@@ -4,8 +4,8 @@
   "description": "A chatbot for MandatoAberto",
   "main": "app/app.js",
   "scripts": {
-    "start:dev": "nodemon app/app.js",
-    "start": "node app/app.js",
+    "start:dev": "nodemon app/server/app.js",
+    "start": "node app/server/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
