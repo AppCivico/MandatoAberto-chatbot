@@ -16,7 +16,7 @@ bot = new builder.UniversalBot(connector);
 // Setup Restify Server
 const server = restify.createServer();
 server.listen(process.env.port || 8080, () => {
-	console.log('%s listening to port %s', server.name, server.url);
+//	console.log('%s listening to port %s', server.name, server.url);
 });
 server.post('/api/messages', connector.listen());
 bot.use(builder.Middleware.dialogVersion({ version: 0.2, resetCommand: /^reset/i }));
