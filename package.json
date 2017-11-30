@@ -2,7 +2,7 @@
   "name": "MandatoAberto-chatbot",
   "version": "0.0.0",
   "description": "A chatbot for MandatoAberto",
-  "main": "app/app.js",
+  "main": "app/server/app.js",
   "scripts": {
     "start:dev": "nodemon app/server/app.js",
     "start": "node app/server/app.js",
@@ -22,7 +22,7 @@
     "babel-preset-es2015-native-modules": "^6.9.4",
     "changelog-verify": "^1.0.4",
     "cssnano": "^3.10.0",
-    "eslint": "^4.11.0",
+    "eslint": "^4.12.0",
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-import": "^2.8.0",
     "hashmark": "^5.0.0",
@@ -39,6 +39,9 @@
   "dependencies": {
     "botbuilder": "^3.12.0",
     "dotenv": "^4.0.0",
+    "filestream": "^4.1.3",
+    "request": "^2.83.0",
+    "rest": "^2.0.0",
     "restify": "^6.3.4"
   }
 }
