@@ -2,10 +2,10 @@
   "name": "MandatoAberto-chatbot",
   "version": "0.0.0",
   "description": "A chatbot for MandatoAberto",
-  "main": "app/server/app.js",
+  "main": "app/app.js",
   "scripts": {
-    "start:dev": "nodemon app/server/app.js",
-    "start": "node app/server/app.js",
+    "start:dev": "nodemon app/app.js",
+    "start": "node app/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
