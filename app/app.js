@@ -148,11 +148,11 @@ bot.dialog('/contact', [
 bot.dialog('/poll', [
 	(session) => {
 		function callback(poll) {
+			pollData = poll;
 			const options = [
 				pollData.polls[0].questions[0].options[0].content,
 				pollData.polls[0].questions[0].options[1].content,
 			];
-			pollData = poll;
 			session.sendTyping();
 			session.send(`Que legal.
         É muito importante entender o que a população pensa para criarmos
