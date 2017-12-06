@@ -150,8 +150,8 @@ bot.dialog('/poll', [
 		function callback(poll) {
 			pollData = poll;
 			const options = [
-				pollData.polls[0].questions[0].options[0].content,
-				pollData.polls[0].questions[0].options[1].content,
+				pollData.questions[0].options[0].content,
+				pollData.questions[0].options[0].content,
 			];
 			session.sendTyping();
 			session.send(`Que legal.
@@ -159,7 +159,7 @@ bot.dialog('/poll', [
         iniciativas que de fato impactem positivamente na vida de todos.`);
 			builder.Prompts.choice(
 				session,
-				pollData.polls[0].questions[0].content,
+				pollData.name,
 				options,
 				{ listStyle: builder.ListStyle.button, retryPrompt: 'fail' } // eslint-disable-line comma-dangle
 			);

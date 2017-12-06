@@ -17,7 +17,7 @@ module.exports = {
 	getPoliticianData(callback) {
 		// Primeiro realizo a autenticação
 		const options = {
-			url: `${apiUri}api/login`,
+			url: `${apiUri}/api/login`,
 			headers,
 			method: 'POST',
 			form: {
@@ -34,12 +34,13 @@ module.exports = {
 
 				// Depois puxo os dados do representante público
 				options.method = 'GET';
-				options.url = `${apiUri}api/politician/${userId}`;
+				options.url = `${apiUri}/api/chatbot/politician/`;
 				options.form = { api_key: apiKey };
 
 				request(options)
 					.then((bodyRequest) => {
 						const politician = bodyRequest;
+
 						return callback(politician);
 					})
 					.catch((err) => {
@@ -54,7 +55,7 @@ module.exports = {
 	getPoll(callback) {
 		// Primeiro realizo a autenticação
 		const options = {
-			url: `${apiUri}api/login`,
+			url: `${apiUri}/api/login`,
 			headers,
 			method: 'POST',
 			form: {
@@ -71,12 +72,13 @@ module.exports = {
 
 				// Depois puxo os dados do representante público
 				options.method = 'GET';
-				options.url = `${apiUri}api/poll`;
+				options.url = `${apiUri}/api/chatbot/poll`;
 				options.form = { api_key: apiKey };
 
 				request(options)
 					.then((bodyRequest) => {
 						const poll = bodyRequest;
+
 						return callback(poll);
 					})
 					.catch((err) => {
