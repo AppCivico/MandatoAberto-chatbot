@@ -6,7 +6,7 @@
     },
     "rules": {
 
-      "indent": ["error", "space"],
-    "no-tabs": 1
+      "indent": ["error", "tab"],
+    "no-tabs": 0
   }
 }

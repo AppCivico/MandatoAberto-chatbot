@@ -4,8 +4,8 @@ const restify = require('restify');
 global.builder = require('botbuilder');
 
 const connector = new builder.ChatConnector({
-    appId: process.env.MICROSOFT_APP_ID ? process.env.MICROSOFT_APP_ID : '',
-    appPassword: process.env.MICROSOFT_APP_PASSWORD ? process.env.MICROSOFT_APP_PASSWORD : '',
+	appId: process.env.MICROSOFT_APP_ID ? process.env.MICROSOFT_APP_ID : '',
+	appPassword: process.env.MICROSOFT_APP_PASSWORD ? process.env.MICROSOFT_APP_PASSWORD : '',
 });
 
 bot = new builder.UniversalBot(connector);
@@ -13,7 +13,7 @@ bot = new builder.UniversalBot(connector);
 // Setup Restify Server
 const server = restify.createServer();
 server.listen(process.env.port || 2049, () => {
-  console.log('%s listening to port %s', server.name, server.url);
+	console.log('%s listening to port %s', server.name, server.url);
 });
 
 server.post('/api/messages', connector.listen());
