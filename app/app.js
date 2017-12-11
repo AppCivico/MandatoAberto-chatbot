@@ -188,12 +188,14 @@ bot.dialog('/poll', [
 			case pollData.polls[0].questions[0].options[0].content:
 				session.sendTyping();
 				session.send('Muito obrigado, é muito importante a participação da população nesse processo de elaboração de projetos.');
+				// adicionar chamada para a API
 				builder.Prompts.text(session, `Você gostaria de assinar a nossa petição para dar mais força ao projeto?
 		Para isso é só me falar seu email, vamos lá?`);
 				break;
 			case pollData.polls[0].questions[0].options[1].content:
 				session.sendTyping();
 				session.send('Muito obrigado, é muito importante a participação da população nesse processo de elaboração de projetos.');
+				// adicionar chamada para a API
 				session.replaceDialog('/greetings');
 				break;
 			default:
