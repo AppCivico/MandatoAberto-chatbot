@@ -14,7 +14,7 @@ module.exports = {
 	getPoliticianData(pageId, callback) {
 		// Primeiro realizo a autenticação
 		const options = {
-			url: `${apiUri}/chatbot?page_id=${pageId}`,
+			url: `${apiUri}/api/chatbot?page_id=${pageId}`,
 			headers,
 			method: 'GET',
 			json: true,
