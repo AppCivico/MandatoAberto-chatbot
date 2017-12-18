@@ -2,11 +2,16 @@ require('dotenv').config();
 
 const { MessengerBot, FileSessionStore } = require('bottender');
 const { createServer } = require('bottender/restify');
-const MandaAbertoAPI = require('./mandatoaberto_api.js');
+const MandatoAbertoAPI = require('./mandatoaberto_api.js');
 const config = require('./bottender.config.js').messenger;
 
-console.log(MandaAbertoAPI);
 const mapPageToAccessToken = pageId => {
+	function callback(accessToken) {
+		console.log(accessToken);
+		return accessToken;
+	}
+
+	MandatoAbertoAPI.getPoliticianData(pageId, callback);
 };
 
 const bot = new MessengerBot({
