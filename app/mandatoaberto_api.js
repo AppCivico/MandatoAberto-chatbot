@@ -11,7 +11,7 @@ const headers = {
 // let userId;
 
 module.exports = {
-	getPoliticianData(pageId, callback) {
+	getPoliticianData(pageId) {
 		// Primeiro realizo a autenticação
 		const options = {
 			url: `${apiUri}/api/chatbot?fb_page_id=${pageId}`,
