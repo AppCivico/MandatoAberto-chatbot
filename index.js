@@ -14,10 +14,13 @@ const PAGE_2_ACCESS_TOKEN = process.env.PAGE_2_ACCESS_TOKEN;
 const mapPageToAccessToken = pageId => {
   switch (pageId) {
 	case PAGE_1_PAGE_ID:
+		console.log(pageId);
 		return PAGE_1_ACCESS_TOKEN;
 	case PAGE_2_PAGE_ID:
+		console.log(pageId);
 		return PAGE_1_ACCESS_TOKEN;
 	default:
+		console.log("----- DEFAULT ----");
 		return PAGE_2_ACCESS_TOKEN;
   }
 };
@@ -30,7 +33,6 @@ const bot = new MessengerBot({
 });
 
 bot.onEvent(async context => {
-	console.log(context);
 	await context.sendText('foobar');
 });
 
