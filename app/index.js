@@ -5,14 +5,14 @@ const { createServer } = require('bottender/restify');
 const MandatoAbertoAPI = require('./mandatoaberto_api.js');
 const config = require('./bottender.config.js').messenger;
 
-const mapPageToAccessToken = pageId => {
+const mapPageToAccessToken = (async pageId => {
 	function callback(accessToken) {
 		console.log(accessToken);
 		return accessToken;
 	}
 
-	MandatoAbertoAPI.getPoliticianData(pageId, callback);
-};
+	await MandatoAbertoAPI.getPoliticianData(pageId, callback);
+});
 
 const bot = new MessengerBot({
 	mapPageToAccessToken,
