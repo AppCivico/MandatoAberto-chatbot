@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const { MessengerBot, FileSessionStore } = require('bottender');
 const { createServer } = require('bottender/restify');
 
@@ -17,6 +19,6 @@ bot.onEvent(async context => {
 
 const server = createServer(bot);
 
-server.listen(5000, () => {
-	console.log('server is running on 5000 port...');
+server.listen(process.env.API_PORT, () => {
+	console.log(`server is running on ${process.env.API_PORT} port...`);
 });
