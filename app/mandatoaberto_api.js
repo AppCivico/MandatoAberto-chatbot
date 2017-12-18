@@ -25,7 +25,7 @@ module.exports = {
 				const res = body;
 				console.log(res);
 
-				return callback(res.access_token);
+				return callback(res);
 			})
 			.catch((err) => {
 				console.log(err);
