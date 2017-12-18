@@ -6,7 +6,11 @@ const MandatoAbertoAPI = require('./mandatoaberto_api.js');
 const config = require('./bottender.config.js').messenger;
 
 const mapPageToAccessToken = (async pageId => {
-	const accessToken = await MandatoAbertoAPI.getPoliticianData(pageId);
+	function callback(accessToken) {
+		return accessToken;
+	}
+
+	const accessToken = await MandatoAbertoAPI.getPoliticianData(pageId, callback);
 	return accessToken;
 });
 
