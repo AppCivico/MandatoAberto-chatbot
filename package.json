@@ -11,6 +11,7 @@
     "dotenv": "^4.0.0",
     "nodemon": "1.12.7",
     "request": "^2.83.0",
-    "request-promise": "^4.2.2"
+    "request-promise": "^4.2.2",
+    "requisition": "^1.7.0"
   }
 }
