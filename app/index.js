@@ -5,8 +5,8 @@ const { createServer } = require('bottender/restify');
 const MandaAbertoAPI = require('./mandatoaberto_api.js');
 const config = require('./bottender.config.js').messenger;
 
+console.log(MandaAbertoAPI);
 const mapPageToAccessToken = pageId => {
-	console.log(MandaAbertoAPI);
 };
 
 const bot = new MessengerBot({

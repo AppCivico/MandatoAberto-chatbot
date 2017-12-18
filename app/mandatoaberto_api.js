@@ -7,121 +7,104 @@ const headers = {
 	'content-type': 'application/x-www-form-urlencoded',
 };
 
-let apiKey;
-let userId;
+// let apiKey;
+// let userId;
 
 module.exports = {
-	getPoliticianData(callback) {
+	getPoliticianData(pageId, callback) {
 		// Primeiro realizo a autenticação
 		const options = {
-			url: `${apiUri}/api/login`,
+			url: `${apiUri}/chatbot?page_id=${pageId}`,
 			headers,
-			method: 'POST',
-			form: {
-				email,
-				password,
-			},
+			method: 'GET',
 			json: true,
 		};
 
 		request(options)
-			.then((bodyThen) => {
-				apiKey = bodyThen.api_key;
-				userId = bodyThen.user_id;
+			.then((body) => {
+				const res = body;
+				console.log(res);
 
-				// Depois puxo os dados do representante público
-				options.method = 'GET';
-				options.url = `${apiUri}/api/chatbot/politician/`;
-				options.form = { api_key: apiKey };
-
-				request(options)
-					.then((bodyRequest) => {
-						const politician = bodyRequest;
-
-						return callback(politician);
-					})
-					.catch((err) => {
-						console.log(err);
-					});
+				return callback(res);
 			})
 			.catch((err) => {
 				console.log(err);
 			});
 	},
 
-	getPoll(callback) {
-		// Primeiro realizo a autenticação
-		const options = {
-			url: `${apiUri}/api/login`,
-			headers,
-			method: 'POST',
-			form: {
-				email,
-				password,
-			},
-			json: true,
-		};
+	// getPoll(callback) {
+	// 	// Primeiro realizo a autenticação
+	// 	const options = {
+	// 		url: `${apiUri}/api/login`,
+	// 		headers,
+	// 		method: 'POST',
+	// 		form: {
+	// 			email,
+	// 			password,
+	// 		},
+	// 		json: true,
+	// 	};
 
-		request(options)
-			.then((bodyThen) => {
-				apiKey = bodyThen.api_key;
-				userId = bodyThen.user_id;
+	// 	request(options)
+	// 		.then((bodyThen) => {
+	// 			apiKey = bodyThen.api_key;
+	// 			userId = bodyThen.user_id;
 
-				// Depois puxo os dados do representante público
-				options.method = 'GET';
-				options.url = `${apiUri}/api/chatbot/poll`;
-				options.form = { api_key: apiKey };
+	// 			// Depois puxo os dados do representante público
+	// 			options.method = 'GET';
+	// 			options.url = `${apiUri}/api/chatbot/poll`;
+	// 			options.form = { api_key: apiKey };
 
-				request(options)
-					.then((bodyRequest) => {
-						const poll = bodyRequest;
+	// 			request(options)
+	// 				.then((bodyRequest) => {
+	// 					const poll = bodyRequest;
 
-						return callback(poll);
-					})
-					.catch((err) => {
-						console.log(err);
-					});
-			})
-			.catch((err) => {
-				console.log(err);
-			});
-	},
+	// 					return callback(poll);
+	// 				})
+	// 				.catch((err) => {
+	// 					console.log(err);
+	// 				});
+	// 		})
+	// 		.catch((err) => {
+	// 			console.log(err);
+	// 		});
+	// },
 
-	postCitizen(callback, citizen) {
-		// Primeiro realizo a autenticação
-		const options = {
-			url: `${apiUri}/api/login`,
-			headers,
-			method: 'POST',
-			form: {
-				email,
-				password,
-			},
-			json: true,
-		};
+	// postCitizen(callback, citizen) {
+	// 	// Primeiro realizo a autenticação
+	// 	const options = {
+	// 		url: `${apiUri}/api/login`,
+	// 		headers,
+	// 		method: 'POST',
+	// 		form: {
+	// 			email,
+	// 			password,
+	// 		},
+	// 		json: true,
+	// 	};
 
-		request(options)
-			.then((bodyThen) => {
-				apiKey = bodyThen.api_key;
-				userId = bodyThen.user_id;
+	// 	request(options)
+	// 		.then((bodyThen) => {
+	// 			apiKey = bodyThen.api_key;
+	// 			userId = bodyThen.user_id;
 
-				// Depois puxo os dados do representante público
-				options.method = 'POST';
-				options.url = `${apiUri}/api/chatbot/citizen`;
-				options.form = { api_key: apiKey };
+	// 			// Depois puxo os dados do representante público
+	// 			options.method = 'POST';
+	// 			options.url = `${apiUri}/api/chatbot/citizen`;
+	// 			options.form = { api_key: apiKey };
 
-				request(options)
-					.then((bodyRequest) => {
-						const poll = bodyRequest;
+	// 			request(options)
+	// 				.then((bodyRequest) => {
+	// 					const poll = bodyRequest;
 
-						return callback(poll);
-					})
-					.catch((err) => {
-						console.log(err);
-					});
-			})
-			.catch((err) => {
-				console.log(err);
-			});
-	},
+	// 					return callback(poll);
+	// 				})
+	// 				.catch((err) => {
+	// 					console.log(err);
+	// 				});
+	// 		})
+	// 		.catch((err) => {
+	// 			console.log(err);
+	// 		});
+	// },
 };
