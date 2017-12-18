@@ -25,6 +25,7 @@ const mapPageToAccessToken = pageId => {
 const bot = new MessengerBot({
 	mapPageToAccessToken,
 	appSecret: config.appSecret,
+	verifyToken: config.verifyToken,
 	sessionStore: new FileSessionStore(),
 });
 
