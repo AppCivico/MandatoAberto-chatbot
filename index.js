@@ -5,6 +5,23 @@ const { createServer } = require('bottender/restify');
 
 const config = require('./bottender.config.js').messenger;
 
+const PAGE_1_PAGE_ID = process.env.PAGE_1_PAGE_ID;
+const PAGE_1_ACCESS_TOKEN = process.env.PAGE_1_ACCESS_TOKEN;
+
+const PAGE_2_PAGE_ID = process.env.PAGE_2_PAGE_ID;
+const PAGE_2_ACCESS_TOKEN = process.env.PAGE_2_ACCESS_TOKEN;
+
+const mapPageToAccessToken = pageId => {
+  switch (pageId) {
+	case PAGE_1_PAGE_ID:
+		return PAGE_1_ACCESS_TOKEN;
+	case PAGE_2_PAGE_ID:
+		return PAGE_1_ACCESS_TOKEN;
+	default:
+		return PAGE_2_ACCESS_TOKEN;
+  }
+};
+
 const bot = new MessengerBot({
 	accessToken: config.accessToken,
 	appSecret: config.appSecret,
@@ -12,9 +29,8 @@ const bot = new MessengerBot({
 });
 
 bot.onEvent(async context => {
-    console.log(context);
+	console.log(context);
 	await context.sendText('foobar');
-    await context.sendText('fizzbuzz');
 });
 
 const server = createServer(bot);
