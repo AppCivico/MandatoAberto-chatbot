@@ -142,22 +142,39 @@ bot.onEvent(async context => {
 			break;
 
 		case 'poll':
-			await context.sendText('Que legal, é muito importante conhecer você e sua comunidade para criarmos iniciativas que impactem positivamente na vida de todos.');
+			// Verifico se o cidadão já respondeu a enquete atualmente ativa
+			const citizenAnswer = await MandatoAbertoAPI.getPollAnswer(context.session.user.id, pollData.id);
 
-			await context.sendQuickReplies({ text: pollData.questions[0].content }, [
-				{
-					content_type: 'text',
-					title: pollData.questions[0].options[0].content,
-					payload: pollData.questions[0].options[0].id,
-				},
-				{
-					content_type: 'text',
-					title: pollData.questions[0].options[1].content,
-					payload: pollData.questions[0].options[1].id,
-				},
-			]);
+			if (citizenAnswer.citizen_answered === 1) {
+				await context.sendText('Você já respondeu a enquete atualmente ativa');
 
-			await context.setState(	{ dialog: 'pollAnswer' } );
+				await context.sendQuickReplies({ text: 'Se quiser eu posso te ajudar com outra coisa' }, [
+					{
+						content_type: 'text',
+						title: 'Quero saber',
+						payload: 'aboutMe',
+					},
+				]);
+
+				await context.setState( { dialog: 'prompt' } );
+			} else {
+				await context.sendText('Que legal, é muito importante conhecer você e sua comunidade para criarmos iniciativas que impactem positivamente na vida de todos.');
+
+				await context.sendQuickReplies({ text: pollData.questions[0].content }, [
+					{
+						content_type: 'text',
+						title: pollData.questions[0].options[0].content,
+						payload: `${pollData.questions[0].options[0].id}`,
+					},
+					{
+						content_type: 'text',
+						title: pollData.questions[0].options[1].content,
+						payload: `${pollData.questions[0].options[1].id}`,
+					},
+				]);
+
+				await context.setState(	{ dialog: 'pollAnswer' } );
+			}
 
 			break;
 

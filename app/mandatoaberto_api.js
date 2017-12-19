@@ -26,7 +26,12 @@ module.exports = {
 	async postPollAnswer(fb_id, option_id) {
 		const res = await request.post(`${apiUri}/api/chatbot/poll-result?fb_id=${fb_id}&option_id=${option_id}`);
 		const pollAnswer = await res.json();
-		console.log(pollAnswer);
+		return pollAnswer;
+	},
+
+	async getPollAnswer(fb_id, poll_id) {
+		const res = await request(`${apiUri}/api/chatbot/poll-result?fb_id=${fb_id}`);
+		const pollAnswer = await res.json();
 		return pollAnswer;
 	}
 };
