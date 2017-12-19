@@ -13,7 +13,16 @@ let articles;
 let politicianData;
 let pollData;
 let pollAnswer;
+
 let citizenData = {};
+citizenData[
+	'fb_id',
+	'name',
+	'origin_dialog',
+	'email',
+	'cellphone',
+	'gender',
+];
 
 const mapPageToAccessToken = (async pageId => {
 	politicianData = await MandatoAbertoAPI.getPoliticianData(pageId);
@@ -38,6 +47,7 @@ const bot = new MessengerBot({
 bot.setInitialState({});
 
 bot.onEvent(async context => {
+
 	if (!context.state.dialog) {
 		await context.setState( { dialog: 'greetings' } )
 	}
@@ -62,7 +72,15 @@ bot.onEvent(async context => {
 
 	switch (context.state.dialog) {
 		case 'greetings':
-			const introText = `Olá ${context._session.user.first_name}!, sou o assistente digital ${articles.possessive} ${politicianData.office.name} ${politicianData.name}!. Seja benvindo a nossa Rede! Queremos um Brasil a melhor e precisamos de sua ajuda.`;
+			// Criando um cidadão
+			citizenData.fb_id = context.user.id;
+			citizenData.name = context.user.first_name + ' ' + context.user.last_name;
+			citizenData.gender = context.user.gender;
+
+			const citizen = await MandatoAbertoAPI.postCitizen(politicianData.user_id, citizenData);
+			console.log(citizen);
+
+			const introText = `Olá ${context.user.first_name}!, sou o assistente digital ${articles.possessive} ${politicianData.office.name} ${politicianData.name}!. Seja benvindo a nossa Rede! Queremos um Brasil a melhor e precisamos de sua ajuda.`;
 			await context.sendQuickReplies({ text: introText }, [
 				{
 					content_type: 'text',
@@ -93,7 +111,7 @@ bot.onEvent(async context => {
 					content_type: 'text',
 					title: 'Trajetória',
 					// trajetória e bandeiras, dialogo
-					payload: 'poll',
+					payload: 'trajectory',
 				},
 			]);
 
@@ -108,14 +126,9 @@ bot.onEvent(async context => {
 			await context.sendQuickReplies({ text: `Posso te ajudar com outra informação?` }, [
 				{
 					content_type: 'text',
-					title: 'Contatos',
-					payload: 'contact',
-				},
-				{
-					content_type: 'text',
-					title: 'Trajetória / Bandeiras',
+					title: 'Trajetória',
 					// trajetória e bandeiras, dialogo
-					payload: 'poll',
+					payload: 'trajectory',
 				},
 				{
 					content_type: 'text',

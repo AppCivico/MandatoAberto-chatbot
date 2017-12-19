@@ -18,6 +18,16 @@ module.exports = {
 		return pollData;
 	},
 
+	async postCitizen(user_id, citizen) {
+		const res = await request.post(`${apiUri}/api/chatbot/citizen`).query( 
+			{politician_id: user_id}, 
+			citizen
+		);
+		console.log(res);
+		const citizen = await res.json();
+		return citizen;
+	}
+
 	// postCitizen(callback, citizen) {
 	// 	// Primeiro realizo a autenticação
 	// 	const options = {
