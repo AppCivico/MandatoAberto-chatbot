@@ -79,18 +79,19 @@ bot.onEvent(async context => {
 			await context.setState( { dialog: 'prompt' } );
 
 			break;
+
 		case 'aboutMe':
 			await context.sendText(politicianData.greeting);
 
 			await context.sendQuickReplies({ text: `O que mais deseja saber sobre ${articles.defined} ${politicianData.office.name}?` }, [
 				{
 					content_type: 'text',
-					title: 'Quero saber',
-					payload: 'contato',
+					title: 'Contatos',
+					payload: 'contact',
 				},
 				{
 					content_type: 'text',
-					title: 'Responder enquete',
+					title: 'Trajetória / Bandeiras',
 					// trajetória e bandeiras, dialogo
 					payload: 'poll',
 				},
@@ -99,6 +100,34 @@ bot.onEvent(async context => {
 			await context.setState( { dialog: 'prompt' } );
 
 			break;
+
+		case 'contact':
+			const contactText = `Você pode entrar em contato com ${articles.defined} ${politicianData.office.name} ${politicianData.name} através do email: ${politicianData.contact.email}, pelo telefone ${politicianData.contact.cellphone}`
+			await context.sendText(contactText);
+
+			await context.sendQuickReplies({ text: `Posso te ajudar com outra informação?` }, [
+				{
+					content_type: 'text',
+					title: 'Contatos',
+					payload: 'contact',
+				},
+				{
+					content_type: 'text',
+					title: 'Trajetória / Bandeiras',
+					// trajetória e bandeiras, dialogo
+					payload: 'poll',
+				},
+				{
+					content_type: 'text',
+					title: 'Responder enquete',
+					payload: 'poll',
+				},
+			]);
+
+			await context.setState( { dialog: 'prompt' } );
+
+			break;
+
 		case 'poll':
 			await context.sendText('Que legal, é muito importante conhecer você e sua comunidade para criarmos iniciativas que impactem positivamente na vida de todos.');
 
@@ -118,6 +147,7 @@ bot.onEvent(async context => {
 			await context.setState( { dialog: 'pollAnswer' } );
 
 			break;
+
 		case 'pollAnswer':
 			await context.sendText('Muito obrigado, é muito importante a participação da população nesse processo de elaboração de projetos.');
 
@@ -137,6 +167,7 @@ bot.onEvent(async context => {
 			await context.setState( { dialog: 'prompt' } );
 
 			break;
+
 		case 'citizenData':
 			if (context.event.isText && context.event.message.text == 'Agora não') {
 				await context.sendText('Beleza!');
