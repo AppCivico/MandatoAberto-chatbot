@@ -74,8 +74,9 @@ bot.onEvent(async context => {
 		case 'greetings':
 			// Criando um cidadão
 			citizenData.fb_id = context.session.user.id;
-			citizenData.name = context.session.user.first_name + ' ' + context.user.last_name;
+			citizenData.name = context.session.user.first_name + ' ' + context.sessionuser.last_name;
 			citizenData.gender = context.session.user.gender;
+			citizenData.origin_dialog = 'greetings';
 
 			const citizen = await MandatoAbertoAPI.postCitizen(politicianData.user_id, citizenData);
 			console.log(citizen);
