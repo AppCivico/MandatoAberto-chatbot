@@ -7,13 +7,12 @@ const apiUri = process.env.MANDATOABERTO_API_URL;
 const config = require('./bottender.config.js').messenger;
 const request = require('requisition');
 
-let pageId;
+let politicianData;
 
 const mapPageToAccessToken = (async pageId => {
-	pageId = pageId;
-	const res = await request(`${apiUri}/api/chatbot?fb_page_id=${pageId}`).query(pageId);
-	const body = await res.json();
-	return body.access_token;
+	politicianData = await MandatoAbertoAPI.getPoliticianData(pageId);
+	console.log(politicianData);
+	return politicianData.access_token;
 });
 
 const bot = new MessengerBot({
