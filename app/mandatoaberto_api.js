@@ -24,8 +24,8 @@ module.exports = {
 			citizen
 		);
 		console.log(res);
-		const citizen = await res.json();
-		return citizen;
+		const citizenData = await res.json();
+		return citizenData;
 	}
 
 	// postCitizen(callback, citizen) {

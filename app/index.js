@@ -21,7 +21,7 @@ citizenData[
 	'origin_dialog',
 	'email',
 	'cellphone',
-	'gender',
+	'gender'
 ];
 
 const mapPageToAccessToken = (async pageId => {
@@ -73,14 +73,14 @@ bot.onEvent(async context => {
 	switch (context.state.dialog) {
 		case 'greetings':
 			// Criando um cidadão
-			citizenData.fb_id = context.user.id;
-			citizenData.name = context.user.first_name + ' ' + context.user.last_name;
-			citizenData.gender = context.user.gender;
+			citizenData.fb_id = context.session.user.id;
+			citizenData.name = context.session.user.first_name + ' ' + context.user.last_name;
+			citizenData.gender = context.session.user.gender;
 
 			const citizen = await MandatoAbertoAPI.postCitizen(politicianData.user_id, citizenData);
 			console.log(citizen);
 
-			const introText = `Olá ${context.user.first_name}!, sou o assistente digital ${articles.possessive} ${politicianData.office.name} ${politicianData.name}!. Seja benvindo a nossa Rede! Queremos um Brasil a melhor e precisamos de sua ajuda.`;
+			const introText = `Olá ${context.session.user.first_name}!, sou o assistente digital ${articles.possessive} ${politicianData.office.name} ${politicianData.name}!. Seja benvindo a nossa Rede! Queremos um Brasil a melhor e precisamos de sua ajuda.`;
 			await context.sendQuickReplies({ text: introText }, [
 				{
 					content_type: 'text',
