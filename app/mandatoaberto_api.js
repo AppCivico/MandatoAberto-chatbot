@@ -33,5 +33,11 @@ module.exports = {
 		const res = await request(`${apiUri}/api/chatbot/poll-result?fb_id=${fb_id}&poll_id=${poll_id}`);
 		const pollAnswer = await res.json();
 		return pollAnswer;
+	},
+
+	async getDialog(politician_id, dialog_name) {
+		const res = await request(`${apiUri}/api/chatbot/dialog?politician_id=${politician_id}&dialog_name=${dialog_name}`);
+		const dialog = await res.json();
+		return dialog;
 	}
 };

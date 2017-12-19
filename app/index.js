@@ -27,6 +27,7 @@ citizenData[
 const mapPageToAccessToken = (async pageId => {
 	politicianData = await MandatoAbertoAPI.getPoliticianData(pageId);
 	pollData = await MandatoAbertoAPI.getPollData(pageId);
+
 	// Deve-se indentificar o sexo do representante público
 	// e selecionar os artigos (definido e possesivo) adequados
 	if (politicianData.gender === 'F') {
@@ -221,6 +222,29 @@ bot.onEvent(async context => {
 					}
 				);
 			}
+
+			break;
+
+		case 'trajectory':
+			const dialogName = 'Trajetória';
+			const dialog = await MandatoAbertoAPI.getDialog(politicianData.user_id, dialogName);
+
+			await context.sendText(dialog.questions[0].answer.content);
+
+			await context.sendQuickReplies({ text: `Posso te ajudar com outra informação?` }, [
+				{
+					content_type: 'text',
+					title: 'Contatos',
+					payload: 'contact',
+				},
+				{
+					content_type: 'text',
+					title: 'Responder enquete',
+					payload: 'poll',
+				},
+			]);
+
+			await context.setState( { dialog: 'prompt' } );
 
 			break;
 	}
