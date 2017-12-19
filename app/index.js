@@ -21,7 +21,7 @@ const bot = new MessengerBot({
 
 bot.onEvent(async context => {
 	await context.sendText('foobar');
-	await const politicianData = MandatoAbertoAPI.getPoliticianData(pageId);
+	const politicianData = await MandatoAbertoAPI.getPoliticianData(pageId);
 	console.log(politicianData);
 });
 
