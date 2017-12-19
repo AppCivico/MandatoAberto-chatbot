@@ -63,9 +63,8 @@ bot.onEvent(async context => {
 	}
 
 	if (context.event.isQuickReply && context.state.dialog == 'pollAnswer') {
-		pollAnswer = context.event.message.text;
-		const payload = context.event.message.quick_reply.payload;
-		await context.setState( { dialog: payload } );
+		option_id = context.event.message.quick_reply.payload;
+		await MandatoAbertoAPI.postPollAnswer(context.session.user.id, option_id);
 	}
 
 
@@ -149,16 +148,16 @@ bot.onEvent(async context => {
 				{
 					content_type: 'text',
 					title: pollData.questions[0].options[0].content,
-					payload: pollData.questions[0].options[0].content,
+					payload: pollData.questions[0].options[0].id,
 				},
 				{
 					content_type: 'text',
 					title: pollData.questions[0].options[1].content,
-					payload: pollData.questions[0].options[1].content,
+					payload: pollData.questions[0].options[1].id,
 				},
 			]);
 
-			await context.setState( { dialog: 'pollAnswer' } );
+			await context.setState(	{ dialog: 'pollAnswer' } );
 
 			break;
 

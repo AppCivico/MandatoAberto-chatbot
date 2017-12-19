@@ -22,9 +22,15 @@ module.exports = {
 	async postCitizen(user_id, citizen) {
 		const citizenData_qs = queryString.stringify(citizen);
 		const res = await request.post(`${apiUri}/api/chatbot/citizen?${citizenData_qs}&`).query( {politician_id: user_id} );
-		console.log(res);
 		const citizenData = await res.json();
 		return citizenData;
+	}
+
+	async postPollAnswer(fb_id, option_id) {
+		const res = await request.post(`${apiUri}/api/chatbot/poll-result?fb_id=${fb_id}&option_id=${option_id}`);
+		const pollAnswer = await res.json();
+		console.log(pollAnswer);
+		return pollAnswer;
 	}
 
 	// postCitizen(callback, citizen) {
