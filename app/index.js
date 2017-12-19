@@ -48,7 +48,7 @@ bot.onEvent(async context => {
 	}
 
 	if (context.event.isText && context.state.dialog == 'prompt' && context.state.citizenData) {
-		citizenData = { context.state.citizenData: context.event.message.text };
+		citizenData = context.event.message.text;
 		await context.setState( { dialog: payload } );
 	}
 
@@ -91,7 +91,7 @@ bot.onEvent(async context => {
 				},
 				{
 					content_type: 'text',
-					title: 'Trajetória / Bandeiras',
+					title: 'Trajetória',
 					// trajetória e bandeiras, dialogo
 					payload: 'poll',
 				},
