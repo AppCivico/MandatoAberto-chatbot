@@ -22,6 +22,11 @@ const mapPageToAccessToken = (async pageId => {
     } else {
         articles = Articles.masculine;
     }
+
+    await bot.setInitialState({
+        dialog: 'greetings',
+    });
+
 	return politicianData.fb_access_token;
 });
 
@@ -31,12 +36,8 @@ const bot = new MessengerBot({
 	sessionStore: new FileSessionStore(),
 });
 
-bot.setInitialState({
-    dialog: 'greetings',
-});
-
-
 bot.onEvent(async context => {
+    console.log(context.state);
 
     if (context.event.isQuickReply && context.state.dialog == 'prompt') {
         const payload = context.event.message.quick_reply.payload;
