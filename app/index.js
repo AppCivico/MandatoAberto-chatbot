@@ -12,7 +12,7 @@ let politicianData;
 const mapPageToAccessToken = (async pageId => {
 	politicianData = await MandatoAbertoAPI.getPoliticianData(pageId);
 	console.log(politicianData);
-	return politicianData.access_token;
+	return politicianData.fb_access_token;
 });
 
 const bot = new MessengerBot({
@@ -23,7 +23,6 @@ const bot = new MessengerBot({
 
 bot.onEvent(async context => {
 	await context.sendText('foobar');
-	const politicianData = await MandatoAbertoAPI.getPoliticianData(pageId);
 	console.log(politicianData);
 });
 
