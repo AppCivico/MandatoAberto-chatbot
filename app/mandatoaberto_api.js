@@ -7,7 +7,7 @@ const apiUri = process.env.MANDATOABERTO_API_URL;
 
 module.exports = {
 	async getPoliticianData(pageId) {
-		const res = await request.post(`${apiUri}/api/chatbot/politician`).query(pageId);
+		const res = await request.post(`${apiUri}/api/chatbot/politician?fb_page_id=${pageId}`);
 		const politicianData = await res.json();
 		return politicianData;
 	},
