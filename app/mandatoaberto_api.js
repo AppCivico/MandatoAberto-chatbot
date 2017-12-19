@@ -21,10 +21,7 @@ module.exports = {
 
 	async postCitizen(user_id, citizen) {
 		const citizenData_qs = queryString.stringify(citizen);
-		const res = await request.post(`${apiUri}/api/chatbot/citizen`).query( 
-			{politician_id: user_id}, 
-			citizenData_qs
-		);
+		const res = await request.post(`${apiUri}/api/chatbot/citizen?${citizenData_qs}&`).query( {politician_id: user_id} );
 		console.log(res);
 		const citizenData = await res.json();
 		return citizenData;
