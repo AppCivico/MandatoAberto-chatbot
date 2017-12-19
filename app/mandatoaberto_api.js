@@ -3,9 +3,6 @@ const queryString = require('query-string');
 
 const apiUri = process.env.MANDATOABERTO_API_URL;
 
-// let apiKey;
-// let userId;
-
 module.exports = {
 	async getPoliticianData(pageId) {
 		const res = await request(`${apiUri}/api/chatbot/politician?fb_page_id=${pageId}`);
@@ -24,7 +21,7 @@ module.exports = {
 		const res = await request.post(`${apiUri}/api/chatbot/citizen?${citizenData_qs}&`).query( {politician_id: user_id} );
 		const citizenData = await res.json();
 		return citizenData;
-	}
+	},
 
 	async postPollAnswer(fb_id, option_id) {
 		const res = await request.post(`${apiUri}/api/chatbot/poll-result?fb_id=${fb_id}&option_id=${option_id}`);
@@ -32,42 +29,4 @@ module.exports = {
 		console.log(pollAnswer);
 		return pollAnswer;
 	}
-
-	// postCitizen(callback, citizen) {
-	// 	// Primeiro realizo a autenticação
-	// 	const options = {
-	// 		url: `${apiUri}/api/login`,
-	// 		headers,
-	// 		method: 'POST',
-	// 		form: {
-	// 			email,
-	// 			password,
-	// 		},
-	// 		json: true,
-	// 	};
-
-	// 	request(options)
-	// 		.then((bodyThen) => {
-	// 			apiKey = bodyThen.api_key;
-	// 			userId = bodyThen.user_id;
-
-	// 			// Depois puxo os dados do representante público
-	// 			options.method = 'POST';
-	// 			options.url = `${apiUri}/api/chatbot/citizen`;
-	// 			options.form = { api_key: apiKey };
-
-	// 			request(options)
-	// 				.then((bodyRequest) => {
-	// 					const poll = bodyRequest;
-
-	// 					return callback(poll);
-	// 				})
-	// 				.catch((err) => {
-	// 					console.log(err);
-	// 				});
-	// 		})
-	// 		.catch((err) => {
-	// 			console.log(err);
-	// 		});
-	// },
 };
