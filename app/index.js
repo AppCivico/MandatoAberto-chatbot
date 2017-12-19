@@ -2,16 +2,26 @@ require('dotenv').config();
 
 const { MessengerBot, FileSessionStore } = require('bottender');
 const { createServer } = require('bottender/restify');
-const MandatoAbertoAPI = require('./mandatoaberto_api.js');
-const apiUri = process.env.MANDATOABERTO_API_URL;
 const config = require('./bottender.config.js').messenger;
+const MandatoAbertoAPI = require('./mandatoaberto_api.js');
+const Articles = require('./utils/articles.js');
 const request = require('requisition');
 
+const apiUri = process.env.MANDATOABERTO_API_URL;
+
+let articles;
 let politicianData;
 
 const mapPageToAccessToken = (async pageId => {
 	politicianData = await MandatoAbertoAPI.getPoliticianData(pageId);
-	console.log(politicianData);
+
+	// Deve-se indentificar o sexo do representante público
+    // e selecionar os artigos (definido e possesivo) adequados
+    if (politicianData.gender === 'F') {
+        articles = Articles.feminine;
+    } else {
+        articles = Articles.masculine;
+    }
 	return politicianData.fb_access_token;
 });
 
@@ -22,7 +32,19 @@ const bot = new MessengerBot({
 });
 
 bot.onEvent(async context => {
-	await context.sendText('foobar');
+    console.log(context);
+    await context.sendQuickReplies({ text: 'Olá !Nome!, sou !Nome! assistente digital do (a) !Nome e Cargo!. Seja benvindo a nossa Rede! Queremos um Brasil a melhor e precisamos de sua ajuda.' }, [
+        {
+          content_type: 'text',
+          title: 'Quero saber',
+          payload: 'about_me',
+        },
+        {
+          content_type: 'text',
+          title: 'Responder enquete',
+          payload: 'poll',
+        },
+    ]);
 	console.log(politicianData);
 });
 
