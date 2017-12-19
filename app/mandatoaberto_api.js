@@ -1,35 +1,15 @@
-const request = require('request-promise');
-// const qs = require('querystring');
+const request = require('requisition');
 
 const apiUri = process.env.MANDATOABERTO_API_URL;
-
-const headers = {
-	'content-type': 'application/x-www-form-urlencoded',
-};
 
 // let apiKey;
 // let userId;
 
 module.exports = {
-	getPoliticianData(pageId, callback) {
-		// Primeiro realizo a autenticação
-		const options = {
-			url: `${apiUri}/api/chatbot?fb_page_id=${pageId}`,
-			headers,
-			method: 'GET',
-			json: true,
-		};
-
-		request(options)
-			.then((body) => {
-				const res = body;
-				console.log(res);
-
-				return callback(res);
-			})
-			.catch((err) => {
-				console.log(err);
-			});
+	async getPoliticianData(pageId) {
+		const res = await request.post(`${apiUri}/api/chatbot/politician`).query(pageId);
+		const politicianData = await res.json();
+		return politicianData;
 	},
 
 	// getPoll(callback) {

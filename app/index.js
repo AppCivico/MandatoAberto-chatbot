@@ -9,9 +9,8 @@ const request = require('requisition');
 
 const mapPageToAccessToken = (async pageId => {
 	const res = await request(`${apiUri}/api/chatbot?fb_page_id=${pageId}`).query(pageId);
-	console.log(res);
 	const body = await res.json();
-	console.log(body);
+	return body.access_token;
 });
 
 const bot = new MessengerBot({
@@ -22,6 +21,8 @@ const bot = new MessengerBot({
 
 bot.onEvent(async context => {
 	await context.sendText('foobar');
+	await const politicianData = MandatoAbertoAPI.getPoliticianData(pageId);
+	console.log(politicianData);
 });
 
 const server = createServer(bot, { verifyToken: config.verifyToken } );
