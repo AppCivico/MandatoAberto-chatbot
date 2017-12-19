@@ -1,4 +1,5 @@
 const request = require('requisition');
+const queryString = require('query-string');
 
 const apiUri = process.env.MANDATOABERTO_API_URL;
 
@@ -19,9 +20,10 @@ module.exports = {
 	},
 
 	async postCitizen(user_id, citizen) {
+		const citizenData_qs = queryString.stringify(citizen);
 		const res = await request.post(`${apiUri}/api/chatbot/citizen`).query( 
 			{politician_id: user_id}, 
-			citizen
+			citizenData_qs
 		);
 		console.log(res);
 		const citizenData = await res.json();
