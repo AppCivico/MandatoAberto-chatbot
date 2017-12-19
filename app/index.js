@@ -32,8 +32,9 @@ const bot = new MessengerBot({
 });
 
 bot.onEvent(async context => {
-    console.log(context);
-    await context.sendQuickReplies({ text: 'Olá !Nome!, sou !Nome! assistente digital do (a) !Nome e Cargo!. Seja benvindo a nossa Rede! Queremos um Brasil a melhor e precisamos de sua ajuda.' }, [
+    console.log(context._session);
+    const introText = `Olá ${context._session.user.first_name}!, sou o assistente digital ${articles.possessive} ${politicianData.office.name} ${politicianData.name}!. Seja benvindo a nossa Rede! Queremos um Brasil a melhor e precisamos de sua ajuda.`;
+    await context.sendQuickReplies({ text: introText }, [
         {
           content_type: 'text',
           title: 'Quero saber',
