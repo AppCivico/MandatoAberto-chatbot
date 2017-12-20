@@ -67,7 +67,7 @@ bot.onEvent(async context => {
 		if (context.state.citizenData == 'email') {
 			citizenData.email = context.event.message.text;
 		} else if (context.state.citizenData == 'cellphone') {
-			citizenData.email = context.event.message.text;
+			citizenData.cellphone = context.event.message.text;
 			await MandatoAbertoAPI.postCitizen(politicianData.user_id, citizenData);
 		}
 	}
