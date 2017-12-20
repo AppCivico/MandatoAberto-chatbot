@@ -58,17 +58,19 @@ bot.onEvent(async context => {
 		await context.setState( { dialog: payload } );
 	}
 
-	if (context.event.isText && context.state.dialog == 'prompt' && context.state.citizenData) {
-		citizenData = context.event.message.text;
-		await context.setState( { dialog: payload } );
-	}
-
 	if (context.event.isQuickReply && context.state.dialog == 'pollAnswer') {
 		option_id = context.event.message.quick_reply.payload;
 		await MandatoAbertoAPI.postPollAnswer(context.session.user.id, option_id);
 	}
 
-
+	if (context.event.isText && context.state.dialog == 'citizenData' && context.state.citizenData) {
+		if (context.state.citizenData == 'email') {
+			citizenData.email = context.event.message.text;
+		} else if (context.state.citizenData == 'cellphone') {
+			citizenData.email = context.event.message.text;
+			await MandatoAbertoAPI.postCitizen(politicianData.user_id, citizenData);
+		}
+	}
 
 	switch (context.state.dialog) {
 		case 'greetings':
@@ -182,7 +184,7 @@ bot.onEvent(async context => {
 		case 'pollAnswer':
 			await context.sendText('Muito obrigado, é muito importante a participação da população nesse processo de elaboração de projetos.');
 
-			await context.sendQuickReplies({ text: pollData.questions[0].content }, [
+			await context.sendQuickReplies({ text: 'Você gostaria de assinar a nossa petição para dar mais força ao projeto? Para isso é só me falar seu email, vamos la?'  }, [
 				{
 					content_type: 'text',
 					title: 'Vamos lá!',
@@ -213,14 +215,37 @@ bot.onEvent(async context => {
 
 				await context.setState( { dialog: 'prompt' } );
 			} else {
-				await context.sendText('Qual é o seu e-mail?');
+				if (!citizenData.email) {
+					await context.sendText('Qual é o seu e-mail?');
 
-				await context.setState(
-					{
-						dialog: 'prompt',
-						citizenData: 'email'
-					}
-				);
+					await context.setState(
+						{
+							dialog: 'citizenData',
+							citizenData: 'email'
+						}
+					);
+				} else if (!citizenData.cellphone) {
+					await context.sendText('Legal, agora pode me informar seu telefone, para lhe manter informado sobre outras enquetes?');
+
+					await context.setState(
+						{
+							dialog: 'citizenData',
+							citizenData: 'cellphone'
+						}
+					);
+				} else {
+					await context.sendText('Pronto, já guardei seus dados. Vou lhe enviar o resultado atual da enquete, e assim que terminar a pesquisa eu lhe envio o resultado final');
+
+					await context.sendQuickReplies({ text: `Posso te ajudar com outra informação?` }, [
+						{
+							content_type: 'text',
+							title: 'Quero saber',
+							payload: 'aboutMe',
+						}
+					]);
+
+					await context.setState( { dialog: 'prompt' } );
+				}
 			}
 
 			break;
