@@ -303,7 +303,7 @@ bot.onEvent(async context => {
 			citizenData.gender = context.session.user.gender == 'male' ? 'M' : 'F';
 			citizenData.origin_dialog = 'greetings';
 
-			citizen = await MandatoAbertoAPI.postCitizen(politicianData.user_id, citizenData);
+			await MandatoAbertoAPI.postCitizen(politicianData.user_id, citizenData);
 
 			introText = `Olá ${context.session.user.first_name}!, sou o assistente digital ${articles.possessive} ${politicianData.office.name} ${politicianData.name}!. Seja benvindo a nossa Rede! Queremos um Brasil a melhor e precisamos de sua ajuda.`;
 			await context.sendQuickReplies({ text: introText }, [
