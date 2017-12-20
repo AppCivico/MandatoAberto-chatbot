@@ -272,6 +272,34 @@ bot.onEvent(async context => {
 			await context.setState( { dialog: 'prompt' } );
 
 			break;
+
+		default:
+			// Criando um cidadão
+			citizenData.fb_id = context.session.user.id;
+			citizenData.name = context.session.user.first_name + ' ' + context.session.user.last_name;
+			citizenData.gender = context.session.user.gender == 'male' ? 'M' : 'F';
+			citizenData.origin_dialog = 'greetings';
+
+			const citizen = await MandatoAbertoAPI.postCitizen(politicianData.user_id, citizenData);
+			console.log(citizen);
+
+			const introText = `Olá ${context.session.user.first_name}!, sou o assistente digital ${articles.possessive} ${politicianData.office.name} ${politicianData.name}!. Seja benvindo a nossa Rede! Queremos um Brasil a melhor e precisamos de sua ajuda.`;
+			await context.sendQuickReplies({ text: introText }, [
+				{
+					content_type: 'text',
+					title: 'Quero saber',
+					payload: 'aboutMe',
+				},
+				{
+					content_type: 'text',
+					title: 'Responder enquete',
+					payload: 'poll',
+				},
+			]);
+
+			await context.setState( { dialog: 'prompt' } );
+
+			break;
 	}
 });
 
