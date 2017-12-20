@@ -37,8 +37,7 @@ module.exports = {
 
 	async getDialog(politician_id, dialog_name) {
 		const res = await request(`${apiUri}/api/chatbot/dialog?politician_id=${politician_id}&dialog_name=${dialog_name}`);
-		console.log(res);
 		const dialog = await res.json();
 		return dialog;
-	}
+	},
 };

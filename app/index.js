@@ -53,6 +53,29 @@ bot.onEvent(async context => {
 		await context.setState( { dialog: 'greetings' } )
 	}
 
+	if (context.state.dialog == 'prompt') {
+		if (context.event.isQuickReply) {
+			const payload = context.event.message.quick_reply.payload;
+			await context.setState( { dialog: payload } );
+		} else if (context.event.isText) {
+			await context.sendText('Meus algoritmos estão em aprendizagem, pois ainda sou um robo novo. Infelizmente não consegui entender o que você disse. Mas vou guardar sua mensagem e assim que tiver uma resposta eu te mando.');
+			await context.sendQuickReplies({ text: introText }, [
+				{
+					content_type: 'text',
+					title: 'Quero saber',
+					payload: 'aboutMe',
+				},
+				{
+					content_type: 'text',
+					title: 'Responder enquete',
+					payload: 'poll',
+				},
+			]);
+
+			await context.setState( { dialog: 'prompt' } );
+		}
+	}
+
 	if (context.event.isQuickReply && context.state.dialog == 'prompt') {
 		const payload = context.event.message.quick_reply.payload;
 		await context.setState( { dialog: payload } );
@@ -280,10 +303,9 @@ bot.onEvent(async context => {
 			citizenData.gender = context.session.user.gender == 'male' ? 'M' : 'F';
 			citizenData.origin_dialog = 'greetings';
 
-			const citizen = await MandatoAbertoAPI.postCitizen(politicianData.user_id, citizenData);
-			console.log(citizen);
+			citizen = await MandatoAbertoAPI.postCitizen(politicianData.user_id, citizenData);
 
-			const introText = `Olá ${context.session.user.first_name}!, sou o assistente digital ${articles.possessive} ${politicianData.office.name} ${politicianData.name}!. Seja benvindo a nossa Rede! Queremos um Brasil a melhor e precisamos de sua ajuda.`;
+			introText = `Olá ${context.session.user.first_name}!, sou o assistente digital ${articles.possessive} ${politicianData.office.name} ${politicianData.name}!. Seja benvindo a nossa Rede! Queremos um Brasil a melhor e precisamos de sua ajuda.`;
 			await context.sendQuickReplies({ text: introText }, [
 				{
 					content_type: 'text',
