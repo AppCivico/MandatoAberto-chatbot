@@ -95,6 +95,10 @@ bot.onEvent(async context => {
 		}
 	}
 
+	if (!politicianData.greetings && !politicianData.pollData) {
+		await context.setState( { dialog: 'fallback' } );
+	}
+
 	switch (context.state.dialog) {
 		case 'greetings':
 			// Criando um cidadão
@@ -105,26 +109,38 @@ bot.onEvent(async context => {
 
 			const citizen = await MandatoAbertoAPI.postCitizen(politicianData.user_id, citizenData);
 
+			const introduction = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'introduction');
+
+			const promptOptions = [
+				(
+					introduction.content ? 
+						{
+							content_type: 'text',
+							title: 'Sobre o líder',
+							payload: 'aboutMe',
+						}
+					: ''
+				),
+				(
+					pollData ?
+						{
+							content_type: 'text',
+							title: 'Responder enquete',
+							payload: 'poll',
+						}
+					: ''
+				),
+
+			];
+
 			await context.sendText(politicianData.greeting);
-			await context.sendQuickReplies({ text: 'Como posso te ajudar?' }, [
-				{
-					content_type: 'text',
-					title: 'Sobre o líder',
-					payload: 'aboutMe',
-				},
-				{
-					content_type: 'text',
-					title: 'Responder enquete',
-					payload: 'poll',
-				},
-			]);
+			await context.sendQuickReplies({ text: 'Como posso te ajudar?' }, promptOptions);
 
 			await context.setState( { dialog: 'prompt' } );
 
 			break;
 
 		case 'aboutMe':
-			const introduction = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'introduction');
 			await context.sendText(introduction.content);
 
 			await context.sendQuickReplies({ text: `O que mais deseja saber sobre ${articles.defined} ${politicianData.office.name}?` }, [
@@ -301,6 +317,12 @@ bot.onEvent(async context => {
 			]);
 
 			await context.setState( { dialog: 'prompt' } );
+
+			break;
+
+		case 'trajectory':
+
+			await context.sendText('Olá! Por enquanto não consigo fazer muito, mas em breve poderemos conversar sobre várias coisas!');
 
 			break;
 	}
