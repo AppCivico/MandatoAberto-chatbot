@@ -147,15 +147,15 @@ bot.onEvent(async context => {
 
 		case 'contact':
 			// Tratando o formato do telefone
-			if (politicianData.cellphone) {
-				politicianData.cellphone = politicianData.cellphone.replace(/(?:\+55)+/g, "");
-				politicianData.cellphone = politicianData.cellphone.replace(/^\d{2}/g, "($1)");
+			if (politicianData.contact.cellphone) {
+				politicianData.contact.cellphone = politicianData.contact.cellphone.replace(/(?:\+55)+/g, "");
+				politicianData.contact.cellphone = politicianData.contact.cellphone.replace(/^\d{2}/g, "($1)");
 			}
 
 			const contactText = `Você pode entrar em contato com ${articles.defined} ${politicianData.office.name} ${politicianData.name} pelos seguintes canais: `
-							  + politicianData.contact.email ? `através do email: ${politicianData.contact.email}` : '' +
-							  + politicianData.contact.cellphone ? `através do WhatsApp: ${politicianData.contact.cellphone}` : '' +
-							  + politicianData.contact.twitter ? `através do Twitter: ${politicianData.contact.twitter}` : '';
+							  + ( politicianData.contact.email ? ` - através do email: ${politicianData.contact.email}` : '' ) +
+							  + ( politicianData.contact.cellphone ? ` - através do WhatsApp: ${politicianData.contact.cellphone}` : '' ) +
+							  + ( politicianData.contact.twitter ? ` - através do Twitter: ${politicianData.contact.twitter}` : '' );
 			await context.sendText(contactText);
 
 			await context.sendQuickReplies({ text: `Posso te ajudar com outra informação?` }, [
