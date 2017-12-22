@@ -122,7 +122,7 @@ bot.onEvent(async context => {
 					: ''
 				),
 				(
-					pollData ?
+					pollData.questions ?
 						{
 							content_type: 'text',
 							title: 'Responder enquete',
