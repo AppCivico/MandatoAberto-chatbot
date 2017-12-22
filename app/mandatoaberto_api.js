@@ -40,4 +40,10 @@ module.exports = {
 		const dialog = await res.json();
 		return dialog;
 	},
+
+	async getAnswer(politician_id, question_name) {
+		const res = await request(`${apiUri}/api/chatbot/answer?politician_id=${politician_id}&question_name=${question_name}`);
+		const question = await res.json();
+		return question;
+	}
 };

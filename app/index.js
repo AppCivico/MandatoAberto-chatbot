@@ -62,7 +62,7 @@ bot.onEvent(async context => {
 			await context.sendQuickReplies({ text: 'Posso te ajudar com outra coisa?' }, [
 				{
 					content_type: 'text',
-					title: 'Quero saber',
+					title: 'Sobre o líder',
 					payload: 'aboutMe',
 				},
 				{
@@ -104,13 +104,12 @@ bot.onEvent(async context => {
 			citizenData.origin_dialog = 'greetings';
 
 			const citizen = await MandatoAbertoAPI.postCitizen(politicianData.user_id, citizenData);
-			console.log(citizen);
 
-			const introText = `Olá ${context.session.user.first_name}!, sou o assistente digital ${articles.possessive} ${politicianData.office.name} ${politicianData.name}!. Seja benvindo a nossa Rede! Queremos um Brasil a melhor e precisamos de sua ajuda.`;
-			await context.sendQuickReplies({ text: introText }, [
+			await context.sendText(politicianData.greeting);
+			await context.sendQuickReplies({ text: 'Como posso te ajudar?' }, [
 				{
 					content_type: 'text',
-					title: 'Quero saber',
+					title: 'Sobre o líder',
 					payload: 'aboutMe',
 				},
 				{
@@ -125,7 +124,8 @@ bot.onEvent(async context => {
 			break;
 
 		case 'aboutMe':
-			await context.sendText(politicianData.greeting);
+			const introduction = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'introduction');
+			await context.sendText(introduction.content);
 
 			await context.sendQuickReplies({ text: `O que mais deseja saber sobre ${articles.defined} ${politicianData.office.name}?` }, [
 				{
@@ -177,7 +177,7 @@ bot.onEvent(async context => {
 				await context.sendQuickReplies({ text: 'Se quiser eu posso te ajudar com outra coisa' }, [
 					{
 						content_type: 'text',
-						title: 'Quero saber',
+						title: 'Sobre o líder',
 						payload: 'aboutMe',
 					},
 				]);
@@ -231,7 +231,7 @@ bot.onEvent(async context => {
 				await context.sendQuickReplies({ text: 'Se quiser eu posso te ajudar com outra coisa' }, [
 					{
 						content_type: 'text',
-						title: 'Quero saber',
+						title: 'Sobre o líder',
 						payload: 'aboutMe',
 					},
 				]);
@@ -262,7 +262,7 @@ bot.onEvent(async context => {
 					await context.sendQuickReplies({ text: `Posso te ajudar com outra informação?` }, [
 						{
 							content_type: 'text',
-							title: 'Quero saber',
+							title: 'Sobre o líder',
 							payload: 'aboutMe',
 						}
 					]);
@@ -274,10 +274,9 @@ bot.onEvent(async context => {
 			break;
 
 		case 'trajectory':
-			const dialogName = 'Trajetória';
-			const dialog = await MandatoAbertoAPI.getDialog(politicianData.user_id, dialogName);
+			const trajectory = await MandatoAbertoAPI.getAnswer(politicianData.user_id, context.state.dialog);
 
-			await context.sendText(dialog.questions[0].answer.content);
+			await context.sendText(trajectory.content);
 
 			await context.sendQuickReplies({ text: `Posso te ajudar com outra informação?` }, [
 				{
