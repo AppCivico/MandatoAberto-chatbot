@@ -95,7 +95,7 @@ bot.onEvent(async context => {
 		}
 	}
 
-	if (!politicianData.greetings && !politicianData.pollData) {
+	if (!politicianData.greeting && !politicianData.pollData) {
 		await context.setState( { dialog: 'noData' } );
 	}
 
