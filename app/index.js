@@ -320,7 +320,7 @@ bot.onEvent(async context => {
 
 			break;
 
-		case 'trajectory':
+		case 'fallback':
 
 			await context.sendText('Olá! Por enquanto não consigo fazer muito, mas em breve poderemos conversar sobre várias coisas!');
 
