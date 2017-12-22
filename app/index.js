@@ -49,7 +49,7 @@ bot.setInitialState({});
 
 bot.onEvent(async context => {
 
-	if (!context.state.dialog) {
+	if (!context.state.dialog || ( context.state.dialog == 'fallback' && politicianData.greetings )) {
 		await context.setState( { dialog: 'greetings' } )
 	}
 
