@@ -128,7 +128,11 @@ bot.onEvent(async context => {
 							title: 'Responder enquete',
 							payload: 'poll',
 						}
-					: ''
+					: 	{
+							content_type: 'text',
+							title: 'Contatos',
+							payload: 'contact',
+						}
 				),
 
 			];
