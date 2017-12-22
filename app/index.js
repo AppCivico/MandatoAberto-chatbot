@@ -149,12 +149,12 @@ bot.onEvent(async context => {
 			// Tratando o formato do telefone
 			if (politicianData.contact.cellphone) {
 				politicianData.contact.cellphone = politicianData.contact.cellphone.replace(/(?:\+55)+/g, "");
-				politicianData.contact.cellphone = politicianData.contact.cellphone.replace(/^\d{2}/g, "($1)");
+				politicianData.contact.cellphone = politicianData.contact.cellphone.replace(/^(\d{2})/g, "($1)");
 			}
 
-			const contactText = `Você pode entrar em contato com ${articles.defined} ${politicianData.office.name} ${politicianData.name} pelos seguintes canais: `
-							  + ( politicianData.contact.email ? ` - através do email: ${politicianData.contact.email}` : '' ) +
-							  + ( politicianData.contact.cellphone ? ` - através do WhatsApp: ${politicianData.contact.cellphone}` : '' ) +
+			const contactText = `Você pode entrar em contato com ${articles.defined} ${politicianData.office.name} ${politicianData.name} pelos seguintes canais:\n`
+							  + ( politicianData.contact.email ? ` - através do email: ${politicianData.contact.email}\n` : '' )
+							  + ( politicianData.contact.cellphone ? ` - através do WhatsApp: ${politicianData.contact.cellphone}\n` : '' )
 							  + ( politicianData.contact.twitter ? ` - através do Twitter: ${politicianData.contact.twitter}` : '' );
 			await context.sendText(contactText);
 
