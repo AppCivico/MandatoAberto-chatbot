@@ -36,9 +36,6 @@ const mapPageToAccessToken = (async pageId => {
 		articles = Articles.masculine;
 	}
 
-	if (!politicianData.greetings) {
-		return 0;
-	}
 	return politicianData.fb_access_token;
 });
 
