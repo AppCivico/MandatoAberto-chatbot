@@ -36,6 +36,9 @@ const mapPageToAccessToken = (async pageId => {
 		articles = Articles.masculine;
 	}
 
+	if (!politicianData.greetings) {
+		return 0;
+	}
 	return politicianData.fb_access_token;
 });
 
@@ -49,7 +52,7 @@ bot.setInitialState({});
 
 bot.onEvent(async context => {
 
-	if (!context.state.dialog || ( context.state.dialog == 'noData' && politicianData.greetings )) {
+	if (!context.state.dialog) {
 		await context.setState( { dialog: 'greetings' } )
 	}
 
@@ -95,10 +98,6 @@ bot.onEvent(async context => {
 		}
 	}
 
-	if (!politicianData.greeting && !politicianData.pollData) {
-		await context.setState( { dialog: 'noData' } );
-	}
-
 	switch (context.state.dialog) {
 		case 'greetings':
 			// Criando um cidadão
@@ -111,31 +110,37 @@ bot.onEvent(async context => {
 
 			const introduction = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'introduction');
 
-			const promptOptions = [
-				(
-					introduction.content ? 
-						{
-							content_type: 'text',
-							title: 'Sobre o líder',
-							payload: 'aboutMe',
-						}
-					: ''
-				),
-				(
-					pollData.questions ?
-						{
-							content_type: 'text',
-							title: 'Responder enquete',
-							payload: 'poll',
-						}
-					: 	{
-							content_type: 'text',
-							title: 'Contatos',
-							payload: 'contact',
-						}
-				),
-
-			];
+			let promptOptions;
+			if (introduction.content && pollData.questions) {
+				promptOptions = [
+					{
+						content_type: 'text',
+						title: 'Sobre o líder',
+						payload: 'aboutMe',
+					},
+					{
+						content_type: 'text',
+						title: 'Responder enquete',
+						payload: 'poll',
+					}
+				];
+			} else if (introduction.content && !pollData.questions) {
+				promptOptions = [
+					{
+						content_type: 'text',
+						title: 'Sobre o líder',
+						payload: 'aboutMe',
+					}
+				];
+			} else if (!introduction.content && pollData.questions) {
+				promptOptions = [
+					{
+						content_type: 'text',
+						title: 'Responder enquete',
+						payload: 'poll',
+					}
+				];
+			}
 
 			await context.sendText(politicianData.greeting);
 			await context.sendQuickReplies({ text: 'Como posso te ajudar?' }, promptOptions);
