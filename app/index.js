@@ -141,8 +141,8 @@ bot.onEvent(async context => {
 			break;
 
 		case 'aboutMe':
-			const introduction = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'introduction');
-			await context.sendText(introduction.content);
+			const introductionText = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'introduction');
+			await context.sendText(introductionText.content);
 
 			await context.sendQuickReplies({ text: `O que mais deseja saber sobre ${articles.defined} ${politicianData.office.name}?` }, [
 				{
