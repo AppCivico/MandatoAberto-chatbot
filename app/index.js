@@ -49,7 +49,7 @@ bot.setInitialState({});
 
 bot.onEvent(async context => {
 
-	if (!context.state.dialog || ( context.state.dialog == 'fallback' && politicianData.greetings )) {
+	if (!context.state.dialog || ( context.state.dialog == 'noData' && politicianData.greetings )) {
 		await context.setState( { dialog: 'greetings' } )
 	}
 
@@ -96,7 +96,7 @@ bot.onEvent(async context => {
 	}
 
 	if (!politicianData.greetings && !politicianData.pollData) {
-		await context.setState( { dialog: 'fallback' } );
+		await context.setState( { dialog: 'noData' } );
 	}
 
 	switch (context.state.dialog) {
@@ -320,7 +320,7 @@ bot.onEvent(async context => {
 
 			break;
 
-		case 'fallback':
+		case 'noData':
 
 			await context.sendText('Olá! Por enquanto não consigo fazer muito, mas em breve poderemos conversar sobre várias coisas!');
 
