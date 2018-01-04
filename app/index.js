@@ -25,7 +25,7 @@ citizenData[
 ];
 
 const mapPageToAccessToken = (async pageId => {
-	user = await MandatoAbertoAPI.getuser(pageId);
+	user = await MandatoAbertoAPI.getPoliticianData(pageId);
 	pollData = await MandatoAbertoAPI.getPollData(pageId);
 
 	// Deve-se indentificar o sexo do representante público
