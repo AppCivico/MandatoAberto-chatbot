@@ -139,7 +139,9 @@ bot.onEvent(async context => {
 				];
 			}
 
-			await context.sendText(politicianData.greeting);
+			user.office.name = politicianData.office.name;
+			user.name = politicianData.name;
+			await context.sendText("`" + politicianData.greeting + "`");
 			await context.sendQuickReplies({ text: 'Como posso te ajudar?' }, promptOptions);
 
 			await context.setState( { dialog: 'prompt' } );
