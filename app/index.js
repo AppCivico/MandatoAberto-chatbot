@@ -10,7 +10,7 @@ const request = require('requisition');
 const apiUri = process.env.MANDATOABERTO_API_URL;
 
 let articles;
-let politicianData;
+let user;
 let pollData;
 let pollAnswer;
 
@@ -25,18 +25,18 @@ citizenData[
 ];
 
 const mapPageToAccessToken = (async pageId => {
-	politicianData = await MandatoAbertoAPI.getPoliticianData(pageId);
+	user = await MandatoAbertoAPI.getuser(pageId);
 	pollData = await MandatoAbertoAPI.getPollData(pageId);
 
 	// Deve-se indentificar o sexo do representante público
 	// e selecionar os artigos (definido e possesivo) adequados
-	if (politicianData.gender === 'F') {
+	if (user.gender === 'F') {
 		articles = Articles.feminine;
 	} else {
 		articles = Articles.masculine;
 	}
 
-	return politicianData.fb_access_token;
+	return user.fb_access_token;
 });
 
 const bot = new MessengerBot({
@@ -91,7 +91,7 @@ bot.onEvent(async context => {
 			citizenData.email = context.event.message.text;
 		} else if (context.state.citizenData == 'cellphone') {
 			citizenData.cellphone = context.event.message.text;
-			await MandatoAbertoAPI.postCitizen(politicianData.user_id, citizenData);
+			await MandatoAbertoAPI.postCitizen(user.user_id, citizenData);
 		}
 	}
 
@@ -103,9 +103,9 @@ bot.onEvent(async context => {
 			citizenData.gender = context.session.user.gender == 'male' ? 'M' : 'F';
 			citizenData.origin_dialog = 'greetings';
 
-			const citizen = await MandatoAbertoAPI.postCitizen(politicianData.user_id, citizenData);
+			const citizen = await MandatoAbertoAPI.postCitizen(user.user_id, citizenData);
 
-			const introduction = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'introduction');
+			const introduction = await MandatoAbertoAPI.getAnswer(user.user_id, 'introduction');
 
 			let promptOptions;
 			if (introduction.content && pollData.questions) {
@@ -139,9 +139,7 @@ bot.onEvent(async context => {
 				];
 			}
 
-			user.office.name = politicianData.office.name;
-			user.name = politicianData.name;
-			await context.sendText("`" + politicianData.greeting + "`");
+			await context.sendText("`" + user.greeting + "`");
 			await context.sendQuickReplies({ text: 'Como posso te ajudar?' }, promptOptions);
 
 			await context.setState( { dialog: 'prompt' } );
@@ -149,10 +147,10 @@ bot.onEvent(async context => {
 			break;
 
 		case 'aboutMe':
-			const introductionText = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'introduction');
+			const introductionText = await MandatoAbertoAPI.getAnswer(user.user_id, 'introduction');
 			await context.sendText(introductionText.content);
 
-			await context.sendQuickReplies({ text: `O que mais deseja saber sobre ${articles.defined} ${politicianData.office.name}?` }, [
+			await context.sendQuickReplies({ text: `O que mais deseja saber sobre ${articles.defined} ${user.office.name}?` }, [
 				{
 					content_type: 'text',
 					title: 'Contatos',
@@ -172,15 +170,15 @@ bot.onEvent(async context => {
 
 		case 'contact':
 			// Tratando o formato do telefone
-			if (politicianData.contact.cellphone) {
-				politicianData.contact.cellphone = politicianData.contact.cellphone.replace(/(?:\+55)+/g, "");
-				politicianData.contact.cellphone = politicianData.contact.cellphone.replace(/^(\d{2})/g, "($1)");
+			if (user.contact.cellphone) {
+				user.contact.cellphone = user.contact.cellphone.replace(/(?:\+55)+/g, "");
+				user.contact.cellphone = user.contact.cellphone.replace(/^(\d{2})/g, "($1)");
 			}
 
-			const contactText = `Você pode entrar em contato com ${articles.defined} ${politicianData.office.name} ${politicianData.name} pelos seguintes canais:\n`
-							  + ( politicianData.contact.email ? ` - através do email: ${politicianData.contact.email}\n` : '' )
-							  + ( politicianData.contact.cellphone ? ` - através do WhatsApp: ${politicianData.contact.cellphone}\n` : '' )
-							  + ( politicianData.contact.twitter ? ` - através do Twitter: ${politicianData.contact.twitter}` : '' );
+			const contactText = `Você pode entrar em contato com ${articles.defined} ${user.office.name} ${user.name} pelos seguintes canais:\n`
+							  + ( user.contact.email ? ` - através do email: ${user.contact.email}\n` : '' )
+							  + ( user.contact.cellphone ? ` - através do WhatsApp: ${user.contact.cellphone}\n` : '' )
+							  + ( user.contact.twitter ? ` - através do Twitter: ${user.contact.twitter}` : '' );
 			await context.sendText(contactText);
 
 			await context.sendQuickReplies({ text: `Posso te ajudar com outra informação?` }, [
@@ -308,7 +306,7 @@ bot.onEvent(async context => {
 			break;
 
 		case 'trajectory':
-			const trajectory = await MandatoAbertoAPI.getAnswer(politicianData.user_id, context.state.dialog);
+			const trajectory = await MandatoAbertoAPI.getAnswer(user.user_id, context.state.dialog);
 
 			await context.sendText(trajectory.content);
 
