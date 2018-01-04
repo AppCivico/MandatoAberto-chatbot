@@ -13,6 +13,8 @@ let articles;
 let politicianData;
 let pollData;
 let pollAnswer;
+let trajectory;
+let promptOptions;
 
 let citizenData = {};
 citizenData[
@@ -27,6 +29,7 @@ citizenData[
 const mapPageToAccessToken = (async pageId => {
 	politicianData = await MandatoAbertoAPI.getPoliticianData(pageId);
 	pollData = await MandatoAbertoAPI.getPollData(pageId);
+	trajectory = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'trajectory');
 
 	// Deve-se indentificar o sexo do representante público
 	// e selecionar os artigos (definido e possesivo) adequados
@@ -50,7 +53,12 @@ bot.setInitialState({});
 bot.onEvent(async context => {
 
 	if (!context.state.dialog) {
-		await context.setState( { dialog: 'greetings' } )
+		if ( !politicianData.greetings && ( !politicianData.contact && !pollData.questions ) ) {
+			console.log("Politician does not have enough data");
+			return false;
+		} else {
+			await context.setState( { dialog: 'greetings' } )
+		}
 	}
 
 	if (context.state.dialog == 'prompt') {
@@ -107,7 +115,6 @@ bot.onEvent(async context => {
 
 			const introduction = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'introduction');
 
-			let promptOptions;
 			if (introduction.content && pollData.questions) {
 				promptOptions = [
 					{
@@ -152,19 +159,38 @@ bot.onEvent(async context => {
 			const introductionText = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'introduction');
 			await context.sendText(introductionText.content);
 
-			await context.sendQuickReplies({ text: `O que mais deseja saber sobre ${articles.defined} ${politicianData.office.name}?` }, [
-				{
-					content_type: 'text',
-					title: 'Contatos',
-					payload: 'contact',
-				},
-				{
-					content_type: 'text',
-					title: 'Trajetória',
-					// trajetória e bandeiras, dialogo
-					payload: 'trajectory',
-				},
-			]);
+			if (trajectory.content && pollData.questions) {
+				promptOptions = [
+					{
+						content_type: 'text',
+						title: 'Trajetória',
+						payload: 'trajectory',
+					},
+					{
+						content_type: 'text',
+						title: 'Responder enquete',
+						payload: 'poll',
+					}
+				];
+			} else if (trajectory.content && !pollData.questions) {
+				promptOptions = [
+					{
+						content_type: 'text',
+						title: 'Trajetória',
+						payload: 'trajectory',
+					}
+				];
+			} else if (!trajectory.content && pollData.questions) {
+				promptOptions = [
+					{
+						content_type: 'text',
+						title: 'Responder enquete',
+						payload: 'poll',
+					}
+				];
+			}
+
+			await context.sendQuickReplies({ text: `O que mais deseja saber sobre ${articles.defined} ${politicianData.office.name}?` }, promptOptions);
 
 			await context.setState( { dialog: 'prompt' } );
 
@@ -205,16 +231,41 @@ bot.onEvent(async context => {
 			// Verifico se o cidadão já respondeu a enquete atualmente ativa
 			const citizenAnswer = await MandatoAbertoAPI.getPollAnswer(context.session.user.id, pollData.id);
 
+			if (trajectory.content && politicianData.contact) {
+				promptOptions = [
+					{
+						content_type: 'text',
+						title: 'Trajetória',
+						payload: 'trajectory',
+					},
+					{
+						content_type: 'text',
+						title: 'Contatos',
+						payload: 'contacts',
+					}
+				];
+			} else if (trajectory.content && !politicianData.contact) {
+				promptOptions = [
+					{
+						content_type: 'text',
+						title: 'Trajetória',
+						payload: 'trajectory',
+					}
+				];
+			} else if (!trajectory.content && politicianData.contact) {
+				promptOptions = [
+					{
+						content_type: 'text',
+						title: 'Contatos',
+						payload: 'contacts',
+					}
+				];
+			}
+
 			if (citizenAnswer.citizen_answered === 1) {
 				await context.sendText('Você já respondeu a enquete atualmente ativa');
 
-				await context.sendQuickReplies({ text: 'Se quiser eu posso te ajudar com outra coisa' }, [
-					{
-						content_type: 'text',
-						title: 'Sobre o líder',
-						payload: 'aboutMe',
-					},
-				]);
+				await context.sendQuickReplies({ text: 'Se quiser eu posso te ajudar com outra coisa' }, promptOptions);
 
 				await context.setState( { dialog: 'prompt' } );
 			} else {
@@ -262,13 +313,7 @@ bot.onEvent(async context => {
 			if (context.event.isText && context.event.message.text == 'Agora não') {
 				await context.sendText('Beleza!');
 
-				await context.sendQuickReplies({ text: 'Se quiser eu posso te ajudar com outra coisa' }, [
-					{
-						content_type: 'text',
-						title: 'Sobre o líder',
-						payload: 'aboutMe',
-					},
-				]);
+				await context.sendQuickReplies({ text: 'Se quiser eu posso te ajudar com outra coisa' }, promptOptions);
 
 				await context.setState( { dialog: 'prompt' } );
 			} else {
@@ -293,13 +338,7 @@ bot.onEvent(async context => {
 				} else {
 					await context.sendText('Pronto, já guardei seus dados. Vou lhe enviar o resultado atual da enquete, e assim que terminar a pesquisa eu lhe envio o resultado final');
 
-					await context.sendQuickReplies({ text: `Posso te ajudar com outra informação?` }, [
-						{
-							content_type: 'text',
-							title: 'Sobre o líder',
-							payload: 'aboutMe',
-						}
-					]);
+					await context.sendQuickReplies({ text: `Posso te ajudar com outra informação?` }, promptOptions);
 
 					await context.setState( { dialog: 'prompt' } );
 				}
@@ -308,22 +347,40 @@ bot.onEvent(async context => {
 			break;
 
 		case 'trajectory':
-			const trajectory = await MandatoAbertoAPI.getAnswer(politicianData.user_id, context.state.dialog);
-
 			await context.sendText(trajectory.content);
 
-			await context.sendQuickReplies({ text: `Posso te ajudar com outra informação?` }, [
-				{
-					content_type: 'text',
-					title: 'Contatos',
-					payload: 'contact',
-				},
-				{
-					content_type: 'text',
-					title: 'Responder enquete',
-					payload: 'poll',
-				},
-			]);
+			if (pollData.questions && politicianData.contact) {
+				promptOptions = [
+					{
+						content_type: 'text',
+						title: 'Responder enquete',
+						payload: 'poll',
+					},
+					{
+						content_type: 'text',
+						title: 'Contatos',
+						payload: 'contacts',
+					}
+				];
+			} else if (pollData.questions && !politicianData.contact) {
+				promptOptions = [
+					{
+						content_type: 'text',
+						title: 'Responder enquete',
+						payload: 'poll',
+					}
+				];
+			} else if (!pollData.questions && politicianData.contact) {
+				promptOptions = [
+					{
+						content_type: 'text',
+						title: 'Contatos',
+						payload: 'contacts',
+					}
+				];
+			}
+
+			await context.sendQuickReplies({ text: `Posso te ajudar com outra informação?` }, promptOptions);
 
 			await context.setState( { dialog: 'prompt' } );
 
