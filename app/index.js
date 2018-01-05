@@ -213,19 +213,38 @@ bot.onEvent(async context => {
 							  + ( politicianData.contact.twitter ? ` - através do Twitter: ${politicianData.contact.twitter}` : '' );
 			await context.sendText(contactText);
 
-			await context.sendQuickReplies({ text: `Posso te ajudar com outra informação?` }, [
-				{
-					content_type: 'text',
-					title: 'Trajetória',
-					// trajetória e bandeiras, dialogo
-					payload: 'trajectory',
-				},
-				{
-					content_type: 'text',
-					title: 'Responder enquete',
-					payload: 'poll',
-				},
-			]);
+			if (trajectory.content && pollData.questions) {
+				promptOptions = [
+					{
+						content_type: 'text',
+						title: 'Trajetória',
+						payload: 'trajectory',
+					},
+					{
+						content_type: 'text',
+						title: 'Responder enquete',
+						payload: 'poll',
+					},
+				];
+			} else if (trajectory.content && !pollData.questions) {
+				promptOptions = [
+					{
+						content_type: 'text',
+						title: 'Trajetória',
+						payload: 'trajectory',
+					},
+				];
+			} else if (!trajectory.content && pollData.questions) {
+				promptOptions = [
+					{
+						content_type: 'text',
+						title: 'Responder enquete',
+						payload: 'poll',
+					},
+				];
+			}
+
+			await context.sendQuickReplies({ text: `Posso te ajudar com outra informação?` }, promptOptions);
 
 			await context.setState( { dialog: 'prompt' } );
 
@@ -246,7 +265,7 @@ bot.onEvent(async context => {
 						content_type: 'text',
 						title: 'Contatos',
 						payload: 'contacts',
-					}
+					},
 				];
 			} else if (trajectory.content && !politicianData.contact) {
 				promptOptions = [
@@ -254,7 +273,7 @@ bot.onEvent(async context => {
 						content_type: 'text',
 						title: 'Trajetória',
 						payload: 'trajectory',
-					}
+					},
 				];
 			} else if (!trajectory.content && politicianData.contact) {
 				promptOptions = [
@@ -262,7 +281,7 @@ bot.onEvent(async context => {
 						content_type: 'text',
 						title: 'Contatos',
 						payload: 'contacts',
-					}
+					},
 				];
 			}
 
@@ -364,7 +383,7 @@ bot.onEvent(async context => {
 						content_type: 'text',
 						title: 'Contatos',
 						payload: 'contacts',
-					}
+					},
 				];
 			} else if (pollData.questions && !politicianData.contact) {
 				promptOptions = [
@@ -380,7 +399,7 @@ bot.onEvent(async context => {
 						content_type: 'text',
 						title: 'Contatos',
 						payload: 'contacts',
-					}
+					},
 				];
 			}
 
