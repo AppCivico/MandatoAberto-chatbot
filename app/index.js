@@ -84,7 +84,7 @@ bot.onEvent(async context => {
 		}
 	}
 
-	if (context.event.isQuickReply && context.state.dialog == 'prompt') {
+	if (context.event.isQuickReply && (context.state.dialog == 'prompt' || context.event.message.quick_reply.payload == 'greetings') ) {
 		const payload = context.event.message.quick_reply.payload;
 		await context.setState( { dialog: payload } );
 	}
