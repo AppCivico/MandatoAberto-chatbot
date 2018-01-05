@@ -56,11 +56,11 @@ bot.onEvent(async context => {
 		if ( !politicianData.greetings && ( !politicianData.contact && !pollData.questions ) ) {
 			console.log("Politician does not have enough data");
 			return false;
-		} else if (context.postback.payload == 'greetings') {
-			await context.setState( { dialog: 'greetings' } )
 		} else {
 			await context.setState( { dialog: 'greetings' } )
 		}
+	} else if (context.event.postback.payload == 'greetings') {
+		await context.setState( { dialog: 'greetings' } )
 	}
 
 	if (context.state.dialog == 'prompt') {
