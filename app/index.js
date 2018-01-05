@@ -200,7 +200,7 @@ bot.onEvent(async context => {
 
 			break;
 
-		case 'contact':
+		case 'contacts':
 			// Tratando o formato do telefone
 			if (politicianData.contact.cellphone) {
 				politicianData.contact.cellphone = politicianData.contact.cellphone.replace(/(?:\+55)+/g, "");
