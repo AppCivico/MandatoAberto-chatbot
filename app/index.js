@@ -59,7 +59,9 @@ bot.onEvent(async context => {
 		} else {
 			await context.setState( { dialog: 'greetings' } )
 		}
-	} else if (context.event.postback.payload == 'greetings') {
+	}
+
+	if (context.event.postback && context.event.postback.payload == 'greetings') {
 		await context.setState( { dialog: 'greetings' } )
 	}
 
