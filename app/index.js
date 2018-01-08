@@ -116,6 +116,7 @@ bot.onEvent(async context => {
 			citizenData.origin_dialog = 'greetings';
 
 			const citizen = await MandatoAbertoAPI.postCitizen(politicianData.user_id, citizenData);
+			citizenData = {};
 
 			const introduction = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'introduction');
 
@@ -347,7 +348,7 @@ bot.onEvent(async context => {
 						{
 							dialog: 'citizenData',
 							citizenData: 'email'
-						}
+						},
 					);
 				} else if (!citizenData.cellphone) {
 					await context.sendText('Legal, agora pode me informar seu telefone, para lhe manter informado sobre outras enquetes?');
