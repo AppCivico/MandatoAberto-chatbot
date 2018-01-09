@@ -364,19 +364,6 @@ bot.onEvent(async context => {
 						case 'email':
 							await context.sendText('Qual é o seu e-mail?');
 
-							await context.sendQuickReplies({ text: 'Legal, agora quer me informar seu telefone, para lhe manter informado sobre outras enquetes?'  }, [
-								{
-									content_type: 'text',
-									title: 'Sim',
-									payload: 'citizenData',
-								},
-								{
-									content_type: 'text',
-									title: 'Não',
-									payload: 'citizenData',
-								}
-							]);
-
 							await context.setState(
 								{
 									dialog: 'citizenData',
