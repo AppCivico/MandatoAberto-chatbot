@@ -123,8 +123,7 @@ bot.onEvent(async context => {
 					await context.setState(
 						{
 							dialog: 'citizenData',
-							citizenData: 'email',
-							dataPrompt: 'cellphone'
+							citizenData: 'cellphonePrompt'
 						}
 					);
 					break;
@@ -132,6 +131,14 @@ bot.onEvent(async context => {
 					citizenData.cellphone = context.event.message.text;
 					await MandatoAbertoAPI.postCitizen(politicianData.user_id, citizenData);
 					citizenData = {};
+					break;
+				case 'cellphonePrompt':
+					await context.setState(
+						{
+							dialog: 'citizenData',
+							dataPrompt: 'cellphone'
+						}
+					);
 					break;
 			}
 		}
