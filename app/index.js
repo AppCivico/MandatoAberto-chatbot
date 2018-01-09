@@ -101,6 +101,19 @@ bot.onEvent(async context => {
 	if (context.event.isText && context.state.dialog == 'citizenData' && context.state.citizenData) {
 		if (context.state.citizenData == 'email') {
 			citizenData.email = context.event.message.text;
+
+			await context.sendQuickReplies({ text: 'Legal, agora quer me informar seu telefone, para lhe manter informado sobre outras enquetes?'  }, [
+				{
+					content_type: 'text',
+					title: 'Sim',
+					payload: 'citizenData',
+				},
+				{
+					content_type: 'text',
+					title: 'Não',
+					payload: 'citizenData',
+				}
+			]);
 		} else if (context.state.citizenData == 'cellphone') {
 			citizenData.cellphone = context.event.message.text;
 		}
