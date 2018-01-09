@@ -103,6 +103,7 @@ bot.onEvent(async context => {
 		if (context.state.citizenData) {
 			switch (context.state.citizenData) {
 				case 'email':
+					citizenData.fb_id = context.session.user.id;
 					citizenData.email = context.event.message.text;
 					await MandatoAbertoAPI.postCitizen(politicianData.user_id, citizenData);
 					citizenData = {};
@@ -129,6 +130,7 @@ bot.onEvent(async context => {
 					);
 					break;
 				case 'cellphone':
+					citizenData.fb_id = context.session.user.id;
 					citizenData.cellphone = context.event.message.text;
 					await MandatoAbertoAPI.postCitizen(politicianData.user_id, citizenData);
 					citizenData = {};
