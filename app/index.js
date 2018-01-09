@@ -98,25 +98,44 @@ bot.onEvent(async context => {
 		await MandatoAbertoAPI.postPollAnswer(context.session.user.id, option_id);
 	}
 
-	if (context.event.isText && context.state.dialog == 'citizenData' && context.state.citizenData) {
-		if (context.state.citizenData == 'email') {
-			citizenData.email = context.event.message.text;
+	if (context.state.dialog == 'citizenData' && context.state.citizenData) {
 
-			await context.sendQuickReplies({ text: 'Legal, agora quer me informar seu telefone, para lhe manter informado sobre outras enquetes?'  }, [
-				{
-					content_type: 'text',
-					title: 'Sim',
-					payload: 'citizenData',
-				},
-				{
-					content_type: 'text',
-					title: 'Não',
-					payload: 'citizenData',
-				}
-			]);
-		} else if (context.state.citizenData == 'cellphone') {
-			citizenData.cellphone = context.event.message.text;
+		if (context.state.citizenData) {
+			switch (context.state.citizenData) {
+				case 'email':
+					citizenData.email = context.event.message.text;
+					await MandatoAbertoAPI.postCitizen(politicianData.user_id, citizenData);
+					citizenData = {};
+
+					await context.sendQuickReplies({ text: 'Legal, agora quer me informar seu telefone, para lhe manter informado sobre outras enquetes?'  }, [
+						{
+							content_type: 'text',
+							title: 'Sim',
+							payload: 'citizenData',
+						},
+						{
+							content_type: 'text',
+							title: 'Não',
+							payload: 'citizenData',
+						}
+					]);
+
+					await context.setState(
+						{
+							dialog: 'citizenData',
+							citizenData: 'email',
+							dataPrompt: 'cellphone'
+						}
+					);
+					break;
+				case 'cellphone':
+					citizenData.cellphone = context.event.message.text;
+					await MandatoAbertoAPI.postCitizen(politicianData.user_id, citizenData);
+					citizenData = {};
+					break;
+			}
 		}
+
 	}
 
 	switch (context.state.dialog) {
@@ -351,7 +370,7 @@ bot.onEvent(async context => {
 			break;
 
 		case 'citizenData':
-			if (context.event.isText && ( context.event.message.text == 'Agora não' || context.event.message.text == 'Não' ) ) {
+			if ( context.event.message.text == 'Agora não' || context.event.message.text == 'Não' ) {
 				await context.sendText('Beleza!');
 
 				await context.sendQuickReplies({ text: 'Se quiser eu posso te ajudar com outra coisa' }, promptOptions);
@@ -367,8 +386,7 @@ bot.onEvent(async context => {
 							await context.setState(
 								{
 									dialog: 'citizenData',
-									citizenData: 'email',
-									dataPrompt: 'cellphone'
+									citizenData: 'email'
 								}
 							);
 
@@ -385,9 +403,6 @@ bot.onEvent(async context => {
 							);
 							break;
 						case 'end':
-								await MandatoAbertoAPI.postCitizen(politicianData.user_id, citizenData);
-								citizenData = {};
-
 								await context.sendText('Pronto, já guardei seus dados. Vou lhe enviar o resultado atual da enquete, e assim que terminar a pesquisa eu lhe envio o resultado final');
 
 								await context.sendQuickReplies({ text: `Posso te ajudar com outra informação?` }, promptOptions);
