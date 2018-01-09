@@ -132,6 +132,8 @@ bot.onEvent(async context => {
 				case 'cellphone':
 					citizenData.fb_id = context.session.user.id;
 					citizenData.cellphone = context.event.message.text;
+					citizenData.cellphone = citizenData.cellphone.replace(/[- .)(]/g, '');
+					citizenData.cellphone = '+55' + citizenData.cellphone;
 					await MandatoAbertoAPI.postCitizen(politicianData.user_id, citizenData);
 					citizenData = {};
 					break;
