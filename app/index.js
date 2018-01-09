@@ -123,7 +123,8 @@ bot.onEvent(async context => {
 					await context.setState(
 						{
 							dialog: 'citizenData',
-							citizenData: 'cellphonePrompt'
+							citizenData: 'cellphonePrompt',
+							dataPrompt: ''
 						}
 					);
 					break;
