@@ -140,7 +140,12 @@ bot.onEvent(async context => {
 					if (phoneRegex.test(citizenData.cellphone)) {
 						await MandatoAbertoAPI.postCitizen(politicianData.user_id, citizenData);
 					} else {
-						await context.setState( { dataPrompt: '' } );
+						await context.setState(
+							{
+								dataPrompt: '',
+								citizenData: 'cellphonePrompt'
+							}
+						);
 
 						await context.sendText("Desculpa, mas seu telefone não parece estar correto.");
 
@@ -436,6 +441,10 @@ bot.onEvent(async context => {
 									dataPrompt: 'end'
 								}
 							);
+							break;
+						case 'cellphoneFail':
+							
+
 							break;
 						case 'end':
 								await context.sendText('Pronto, já guardei seus dados. Vou lhe enviar o resultado atual da enquete, e assim que terminar a pesquisa eu lhe envio o resultado final');
