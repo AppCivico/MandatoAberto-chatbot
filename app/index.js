@@ -73,18 +73,39 @@ bot.onEvent(async context => {
 			await context.setState( { dialog: payload } );
 		} else if (context.event.isText) {
 			await context.sendText('Meus algoritmos estão em aprendizagem, pois ainda sou um robo novo. Infelizmente não consegui entender o que você disse. Mas vou guardar sua mensagem e assim que tiver uma resposta eu te mando.');
-			await context.sendQuickReplies({ text: 'Posso te ajudar com outra coisa?' }, [
-				{
-					content_type: 'text',
-					title: 'Sobre o líder',
-					payload: 'aboutMe',
-				},
-				{
-					content_type: 'text',
-					title: 'Responder enquete',
-					payload: 'poll',
-				}
-			]);
+
+			if (introduction.content && pollData.questions) {
+				promptOptions = [
+					{
+						content_type: 'text',
+						title: 'Sobre o líder',
+						payload: 'aboutMe',
+					},
+					{
+						content_type: 'text',
+						title: 'Responder enquete',
+						payload: 'poll',
+					}
+				];
+			} else if (introduction.content && !pollData.questions) {
+				promptOptions = [
+					{
+						content_type: 'text',
+						title: 'Sobre o líder',
+						payload: 'aboutMe',
+					}
+				];
+			} else if (!introduction.content && pollData.questions) {
+				promptOptions = [
+					{
+						content_type: 'text',
+						title: 'Responder enquete',
+						payload: 'poll',
+					}
+				];
+			}
+
+			await context.sendQuickReplies({ text: 'Posso te ajudar com outra coisa?' }, promptOptions);
 
 			await context.setState( { dialog: 'prompt' } );
 		}
