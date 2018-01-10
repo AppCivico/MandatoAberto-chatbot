@@ -9,6 +9,8 @@ const request = require('requisition');
 
 const apiUri = process.env.MANDATOABERTO_API_URL;
 
+const phoneRegex = new RegExp(/^\+55\d{2}(\d{1})?\d{8}$/);
+
 let articles;
 let politicianData;
 let pollData;
@@ -134,7 +136,28 @@ bot.onEvent(async context => {
 					citizenData.cellphone = context.event.message.text;
 					citizenData.cellphone = citizenData.cellphone.replace(/[- .)(]/g, '');
 					citizenData.cellphone = '+55' + citizenData.cellphone;
-					await MandatoAbertoAPI.postCitizen(politicianData.user_id, citizenData);
+
+					if (phoneRegex.test(citizenData.cellphone)) {
+						await MandatoAbertoAPI.postCitizen(politicianData.user_id, citizenData);
+					} else {
+						await context.setState( { dataPrompt: '' } );
+
+						await context.sendText("Desculpa, mas seu telefone não parece estar correto.");
+
+						await context.sendQuickReplies({ text: 'Vamos tentar de novo?'  }, [
+							{
+								content_type: 'text',
+								title: 'Sim',
+								payload: 'citizenData',
+							},
+							{
+								content_type: 'text',
+								title: 'Não',
+								payload: 'citizenData',
+							}
+						]);
+					}
+
 					citizenData = {};
 					break;
 				case 'cellphonePrompt':
