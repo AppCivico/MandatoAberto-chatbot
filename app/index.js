@@ -117,8 +117,8 @@ bot.onEvent(async context => {
 	}
 
 	if (context.event.isQuickReply && context.state.dialog == 'pollAnswer') {
-		option_id = context.event.message.quick_reply.payload;
-		await MandatoAbertoAPI.postPollAnswer(context.session.user.id, option_id);
+		poll_question_option_id = context.event.message.quick_reply.payload;
+		await MandatoAbertoAPI.postPollAnswer(context.session.user.id, poll_question_option_id);
 	}
 
 	if (context.state.dialog == 'citizenData' && context.state.citizenData) {
