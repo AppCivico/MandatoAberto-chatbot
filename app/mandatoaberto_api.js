@@ -16,34 +16,34 @@ module.exports = {
 		return pollData;
 	},
 
-	async postCitizen(user_id, citizen) {
-		const citizenData_qs = queryString.stringify(citizen);
-		const res = await request.post(`${apiUri}/api/chatbot/citizen?${citizenData_qs}&`).query( {politician_id: user_id} );
+	async postCitizen(userId, citizen) {
+		const citizenDataQs = queryString.stringify(citizen);
+		const res = await request.post(`${apiUri}/api/chatbot/citizen?${citizenDataQs}&`).query({ politician_id: userId });
 		const citizenData = await res.json();
 		return citizenData;
 	},
 
-	async postPollAnswer(fb_id, option_id) {
-		const res = await request.post(`${apiUri}/api/chatbot/poll-result?fb_id=${fb_id}&option_id=${option_id}`);
+	async postPollAnswer(fbId, optionId) {
+		const res = await request.post(`${apiUri}/api/chatbot/poll-result?fb_id=${fbId}&option_id=${optionId}`);
 		const pollAnswer = await res.json();
 		return pollAnswer;
 	},
 
-	async getPollAnswer(fb_id, poll_id) {
-		const res = await request(`${apiUri}/api/chatbot/poll-result?fb_id=${fb_id}&poll_id=${poll_id}`);
+	async getPollAnswer(fbId, pollId) {
+		const res = await request(`${apiUri}/api/chatbot/poll-result?fb_id=${fbId}&poll_id=${pollId}`);
 		const pollAnswer = await res.json();
 		return pollAnswer;
 	},
 
-	async getDialog(politician_id, dialog_name) {
-		const res = await request(`${apiUri}/api/chatbot/dialog?politician_id=${politician_id}&dialog_name=${dialog_name}`);
+	async getDialog(politicianId, dialogName) {
+		const res = await request(`${apiUri}/api/chatbot/dialog?politician_id=${politicianId}&dialog_name=${dialogName}`);
 		const dialog = await res.json();
 		return dialog;
 	},
 
-	async getAnswer(politician_id, question_name) {
-		const res = await request(`${apiUri}/api/chatbot/answer?politician_id=${politician_id}&question_name=${question_name}`);
+	async getAnswer(politicianId, questionName) {
+		const res = await request(`${apiUri}/api/chatbot/answer?politician_id=${politicianId}&question_name=${questionName}`);
 		const question = await res.json();
 		return question;
-	}
+	},
 };
