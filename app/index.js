@@ -72,42 +72,32 @@ bot.onEvent(async context => {
 			const payload = context.event.message.quick_reply.payload;
 			await context.setState( { dialog: payload } );
 		} else if (context.event.isText) {
-			await context.sendText('Meus algoritmos estão em aprendizagem, pois ainda sou um robo novo. Infelizmente não consegui entender o que você disse. Mas vou guardar sua mensagem e assim que tiver uma resposta eu te mando.');
+			if (context.state.prompt && context.state.prompt == 'issue') {
+				const issue = await MandatoAbertoAPI.postIssue(politicianData.user_id, context.session.user.id, context.event.message.text);
+				await context.sendText("Muito obrigado pela sua mensagem, iremos responde-la em breve!");
 
-			if (introduction.content && pollData.questions) {
+				await context.setState( { dialog: 'greetings' } );
+			} else {
+				const misunderstand_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'misunderstand');
+				await context.sendText(misunderstand_message ? misunderstand_message : 'Não entendi sua mensagem, mas quero te ajudar. Você quer enviar uma mensagem para outros membros de nosso equipe?');
+
 				promptOptions = [
 					{
 						content_type: 'text',
-						title: 'Sobre o líder',
-						payload: 'aboutMe',
+						title: 'Sim',
+						payload: 'issue'
 					},
 					{
 						content_type: 'text',
-						title: 'Responder enquete',
-						payload: 'poll',
-					}
-				];
-			} else if (introduction.content && !pollData.questions) {
-				promptOptions = [
-					{
-						content_type: 'text',
-						title: 'Sobre o líder',
-						payload: 'aboutMe',
-					}
-				];
-			} else if (!introduction.content && pollData.questions) {
-				promptOptions = [
-					{
-						content_type: 'text',
-						title: 'Responder enquete',
-						payload: 'poll',
-					}
-				];
+						title: 'Não',
+						payload: 'greetings'
+					},
+				]
+
+				await context.sendQuickReplies({ text: 'Posso te ajudar com outra coisa?' }, promptOptions);
+
+				await context.setState( { dialog: 'prompt' } );
 			}
-
-			await context.sendQuickReplies({ text: 'Posso te ajudar com outra coisa?' }, promptOptions);
-
-			await context.setState( { dialog: 'prompt' } );
 		}
 	}
 
@@ -520,9 +510,15 @@ bot.onEvent(async context => {
 
 			break;
 
-		case 'noData':
+		case 'issue':
+			await context.sendText('Digite a mensagem que você deseja deixar:');
 
-			await context.sendText('Olá! Por enquanto não consigo fazer muito, mas em breve poderemos conversar sobre várias coisas!');
+			await context.setState( 
+				{
+					dialog: 'prompt',
+					prompt: 'issue'
+				}
+			);
 
 			break;
 	}
