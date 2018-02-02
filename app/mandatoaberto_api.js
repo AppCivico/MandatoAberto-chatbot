@@ -49,7 +49,7 @@ module.exports = {
 
 	async postIssue(politician_id, fb_id, message) {
 		message = encodeURI(message);
-		const res = await request(`${apiUri}/api/chatbot/issue?politician_id=${politician_id}&fb_id=${fb_id}&message=${message}`);
+		const res = await request.post(`${apiUri}/api/chatbot/issue?politician_id=${politician_id}&fb_id=${fb_id}&message=${message}`);
 		const issue = await res.json;
 		return issue;
 	}

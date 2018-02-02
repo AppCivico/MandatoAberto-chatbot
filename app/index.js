@@ -79,7 +79,7 @@ bot.onEvent(async context => {
 				await context.setState( { dialog: 'greetings' } );
 			} else {
 				const misunderstand_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'misunderstand');
-				await context.sendText(misunderstand_message ? misunderstand_message : 'Não entendi sua mensagem, mas quero te ajudar. Você quer enviar uma mensagem para outros membros de nosso equipe?');
+				await context.sendText(misunderstand_message ? misunderstand_message.content : 'Não entendi sua mensagem, mas quero te ajudar. Você quer enviar uma mensagem para outros membros de nosso equipe?');
 
 				promptOptions = [
 					{
