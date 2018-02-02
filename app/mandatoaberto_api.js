@@ -16,12 +16,16 @@ module.exports = {
 		return pollData;
 	},
 
-	async postCitizen(user_id, citizen) {
-		const citizenData_qs = queryString.stringify(citizen);
-		const res = await request.post(`${apiUri}/api/chatbot/citizen?${citizenData_qs}&`).query( {politician_id: user_id} );
-		const citizenData = await res.json();
-		return citizenData;
+	async postRecipient(user_id, recipient) {
+		const recipientData_qs = queryString.stringify(recipient);
+		const res = await request.post(`${apiUri}/api/chatbot/recipient?${recipientData_qs}&`).query( {politician_id: user_id} );
+		const recipientData = await res.json();
+		return recipientData;
 	},
+
+	// async getRecipient(fb_id) {
+	// 	const res = await request
+	// }
 
 	async postPollAnswer(fb_id, poll_question_option_id) {
 		const res = await request.post(`${apiUri}/api/chatbot/poll-result?fb_id=${fb_id}&poll_question_option_id=${poll_question_option_id}`);

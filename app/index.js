@@ -18,8 +18,8 @@ let pollAnswer;
 let trajectory;
 let promptOptions;
 
-let citizenData = {};
-citizenData[
+let recipientData = {};
+recipientData[
 	'fb_id',
 	'name',
 	'origin_dialog',
@@ -113,50 +113,50 @@ bot.onEvent(async context => {
 		await MandatoAbertoAPI.postPollAnswer(context.session.user.id, poll_question_option_id);
 	}
 
-	if (context.state.dialog == 'citizenData' && context.state.citizenData) {
+	if (context.state.dialog == 'recipientData' && context.state.recipientData) {
 
-		if (context.state.citizenData) {
-			switch (context.state.citizenData) {
+		if (context.state.recipientData) {
+			switch (context.state.recipientData) {
 				case 'email':
-					citizenData.fb_id = context.session.user.id;
-					citizenData.email = context.event.message.text;
-					await MandatoAbertoAPI.postCitizen(politicianData.user_id, citizenData);
-					citizenData = {};
+					recipientData.fb_id = context.session.user.id;
+					recipientData.email = context.event.message.text;
+					await MandatoAbertoAPI.postRecipient(politicianData.user_id, recipientData);
+					recipientData = {};
 
 					await context.sendQuickReplies({ text: 'Legal, agora quer me informar seu telefone, para lhe manter informado sobre outras enquetes?'  }, [
 						{
 							content_type: 'text',
 							title: 'Sim',
-							payload: 'citizenData',
+							payload: 'recipientData',
 						},
 						{
 							content_type: 'text',
 							title: 'Não',
-							payload: 'citizenData',
+							payload: 'recipientData',
 						}
 					]);
 
 					await context.setState(
 						{
-							dialog: 'citizenData',
-							citizenData: 'cellphonePrompt',
+							dialog: 'recipientData',
+							recipientData: 'cellphonePrompt',
 							dataPrompt: ''
 						}
 					);
 					break;
 				case 'cellphone':
-					citizenData.fb_id = context.session.user.id;
-					citizenData.cellphone = context.event.message.text;
-					citizenData.cellphone = citizenData.cellphone.replace(/[- .)(]/g, '');
-					citizenData.cellphone = '+55' + citizenData.cellphone;
+					recipientData.fb_id = context.session.user.id;
+					recipientData.cellphone = context.event.message.text;
+					recipientData.cellphone = recipientData.cellphone.replace(/[- .)(]/g, '');
+					recipientData.cellphone = '+55' + recipientData.cellphone;
 
-					if (phoneRegex.test(citizenData.cellphone)) {
-						await MandatoAbertoAPI.postCitizen(politicianData.user_id, citizenData);
+					if (phoneRegex.test(recipientData.cellphone)) {
+						await MandatoAbertoAPI.postRecipient(politicianData.user_id, recipientData);
 					} else {
 						await context.setState(
 							{
 								dataPrompt: '',
-								citizenData: 'cellphonePrompt'
+								recipientData: 'cellphonePrompt'
 							}
 						);
 
@@ -166,22 +166,22 @@ bot.onEvent(async context => {
 							{
 								content_type: 'text',
 								title: 'Sim',
-								payload: 'citizenData',
+								payload: 'recipientData',
 							},
 							{
 								content_type: 'text',
 								title: 'Não',
-								payload: 'citizenData',
+								payload: 'recipientData',
 							}
 						]);
 					}
 
-					citizenData = {};
+					recipientData = {};
 					break;
 				case 'cellphonePrompt':
 					await context.setState(
 						{
-							dialog: 'citizenData',
+							dialog: 'recipientData',
 							dataPrompt: 'cellphone'
 						}
 					);
@@ -194,13 +194,14 @@ bot.onEvent(async context => {
 	switch (context.state.dialog) {
 		case 'greetings':
 			// Criando um cidadão
-			citizenData.fb_id = context.session.user.id;
-			citizenData.name = context.session.user.first_name + ' ' + context.session.user.last_name;
-			citizenData.gender = context.session.user.gender == 'male' ? 'M' : 'F';
-			citizenData.origin_dialog = 'greetings';
+			recipientData.fb_id = context.session.user.id;
+			recipientData.name = context.session.user.first_name + ' ' + context.session.user.last_name;
+			recipientData.gender = context.session.user.gender == 'male' ? 'M' : 'F';
+			recipientData.origin_dialog = 'greetings';
+			recipientData.picture = context.session.user.profile_pic;
 
-			const citizen = await MandatoAbertoAPI.postCitizen(politicianData.user_id, citizenData);
-			citizenData = {};
+			const recipient = await MandatoAbertoAPI.postRecipient(politicianData.user_id, recipientData);
+			recipientData = {};
 
 			const introduction = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'introduction');
 
@@ -337,7 +338,7 @@ bot.onEvent(async context => {
 
 		case 'poll':
 			// Verifico se o cidadão já respondeu a enquete atualmente ativa
-			const citizenAnswer = await MandatoAbertoAPI.getPollAnswer(context.session.user.id, pollData.id);
+			const recipientAnswer = await MandatoAbertoAPI.getPollAnswer(context.session.user.id, pollData.id);
 
 			if (trajectory.content && politicianData.contact) {
 				promptOptions = [
@@ -370,7 +371,7 @@ bot.onEvent(async context => {
 				];
 			}
 
-			if (citizenAnswer.citizen_answered === 1) {
+			if (recipientAnswer.recipient_answered === 1) {
 				await context.sendText('Você já respondeu a enquete atualmente ativa');
 
 				await context.sendQuickReplies({ text: 'Se quiser eu posso te ajudar com outra coisa' }, promptOptions);
@@ -404,12 +405,12 @@ bot.onEvent(async context => {
 				{
 					content_type: 'text',
 					title: 'Vamos lá!',
-					payload: 'citizenData',
+					payload: 'recipientData',
 				},
 				{
 					content_type: 'text',
 					title: 'Agora não',
-					payload: 'citizenData',
+					payload: 'recipientData',
 				}
 			]);
 
@@ -422,7 +423,7 @@ bot.onEvent(async context => {
 
 			break;
 
-		case 'citizenData':
+		case 'recipientData':
 			if ( context.event.message.text == 'Agora não' || context.event.message.text == 'Não' ) {
 				await context.sendText('Beleza!');
 
@@ -438,8 +439,8 @@ bot.onEvent(async context => {
 
 							await context.setState(
 								{
-									dialog: 'citizenData',
-									citizenData: 'email'
+									dialog: 'recipientData',
+									recipientData: 'email'
 								}
 							);
 
@@ -449,8 +450,8 @@ bot.onEvent(async context => {
 
 							await context.setState(
 								{
-									dialog: 'citizenData',
-									citizenData: 'cellphone',
+									dialog: 'recipientData',
+									recipientData: 'cellphone',
 									dataPrompt: 'end'
 								}
 							);
