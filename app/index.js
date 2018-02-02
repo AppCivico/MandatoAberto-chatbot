@@ -76,6 +76,8 @@ bot.onEvent(async context => {
 				const issue = await MandatoAbertoAPI.postIssue(politicianData.user_id, context.session.user.id, context.event.message.text);
 				await context.sendText("Muito obrigado pela sua mensagem, iremos responde-la em breve!");
 
+				await context.resetState();
+
 				await context.setState( { dialog: 'greetings' } );
 			} else {
 				const misunderstand_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'misunderstand');
