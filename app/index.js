@@ -293,11 +293,17 @@ bot.onEvent(async context => {
 				politicianData.contact.cellphone = politicianData.contact.cellphone.replace(/^(\d{2})/g, "($1)");
 			}
 
-			const contactText = `Você pode entrar em contato com ${articles.defined} ${politicianData.office.name} ${politicianData.name} pelos seguintes canais:\n`;
-			await context.sendText(contactText);
-			await context.sendText( politicianData.contact.email ? ` - através do email: ${politicianData.contact.email}\n` : '' );
-			await context.sendText( politicianData.contact.cellphone ? ` - através do WhatsApp: ${politicianData.contact.cellphone}\n` : '' );
-			await context.sendText( politicianData.contact.twitter ? ` - através do Twitter: ${politicianData.contact.twitter}\n` : '' );
+			await context.sendText(`Você pode entrar em contato com ${articles.defined} ${politicianData.office.name} ${politicianData.name} pelos seguintes canais:`);
+
+			if (politicianData.contact.email) {
+				await context.sendText(` - através do email: ${politicianData.contact.email}`);
+			}
+			if (politicianData.contact.cellphone) {
+				await context.sendText(` - através do WhatsApp: ${politicianData.contact.cellphone}`);
+			}
+			if (politicianData.contact.twitter) {
+				await context.sendText(` - através do Twitter: ${politicianData.contact.twitter}`);
+			}
 
 			if (trajectory.content && pollData.questions) {
 				promptOptions = [
