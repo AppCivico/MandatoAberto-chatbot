@@ -296,13 +296,13 @@ bot.onEvent(async context => {
 			await context.sendText(`Você pode entrar em contato com ${articles.defined} ${politicianData.office.name} ${politicianData.name} pelos seguintes canais:`);
 
 			if (politicianData.contact.email) {
-				await context.sendText(` - através do email: ${politicianData.contact.email}`);
+				await context.sendText(` - Através do email: ${politicianData.contact.email}`);
 			}
 			if (politicianData.contact.cellphone) {
-				await context.sendText(` - através do WhatsApp: ${politicianData.contact.cellphone}`);
+				await context.sendText(` - Através do WhatsApp: ${politicianData.contact.cellphone}`);
 			}
 			if (politicianData.contact.twitter) {
-				await context.sendText(` - através do Twitter: ${politicianData.contact.twitter}`);
+				await context.sendText(` - Através do Twitter: ${politicianData.contact.twitter}`);
 			}
 
 			if (trajectory.content && pollData.questions) {
