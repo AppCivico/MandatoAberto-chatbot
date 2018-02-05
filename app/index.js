@@ -239,7 +239,7 @@ bot.onEvent(async context => {
 			let greeting = politicianData.greeting.replace('${user.office.name}', politicianData.office.name);
 			greeting = greeting.replace('${user.name}', politicianData.name);
 			await context.sendText(greeting);
-			await context.sendQuickReplies({ text: 'Como posso te ajudar?' }, promptOptions);
+			await context.sendQuickReplies({ text: 'Quer saber mais?' }, promptOptions);
 
 			await context.setState( { dialog: 'prompt' } );
 
@@ -294,9 +294,9 @@ bot.onEvent(async context => {
 			}
 
 			const contactText = `Você pode entrar em contato com ${articles.defined} ${politicianData.office.name} ${politicianData.name} pelos seguintes canais:\n`
-							  + ( politicianData.contact.email ? ` - através do email: ${politicianData.contact.email}\n` : '' )
-							  + ( politicianData.contact.cellphone ? ` - através do WhatsApp: ${politicianData.contact.cellphone}\n` : '' )
-							  + ( politicianData.contact.twitter ? ` - através do Twitter: ${politicianData.contact.twitter}` : '' );
+							  + ( politicianData.contact.email ? ` - através do email: ${politicianData.contact.email}\n\n\n\n\n` : '' )
+							  + ( politicianData.contact.cellphone ? ` - através do WhatsApp: ${politicianData.contact.cellphone}\n\n\n\n\n` : '' )
+							  + ( politicianData.contact.twitter ? ` - através do Twitter: ${politicianData.contact.twitter}\n\n\n\n` : '' );
 			await context.sendText(contactText);
 
 			if (trajectory.content && pollData.questions) {
@@ -378,9 +378,7 @@ bot.onEvent(async context => {
 
 				await context.setState( { dialog: 'prompt' } );
 			} else {
-				await context.sendText('Que legal, é muito importante conhecer você e sua comunidade para criarmos iniciativas que impactem positivamente na vida de todos.');
-
-				await context.sendQuickReplies({ text: pollData.questions[0].content }, [
+				await context.sendQuickReplies({ text: "Pergunta: " + pollData.questions[0].content }, [
 					{
 						content_type: 'text',
 						title: pollData.questions[0].options[0].content,
@@ -401,7 +399,7 @@ bot.onEvent(async context => {
 		case 'pollAnswer':
 			await context.sendText('Muito obrigado, é muito importante a participação da população nesse processo de elaboração de projetos.');
 
-			await context.sendQuickReplies({ text: 'Você gostaria de assinar a nossa petição para dar mais força ao projeto? Para isso é só me falar seu email, vamos la?'  }, [
+			await context.sendQuickReplies({ text: 'Muito obrigado por sua reposta. Você gostaria de deixar seu email e telefone  para nossa equipe?'  }, [
 				{
 					content_type: 'text',
 					title: 'Vamos lá!',
