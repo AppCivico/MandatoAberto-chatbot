@@ -258,8 +258,8 @@ bot.onEvent(async context => {
 					},
 					{
 						content_type: 'text',
-						title: 'Responder enquete',
-						payload: 'poll',
+						title: 'Contatos',
+						payload: 'contacts',
 					}
 				];
 			} else if (trajectory.content && !pollData.questions) {
@@ -274,8 +274,8 @@ bot.onEvent(async context => {
 				promptOptions = [
 					{
 						content_type: 'text',
-						title: 'Responder enquete',
-						payload: 'poll',
+						title: 'Contatos',
+						payload: 'contacts',
 					}
 				];
 			}
