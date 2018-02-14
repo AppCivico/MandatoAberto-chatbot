@@ -7,10 +7,10 @@
     "start": "node index.js"
   },
   "dependencies": {
-    "bottender": "^0.14.10",
+    "bottender": "^0.14.22",
     "dotenv": "^4.0.0",
     "nodemon": "1.12.7",
-    "query-string": "^5.0.1",
+    "query-string": "^5.1.0",
     "request": "^2.83.0",
     "request-promise": "^4.2.2",
     "requisition": "^1.7.0"
