@@ -304,6 +304,9 @@ bot.onEvent(async context => {
 			if (politicianData.contact.twitter) {
 				await context.sendText(` - Através do Twitter: ${politicianData.contact.twitter}`);
 			}
+			if (politicianData.contact.url) {
+				await context.sendText(` - Através do site: ${politicianData.contact.url}`);
+			}
 
 			if (trajectory.content && pollData.questions) {
 				promptOptions = [
