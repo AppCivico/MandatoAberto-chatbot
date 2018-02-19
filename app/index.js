@@ -54,6 +54,30 @@ bot.setInitialState({});
 
 bot.onEvent(async context => {
 
+	if (context.event.rawEvent.field == 'feed') {
+		let item;
+		let comment_id;
+		let permalink;
+		let post_id = context.event.rawEvent.value.post_id;;
+		let page_id = post_id.substr(0, post_id.indexOf('_'));;
+
+		switch (context.event.rawEvent.value.item) {
+			case 'comment':
+				item = 'comment';
+				comment_id = context.event.rawEvent.value.comment_id;
+				permalink = context.event.rawEvent.value.post.permalink_url;
+
+				await MandatoAbertoAPI.postPrivateReply(item, page_id, post_id, comment_id, permalink);
+				break;
+			case 'post':
+				item = 'post';
+				permalink = context.event.rawEvent.value.post.permalink_url;
+
+				await MandatoAbertoAPI.postPrivateReply(item, page_id, post_id, comment_id, permalink);
+				break;
+		}
+	}
+
 	if (!context.state.dialog) {
 		if ( !politicianData.greetings && ( !politicianData.contact && !pollData.questions ) ) {
 			console.log("Politician does not have enough data");
@@ -535,7 +559,7 @@ bot.onEvent(async context => {
 });
 
 const server = createServer(bot, { verifyToken: config.verifyToken } );
-
+console.log(server.log.events);
 server.listen(process.env.API_PORT, () => {
 	console.log(`server is running on ${process.env.API_PORT} port...`);
 });

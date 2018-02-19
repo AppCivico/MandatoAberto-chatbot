@@ -23,10 +23,6 @@ module.exports = {
 		return recipientData;
 	},
 
-	// async getRecipient(fb_id) {
-	// 	const res = await request
-	// }
-
 	async postPollAnswer(fb_id, poll_question_option_id) {
 		const res = await request.post(`${apiUri}/api/chatbot/poll-result?fb_id=${fb_id}&poll_question_option_id=${poll_question_option_id}`);
 		const pollAnswer = await res.json();
@@ -56,5 +52,11 @@ module.exports = {
 		const res = await request.post(`${apiUri}/api/chatbot/issue?politician_id=${politician_id}&fb_id=${fb_id}&message=${message}`);
 		const issue = await res.json;
 		return issue;
+	},
+
+	async postPrivateReply(item, page_id, post_id, comment_id, permalink) {
+		const res = await request.post(`${apiUri}/api/chatbot/private-reply?page_id=${page_id}&item=${item}&post_id=${post_id}&comment_id=${comment_id}&permalink=${permalink}`);
+		const privateReply = await res.json;
+		return privateReply;
 	}
 };
