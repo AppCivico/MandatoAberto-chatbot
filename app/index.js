@@ -71,7 +71,6 @@ bot.onEvent(async context => {
 				break;
 			case 'post':
 				item = 'post';
-				permalink = context.event.rawEvent.value.post.permalink_url;
 
 				await MandatoAbertoAPI.postPrivateReply(item, page_id, post_id, comment_id, permalink);
 				break;
