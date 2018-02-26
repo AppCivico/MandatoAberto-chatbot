@@ -108,7 +108,6 @@ bot.onEvent(async context => {
 				await context.setState( { dialog: 'greetings' } );
 			} else {
 				const misunderstand_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'misunderstand');
-				await context.sendText(misunderstand_message ? misunderstand_message.content : 'Não entendi sua mensagem, mas quero te ajudar. Você quer enviar uma mensagem para outros membros de nosso equipe?');
 
 				promptOptions = [
 					{
@@ -122,8 +121,16 @@ bot.onEvent(async context => {
 						payload: 'greetings'
 					},
 				]
-
-				await context.sendQuickReplies({ text: 'Posso te ajudar com outra coisa?' }, promptOptions);
+				
+				if (Object.keys(misunderstand_message).length === 0) {
+					await context.sendText('Não entendi sua mensagem, mas quero te ajudar. Você quer enviar uma mensagem para outros membros de nosso equipe?', {
+						quick_replies: promptOptions
+					});
+				} else {
+					await context.sendText(misunderstand_message.content, {
+						quick_replies: promptOptions
+					});
+				}
 
 				await context.setState( { dialog: 'prompt' } );
 			}
