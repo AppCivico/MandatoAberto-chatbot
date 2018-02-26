@@ -101,7 +101,14 @@ bot.onEvent(async context => {
 		} else if (context.event.isText) {
 			if (context.state.prompt && context.state.prompt == 'issue') {
 				const issue = await MandatoAbertoAPI.postIssue(politicianData.user_id, context.session.user.id, context.event.message.text);
-				await context.sendText("Muito obrigado pela sua mensagem, iremos responde-la em breve!");
+				
+				const issue_created_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'issue_created');
+
+				if (Object.keys(issue_created_message).length === 0) {
+					await context.sendText("Muito obrigado pela sua mensagem, iremos responde-la em breve!");
+				} else {
+					await context.sendText(issue_created_message.content);
+				}
 
 				await context.resetState();
 
