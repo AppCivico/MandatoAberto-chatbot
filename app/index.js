@@ -59,8 +59,8 @@ bot.onEvent(async context => {
 		let item;
 		let comment_id;
 		let permalink;
-		let post_id = context.event.rawEvent.value.post_id;;
-		let page_id = post_id.substr(0, post_id.indexOf('_'));;
+		let post_id = context.event.rawEvent.value.post_id;
+		let page_id = post_id.substr(0, post_id.indexOf('_'));
 
 		switch (context.event.rawEvent.value.item) {
 			case 'comment':
@@ -144,13 +144,16 @@ bot.onEvent(async context => {
 	}
 
 	// Resposta de enquete
+	let propagateIdentifier = 'pollAnswerPropagate';
 	if (context.event.isQuickReply && context.state.dialog == 'pollAnswer') {
 		poll_question_option_id = context.event.message.quick_reply.payload;
 		let origin = 'dialog';
 		await MandatoAbertoAPI.postPollAnswer(context.session.user.id, poll_question_option_id, origin);
-	} else if (context.event.isQuickReply && context.event.message.quick_reply.payload && ( context.event.message.quick_reply.payload.dialog && context.event.message.quick_reply.payload.option_id ) ) {
+	} else if (context.event.isQuickReply && context.event.message.quick_reply.payload && context.event.message.quick_reply.payload.includes(propagateIdentifier) ) {
 		// Tratando resposta da enquete através de propagação
-		poll_question_option_id = context.event.message.quick_reply.payload.option_id;
+		let payload = context.event.message.quick_reply.payload;
+
+		poll_question_option_id = payload.substr( payload.indexOf('_'), payload.length );
 		let origin = 'propagate';
 		await MandatoAbertoAPI.postPollAnswer(context.session.user.id, poll_question_option_id, origin);
 	}
