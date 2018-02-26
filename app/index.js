@@ -141,8 +141,10 @@ bot.onEvent(async context => {
 		poll_question_option_id = context.event.message.quick_reply.payload;
 		let origin = 'dialog';
 		await MandatoAbertoAPI.postPollAnswer(context.session.user.id, poll_question_option_id, origin);
-	} else if (context.event.isQuickReply && context.event.quick_reply.payload && ( context.event.quick_reply.payload.dialog && context.event.quick_reply.payload.option_id ) ) {
-		// Tratando resposta da enquete através de propagação
+	}
+
+	// Tratando resposta da enquete através de propagação
+	if (context.event.isQuickReply && context.event.quick_reply.payload && ( context.event.quick_reply.payload.dialog && context.event.quick_reply.payload.option_id ) ) {
 		poll_question_option_id = context.event.message.quick_reply.payload.option_id;
 		let origin = 'propagate';
 		await MandatoAbertoAPI.postPollAnswer(context.session.user.id, poll_question_option_id, origin);
