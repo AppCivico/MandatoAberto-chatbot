@@ -54,6 +54,7 @@ bot.setInitialState({});
 
 bot.onEvent(async context => {
 
+	// Abrindo bot através de comentários e posts
 	if (context.event.rawEvent.field == 'feed') {
 		let item;
 		let comment_id;
@@ -77,6 +78,7 @@ bot.onEvent(async context => {
 		}
 	}
 
+	// Tratando caso de o poĺítico não ter dados suficientes
 	if (!context.state.dialog) {
 		if ( !politicianData.greetings && ( !politicianData.contact && !pollData.questions ) ) {
 			console.log("Politician does not have enough data");
@@ -86,10 +88,12 @@ bot.onEvent(async context => {
 		}
 	}
 
+	// Tratando botão GET STARTED
 	if (context.event.postback && context.event.postback.payload == 'greetings') {
 		await context.setState( { dialog: 'greetings' } )
 	}
 
+	// Tratando dinâmica de issues
 	if (context.state.dialog == 'prompt') {
 		if (context.event.isQuickReply) {
 			const payload = context.event.message.quick_reply.payload;
@@ -126,16 +130,25 @@ bot.onEvent(async context => {
 		}
 	}
 
+	// Switch de dialogos
 	if (context.event.isQuickReply && (context.state.dialog == 'prompt' || context.event.message.quick_reply.payload == 'greetings') ) {
 		const payload = context.event.message.quick_reply.payload;
 		await context.setState( { dialog: payload } );
 	}
 
+	// Resposta de enquete
 	if (context.event.isQuickReply && context.state.dialog == 'pollAnswer') {
 		poll_question_option_id = context.event.message.quick_reply.payload;
-		await MandatoAbertoAPI.postPollAnswer(context.session.user.id, poll_question_option_id);
+		let origin = 'dialog';
+		await MandatoAbertoAPI.postPollAnswer(context.session.user.id, poll_question_option_id, origin);
+	} else if (context.event.isQuickReply && ( context.event.quick_reply.payload.dialog && context.event.quick_reply.payload.option_id ) ) {
+		// Tratando resposta da enquete através de propagação
+		poll_question_option_id = context.event.message.quick_reply.payload.option_id;
+		let origin = 'propagate';
+		await MandatoAbertoAPI.postPollAnswer(context.session.user.id, poll_question_option_id, origin);
 	}
 
+	// Tratando dados adicionais do recipient
 	if (context.state.dialog == 'recipientData' && context.state.recipientData) {
 
 		if (context.state.recipientData) {
@@ -362,7 +375,7 @@ bot.onEvent(async context => {
 				];
 			}
 
-			await context.sendQuickReplies({ text: `Posso te ajudar com outra informação?` }, promptOptions);
+			await context.sendQuickReplies({ text: `Quer saber mais?` }, promptOptions);
 
 			await context.setState( { dialog: 'prompt' } );
 
@@ -429,7 +442,6 @@ bot.onEvent(async context => {
 			break;
 
 		case 'pollAnswer':
-			await context.sendText('Muito obrigado, é muito importante a participação da população nesse processo de elaboração de projetos.');
 
 			await context.sendQuickReplies({ text: 'Muito obrigado por sua reposta. Você gostaria de deixar seu email e telefone  para nossa equipe?'  }, [
 				{
@@ -493,7 +505,7 @@ bot.onEvent(async context => {
 						case 'end':
 								await context.sendText('Pronto, já guardei seus dados. Vou lhe enviar o resultado atual da enquete, e assim que terminar a pesquisa eu lhe envio o resultado final');
 
-								await context.sendQuickReplies({ text: `Posso te ajudar com outra informação?` }, promptOptions);
+								await context.sendQuickReplies({ text: `Quer saber mais?` }, promptOptions);
 
 								await context.setState( { dialog: 'prompt' } );
 							break;
@@ -537,7 +549,7 @@ bot.onEvent(async context => {
 				];
 			}
 
-			await context.sendQuickReplies({ text: `Posso te ajudar com outra informação?` }, promptOptions);
+			await context.sendQuickReplies({ text: `Quer saber mais?` }, promptOptions);
 
 			await context.setState( { dialog: 'prompt' } );
 

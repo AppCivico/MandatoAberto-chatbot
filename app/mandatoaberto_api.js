@@ -23,8 +23,8 @@ module.exports = {
 		return recipientData;
 	},
 
-	async postPollAnswer(fb_id, poll_question_option_id) {
-		const res = await request.post(`${apiUri}/api/chatbot/poll-result?fb_id=${fb_id}&poll_question_option_id=${poll_question_option_id}`);
+	async postPollAnswer(fb_id, poll_question_option_id, origin) {
+		const res = await request.post(`${apiUri}/api/chatbot/poll-result?fb_id=${fb_id}&poll_question_option_id=${poll_question_option_id}&origin=${origin}`);
 		const pollAnswer = await res.json();
 		return pollAnswer;
 	},
