@@ -589,7 +589,7 @@ bot.onEvent(async context => {
 });
 
 const server = createServer(bot, { verifyToken: config.verifyToken } );
-console.log(server.log.events);
+
 server.listen(process.env.API_PORT, () => {
 	console.log(`server is running on ${process.env.API_PORT} port...`);
 });
