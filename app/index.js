@@ -153,7 +153,7 @@ bot.onEvent(async context => {
 		// Tratando resposta da enquete através de propagação
 		let payload = context.event.message.quick_reply.payload;
 
-		poll_question_option_id = payload.substr( payload.indexOf('_'), payload.length );
+		poll_question_option_id = payload.substr( payload.indexOf('_') + 1, payload.length );
 		let origin = 'propagate';
 		await MandatoAbertoAPI.postPollAnswer(context.session.user.id, poll_question_option_id, origin);
 	}
