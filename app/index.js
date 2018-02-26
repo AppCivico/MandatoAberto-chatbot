@@ -156,6 +156,8 @@ bot.onEvent(async context => {
 		poll_question_option_id = payload.substr( payload.indexOf('_') + 1, payload.length );
 		let origin = 'propagate';
 		await MandatoAbertoAPI.postPollAnswer(context.session.user.id, poll_question_option_id, origin);
+
+		context.setState( { dialog: 'pollAnswer' } );
 	}
 
 	// Tratando dados adicionais do recipient
