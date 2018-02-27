@@ -153,13 +153,9 @@ bot.onEvent(async context => {
 	// Resposta de enquete
 	let propagateIdentifier = 'pollAnswerPropagate';
 	if (context.event.isQuickReply && context.state.dialog == 'pollAnswer') {
-
-		if ( (context.event.message.quick_reply.payload == pollData.questions[0].options[0].content) || (context.event.message.quick_reply.payload == pollData.questions[0].options[1].content) ) {
-			poll_question_option_id = context.event.message.quick_reply.payload;
-			let origin = 'dialog';
-			await MandatoAbertoAPI.postPollAnswer(context.session.user.id, poll_question_option_id, origin);
-		}
-
+		poll_question_option_id = context.event.message.quick_reply.payload;
+		let origin = 'dialog';
+		await MandatoAbertoAPI.postPollAnswer(context.session.user.id, poll_question_option_id, origin);
 	} else if (context.event.isQuickReply && context.event.message.quick_reply.payload && context.event.message.quick_reply.payload.includes(propagateIdentifier) ) {
 		// Tratando resposta da enquete através de propagação
 		let payload = context.event.message.quick_reply.payload;
@@ -169,6 +165,33 @@ bot.onEvent(async context => {
 		await MandatoAbertoAPI.postPollAnswer(context.session.user.id, poll_question_option_id, origin);
 
 		context.setState( { dialog: 'pollAnswer' } );
+	} else {
+		const misunderstand_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'misunderstand');
+
+		promptOptions = [
+			{
+				content_type: 'text',
+				title: 'Sim',
+				payload: 'issue'
+			},
+			{
+				content_type: 'text',
+				title: 'Não',
+				payload: 'greetings'
+			},
+		]
+		
+		if (Object.keys(misunderstand_message).length === 0) {
+			await context.sendText('Não entendi sua mensagem, mas quero te ajudar. Você quer enviar uma mensagem para outros membros de nosso equipe?', {
+				quick_replies: promptOptions
+			});
+		} else {
+			await context.sendText(misunderstand_message.content, {
+				quick_replies: promptOptions
+			});
+		}
+
+		await context.setState( { dialog: 'prompt' } );
 	}
 
 	// Tratando dados adicionais do recipient
