@@ -153,9 +153,13 @@ bot.onEvent(async context => {
 	// Resposta de enquete
 	let propagateIdentifier = 'pollAnswerPropagate';
 	if (context.event.isQuickReply && context.state.dialog == 'pollAnswer') {
-		poll_question_option_id = context.event.message.quick_reply.payload;
-		let origin = 'dialog';
-		await MandatoAbertoAPI.postPollAnswer(context.session.user.id, poll_question_option_id, origin);
+
+		if ( (context.event.message.quick_reply.payload == pollData.questions[0].options[0].content) || (context.event.message.quick_reply.payload == pollData.questions[0].options[1].content) ) {
+			poll_question_option_id = context.event.message.quick_reply.payload;
+			let origin = 'dialog';
+			await MandatoAbertoAPI.postPollAnswer(context.session.user.id, poll_question_option_id, origin);
+		}
+
 	} else if (context.event.isQuickReply && context.event.message.quick_reply.payload && context.event.message.quick_reply.payload.includes(propagateIdentifier) ) {
 		// Tratando resposta da enquete através de propagação
 		let payload = context.event.message.quick_reply.payload;
