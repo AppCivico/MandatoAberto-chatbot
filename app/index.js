@@ -165,7 +165,7 @@ bot.onEvent(async context => {
 		await MandatoAbertoAPI.postPollAnswer(context.session.user.id, poll_question_option_id, origin);
 
 		context.setState( { dialog: 'pollAnswer' } );
-	} else {
+	} else if (context.event.isText && context.state.dialog == 'pollAnswer') {
 		const misunderstand_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'misunderstand');
 
 		promptOptions = [
