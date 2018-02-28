@@ -18,8 +18,8 @@ let pollAnswer;
 let trajectory;
 let promptOptions;
 
-let citizenData = {};
-citizenData[
+let recipientData = {};
+recipientData[
 	'fb_id',
 	'name',
 	'origin_dialog',
@@ -54,6 +54,31 @@ bot.setInitialState({});
 
 bot.onEvent(async context => {
 
+	// Abrindo bot através de comentários e posts
+	if (context.event.rawEvent.field == 'feed') {
+		let item;
+		let comment_id;
+		let permalink;
+		let post_id = context.event.rawEvent.value.post_id;
+		let page_id = post_id.substr(0, post_id.indexOf('_'));
+
+		switch (context.event.rawEvent.value.item) {
+			case 'comment':
+				item = 'comment';
+				comment_id = context.event.rawEvent.value.comment_id;
+				permalink = context.event.rawEvent.value.post.permalink_url;
+
+				await MandatoAbertoAPI.postPrivateReply(item, page_id, post_id, comment_id, permalink);
+				break;
+			case 'post':
+				item = 'post';
+
+				await MandatoAbertoAPI.postPrivateReply(item, page_id, post_id, comment_id, permalink);
+				break;
+		}
+	}
+
+	// Tratando caso de o poĺítico não ter dados suficientes
 	if (!context.state.dialog) {
 		if ( !politicianData.greetings && ( !politicianData.contact && !pollData.questions ) ) {
 			console.log("Politician does not have enough data");
@@ -63,108 +88,165 @@ bot.onEvent(async context => {
 		}
 	}
 
+	// Tratando botão GET STARTED
 	if (context.event.postback && context.event.postback.payload == 'greetings') {
 		await context.setState( { dialog: 'greetings' } )
 	}
 
+	// Tratando dinâmica de issues
 	if (context.state.dialog == 'prompt') {
 		if (context.event.isQuickReply) {
 			const payload = context.event.message.quick_reply.payload;
 			await context.setState( { dialog: payload } );
 		} else if (context.event.isText) {
-			await context.sendText('Meus algoritmos estão em aprendizagem, pois ainda sou um robo novo. Infelizmente não consegui entender o que você disse. Mas vou guardar sua mensagem e assim que tiver uma resposta eu te mando.');
+			if (context.state.prompt && context.state.prompt == 'issue') {
+				const issue = await MandatoAbertoAPI.postIssue(politicianData.user_id, context.session.user.id, context.event.message.text);
+				
+				const issue_created_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'issue_created');
 
-			if (introduction.content && pollData.questions) {
+				if (Object.keys(issue_created_message).length === 0) {
+					await context.sendText("Muito obrigado pela sua mensagem!");
+				} else {
+					await context.sendText(issue_created_message.content);
+				}
+
+				await context.resetState();
+
+				await context.setState( { dialog: 'greetings' } );
+			} else {
+				const misunderstand_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'misunderstand');
+
 				promptOptions = [
 					{
 						content_type: 'text',
-						title: 'Sobre o líder',
-						payload: 'aboutMe',
+						title: 'Sim',
+						payload: 'issue'
 					},
 					{
 						content_type: 'text',
-						title: 'Responder enquete',
-						payload: 'poll',
-					}
-				];
-			} else if (introduction.content && !pollData.questions) {
-				promptOptions = [
-					{
-						content_type: 'text',
-						title: 'Sobre o líder',
-						payload: 'aboutMe',
-					}
-				];
-			} else if (!introduction.content && pollData.questions) {
-				promptOptions = [
-					{
-						content_type: 'text',
-						title: 'Responder enquete',
-						payload: 'poll',
-					}
-				];
+						title: 'Não',
+						payload: 'greetings'
+					},
+				]
+				
+				if (Object.keys(misunderstand_message).length === 0) {
+					await context.sendText('Não entendi sua mensagem, mas quero te ajudar.');
+
+					await context.sendText('Quer deixar uma mensagem conosco?', {
+						quick_replies: promptOptions
+					});
+				} else {
+					await context.sendText(misunderstand_message.content);
+
+					await context.sendText('Quer deixar uma mensagem conosco?', {
+						quick_replies: promptOptions
+					});
+				}
+
+				await context.setState( { dialog: 'prompt' } );
 			}
-
-			await context.sendQuickReplies({ text: 'Posso te ajudar com outra coisa?' }, promptOptions);
-
-			await context.setState( { dialog: 'prompt' } );
 		}
 	}
 
+	// Switch de dialogos
 	if (context.event.isQuickReply && (context.state.dialog == 'prompt' || context.event.message.quick_reply.payload == 'greetings') ) {
 		const payload = context.event.message.quick_reply.payload;
 		await context.setState( { dialog: payload } );
 	}
 
+	// Resposta de enquete
+	let propagateIdentifier = 'pollAnswerPropagate';
 	if (context.event.isQuickReply && context.state.dialog == 'pollAnswer') {
-		option_id = context.event.message.quick_reply.payload;
-		await MandatoAbertoAPI.postPollAnswer(context.session.user.id, option_id);
+		poll_question_option_id = context.event.message.quick_reply.payload;
+		let origin = 'dialog';
+		await MandatoAbertoAPI.postPollAnswer(context.session.user.id, poll_question_option_id, origin);
+	} else if (context.event.isQuickReply && context.event.message.quick_reply.payload && context.event.message.quick_reply.payload.includes(propagateIdentifier) ) {
+		// Tratando resposta da enquete através de propagação
+		let payload = context.event.message.quick_reply.payload;
+
+		poll_question_option_id = payload.substr( payload.indexOf('_') + 1, payload.length );
+		let origin = 'propagate';
+		await MandatoAbertoAPI.postPollAnswer(context.session.user.id, poll_question_option_id, origin);
+
+		context.setState( { dialog: 'pollAnswer' } );
+	} else if (context.event.isText && context.state.dialog == 'pollAnswer') {
+		const misunderstand_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'misunderstand');
+
+		promptOptions = [
+			{
+				content_type: 'text',
+				title: 'Sim',
+				payload: 'issue'
+			},
+			{
+				content_type: 'text',
+				title: 'Não',
+				payload: 'greetings'
+			},
+		]
+		
+		if (Object.keys(misunderstand_message).length === 0) {
+			await context.sendText('Não entendi sua mensagem, mas quero te ajudar. Você quer enviar uma mensagem para outros membros de nosso equipe?');
+
+			await context.sendText('Quer deixar uma mensagem conosco?', {
+				quick_replies: promptOptions
+			});
+		} else {
+			await context.sendText(misunderstand_message.content);
+
+			await context.sendText('Quer deixar uma mensagem conosco?', {
+				quick_replies: promptOptions
+			});
+		}
+
+		await context.setState( { dialog: 'prompt' } );
 	}
 
-	if (context.state.dialog == 'citizenData' && context.state.citizenData) {
+	// Tratando dados adicionais do recipient
+	if (context.state.dialog == 'recipientData' && context.state.recipientData) {
 
-		if (context.state.citizenData) {
-			switch (context.state.citizenData) {
+		if (context.state.recipientData) {
+			switch (context.state.recipientData) {
 				case 'email':
-					citizenData.fb_id = context.session.user.id;
-					citizenData.email = context.event.message.text;
-					await MandatoAbertoAPI.postCitizen(politicianData.user_id, citizenData);
-					citizenData = {};
+					recipientData.fb_id = context.session.user.id;
+					recipientData.email = context.event.message.text;
+					await MandatoAbertoAPI.postRecipient(politicianData.user_id, recipientData);
+					recipientData = {};
 
 					await context.sendQuickReplies({ text: 'Legal, agora quer me informar seu telefone, para lhe manter informado sobre outras enquetes?'  }, [
 						{
 							content_type: 'text',
 							title: 'Sim',
-							payload: 'citizenData',
+							payload: 'recipientData',
 						},
 						{
 							content_type: 'text',
 							title: 'Não',
-							payload: 'citizenData',
+							payload: 'recipientData',
 						}
 					]);
 
 					await context.setState(
 						{
-							dialog: 'citizenData',
-							citizenData: 'cellphonePrompt',
+							dialog: 'recipientData',
+							recipientData: 'cellphonePrompt',
 							dataPrompt: ''
 						}
 					);
 					break;
 				case 'cellphone':
-					citizenData.fb_id = context.session.user.id;
-					citizenData.cellphone = context.event.message.text;
-					citizenData.cellphone = citizenData.cellphone.replace(/[- .)(]/g, '');
-					citizenData.cellphone = '+55' + citizenData.cellphone;
+					recipientData.fb_id = context.session.user.id;
+					recipientData.cellphone = context.event.message.text;
+					recipientData.cellphone = recipientData.cellphone.replace(/[- .)(]/g, '');
+					recipientData.cellphone = '+55' + recipientData.cellphone;
 
-					if (phoneRegex.test(citizenData.cellphone)) {
-						await MandatoAbertoAPI.postCitizen(politicianData.user_id, citizenData);
+					if (phoneRegex.test(recipientData.cellphone)) {
+						await MandatoAbertoAPI.postRecipient(politicianData.user_id, recipientData);
 					} else {
 						await context.setState(
 							{
 								dataPrompt: '',
-								citizenData: 'cellphonePrompt'
+								recipientData: 'cellphonePrompt'
 							}
 						);
 
@@ -174,22 +256,22 @@ bot.onEvent(async context => {
 							{
 								content_type: 'text',
 								title: 'Sim',
-								payload: 'citizenData',
+								payload: 'recipientData',
 							},
 							{
 								content_type: 'text',
 								title: 'Não',
-								payload: 'citizenData',
+								payload: 'recipientData',
 							}
 						]);
 					}
 
-					citizenData = {};
+					recipientData = {};
 					break;
 				case 'cellphonePrompt':
 					await context.setState(
 						{
-							dialog: 'citizenData',
+							dialog: 'recipientData',
 							dataPrompt: 'cellphone'
 						}
 					);
@@ -202,13 +284,14 @@ bot.onEvent(async context => {
 	switch (context.state.dialog) {
 		case 'greetings':
 			// Criando um cidadão
-			citizenData.fb_id = context.session.user.id;
-			citizenData.name = context.session.user.first_name + ' ' + context.session.user.last_name;
-			citizenData.gender = context.session.user.gender == 'male' ? 'M' : 'F';
-			citizenData.origin_dialog = 'greetings';
+			recipientData.fb_id = context.session.user.id;
+			recipientData.name = context.session.user.first_name + ' ' + context.session.user.last_name;
+			recipientData.gender = context.session.user.gender == 'male' ? 'M' : 'F';
+			recipientData.origin_dialog = 'greetings';
+			recipientData.picture = context.session.user.profile_pic;
 
-			const citizen = await MandatoAbertoAPI.postCitizen(politicianData.user_id, citizenData);
-			citizenData = {};
+			const recipient = await MandatoAbertoAPI.postRecipient(politicianData.user_id, recipientData);
+			recipientData = {};
 
 			const introduction = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'introduction');
 
@@ -246,7 +329,7 @@ bot.onEvent(async context => {
 			let greeting = politicianData.greeting.replace('${user.office.name}', politicianData.office.name);
 			greeting = greeting.replace('${user.name}', politicianData.name);
 			await context.sendText(greeting);
-			await context.sendQuickReplies({ text: 'Como posso te ajudar?' }, promptOptions);
+			await context.sendQuickReplies({ text: 'Quer saber mais?' }, promptOptions);
 
 			await context.setState( { dialog: 'prompt' } );
 
@@ -265,8 +348,8 @@ bot.onEvent(async context => {
 					},
 					{
 						content_type: 'text',
-						title: 'Responder enquete',
-						payload: 'poll',
+						title: 'Contatos',
+						payload: 'contacts',
 					}
 				];
 			} else if (trajectory.content && !pollData.questions) {
@@ -281,8 +364,8 @@ bot.onEvent(async context => {
 				promptOptions = [
 					{
 						content_type: 'text',
-						title: 'Responder enquete',
-						payload: 'poll',
+						title: 'Contatos',
+						payload: 'contacts',
 					}
 				];
 			}
@@ -300,11 +383,20 @@ bot.onEvent(async context => {
 				politicianData.contact.cellphone = politicianData.contact.cellphone.replace(/^(\d{2})/g, "($1)");
 			}
 
-			const contactText = `Você pode entrar em contato com ${articles.defined} ${politicianData.office.name} ${politicianData.name} pelos seguintes canais:\n`
-							  + ( politicianData.contact.email ? ` - através do email: ${politicianData.contact.email}\n` : '' )
-							  + ( politicianData.contact.cellphone ? ` - através do WhatsApp: ${politicianData.contact.cellphone}\n` : '' )
-							  + ( politicianData.contact.twitter ? ` - através do Twitter: ${politicianData.contact.twitter}` : '' );
-			await context.sendText(contactText);
+			await context.sendText(`Você pode entrar em contato com ${articles.defined} ${politicianData.office.name} ${politicianData.name} pelos seguintes canais:`);
+
+			if (politicianData.contact.email) {
+				await context.sendText(` - Através do email: ${politicianData.contact.email}`);
+			}
+			if (politicianData.contact.cellphone) {
+				await context.sendText(` - Através do WhatsApp: ${politicianData.contact.cellphone}`);
+			}
+			if (politicianData.contact.twitter) {
+				await context.sendText(` - Através do Twitter: ${politicianData.contact.twitter}`);
+			}
+			if (politicianData.contact.url) {
+				await context.sendText(` - Através do site: ${politicianData.contact.url}`);
+			}
 
 			if (trajectory.content && pollData.questions) {
 				promptOptions = [
@@ -337,7 +429,7 @@ bot.onEvent(async context => {
 				];
 			}
 
-			await context.sendQuickReplies({ text: `Posso te ajudar com outra informação?` }, promptOptions);
+			await context.sendQuickReplies({ text: `Quer saber mais?` }, promptOptions);
 
 			await context.setState( { dialog: 'prompt' } );
 
@@ -345,7 +437,7 @@ bot.onEvent(async context => {
 
 		case 'poll':
 			// Verifico se o cidadão já respondeu a enquete atualmente ativa
-			const citizenAnswer = await MandatoAbertoAPI.getPollAnswer(context.session.user.id, pollData.id);
+			const recipientAnswer = await MandatoAbertoAPI.getPollAnswer(context.session.user.id, pollData.id);
 
 			if (trajectory.content && politicianData.contact) {
 				promptOptions = [
@@ -378,16 +470,15 @@ bot.onEvent(async context => {
 				];
 			}
 
-			if (citizenAnswer.citizen_answered === 1) {
+			// Agora a enquete poderá ser respondida via propagação ou via dialogo
+			if (recipientAnswer.recipient_answered > 1) {
 				await context.sendText('Você já respondeu a enquete atualmente ativa');
 
 				await context.sendQuickReplies({ text: 'Se quiser eu posso te ajudar com outra coisa' }, promptOptions);
 
 				await context.setState( { dialog: 'prompt' } );
 			} else {
-				await context.sendText('Que legal, é muito importante conhecer você e sua comunidade para criarmos iniciativas que impactem positivamente na vida de todos.');
-
-				await context.sendQuickReplies({ text: pollData.questions[0].content }, [
+				await context.sendQuickReplies({ text: "Pergunta: " + pollData.questions[0].content }, [
 					{
 						content_type: 'text',
 						title: pollData.questions[0].options[0].content,
@@ -406,18 +497,17 @@ bot.onEvent(async context => {
 			break;
 
 		case 'pollAnswer':
-			await context.sendText('Muito obrigado, é muito importante a participação da população nesse processo de elaboração de projetos.');
 
-			await context.sendQuickReplies({ text: 'Você gostaria de assinar a nossa petição para dar mais força ao projeto? Para isso é só me falar seu email, vamos la?'  }, [
+			await context.sendQuickReplies({ text: 'Muito obrigado por sua reposta. Você gostaria de deixar seu email e telefone  para nossa equipe?'  }, [
 				{
 					content_type: 'text',
 					title: 'Vamos lá!',
-					payload: 'citizenData',
+					payload: 'recipientData',
 				},
 				{
 					content_type: 'text',
 					title: 'Agora não',
-					payload: 'citizenData',
+					payload: 'recipientData',
 				}
 			]);
 
@@ -430,7 +520,7 @@ bot.onEvent(async context => {
 
 			break;
 
-		case 'citizenData':
+		case 'recipientData':
 			if ( context.event.message.text == 'Agora não' || context.event.message.text == 'Não' ) {
 				await context.sendText('Beleza!');
 
@@ -446,8 +536,8 @@ bot.onEvent(async context => {
 
 							await context.setState(
 								{
-									dialog: 'citizenData',
-									citizenData: 'email'
+									dialog: 'recipientData',
+									recipientData: 'email'
 								}
 							);
 
@@ -457,8 +547,8 @@ bot.onEvent(async context => {
 
 							await context.setState(
 								{
-									dialog: 'citizenData',
-									citizenData: 'cellphone',
+									dialog: 'recipientData',
+									recipientData: 'cellphone',
 									dataPrompt: 'end'
 								}
 							);
@@ -468,9 +558,9 @@ bot.onEvent(async context => {
 
 							break;
 						case 'end':
-								await context.sendText('Pronto, já guardei seus dados. Vou lhe enviar o resultado atual da enquete, e assim que terminar a pesquisa eu lhe envio o resultado final');
+								await context.sendText('Pronto, já guardei seus dados.');
 
-								await context.sendQuickReplies({ text: `Posso te ajudar com outra informação?` }, promptOptions);
+								await context.sendQuickReplies({ text: `Quer saber mais?` }, promptOptions);
 
 								await context.setState( { dialog: 'prompt' } );
 							break;
@@ -514,15 +604,21 @@ bot.onEvent(async context => {
 				];
 			}
 
-			await context.sendQuickReplies({ text: `Posso te ajudar com outra informação?` }, promptOptions);
+			await context.sendQuickReplies({ text: `Quer saber mais?` }, promptOptions);
 
 			await context.setState( { dialog: 'prompt' } );
 
 			break;
 
-		case 'noData':
+		case 'issue':
+			await context.sendText('Digite a mensagem que você deseja deixar:');
 
-			await context.sendText('Olá! Por enquanto não consigo fazer muito, mas em breve poderemos conversar sobre várias coisas!');
+			await context.setState( 
+				{
+					dialog: 'prompt',
+					prompt: 'issue'
+				}
+			);
 
 			break;
 	}

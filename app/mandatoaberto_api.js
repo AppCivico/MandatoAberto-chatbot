@@ -16,15 +16,15 @@ module.exports = {
 		return pollData;
 	},
 
-	async postCitizen(user_id, citizen) {
-		const citizenData_qs = queryString.stringify(citizen);
-		const res = await request.post(`${apiUri}/api/chatbot/citizen?${citizenData_qs}&`).query( {politician_id: user_id} );
-		const citizenData = await res.json();
-		return citizenData;
+	async postRecipient(user_id, recipient) {
+		const recipientData_qs = queryString.stringify(recipient);
+		const res = await request.post(`${apiUri}/api/chatbot/recipient?${recipientData_qs}&`).query( {politician_id: user_id} );
+		const recipientData = await res.json();
+		return recipientData;
 	},
 
-	async postPollAnswer(fb_id, option_id) {
-		const res = await request.post(`${apiUri}/api/chatbot/poll-result?fb_id=${fb_id}&option_id=${option_id}`);
+	async postPollAnswer(fb_id, poll_question_option_id, origin) {
+		const res = await request.post(`${apiUri}/api/chatbot/poll-result?fb_id=${fb_id}&poll_question_option_id=${poll_question_option_id}&origin=${origin}`);
 		const pollAnswer = await res.json();
 		return pollAnswer;
 	},
@@ -45,5 +45,18 @@ module.exports = {
 		const res = await request(`${apiUri}/api/chatbot/answer?politician_id=${politician_id}&question_name=${question_name}`);
 		const question = await res.json();
 		return question;
+	},
+
+	async postIssue(politician_id, fb_id, message) {
+		message = encodeURI(message);
+		const res = await request.post(`${apiUri}/api/chatbot/issue?politician_id=${politician_id}&fb_id=${fb_id}&message=${message}`);
+		const issue = await res.json();
+		return issue;
+	},
+
+	async postPrivateReply(item, page_id, post_id, comment_id, permalink) {
+		const res = await request.post(`${apiUri}/api/chatbot/private-reply?page_id=${page_id}&item=${item}&post_id=${post_id}&comment_id=${comment_id}&permalink=${permalink}`);
+		const privateReply = await res.json();
+		return privateReply;
 	}
 };
