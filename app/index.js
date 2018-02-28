@@ -105,7 +105,7 @@ bot.onEvent(async context => {
 				const issue_created_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'issue_created');
 
 				if (Object.keys(issue_created_message).length === 0) {
-					await context.sendText("Muito obrigado pela sua mensagem, iremos responde-la em breve!");
+					await context.sendText("Muito obrigado pela sua mensagem!");
 				} else {
 					await context.sendText(issue_created_message.content);
 				}
