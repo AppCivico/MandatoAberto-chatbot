@@ -130,11 +130,15 @@ bot.onEvent(async context => {
 				]
 				
 				if (Object.keys(misunderstand_message).length === 0) {
-					await context.sendText('Não entendi sua mensagem, mas quero te ajudar. Você quer enviar uma mensagem para outros membros de nosso equipe?', {
+					await context.sendText('Não entendi sua mensagem, mas quero te ajudar.');
+
+					await context.sendText('Quer deixar uma mensagem conosco?', {
 						quick_replies: promptOptions
 					});
 				} else {
-					await context.sendText(misunderstand_message.content, {
+					await context.sendText(misunderstand_message.content);
+
+					await context.sendText('Quer deixar uma mensagem conosco?', {
 						quick_replies: promptOptions
 					});
 				}
@@ -549,7 +553,7 @@ bot.onEvent(async context => {
 
 							break;
 						case 'end':
-								await context.sendText('Pronto, já guardei seus dados. Vou lhe enviar o resultado atual da enquete, e assim que terminar a pesquisa eu lhe envio o resultado final');
+								await context.sendText('Pronto, já guardei seus dados.');
 
 								await context.sendQuickReplies({ text: `Quer saber mais?` }, promptOptions);
 
