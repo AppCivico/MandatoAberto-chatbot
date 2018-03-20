@@ -101,7 +101,7 @@ bot.onEvent(async context => {
 		} else if (context.event.isText) {
 			if (context.state.prompt && context.state.prompt == 'issue') {
 				const issue = await MandatoAbertoAPI.postIssue(politicianData.user_id, context.session.user.id, context.event.message.text);
-				
+
 				const issue_created_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'issue_created');
 
 				if (Object.keys(issue_created_message).length === 0) {
@@ -128,7 +128,7 @@ bot.onEvent(async context => {
 						payload: 'greetings'
 					},
 				]
-				
+
 				if (Object.keys(misunderstand_message).length === 0) {
 					await context.sendText('Não entendi sua mensagem, mas quero te ajudar.');
 
@@ -184,7 +184,7 @@ bot.onEvent(async context => {
 				payload: 'greetings'
 			},
 		]
-		
+
 		if (Object.keys(misunderstand_message).length === 0) {
 			await context.sendText('Não entendi sua mensagem, mas quero te ajudar. Você quer enviar uma mensagem para outros membros de nosso equipe?');
 
@@ -322,6 +322,14 @@ bot.onEvent(async context => {
 						content_type: 'text',
 						title: 'Responder enquete',
 						payload: 'poll',
+					}
+				];
+			} else if (!introduction.content && !pollData.questions && politicianData.contact) {
+				promptOptions = [
+					{
+						content_type: 'text',
+						title: 'Contatos',
+						payload: 'contacts',
 					}
 				];
 			}
@@ -554,7 +562,7 @@ bot.onEvent(async context => {
 							);
 							break;
 						case 'cellphoneFail':
-							
+
 
 							break;
 						case 'end':
@@ -613,7 +621,7 @@ bot.onEvent(async context => {
 		case 'issue':
 			await context.sendText('Digite a mensagem que você deseja deixar:');
 
-			await context.setState( 
+			await context.setState(
 				{
 					dialog: 'prompt',
 					prompt: 'issue'
