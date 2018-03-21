@@ -1,6 +1,6 @@
 require('dotenv').config();
 
-const { MessengerBot, FileSessionStore } = require('bottender');
+const { MessengerBot, FileSessionStore, withTyping } = require('bottender');
 const { createServer } = require('bottender/restify');
 const config = require('./bottender.config.js').messenger;
 const MandatoAbertoAPI = require('./mandatoaberto_api.js');
@@ -52,6 +52,8 @@ const bot = new MessengerBot({
 });
 
 bot.setInitialState({});
+
+bot.use(withTyping({ delay: 1000 }));
 
 bot.onEvent(async context => {
 
