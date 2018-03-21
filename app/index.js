@@ -1,6 +1,6 @@
 require('dotenv').config();
 
-const { MessengerBot, FileSessionStore } = require('bottender');
+const { MessengerBot, FileSessionStore, withTyping } = require('bottender');
 const { createServer } = require('bottender/restify');
 const config = require('./bottender.config.js').messenger;
 const MandatoAbertoAPI = require('./mandatoaberto_api.js');
@@ -13,12 +13,13 @@ const phoneRegex = new RegExp(/^\+55\d{2}(\d{1})?\d{8}$/);
 
 let articles;
 let politicianData;
-let pollData;
 let pollAnswer;
 let trajectory;
 let promptOptions;
 
+let pollData = {};
 let recipientData = {};
+
 recipientData[
 	'fb_id',
 	'name',
@@ -51,6 +52,8 @@ const bot = new MessengerBot({
 });
 
 bot.setInitialState({});
+
+bot.use(withTyping({ delay: 1000 }));
 
 bot.onEvent(async context => {
 
@@ -479,7 +482,7 @@ bot.onEvent(async context => {
 			}
 
 			// Agora a enquete poderá ser respondida via propagação ou via dialogo
-			if (recipientAnswer.recipient_answered > 1) {
+			if (recipientAnswer.recipient_answered >= 1) {
 				await context.sendText('Você já respondeu a enquete atualmente ativa');
 
 				await context.sendQuickReplies({ text: 'Se quiser eu posso te ajudar com outra coisa' }, promptOptions);
