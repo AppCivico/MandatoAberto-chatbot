@@ -102,52 +102,27 @@ bot.onEvent(async context => {
 			const payload = context.event.message.quick_reply.payload;
 			await context.setState( { dialog: payload } );
 		} else if (context.event.isText) {
-			if (context.state.prompt && context.state.prompt == 'issue') {
-				const issue = await MandatoAbertoAPI.postIssue(politicianData.user_id, context.session.user.id, context.event.message.text);
 
-				const issue_created_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'issue_created');
+			const misunderstand_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'misunderstand');
 
-				if (Object.keys(issue_created_message).length === 0) {
-					await context.sendText("Muito obrigado pela sua mensagem!");
-				} else {
-					await context.sendText(issue_created_message.content);
-				}
 
-				await context.resetState();
+			if (Object.keys(misunderstand_message).length === 0) {
+				await context.sendText('Não entendi sua mensagem, mas quero te ajudar.');
 
-				await context.setState( { dialog: 'greetings' } );
 			} else {
-				const misunderstand_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'misunderstand');
-
-				promptOptions = [
-					{
-						content_type: 'text',
-						title: 'Sim',
-						payload: 'issue'
-					},
-					{
-						content_type: 'text',
-						title: 'Não',
-						payload: 'greetings'
-					},
-				]
-
-				if (Object.keys(misunderstand_message).length === 0) {
-					await context.sendText('Não entendi sua mensagem, mas quero te ajudar.');
-
-					await context.sendText('Quer deixar uma mensagem conosco?', {
-						quick_replies: promptOptions
-					});
-				} else {
-					await context.sendText(misunderstand_message.content);
-
-					await context.sendText('Quer deixar uma mensagem conosco?', {
-						quick_replies: promptOptions
-					});
-				}
-
-				await context.setState( { dialog: 'prompt' } );
+				await context.sendText(misunderstand_message.content);
 			}
+
+
+			const issue_message = context.event.message.text;
+
+			const issue = await MandatoAbertoAPI.postIssue(politicianData.user_id, context.session.user.id, issue_message);
+
+			const issue_created_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'issue_created');
+
+			await context.resetState();
+
+			await context.setState( { dialog: 'greetings' } );
 		}
 	}
 
