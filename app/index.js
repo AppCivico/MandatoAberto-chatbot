@@ -302,6 +302,11 @@ bot.onEvent(async context => {
 				promptOptions = [
 					{
 						content_type: 'text',
+						title: 'Fale conosco',
+						payload: 'issue'
+					},
+					{
+						content_type: 'text',
 						title: 'Sobre o líder',
 						payload: 'aboutMe',
 					},
@@ -309,10 +314,15 @@ bot.onEvent(async context => {
 						content_type: 'text',
 						title: 'Responder enquete',
 						payload: 'poll',
-					}
+					},
 				];
 			} else if (introduction.content && !pollData.questions) {
 				promptOptions = [
+					{
+						content_type: 'text',
+						title: 'Fale conosco',
+						payload: 'issue'
+					},
 					{
 						content_type: 'text',
 						title: 'Sobre o líder',
@@ -323,12 +333,22 @@ bot.onEvent(async context => {
 				promptOptions = [
 					{
 						content_type: 'text',
+						title: 'Fale conosco',
+						payload: 'issue'
+					},
+					{
+						content_type: 'text',
 						title: 'Responder enquete',
 						payload: 'poll',
 					}
 				];
 			} else if (!introduction.content && !pollData.questions && politicianData.contact) {
 				promptOptions = [
+					{
+						content_type: 'text',
+						title: 'Fale conosco',
+						payload: 'issue'
+					},
 					{
 						content_type: 'text',
 						title: 'Contatos',
