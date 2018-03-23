@@ -260,7 +260,7 @@ bot.onEvent(async context => {
 			recipientData = {};
 
 			const introduction = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'introduction');
-			const issue_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'misunderstand');
+			let issue_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'misunderstand');
 
 			if (Object.keys(issue_message).length === 0) {
 				issue_message = 'A qualquer momento você pode digitar uma mensagem e eu enviarei para o gabinete.';
