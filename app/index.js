@@ -103,26 +103,14 @@ bot.onEvent(async context => {
 			await context.setState( { dialog: payload } );
 		} else if (context.event.isText) {
 
-			const misunderstand_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'misunderstand');
-
-
-			if (Object.keys(misunderstand_message).length === 0) {
-				await context.sendText('Não entendi sua mensagem, mas quero te ajudar.');
-
-			} else {
-				await context.sendText(misunderstand_message.content);
-			}
-
-
+			// Ao mandar uma mensagem que não é interpretada como fluxo do chatbot
+			// Devo já criar uma issue
 			const issue_message = context.event.message.text;
-
 			const issue = await MandatoAbertoAPI.postIssue(politicianData.user_id, context.session.user.id, issue_message);
-
-			const issue_created_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'issue_created');
 
 			await context.resetState();
 
-			await context.setState( { dialog: 'greetings' } );
+			await context.setState( { dialog: 'issue_created' } );
 		}
 	}
 
@@ -272,14 +260,19 @@ bot.onEvent(async context => {
 			recipientData = {};
 
 			const introduction = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'introduction');
+			const issue_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'misunderstand');
+
+			if (Object.keys(issue_message).length === 0) {
+				issue_message = 'A qualquer momento você pode digitar uma mensagem e eu enviarei para o gabinete.';
+			}
 
 			if (introduction.content && pollData.questions) {
 				promptOptions = [
-					{
-						content_type: 'text',
-						title: 'Fale conosco',
-						payload: 'issue'
-					},
+					// {
+					// 	content_type: 'text',
+					// 	title: 'Fale conosco',
+					// 	payload: 'issue'
+					// },
 					{
 						content_type: 'text',
 						title: 'Sobre o líder',
@@ -293,11 +286,11 @@ bot.onEvent(async context => {
 				];
 			} else if (introduction.content && !pollData.questions) {
 				promptOptions = [
-					{
-						content_type: 'text',
-						title: 'Fale conosco',
-						payload: 'issue'
-					},
+					// {
+					// 	content_type: 'text',
+					// 	title: 'Fale conosco',
+					// 	payload: 'issue'
+					// },
 					{
 						content_type: 'text',
 						title: 'Sobre o líder',
@@ -306,11 +299,11 @@ bot.onEvent(async context => {
 				];
 			} else if (!introduction.content && pollData.questions) {
 				promptOptions = [
-					{
-						content_type: 'text',
-						title: 'Fale conosco',
-						payload: 'issue'
-					},
+					// {
+					// 	content_type: 'text',
+					// 	title: 'Fale conosco',
+					// 	payload: 'issue'
+					// },
 					{
 						content_type: 'text',
 						title: 'Responder enquete',
@@ -319,11 +312,11 @@ bot.onEvent(async context => {
 				];
 			} else if (!introduction.content && !pollData.questions && politicianData.contact) {
 				promptOptions = [
-					{
-						content_type: 'text',
-						title: 'Fale conosco',
-						payload: 'issue'
-					},
+					// {
+					// 	content_type: 'text',
+					// 	title: 'Fale conosco',
+					// 	payload: 'issue'
+					// },
 					{
 						content_type: 'text',
 						title: 'Contatos',
@@ -335,7 +328,9 @@ bot.onEvent(async context => {
 			let greeting = politicianData.greeting.replace('${user.office.name}', politicianData.office.name);
 			greeting = greeting.replace('${user.name}', politicianData.name);
 			await context.sendText(greeting);
-			await context.sendQuickReplies({ text: 'Quer saber mais?' }, promptOptions);
+			await context.sendText(issue_message, {
+				quick_replies: promptOptions
+			});
 
 			await context.setState( { dialog: 'prompt' } );
 
@@ -617,7 +612,7 @@ bot.onEvent(async context => {
 			break;
 
 		case 'issue':
-			await context.sendText('Digite a mensagem que você deseja deixar:');
+			await context.sendText('Escreva sua mensagem para nossa equipe:');
 
 			await context.setState(
 				{
@@ -625,6 +620,21 @@ bot.onEvent(async context => {
 					prompt: 'issue'
 				}
 			);
+
+			break;
+
+		case 'issue_created':
+			const issue_created_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'issue_created');
+
+			await context.sendText(issue_created_message, {
+				quick_replies: [
+					{
+						content_type: 'text',
+						title: 'Voltar ao início',
+						payload: 'greetings'
+					}
+				]
+			});
 
 			break;
 	}
