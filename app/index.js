@@ -136,7 +136,7 @@ bot.onEvent(async context => {
 
 		context.setState( { dialog: 'pollAnswer' } );
 	} else if (context.event.isText && context.state.dialog == 'pollAnswer') {
-		const misunderstand_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'misunderstand');
+		const issue_acknowledgment_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'issue_acknowledgment');
 
 		promptOptions = [
 			{
@@ -151,14 +151,14 @@ bot.onEvent(async context => {
 			},
 		]
 
-		if (Object.keys(misunderstand_message).length === 0) {
+		if (Object.keys(issue_acknowledgment_message).length === 0) {
 			await context.sendText('Não entendi sua mensagem, mas quero te ajudar. Você quer enviar uma mensagem para outros membros de nosso equipe?');
 
 			await context.sendText('Quer deixar uma mensagem conosco?', {
 				quick_replies: promptOptions
 			});
 		} else {
-			await context.sendText(misunderstand_message.content);
+			await context.sendText(issue_acknowledgment_message.content);
 
 			await context.sendText('Quer deixar uma mensagem conosco?', {
 				quick_replies: promptOptions
@@ -260,7 +260,7 @@ bot.onEvent(async context => {
 			recipientData = {};
 
 			const introduction = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'introduction');
-			let issue_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'misunderstand');
+			let issue_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'issue_acknowledgment');
 
 			if (Object.keys(issue_message).length === 0) {
 				issue_message = 'A qualquer momento você pode digitar uma mensagem e eu enviarei para o gabinete.';
