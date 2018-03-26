@@ -266,6 +266,14 @@ bot.onEvent(async context => {
 				issue_message = 'A qualquer momento você pode digitar uma mensagem e eu enviarei para o gabinete.';
 			}
 
+			let about_me_text;
+
+			if (politicianData.office.name == 'Outros' || politicianData.office.name == 'Candidato' || politicianData.office.name == 'Candidata') {
+				about_me_text = `Sobre ${articles.defined} líder`;
+			} else {
+				about_me_text = `Sobre ${articles.defined} ${politicianData.office.name}`;
+			}
+
 			if (introduction.content && pollData.questions) {
 				promptOptions = [
 					// {
@@ -275,12 +283,12 @@ bot.onEvent(async context => {
 					// },
 					{
 						content_type: 'text',
-						title: 'Sobre o líder',
+						title: about_me_text,
 						payload: 'aboutMe',
 					},
 					{
 						content_type: 'text',
-						title: 'Responder enquete',
+						title: 'Dê sua opinião',
 						payload: 'poll',
 					},
 				];
@@ -293,7 +301,7 @@ bot.onEvent(async context => {
 					// },
 					{
 						content_type: 'text',
-						title: 'Sobre o líder',
+						title: about_me_text,
 						payload: 'aboutMe',
 					}
 				];
@@ -306,7 +314,7 @@ bot.onEvent(async context => {
 					// },
 					{
 						content_type: 'text',
-						title: 'Responder enquete',
+						title: 'Dê sua opinião',
 						payload: 'poll',
 					}
 				];
@@ -408,7 +416,7 @@ bot.onEvent(async context => {
 					},
 					{
 						content_type: 'text',
-						title: 'Responder enquete',
+						title: 'Dê sua opinião',
 						payload: 'poll',
 					}
 				];
@@ -424,7 +432,7 @@ bot.onEvent(async context => {
 				promptOptions = [
 					{
 						content_type: 'text',
-						title: 'Responder enquete',
+						title: 'Dê sua opinião',
 						payload: 'poll',
 					}
 				];
@@ -479,6 +487,8 @@ bot.onEvent(async context => {
 
 				await context.setState( { dialog: 'prompt' } );
 			} else {
+				await context.sendText('Quero conhecer você melhor. Deixe sua resposta e participe deste debate.');
+
 				await context.sendQuickReplies({ text: "Pergunta: " + pollData.questions[0].content }, [
 					{
 						content_type: 'text',
@@ -523,9 +533,7 @@ bot.onEvent(async context => {
 
 		case 'recipientData':
 			if ( context.event.message.text == 'Agora não' || context.event.message.text == 'Não' ) {
-				await context.sendText('Beleza!');
-
-				await context.sendQuickReplies({ text: 'Se quiser eu posso te ajudar com outra coisa' }, promptOptions);
+				await context.sendQuickReplies({ text: 'Está bem! Posso te ajudar com mais alguma informação?' }, promptOptions);
 
 				await context.setState( { dialog: 'prompt' } );
 			} else {
@@ -578,7 +586,7 @@ bot.onEvent(async context => {
 				promptOptions = [
 					{
 						content_type: 'text',
-						title: 'Responder enquete',
+						title: 'Dê sua opinião',
 						payload: 'poll',
 					},
 					{
@@ -591,7 +599,7 @@ bot.onEvent(async context => {
 				promptOptions = [
 					{
 						content_type: 'text',
-						title: 'Responder enquete',
+						title: 'Dê sua opinião',
 						payload: 'poll',
 					}
 				];
