@@ -102,52 +102,15 @@ bot.onEvent(async context => {
 			const payload = context.event.message.quick_reply.payload;
 			await context.setState( { dialog: payload } );
 		} else if (context.event.isText) {
-			if (context.state.prompt && context.state.prompt == 'issue') {
-				const issue = await MandatoAbertoAPI.postIssue(politicianData.user_id, context.session.user.id, context.event.message.text);
 
-				const issue_created_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'issue_created');
+			// Ao mandar uma mensagem que não é interpretada como fluxo do chatbot
+			// Devo já criar uma issue
+			const issue_message = context.event.message.text;
+			const issue = await MandatoAbertoAPI.postIssue(politicianData.user_id, context.session.user.id, issue_message);
 
-				if (Object.keys(issue_created_message).length === 0) {
-					await context.sendText("Muito obrigado pela sua mensagem!");
-				} else {
-					await context.sendText(issue_created_message.content);
-				}
+			await context.resetState();
 
-				await context.resetState();
-
-				await context.setState( { dialog: 'greetings' } );
-			} else {
-				const misunderstand_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'misunderstand');
-
-				promptOptions = [
-					{
-						content_type: 'text',
-						title: 'Sim',
-						payload: 'issue'
-					},
-					{
-						content_type: 'text',
-						title: 'Não',
-						payload: 'greetings'
-					},
-				]
-
-				if (Object.keys(misunderstand_message).length === 0) {
-					await context.sendText('Não entendi sua mensagem, mas quero te ajudar.');
-
-					await context.sendText('Quer deixar uma mensagem conosco?', {
-						quick_replies: promptOptions
-					});
-				} else {
-					await context.sendText(misunderstand_message.content);
-
-					await context.sendText('Quer deixar uma mensagem conosco?', {
-						quick_replies: promptOptions
-					});
-				}
-
-				await context.setState( { dialog: 'prompt' } );
-			}
+			await context.setState( { dialog: 'issue_created' } );
 		}
 	}
 
@@ -173,7 +136,7 @@ bot.onEvent(async context => {
 
 		context.setState( { dialog: 'pollAnswer' } );
 	} else if (context.event.isText && context.state.dialog == 'pollAnswer') {
-		const misunderstand_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'misunderstand');
+		const issue_acknowledgment_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'issue_acknowledgment');
 
 		promptOptions = [
 			{
@@ -188,14 +151,14 @@ bot.onEvent(async context => {
 			},
 		]
 
-		if (Object.keys(misunderstand_message).length === 0) {
+		if (Object.keys(issue_acknowledgment_message).length === 0) {
 			await context.sendText('Não entendi sua mensagem, mas quero te ajudar. Você quer enviar uma mensagem para outros membros de nosso equipe?');
 
 			await context.sendText('Quer deixar uma mensagem conosco?', {
 				quick_replies: promptOptions
 			});
 		} else {
-			await context.sendText(misunderstand_message.content);
+			await context.sendText(issue_acknowledgment_message.content);
 
 			await context.sendText('Quer deixar uma mensagem conosco?', {
 				quick_replies: promptOptions
@@ -297,38 +260,71 @@ bot.onEvent(async context => {
 			recipientData = {};
 
 			const introduction = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'introduction');
+			let issue_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'issue_acknowledgment');
+
+			if (Object.keys(issue_message).length === 0) {
+				issue_message = 'A qualquer momento você pode digitar uma mensagem e eu enviarei para o gabinete.';
+			}
+
+			let about_me_text;
+
+			if (politicianData.office.name == 'Outros' || politicianData.office.name == 'Candidato' || politicianData.office.name == 'Candidata') {
+				about_me_text = `Sobre ${articles.defined} líder`;
+			} else {
+				about_me_text = `Sobre ${articles.defined} ${politicianData.office.name}`;
+			}
 
 			if (introduction.content && pollData.questions) {
 				promptOptions = [
+					// {
+					// 	content_type: 'text',
+					// 	title: 'Fale conosco',
+					// 	payload: 'issue'
+					// },
 					{
 						content_type: 'text',
-						title: 'Sobre o líder',
+						title: about_me_text,
 						payload: 'aboutMe',
 					},
 					{
 						content_type: 'text',
-						title: 'Responder enquete',
+						title: 'Dê sua opinião',
 						payload: 'poll',
-					}
+					},
 				];
 			} else if (introduction.content && !pollData.questions) {
 				promptOptions = [
+					// {
+					// 	content_type: 'text',
+					// 	title: 'Fale conosco',
+					// 	payload: 'issue'
+					// },
 					{
 						content_type: 'text',
-						title: 'Sobre o líder',
+						title: about_me_text,
 						payload: 'aboutMe',
 					}
 				];
 			} else if (!introduction.content && pollData.questions) {
 				promptOptions = [
+					// {
+					// 	content_type: 'text',
+					// 	title: 'Fale conosco',
+					// 	payload: 'issue'
+					// },
 					{
 						content_type: 'text',
-						title: 'Responder enquete',
+						title: 'Dê sua opinião',
 						payload: 'poll',
 					}
 				];
 			} else if (!introduction.content && !pollData.questions && politicianData.contact) {
 				promptOptions = [
+					// {
+					// 	content_type: 'text',
+					// 	title: 'Fale conosco',
+					// 	payload: 'issue'
+					// },
 					{
 						content_type: 'text',
 						title: 'Contatos',
@@ -340,7 +336,9 @@ bot.onEvent(async context => {
 			let greeting = politicianData.greeting.replace('${user.office.name}', politicianData.office.name);
 			greeting = greeting.replace('${user.name}', politicianData.name);
 			await context.sendText(greeting);
-			await context.sendQuickReplies({ text: 'Quer saber mais?' }, promptOptions);
+			await context.sendText(issue_message, {
+				quick_replies: promptOptions
+			});
 
 			await context.setState( { dialog: 'prompt' } );
 
@@ -418,7 +416,7 @@ bot.onEvent(async context => {
 					},
 					{
 						content_type: 'text',
-						title: 'Responder enquete',
+						title: 'Dê sua opinião',
 						payload: 'poll',
 					}
 				];
@@ -434,7 +432,7 @@ bot.onEvent(async context => {
 				promptOptions = [
 					{
 						content_type: 'text',
-						title: 'Responder enquete',
+						title: 'Dê sua opinião',
 						payload: 'poll',
 					}
 				];
@@ -489,6 +487,8 @@ bot.onEvent(async context => {
 
 				await context.setState( { dialog: 'prompt' } );
 			} else {
+				await context.sendText('Quero conhecer você melhor. Deixe sua resposta e participe deste debate.');
+
 				await context.sendQuickReplies({ text: "Pergunta: " + pollData.questions[0].content }, [
 					{
 						content_type: 'text',
@@ -533,9 +533,7 @@ bot.onEvent(async context => {
 
 		case 'recipientData':
 			if ( context.event.message.text == 'Agora não' || context.event.message.text == 'Não' ) {
-				await context.sendText('Beleza!');
-
-				await context.sendQuickReplies({ text: 'Se quiser eu posso te ajudar com outra coisa' }, promptOptions);
+				await context.sendQuickReplies({ text: 'Está bem! Posso te ajudar com mais alguma informação?' }, promptOptions);
 
 				await context.setState( { dialog: 'prompt' } );
 			} else {
@@ -588,7 +586,7 @@ bot.onEvent(async context => {
 				promptOptions = [
 					{
 						content_type: 'text',
-						title: 'Responder enquete',
+						title: 'Dê sua opinião',
 						payload: 'poll',
 					},
 					{
@@ -601,7 +599,7 @@ bot.onEvent(async context => {
 				promptOptions = [
 					{
 						content_type: 'text',
-						title: 'Responder enquete',
+						title: 'Dê sua opinião',
 						payload: 'poll',
 					}
 				];
@@ -622,7 +620,7 @@ bot.onEvent(async context => {
 			break;
 
 		case 'issue':
-			await context.sendText('Digite a mensagem que você deseja deixar:');
+			await context.sendText('Escreva sua mensagem para nossa equipe:');
 
 			await context.setState(
 				{
@@ -630,6 +628,21 @@ bot.onEvent(async context => {
 					prompt: 'issue'
 				}
 			);
+
+			break;
+
+		case 'issue_created':
+			const issue_created_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'issue_created');
+
+			await context.sendText(issue_created_message.content, {
+				quick_replies: [
+					{
+						content_type: 'text',
+						title: 'Voltar ao início',
+						payload: 'greetings'
+					}
+				]
+			});
 
 			break;
 	}
