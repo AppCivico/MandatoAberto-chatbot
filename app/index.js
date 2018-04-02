@@ -87,12 +87,14 @@ bot.onEvent(async context => {
 			console.log("Politician does not have enough data");
 			return false;
 		} else {
+			await context.resetState();
 			await context.setState( { dialog: 'greetings' } )
 		}
 	}
 
 	// Tratando botão GET STARTED
 	if (context.event.postback && context.event.postback.payload == 'greetings') {
+		await context.resetState();
 		await context.setState( { dialog: 'greetings' } )
 	}
 
