@@ -268,13 +268,14 @@ bot.onEvent(async context => {
 				issue_message = 'A qualquer momento você pode digitar uma mensagem e eu enviarei para o gabinete.';
 			}
 
-			let about_me_text;
+			// Deactivating for noy to test
+			// let about_me_text;
 
-			if (politicianData.office.name == 'Outros' || politicianData.office.name == 'Candidato' || politicianData.office.name == 'Candidata') {
-				about_me_text = `Sobre ${articles.defined} líder`;
-			} else {
-				about_me_text = `Sobre ${articles.defined} ${politicianData.office.name}`;
-			}
+			// if (politicianData.office.name == 'Outros' || politicianData.office.name == 'Candidato' || politicianData.office.name == 'Candidata') {
+			// 	about_me_text = `Sobre ${articles.defined} líder`;
+			// } else {
+			// 	about_me_text = `Sobre ${articles.defined} ${politicianData.office.name}`;
+			// }
 
 			if (introduction.content && pollData.questions) {
 				promptOptions = [
