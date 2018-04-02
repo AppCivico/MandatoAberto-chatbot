@@ -160,7 +160,7 @@ bot.onEvent(async context => {
 				quick_replies: promptOptions
 			});
 		} else {
-			await context.sendText(issue_acknowledgment_message.content);
+			await context.sendText(issue_acknowledgment_message.content.content);
 
 			await context.sendText('Quer deixar uma mensagem conosco?', {
 				quick_replies: promptOptions
