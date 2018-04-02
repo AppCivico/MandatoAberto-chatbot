@@ -268,14 +268,13 @@ bot.onEvent(async context => {
 				issue_message = 'A qualquer momento você pode digitar uma mensagem e eu enviarei para o gabinete.';
 			}
 
-			// Deactivating for noy to test
-			// let about_me_text;
+			let about_me_text;
 
-			// if (politicianData.office.name == 'Outros' || politicianData.office.name == 'Candidato' || politicianData.office.name == 'Candidata') {
-			// 	about_me_text = `Sobre ${articles.defined} líder`;
-			// } else {
-			// 	about_me_text = `Sobre ${articles.defined} ${politicianData.office.name}`;
-			// }
+			if (politicianData.office.name == 'Outros' || politicianData.office.name == 'Candidato' || politicianData.office.name == 'Candidata') {
+				about_me_text = `Sobre ${articles.defined} líder`;
+			} else {
+				about_me_text = `Sobre ${articles.defined} ${politicianData.office.name}`;
+			}
 
 			if (introduction.content && pollData.questions) {
 				promptOptions = [
@@ -286,7 +285,7 @@ bot.onEvent(async context => {
 					// },
 					{
 						content_type: 'text',
-						title: 'Sobre o líder',
+						title: about_me_text,
 						payload: 'aboutMe',
 					},
 					{
@@ -304,7 +303,7 @@ bot.onEvent(async context => {
 					// },
 					{
 						content_type: 'text',
-						title: 'Sobre o líder',
+						title: about_me_text,
 						payload: 'aboutMe',
 					}
 				];
@@ -339,7 +338,7 @@ bot.onEvent(async context => {
 			let greeting = politicianData.greeting.replace('${user.office.name}', politicianData.office.name);
 			greeting = greeting.replace('${user.name}', politicianData.name);
 			await context.sendText(greeting);
-			await context.sendText(issue_message, {
+			await context.sendText(issue_message.content, {
 				quick_replies: promptOptions
 			});
 
