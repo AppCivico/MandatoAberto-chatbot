@@ -138,7 +138,7 @@ bot.onEvent(async context => {
 
 		context.setState( { dialog: 'pollAnswer' } );
 	} else if (context.event.isText && context.state.dialog == 'pollAnswer') {
-		const issue_acknowledgment_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'issue_acknowledgment');
+		const issue_acknowledgment_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'issue_acknowledgment_message');
 
 		promptOptions = [
 			{
