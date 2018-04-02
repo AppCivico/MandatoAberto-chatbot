@@ -286,7 +286,7 @@ bot.onEvent(async context => {
 					// },
 					{
 						content_type: 'text',
-						title: about_me_text,
+						title: 'Sobre o líder',
 						payload: 'aboutMe',
 					},
 					{
@@ -304,7 +304,7 @@ bot.onEvent(async context => {
 					// },
 					{
 						content_type: 'text',
-						title: about_me_text,
+						title: 'Sobre o líder',
 						payload: 'aboutMe',
 					}
 				];
