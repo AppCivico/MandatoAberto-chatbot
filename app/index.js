@@ -160,7 +160,7 @@ bot.onEvent(async context => {
 				quick_replies: promptOptions
 			});
 		} else {
-			await context.sendText(issue_acknowledgment_message.content.content);
+			await context.sendText(issue_acknowledgment_message.content);
 
 			await context.sendText('Quer deixar uma mensagem conosco?', {
 				quick_replies: promptOptions
@@ -339,7 +339,7 @@ bot.onEvent(async context => {
 			let greeting = politicianData.greeting.replace('${user.office.name}', politicianData.office.name);
 			greeting = greeting.replace('${user.name}', politicianData.name);
 			await context.sendText(greeting);
-			await context.sendText(issue_message, {
+			await context.sendText(issue_message.content, {
 				quick_replies: promptOptions
 			});
 
