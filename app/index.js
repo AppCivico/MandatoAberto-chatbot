@@ -266,6 +266,8 @@ bot.onEvent(async context => {
 
 			if (Object.keys(issue_message).length === 0) {
 				issue_message = 'A qualquer momento você pode digitar uma mensagem e eu enviarei para o gabinete.';
+			} else {
+				issue_message = issue_message.content;
 			}
 
 			let about_me_text;
@@ -338,7 +340,7 @@ bot.onEvent(async context => {
 			let greeting = politicianData.greeting.replace('${user.office.name}', politicianData.office.name);
 			greeting = greeting.replace('${user.name}', politicianData.name);
 			await context.sendText(greeting);
-			await context.sendText(issue_message.content, {
+			await context.sendText(issue_message, {
 				quick_replies: promptOptions
 			});
 
