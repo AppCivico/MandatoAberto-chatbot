@@ -135,36 +135,44 @@ bot.onEvent(async (context) => {
 
 		context.setState({ dialog: 'pollAnswer' });
 	} else if (context.event.isText && context.state.dialog == 'pollAnswer') {
-		const issue_acknowledgment_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'issue_acknowledgment');
+		// Ao mandar uma mensagem que não é interpretada como fluxo do chatbot
+		// Devo já criar uma issue
+		const issue_message = context.event.message.text;
+		const issue = await MandatoAbertoAPI.postIssue(politicianData.user_id, context.session.user.id, issue_message);
 
-		promptOptions = [
-			{
-				content_type: 'text',
-				title: 'Sim',
-				payload: 'issue',
-			},
-			{
-				content_type: 'text',
-				title: 'Não',
-				payload: 'greetings',
-			},
-		];
+		await context.resetState();
 
-		if (Object.keys(issue_acknowledgment_message).length === 0) {
-			await context.sendText('Não entendi sua mensagem, mas quero te ajudar. Você quer enviar uma mensagem para outros membros de nosso equipe?');
-
-			await context.sendText('Quer deixar uma mensagem conosco?', {
-				quick_replies: promptOptions,
-			});
-		} else {
-			await context.sendText(issue_acknowledgment_message.content);
-
-			await context.sendText('Quer deixar uma mensagem conosco?', {
-				quick_replies: promptOptions,
-			});
-		}
-
-		await context.setState({ dialog: 'prompt' });
+		await context.setState({ dialog: 'issue_created' });
+		// const issue_acknowledgment_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'issue_acknowledgment');
+		//
+		// promptOptions = [
+		// 	{
+		// 		content_type: 'text',
+		// 		title: 'Sim',
+		// 		payload: 'issue',
+		// 	},
+		// 	{
+		// 		content_type: 'text',
+		// 		title: 'Não',
+		// 		payload: 'greetings',
+		// 	},
+		// ];
+		//
+		// if (Object.keys(issue_acknowledgment_message).length === 0) {
+		// 	await context.sendText('Não entendi sua mensagem, mas quero te ajudar. Você quer enviar uma mensagem para outros membros de nosso equipe?');
+		//
+		// 	await context.sendText('Quer deixar uma mensagem conosco?', {
+		// 		quick_replies: promptOptions,
+		// 	});
+		// } else {
+		// 	await context.sendText(issue_acknowledgment_message.content);
+		//
+		// 	await context.sendText('Quer deixar uma mensagem conosco?', {
+		// 		quick_replies: promptOptions,
+		// 	});
+		// }
+		//
+		// await context.setState({ dialog: 'prompt' });
 	}
 
 	// Tratando dados adicionais do recipient
@@ -493,8 +501,7 @@ bot.onEvent(async (context) => {
 					payload: `${pollData.questions[0].options[1].id}`,
 				},
 			]);
-			await context.setState({ dialog: 'prompt' });
-			// await context.setState({ dialog: 'pollAnswer' });
+			await context.setState({ dialog: 'pollAnswer' });
 		}
 
 		break;
