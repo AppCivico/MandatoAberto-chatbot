@@ -476,9 +476,9 @@ bot.onEvent(async (context) => {
 
 		// Agora a enquete poderá ser respondida via propagação ou via dialogo
 		if (recipientAnswer.recipient_answered >= 1) {
-			await context.sendText('Você já respondeu a enquete atualmente ativaaaaaa');
+			await context.sendText('Você já respondeu a enquete atualmente ativa.');
 
-			await context.sendQuickReplies({ text: 'Se quiser eu posso te ajudar com outra coisa' }, promptOptions);
+			await context.sendQuickReplies({ text: 'Se quiser, eu posso te ajudar com outra coisa.' }, promptOptions);
 
 			await context.setState({ dialog: 'prompt' });
 		} else {
