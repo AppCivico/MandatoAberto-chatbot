@@ -247,6 +247,10 @@ bot.onEvent(async (context) => {
 		recipientData.origin_dialog = 'greetings';
 		recipientData.picture = context.session.user.profile_pic;
 		console.log('\n\ndfksdfjsdf');
+		console.log('\n\ndfksdfjsdf');
+		console.log('\n\ndfksdfjsdf');
+		console.log('\n\ndfksdfjsdf');
+		console.log('\n\ndfksdfjsdf');
 		const recipient = await MandatoAbertoAPI.postRecipient(politicianData.user_id, recipientData);
 		recipientData = {};
 
