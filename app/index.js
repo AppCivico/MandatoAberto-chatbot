@@ -137,15 +137,13 @@ bot.onEvent(async (context) => {
 	} else if (context.event.isText && context.state.dialog == 'pollAnswer') {
 		// Ao mandar uma mensagem que não é interpretada como fluxo do chatbot
 		// Devo já criar uma issue
-		console.log('\n\naajajsd');
 		const issue_message = context.event.message.text;
 		const issue = await MandatoAbertoAPI.postIssue(politicianData.user_id, context.session.user.id, issue_message);
-
 		await context.resetState();
-
 		await context.setState({ dialog: 'issue_created' });
+		// This is the old way of handling text messages during the poll dialog.
+		// It asks for confirmation from user. Whats above creates issue automatically like in 'prompt'.
 		// const issue_acknowledgment_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'issue_acknowledgment');
-		//
 		// promptOptions = [
 		// 	{
 		// 		content_type: 'text',
@@ -158,21 +156,17 @@ bot.onEvent(async (context) => {
 		// 		payload: 'greetings',
 		// 	},
 		// ];
-		//
 		// if (Object.keys(issue_acknowledgment_message).length === 0) {
 		// 	await context.sendText('Não entendi sua mensagem, mas quero te ajudar. Você quer enviar uma mensagem para outros membros de nosso equipe?');
-		//
 		// 	await context.sendText('Quer deixar uma mensagem conosco?', {
 		// 		quick_replies: promptOptions,
 		// 	});
 		// } else {
 		// 	await context.sendText(issue_acknowledgment_message.content);
-		//
 		// 	await context.sendText('Quer deixar uma mensagem conosco?', {
 		// 		quick_replies: promptOptions,
 		// 	});
 		// }
-		//
 		// await context.setState({ dialog: 'prompt' });
 	}
 
@@ -481,7 +475,7 @@ bot.onEvent(async (context) => {
 		}
 
 		// Agora a enquete poderá ser respondida via propagação ou via dialogo
-		if (recipientAnswer.recipient_answered > 1) { // TODO >= 1
+		if (recipientAnswer.recipient_answered >= 1) {
 			await context.sendText('Você já respondeu a enquete atualmente ativaaaaaa');
 
 			await context.sendQuickReplies({ text: 'Se quiser eu posso te ajudar com outra coisa' }, promptOptions);
@@ -489,7 +483,6 @@ bot.onEvent(async (context) => {
 			await context.setState({ dialog: 'prompt' });
 		} else {
 			await context.sendText('Quero conhecer você melhor. Deixe sua resposta e participe deste debate.');
-
 			await context.sendQuickReplies({ text: `Pergunta: ${pollData.questions[0].content}` }, [
 				{
 					content_type: 'text',
@@ -504,9 +497,7 @@ bot.onEvent(async (context) => {
 			]);
 			await context.setState({ dialog: 'pollAnswer' });
 		}
-
 		break;
-
 	case 'pollAnswer':
 
 		await context.sendQuickReplies({ text: 'Muito obrigado por sua reposta. Você gostaria de deixar seu email e telefone  para nossa equipe?' }, [
