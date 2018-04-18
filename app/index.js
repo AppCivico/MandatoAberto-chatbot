@@ -137,6 +137,7 @@ bot.onEvent(async (context) => {
 	} else if (context.event.isText && context.state.dialog == 'pollAnswer') {
 		// Ao mandar uma mensagem que não é interpretada como fluxo do chatbot
 		// Devo já criar uma issue
+		console.log('\n\naajajsd');
 		const issue_message = context.event.message.text;
 		const issue = await MandatoAbertoAPI.postIssue(politicianData.user_id, context.session.user.id, issue_message);
 
