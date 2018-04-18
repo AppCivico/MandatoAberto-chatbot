@@ -246,11 +246,6 @@ bot.onEvent(async (context) => {
 		recipientData.gender = context.session.user.gender == 'male' ? 'M' : 'F';
 		recipientData.origin_dialog = 'greetings';
 		recipientData.picture = context.session.user.profile_pic;
-		console.log('\n\ndfksdfjsdf');
-		console.log('\n\ndfksdfjsdf');
-		console.log('\n\ndfksdfjsdf');
-		console.log('\n\ndfksdfjsdf');
-		console.log('\n\ndfksdfjsdf');
 		const recipient = await MandatoAbertoAPI.postRecipient(politicianData.user_id, recipientData);
 		recipientData = {};
 
@@ -477,7 +472,7 @@ bot.onEvent(async (context) => {
 		}
 
 		// Agora a enquete poderá ser respondida via propagação ou via dialogo
-		if (recipientAnswer.recipient_answered >= 1) {
+		if (recipientAnswer.recipient_answered >= 1) { // TODO >= 1
 			await context.sendText('Você já respondeu a enquete atualmente ativa');
 
 			await context.sendQuickReplies({ text: 'Se quiser eu posso te ajudar com outra coisa' }, promptOptions);
