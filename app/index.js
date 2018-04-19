@@ -23,6 +23,7 @@ let recipientData = {};
 const limit = (10000 * 2);
 let timer;
 let userMessage = '';
+let endThis = false;
 
 recipientData[
 	'fb_id',
@@ -369,9 +370,15 @@ bot.onEvent(async (context) => {
 		const issue = MandatoAbertoAPI.postIssue(politicianData.user_id, context.session.user.id, issue_message);
 		userMessage = '';
 		// context.resetState();
-		context.setState({ dialog: 'issue_created' });
+		endThis = true;
+		// context.setState({ dialog: 'issue_created' });
 		// await context.setState({ dialog: 'mainMenu' });
 	}, limit);
+
+	if(endThis === true) {
+		await ontext.setState({ dialog: 'issue_created' });
+
+	};
 
 	break;
 		case 'aboutMe':
