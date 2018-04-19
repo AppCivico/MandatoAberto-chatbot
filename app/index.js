@@ -330,65 +330,65 @@ bot.onEvent(async (context) => {
 		} else {
 			about_me_text = `Sobre ${articles.defined} ${politicianData.office.name}`;
 		}
-
-		if (introduction.content && pollData.questions) {
-			promptOptions = [
-				// {
-				// 	content_type: 'text',
-				// 	title: 'Fale conosco',
-				// 	payload: 'issue'
-				// },
-				{
-					content_type: 'text',
-					title: about_me_text,
-					payload: 'aboutMe',
-				},
-				{
-					content_type: 'text',
-					title: 'Dê sua opinião',
-					payload: 'poll',
-				},
-			];
-		} else if (introduction.content && !pollData.questions) {
-			promptOptions = [
-				// {
-				// 	content_type: 'text',
-				// 	title: 'Fale conosco',
-				// 	payload: 'issue'
-				// },
-				{
-					content_type: 'text',
-					title: about_me_text,
-					payload: 'aboutMe',
-				},
-			];
-		} else if (!introduction.content && pollData.questions) {
-			promptOptions = [
-				// {
-				// 	content_type: 'text',
-				// 	title: 'Fale conosco',
-				// 	payload: 'issue'
-				// },
-				{
-					content_type: 'text',
-					title: 'Dê sua opinião',
-					payload: 'poll',
-				},
-			];
-		} else if (!introduction.content && !pollData.questions && politicianData.contact) {
-			promptOptions = [
-				// {
-				// 	content_type: 'text',
-				// 	title: 'Fale conosco',
-				// 	payload: 'issue'
-				// },
-				{
-					content_type: 'text',
-					title: 'Contatos',
-					payload: 'contacts',
-				},
-			];
-		}
+		await getMenuPrompt();
+		// if (introduction.content && pollData.questions) {
+		// 	promptOptions = [
+		// 		// {
+		// 		// 	content_type: 'text',
+		// 		// 	title: 'Fale conosco',
+		// 		// 	payload: 'issue'
+		// 		// },
+		// 		{
+		// 			content_type: 'text',
+		// 			title: about_me_text,
+		// 			payload: 'aboutMe',
+		// 		},
+		// 		{
+		// 			content_type: 'text',
+		// 			title: 'Dê sua opinião',
+		// 			payload: 'poll',
+		// 		},
+		// 	];
+		// } else if (introduction.content && !pollData.questions) {
+		// 	promptOptions = [
+		// 		// {
+		// 		// 	content_type: 'text',
+		// 		// 	title: 'Fale conosco',
+		// 		// 	payload: 'issue'
+		// 		// },
+		// 		{
+		// 			content_type: 'text',
+		// 			title: about_me_text,
+		// 			payload: 'aboutMe',
+		// 		},
+		// 	];
+		// } else if (!introduction.content && pollData.questions) {
+		// 	promptOptions = [
+		// 		// {
+		// 		// 	content_type: 'text',
+		// 		// 	title: 'Fale conosco',
+		// 		// 	payload: 'issue'
+		// 		// },
+		// 		{
+		// 			content_type: 'text',
+		// 			title: 'Dê sua opinião',
+		// 			payload: 'poll',
+		// 		},
+		// 	];
+		// } else if (!introduction.content && !pollData.questions && politicianData.contact) {
+		// 	promptOptions = [
+		// 		// {
+		// 		// 	content_type: 'text',
+		// 		// 	title: 'Fale conosco',
+		// 		// 	payload: 'issue'
+		// 		// },
+		// 		{
+		// 			content_type: 'text',
+		// 			title: 'Contatos',
+		// 			payload: 'contacts',
+		// 		},
+		// 	];
+		// }
 
 		let greeting = politicianData.greeting.replace('${user.office.name}', politicianData.office.name);
 		greeting = greeting.replace('${user.name}', politicianData.name);
@@ -402,66 +402,8 @@ bot.onEvent(async (context) => {
 		break;
 	case 'mainMenu': // after issue is created we come back to this dialog
 	// introduction and about_me_text aren't declared inside of greetings anymore. What's defined there is accessible here.
-	// await getMenuPrompt();
-	// if (introduction.content && pollData.questions) {
-	// 	promptOptions = [
-	// 		// {
-	// 		// 	content_type: 'text',
-	// 		// 	title: 'Fale conosco',
-	// 		// 	payload: 'issue'
-	// 		// },
-	// 		{
-	// 			content_type: 'text',
-	// 			title: about_me_text,
-	// 			payload: 'aboutMe',
-	// 		},
-	// 		{
-	// 			content_type: 'text',
-	// 			title: 'Dê sua opinião',
-	// 			payload: 'poll',
-	// 		},
-	// 	];
-	// } else if (introduction.content && !pollData.questions) {
-	// 	promptOptions = [
-	// 		// {
-	// 		// 	content_type: 'text',
-	// 		// 	title: 'Fale conosco',
-	// 		// 	payload: 'issue'
-	// 		// },
-	// 		{
-	// 			content_type: 'text',
-	// 			title: about_me_text,
-	// 			payload: 'aboutMe',
-	// 		},
-	// 	];
-	// } else if (!introduction.content && pollData.questions) {
-	// 	promptOptions = [
-	// 		// {
-	// 		// 	content_type: 'text',
-	// 		// 	title: 'Fale conosco',
-	// 		// 	payload: 'issue'
-	// 		// },
-	// 		{
-	// 			content_type: 'text',
-	// 			title: 'Dê sua opinião',
-	// 			payload: 'poll',
-	// 		},
-	// 	];
-	// } else if (!introduction.content && !pollData.questions && politicianData.contact) {
-	// 	promptOptions = [
-	// 		// {
-	// 		// 	content_type: 'text',
-	// 		// 	title: 'Fale conosco',
-	// 		// 	payload: 'issue'
-	// 		// },
-	// 		{
-	// 			content_type: 'text',
-	// 			title: 'Contatos',
-	// 			payload: 'contacts',
-	// 		},
-	// 	];
-	// }
-
+	await getMenuPrompt();
+	console.log('\n\n', aboutMe);
 	await context.sendText('Como posso te ajudar?', {
 		quick_replies: promptOptions,
 	});
@@ -556,13 +498,9 @@ bot.onEvent(async (context) => {
 				},
 			];
 		}
-
 		await context.sendQuickReplies({ text: 'Quer saber mais?' }, promptOptions);
-
 		await context.setState({ dialog: 'prompt' });
-
 		break;
-
 	case 'poll':
 		// Verifico se o cidadão já  a enquete atualmente ativa
 		const recipientAnswer = await MandatoAbertoAPI.getPollAnswer(context.session.user.id, pollData.id);
@@ -601,9 +539,7 @@ bot.onEvent(async (context) => {
 		// Agora a enquete poderá ser respondida via propagação ou via dialogo
 		if (recipientAnswer.recipient_answered >= 1) {
 			await context.sendText('Você já respondeu a enquete atualmente ativa.');
-
 			await context.sendQuickReplies({ text: 'Se quiser, eu posso te ajudar com outra coisa.' }, promptOptions);
-
 			await context.setState({ dialog: 'prompt' });
 		} else {
 			await context.sendText('Quero conhecer você melhor. Deixe sua resposta e participe deste debate.');
@@ -623,7 +559,6 @@ bot.onEvent(async (context) => {
 		}
 		break;
 	case 'pollAnswer':
-
 		await context.sendQuickReplies({ text: 'Muito obrigado por sua reposta. Você gostaria de deixar seu email e telefone  para nossa equipe?' }, [
 			{
 				content_type: 'text',
