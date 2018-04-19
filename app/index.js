@@ -62,6 +62,7 @@ bot.onEvent(async (context) => {
 		let comment_id;
 		let permalink;
 		let introduction;
+		let about_me_text;
 		const post_id = context.event.rawEvent.value.post_id;
 		const page_id = post_id.substr(0, post_id.indexOf('_'));
 
@@ -262,7 +263,6 @@ bot.onEvent(async (context) => {
 			issue_message = issue_message.content;
 		}
 
-		let about_me_text;
 
 		if (politicianData.office.name == 'Outros' || politicianData.office.name == 'Candidato' || politicianData.office.name == 'Candidata') {
 			about_me_text = `Sobre ${articles.defined} líder`;
@@ -344,12 +344,10 @@ bot.onEvent(async (context) => {
 
 	introduction = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'introduction');
 
-	let about_me_text2;
-
 	if (politicianData.office.name == 'Outros' || politicianData.office.name == 'Candidato' || politicianData.office.name == 'Candidata') {
-		about_me_text2 = `Sobre ${articles.defined} líder`;
+		about_me_text = `Sobre ${articles.defined} líder`;
 	} else {
-		about_me_text2 = `Sobre ${articles.defined} ${politicianData.office.name}`;
+		about_me_text = `Sobre ${articles.defined} ${politicianData.office.name}`;
 	}
 
 	if (introduction.content && pollData.questions) {
@@ -361,7 +359,7 @@ bot.onEvent(async (context) => {
 			// },
 			{
 				content_type: 'text',
-				title: about_me_text2,
+				title: about_me_text,
 				payload: 'aboutMe',
 			},
 			{
@@ -379,7 +377,7 @@ bot.onEvent(async (context) => {
 			// },
 			{
 				content_type: 'text',
-				title: about_me_text2,
+				title: about_me_text,
 				payload: 'aboutMe',
 			},
 		];
