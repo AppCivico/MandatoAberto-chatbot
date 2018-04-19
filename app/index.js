@@ -30,12 +30,14 @@ recipientData[
 ];
 
 function getMenuPrompt() {
+	// so we can avoid duplicating code
+	// both of these verifications was on greetings dialog, now they're both at greeting and mainMenu
 	if (politicianData.office.name == 'Outros' || politicianData.office.name == 'Candidato' || politicianData.office.name == 'Candidata') {
 		about_me_text = `Sobre ${articles.defined} líder`;
 	} else {
 		about_me_text = `Sobre ${articles.defined} ${politicianData.office.name}`;
 	}
-	
+
 	if (introduction.content && pollData.questions) {
 		promptOptions = [
 			// {
@@ -331,64 +333,6 @@ bot.onEvent(async (context) => {
 		}
 
 		await getMenuPrompt();
-		// if (introduction.content && pollData.questions) {
-		// 	promptOptions = [
-		// 		// {
-		// 		// 	content_type: 'text',
-		// 		// 	title: 'Fale conosco',
-		// 		// 	payload: 'issue'
-		// 		// },
-		// 		{
-		// 			content_type: 'text',
-		// 			title: about_me_text,
-		// 			payload: 'aboutMe',
-		// 		},
-		// 		{
-		// 			content_type: 'text',
-		// 			title: 'Dê sua opinião',
-		// 			payload: 'poll',
-		// 		},
-		// 	];
-		// } else if (introduction.content && !pollData.questions) {
-		// 	promptOptions = [
-		// 		// {
-		// 		// 	content_type: 'text',
-		// 		// 	title: 'Fale conosco',
-		// 		// 	payload: 'issue'
-		// 		// },
-		// 		{
-		// 			content_type: 'text',
-		// 			title: about_me_text,
-		// 			payload: 'aboutMe',
-		// 		},
-		// 	];
-		// } else if (!introduction.content && pollData.questions) {
-		// 	promptOptions = [
-		// 		// {
-		// 		// 	content_type: 'text',
-		// 		// 	title: 'Fale conosco',
-		// 		// 	payload: 'issue'
-		// 		// },
-		// 		{
-		// 			content_type: 'text',
-		// 			title: 'Dê sua opinião',
-		// 			payload: 'poll',
-		// 		},
-		// 	];
-		// } else if (!introduction.content && !pollData.questions && politicianData.contact) {
-		// 	promptOptions = [
-		// 		// {
-		// 		// 	content_type: 'text',
-		// 		// 	title: 'Fale conosco',
-		// 		// 	payload: 'issue'
-		// 		// },
-		// 		{
-		// 			content_type: 'text',
-		// 			title: 'Contatos',
-		// 			payload: 'contacts',
-		// 		},
-		// 	];
-		// }
 
 		let greeting = politicianData.greeting.replace('${user.office.name}', politicianData.office.name);
 		greeting = greeting.replace('${user.name}', politicianData.name);
@@ -403,7 +347,6 @@ bot.onEvent(async (context) => {
 	case 'mainMenu': // after issue is created we come back to this dialog
 	// introduction and about_me_text aren't declared inside of greetings anymore. What's defined there is accessible here.
 	await getMenuPrompt();
-	console.log('\n\n', about_me_text);
 	await context.sendText('Como posso te ajudar?', {
 		quick_replies: promptOptions,
 	});
