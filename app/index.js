@@ -100,7 +100,18 @@ function getMenuPrompt() {
 			},
 		];
 	}
-}
+};
+
+function async issueCreate () {
+	console.log('\nAcionado');
+	const issue_message = userMessage;
+	const issue = MandatoAbertoAPI.postIssue(politicianData.user_id, context.session.user.id, issue_message);
+	userMessage = '';
+	await context.resetState();
+	await context.setState({ dialog: 'issue_created' });
+};
+
+
 
 const mapPageToAccessToken = (async (pageId) => {
 	politicianData = await MandatoAbertoAPI.getPoliticianData(pageId);
@@ -364,14 +375,16 @@ bot.onEvent(async (context) => {
 	clearTimeout(timer);
 	userMessage = userMessage + context.event.message.text;
 	timer = setTimeout(() => {
-		console.log('\nAcionado');
-		const issue_message = userMessage;
-		const issue = MandatoAbertoAPI.postIssue(politicianData.user_id, context.session.user.id, issue_message);
-		userMessage = '';
-		context.resetState();
+		issueCreate ();
+		// console.log('\nAcionado');
+		// const issue_message = userMessage;
+		// const issue = MandatoAbertoAPI.postIssue(politicianData.user_id, context.session.user.id, issue_message);
+		// userMessage = '';
+		// context.resetState();
 		// context.setState({ dialog: 'issue_created' });
 		// await context.setState({ dialog: 'mainMenu' });
 	}, limit);
+
 	break;
 		case 'aboutMe':
 		const introductionText = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'introduction');
