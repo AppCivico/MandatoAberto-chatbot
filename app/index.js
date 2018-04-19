@@ -61,6 +61,7 @@ bot.onEvent(async (context) => {
 		let item;
 		let comment_id;
 		let permalink;
+		let introduction;
 		const post_id = context.event.rawEvent.value.post_id;
 		const page_id = post_id.substr(0, post_id.indexOf('_'));
 
@@ -70,13 +71,11 @@ bot.onEvent(async (context) => {
 			comment_id = context.event.rawEvent.value.comment_id;
 			permalink = context.event.rawEvent.value.post.permalink_url;
 
-			console.log('\nsdfgdfgdfgdfgdfdasdasdasdasd');
 			await MandatoAbertoAPI.postPrivateReply(item, page_id, post_id, comment_id, permalink);
 			break;
 		case 'post':
 			item = 'post';
 
-			console.log('\nsdfgdf00000000000gdfgdfgdfdasdasdasdasd');
 			await MandatoAbertoAPI.postPrivateReply(item, page_id, post_id, comment_id, permalink);
 			break;
 		}
@@ -254,7 +253,7 @@ bot.onEvent(async (context) => {
 		const recipient = await MandatoAbertoAPI.postRecipient(politicianData.user_id, recipientData);
 		recipientData = {};
 
-		const introduction = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'introduction');
+		introduction = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'introduction');
 		let issue_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'issue_acknowledgment');
 
 		if (Object.keys(issue_message).length === 0) {
@@ -343,7 +342,7 @@ bot.onEvent(async (context) => {
 	case 'mainMenu': // after issue is created we come back to this dialog
 	console.log('\n\naaaaa');
 
-	const introduction2 = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'introduction');
+	introduction = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'introduction');
 
 	let about_me_text2;
 
@@ -353,7 +352,7 @@ bot.onEvent(async (context) => {
 		about_me_text2 = `Sobre ${articles.defined} ${politicianData.office.name}`;
 	}
 
-	if (introduction2.content && pollData.questions) {
+	if (introduction.content && pollData.questions) {
 		promptOptions = [
 			// {
 			// 	content_type: 'text',
@@ -371,7 +370,7 @@ bot.onEvent(async (context) => {
 				payload: 'poll',
 			},
 		];
-	} else if (introduction2.content && !pollData.questions) {
+	} else if (introduction.content && !pollData.questions) {
 		promptOptions = [
 			// {
 			// 	content_type: 'text',
@@ -384,7 +383,7 @@ bot.onEvent(async (context) => {
 				payload: 'aboutMe',
 			},
 		];
-	} else if (!introduction2.content && pollData.questions) {
+	} else if (!introduction.content && pollData.questions) {
 		promptOptions = [
 			// {
 			// 	content_type: 'text',
@@ -397,7 +396,7 @@ bot.onEvent(async (context) => {
 				payload: 'poll',
 			},
 		];
-	} else if (!introduction2.content && !pollData.questions && politicianData.contact) {
+	} else if (!introduction.content && !pollData.questions && politicianData.contact) {
 		promptOptions = [
 			// {
 			// 	content_type: 'text',
@@ -594,7 +593,6 @@ bot.onEvent(async (context) => {
 		});
 
 		break;
-
 	case 'recipientData':
 		if (context.event.message.text == 'Agora não' || context.event.message.text == 'Não') {
 			await context.sendQuickReplies({ text: 'Está bem! Posso te ajudar com mais alguma informação?' }, promptOptions);
@@ -604,16 +602,13 @@ bot.onEvent(async (context) => {
 			switch (context.state.dataPrompt) {
 			case 'email':
 				await context.sendText('Qual é o seu e-mail?');
-
 				await context.setState({
 					dialog: 'recipientData',
 					recipientData: 'email',
 				});
-
 				break;
 			case 'cellphone':
 				await context.sendText('Qual é o seu telefone?');
-
 				await context.setState({
 					dialog: 'recipientData',
 					recipientData: 'cellphone',
@@ -622,20 +617,15 @@ bot.onEvent(async (context) => {
 				break;
 			case 'cellphoneFail':
 
-
 				break;
 			case 'end':
 				await context.sendText('Pronto, já guardei seus dados.');
-
 				await context.sendQuickReplies({ text: 'Quer saber mais?' }, promptOptions);
-
 				await context.setState({ dialog: 'prompt' });
 				break;
 			}
 		}
-
 		break;
-
 	case 'trajectory':
 		await context.sendText(trajectory.content);
 
@@ -688,7 +678,6 @@ bot.onEvent(async (context) => {
 
 	case 'issue_created':
 		const issue_created_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'issue_created');
-		console.log('\nkkkk');
 		await context.sendText(issue_created_message.content, {
 			quick_replies: [
 				{
