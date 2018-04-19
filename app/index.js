@@ -402,7 +402,7 @@ bot.onEvent(async (context) => {
 		break;
 	case 'mainMenu': // after issue is created we come back to this dialog
 	// introduction and about_me_text aren't declared inside of greetings anymore. What's defined there is accessible here.
-	await getMenuPrompt();
+	// await getMenuPrompt();
 	// if (introduction.content && pollData.questions) {
 	// 	promptOptions = [
 	// 		// {
