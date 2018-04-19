@@ -338,7 +338,73 @@ bot.onEvent(async (context) => {
 		await context.setState({ dialog: 'prompt' });
 
 		break;
+	case 'mainMenu': // after issue is created we come back to this dialog
+	console.log('\n\naaaaa');
+	if (introduction.content && pollData.questions) {
+		promptOptions = [
+			// {
+			// 	content_type: 'text',
+			// 	title: 'Fale conosco',
+			// 	payload: 'issue'
+			// },
+			{
+				content_type: 'text',
+				title: about_me_text,
+				payload: 'aboutMe',
+			},
+			{
+				content_type: 'text',
+				title: 'Dê sua opinião',
+				payload: 'poll',
+			},
+		];
+	} else if (introduction.content && !pollData.questions) {
+		promptOptions = [
+			// {
+			// 	content_type: 'text',
+			// 	title: 'Fale conosco',
+			// 	payload: 'issue'
+			// },
+			{
+				content_type: 'text',
+				title: about_me_text,
+				payload: 'aboutMe',
+			},
+		];
+	} else if (!introduction.content && pollData.questions) {
+		promptOptions = [
+			// {
+			// 	content_type: 'text',
+			// 	title: 'Fale conosco',
+			// 	payload: 'issue'
+			// },
+			{
+				content_type: 'text',
+				title: 'Dê sua opinião',
+				payload: 'poll',
+			},
+		];
+	} else if (!introduction.content && !pollData.questions && politicianData.contact) {
+		promptOptions = [
+			// {
+			// 	content_type: 'text',
+			// 	title: 'Fale conosco',
+			// 	payload: 'issue'
+			// },
+			{
+				content_type: 'text',
+				title: 'Contatos',
+				payload: 'contacts',
+			},
+		];
+	}
 
+	console.log('\n\nbbbbb');
+	await context.sendText('Como posso te ajudar?', {
+		quick_replies: promptOptions,
+	});
+	await context.setState({ dialog: 'prompt' });
+	break;
 	case 'aboutMe':
 		const introductionText = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'introduction');
 		await context.sendText(introductionText.content);
@@ -619,7 +685,7 @@ bot.onEvent(async (context) => {
 				{
 					content_type: 'text',
 					title: 'Voltar ao início',
-					payload: 'greetings',
+					payload: 'mainMenu',
 				},
 			],
 		});
