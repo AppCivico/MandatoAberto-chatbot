@@ -65,16 +65,19 @@ bot.onEvent(async (context) => {
 		const page_id = post_id.substr(0, post_id.indexOf('_'));
 
 		switch (context.event.rawEvent.value.item) {
+			console.log('\nsdasdasdasdasd');
 		case 'comment':
 			item = 'comment';
 			comment_id = context.event.rawEvent.value.comment_id;
 			permalink = context.event.rawEvent.value.post.permalink_url;
 
+			console.log('\nsdfgdfgdfgdfgdfdasdasdasdasd');
 			await MandatoAbertoAPI.postPrivateReply(item, page_id, post_id, comment_id, permalink);
 			break;
 		case 'post':
 			item = 'post';
 
+			console.log('\nsdfgdf00000000000gdfgdfgdfdasdasdasdasd');
 			await MandatoAbertoAPI.postPrivateReply(item, page_id, post_id, comment_id, permalink);
 			break;
 		}
@@ -450,13 +453,9 @@ bot.onEvent(async (context) => {
 				},
 			];
 		}
-
 		await context.sendQuickReplies({ text: `O que mais deseja saber sobre ${articles.defined} ${politicianData.office.name}?` }, promptOptions);
-
 		await context.setState({ dialog: 'prompt' });
-
 		break;
-
 	case 'contacts':
 		// Tratando o formato do telefone
 		if (politicianData.contact.cellphone) {
