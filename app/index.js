@@ -30,6 +30,12 @@ recipientData[
 ];
 
 function getMenuPrompt() {
+	if (politicianData.office.name == 'Outros' || politicianData.office.name == 'Candidato' || politicianData.office.name == 'Candidata') {
+		about_me_text = `Sobre ${articles.defined} líder`;
+	} else {
+		about_me_text = `Sobre ${articles.defined} ${politicianData.office.name}`;
+	}
+	
 	if (introduction.content && pollData.questions) {
 		promptOptions = [
 			// {
@@ -324,12 +330,6 @@ bot.onEvent(async (context) => {
 			issue_message = issue_message.content;
 		}
 
-
-		if (politicianData.office.name == 'Outros' || politicianData.office.name == 'Candidato' || politicianData.office.name == 'Candidata') {
-			about_me_text = `Sobre ${articles.defined} líder`;
-		} else {
-			about_me_text = `Sobre ${articles.defined} ${politicianData.office.name}`;
-		}
 		await getMenuPrompt();
 		// if (introduction.content && pollData.questions) {
 		// 	promptOptions = [
@@ -403,7 +403,7 @@ bot.onEvent(async (context) => {
 	case 'mainMenu': // after issue is created we come back to this dialog
 	// introduction and about_me_text aren't declared inside of greetings anymore. What's defined there is accessible here.
 	await getMenuPrompt();
-	console.log('\n\n', aboutMe);
+	console.log('\n\n', about_me_text);
 	await context.sendText('Como posso te ajudar?', {
 		quick_replies: promptOptions,
 	});
