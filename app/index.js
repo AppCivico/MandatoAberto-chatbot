@@ -340,6 +340,8 @@ bot.onEvent(async (context) => {
 		break;
 	case 'mainMenu': // after issue is created we come back to this dialog
 	console.log('\n\naaaaa');
+	const introduction = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'introduction');
+
 	if (introduction.content && pollData.questions) {
 		promptOptions = [
 			// {
