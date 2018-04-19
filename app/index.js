@@ -63,6 +63,7 @@ bot.onEvent(async (context) => {
 		let permalink;
 		const post_id = context.event.rawEvent.value.post_id;
 		const page_id = post_id.substr(0, post_id.indexOf('_'));
+		let introduction;
 
 		switch (context.event.rawEvent.value.item) {
 		case 'comment':
@@ -252,7 +253,7 @@ bot.onEvent(async (context) => {
 		const recipient = await MandatoAbertoAPI.postRecipient(politicianData.user_id, recipientData);
 		recipientData = {};
 
-		const introduction = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'introduction');
+		introduction = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'introduction');
 		let issue_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'issue_acknowledgment');
 
 		if (Object.keys(issue_message).length === 0) {
@@ -340,7 +341,7 @@ bot.onEvent(async (context) => {
 		break;
 	case 'mainMenu': // after issue is created we come back to this dialog
 	console.log('\n\naaaaa');
-	const introduction = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'introduction');
+	introduction = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'introduction');
 
 	if (introduction.content && pollData.questions) {
 		promptOptions = [
