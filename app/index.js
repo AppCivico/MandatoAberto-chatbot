@@ -340,9 +340,9 @@ bot.onEvent(async (context) => {
 		break;
 	case 'mainMenu': // after issue is created we come back to this dialog
 	console.log('\n\naaaaa');
-	const introduction = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'introduction');
+	const introduction2 = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'introduction');
 
-	if (introduction.content && pollData.questions) {
+	if (introduction2.content && pollData.questions) {
 		promptOptions = [
 			// {
 			// 	content_type: 'text',
@@ -360,7 +360,7 @@ bot.onEvent(async (context) => {
 				payload: 'poll',
 			},
 		];
-	} else if (introduction.content && !pollData.questions) {
+	} else if (introduction2.content && !pollData.questions) {
 		promptOptions = [
 			// {
 			// 	content_type: 'text',
@@ -373,7 +373,7 @@ bot.onEvent(async (context) => {
 				payload: 'aboutMe',
 			},
 		];
-	} else if (!introduction.content && pollData.questions) {
+	} else if (!introduction2.content && pollData.questions) {
 		promptOptions = [
 			// {
 			// 	content_type: 'text',
@@ -386,7 +386,7 @@ bot.onEvent(async (context) => {
 				payload: 'poll',
 			},
 		];
-	} else if (!introduction.content && !pollData.questions && politicianData.contact) {
+	} else if (!introduction2.content && !pollData.questions && politicianData.contact) {
 		promptOptions = [
 			// {
 			// 	content_type: 'text',
