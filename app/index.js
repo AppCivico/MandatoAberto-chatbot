@@ -53,7 +53,7 @@ const bot = new MessengerBot({
 
 bot.setInitialState({});
 
-bot.use(withTyping({ delay: 1000 }));
+// bot.use(withTyping({ delay: 1000 }));
 
 bot.onEvent(async (context) => {
 	// Abrindo bot através de comentários e posts
@@ -344,11 +344,11 @@ bot.onEvent(async (context) => {
 
 	introduction = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'introduction');
 
-	if (politicianData.office.name == 'Outros' || politicianData.office.name == 'Candidato' || politicianData.office.name == 'Candidata') {
-		about_me_text = `Sobre ${articles.defined} líder`;
-	} else {
-		about_me_text = `Sobre ${articles.defined} ${politicianData.office.name}`;
-	}
+	// if (politicianData.office.name == 'Outros' || politicianData.office.name == 'Candidato' || politicianData.office.name == 'Candidata') {
+	// 	about_me_text = `Sobre ${articles.defined} líder`;
+	// } else {
+	// 	about_me_text = `Sobre ${articles.defined} ${politicianData.office.name}`;
+	// }
 
 	if (introduction.content && pollData.questions) {
 		promptOptions = [
