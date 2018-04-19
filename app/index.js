@@ -359,7 +359,7 @@ bot.onEvent(async (context) => {
 		console.log('\nbbbb');
 	}
 	userMessage = userMessage + context.event.message.text;
-	await timer = setTimeout(() => {
+	timer = setTimeout(() => {
 		console.log('\ndfdfd');
 		const issue_message = context.event.message.text;
 		const issue = await MandatoAbertoAPI.postIssue(politicianData.user_id, context.session.user.id, issue_message);
