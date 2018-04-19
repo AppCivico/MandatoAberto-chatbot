@@ -20,7 +20,7 @@ let promptOptions;
 let pollData = {};
 let recipientData = {};
 
-const limit = (10000 * 6);
+const limit = (10000 * 2);
 let timer;
 let userMessage;
 
@@ -355,12 +355,14 @@ bot.onEvent(async (context) => {
 	case 'listening':
 
 	console.log('\naaaa');
-	if(userMessage === '') {
+	if(!userMessage) {
 		await context.sendText('Entendido! Continue enviando dúvidas, ficamos felizes em responder!');
 		console.log('\nbbbb');
 	}
 	clearTimeout(timer);
+	console.log('\n\n', timer);
 	userMessage = userMessage + context.event.message.text;
+	console.log('\n\n', userMessage);
 	timer = setTimeout(() => {
 		console.log('\ndfdfd');
 		const issue_message = context.event.message.text;
