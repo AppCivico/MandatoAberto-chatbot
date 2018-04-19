@@ -342,13 +342,8 @@ bot.onEvent(async (context) => {
 	case 'mainMenu': // after issue is created we come back to this dialog
 	console.log('\n\naaaaa');
 
-	introduction = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'introduction');
+	// introduction = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'introduction');
 
-	// if (politicianData.office.name == 'Outros' || politicianData.office.name == 'Candidato' || politicianData.office.name == 'Candidata') {
-	// 	about_me_text = `Sobre ${articles.defined} líder`;
-	// } else {
-	// 	about_me_text = `Sobre ${articles.defined} ${politicianData.office.name}`;
-	// }
 
 	if (introduction.content && pollData.questions) {
 		promptOptions = [
