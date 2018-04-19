@@ -353,16 +353,18 @@ bot.onEvent(async (context) => {
 		await context.setState({ dialog: 'prompt' });
 	break;
 	case 'listening':
+
 	console.log('\naaaa');
 	if(userMessage === '') {
 		await context.sendText('Entendido! Continue enviando dúvidas, ficamos felizes em responder!');
 		console.log('\nbbbb');
 	}
+	clearTimeout(timer);
 	userMessage = userMessage + context.event.message.text;
 	timer = setTimeout(() => {
 		console.log('\ndfdfd');
 		const issue_message = context.event.message.text;
-		const issue = await MandatoAbertoAPI.postIssue(politicianData.user_id, context.session.user.id, issue_message);
+		const issue = MandatoAbertoAPI.postIssue(politicianData.user_id, context.session.user.id, issue_message);
 
 		// await context.resetState();
 
