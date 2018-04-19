@@ -362,6 +362,7 @@ bot.onEvent(async (context) => {
 	if(userMessage === '') {
 		await context.sendText('Entendido! Continue enviando dúvidas, ficamos felizes em responder!');
 	}
+	endThis = false;
 	clearTimeout(timer);
 	userMessage = userMessage + context.event.message.text;
 	timer = setTimeout(() => {
