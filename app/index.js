@@ -679,7 +679,7 @@ bot.onEvent(async (context) => {
 
 	case 'issue_created':
 		const issue_created_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'issue_created');
-
+		console.log('\nkkkk');
 		await context.sendText(issue_created_message.content, {
 			quick_replies: [
 				{
@@ -689,7 +689,7 @@ bot.onEvent(async (context) => {
 				},
 			],
 		});
-
+		await context.setState({ dialog: 'prompt' });
 		break;
 	}
 });
