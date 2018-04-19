@@ -65,7 +65,6 @@ bot.onEvent(async (context) => {
 		const page_id = post_id.substr(0, post_id.indexOf('_'));
 
 		switch (context.event.rawEvent.value.item) {
-			console.log('\nsdasdasdasdasd');
 		case 'comment':
 			item = 'comment';
 			comment_id = context.event.rawEvent.value.comment_id;
