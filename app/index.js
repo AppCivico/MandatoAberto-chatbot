@@ -361,14 +361,14 @@ bot.onEvent(async (context) => {
 	}
 	clearTimeout(timer);
 	userMessage = userMessage + context.event.message.text;
-	timer = async setTimeout(() => {
+	timer = setTimeout(() => {
 		console.log('\ndfdfd');
 		const issue_message = context.event.message.text;
-		const issue = await MandatoAbertoAPI.postIssue(politicianData.user_id, context.session.user.id, issue_message);
+		const issue = MandatoAbertoAPI.postIssue(politicianData.user_id, context.session.user.id, issue_message);
 
 		// await context.resetState();
 
-		await context.setState({ dialog: 'issue_created' });
+		context.setState({ dialog: 'issue_created' });
 
 		// await context.setState({ dialog: 'mainMenu' });
 
