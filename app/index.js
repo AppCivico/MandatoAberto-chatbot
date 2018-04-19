@@ -23,7 +23,6 @@ let recipientData = {};
 const limit = (10000 * 2);
 let timer;
 let userMessage = '';
-let endThis = false;
 
 recipientData[
 	'fb_id',
@@ -362,7 +361,6 @@ bot.onEvent(async (context) => {
 	if(userMessage === '') {
 		await context.sendText('Entendido! Continue enviando dúvidas, ficamos felizes em responder!');
 	}
-	endThis = false;
 	clearTimeout(timer);
 	userMessage = userMessage + context.event.message.text;
 	timer = setTimeout(() => {
@@ -370,16 +368,11 @@ bot.onEvent(async (context) => {
 		const issue_message = userMessage;
 		const issue = MandatoAbertoAPI.postIssue(politicianData.user_id, context.session.user.id, issue_message);
 		userMessage = '';
-		// context.resetState();
-		endThis = true;
-		// context.setState({ dialog: 'issue_created' });
+		context.resetState();
+		context.setState({ dialog: 'issue_created' });
 		// await context.setState({ dialog: 'mainMenu' });
 	}, limit);
 
-	if(endThis === true) {
-		await ontext.setState({ dialog: 'issue_created' });
-
-	};
 
 	break;
 		case 'aboutMe':
