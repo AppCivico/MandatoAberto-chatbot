@@ -20,7 +20,7 @@ let promptOptions;
 let pollData = {};
 let recipientData = {};
 
-const timeLimit = (10000 * 6);
+const limit = (10000 * 6);
 let timer;
 let userMessage;
 
