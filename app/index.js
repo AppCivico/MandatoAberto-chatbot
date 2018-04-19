@@ -22,7 +22,7 @@ let recipientData = {};
 
 const limit = (10000 * 2);
 let timer;
-let userMessage;
+let userMessage = '';
 
 recipientData[
 	'fb_id',
@@ -355,9 +355,8 @@ bot.onEvent(async (context) => {
 	case 'listening':
 
 	console.log('\naaaa');
-	if(!userMessage) {
+	if(userMessage === '') {
 		await context.sendText('Entendido! Continue enviando dúvidas, ficamos felizes em responder!');
-		userMessage = '';
 		console.log('\nbbbb');
 	}
 	console.log('\n\n', timer);
