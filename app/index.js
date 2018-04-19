@@ -102,13 +102,13 @@ function getMenuPrompt() {
 	}
 };
 
-function issueCreate async () {
+function issueCreate  () {
 	console.log('\nAcionado');
 	const issue_message = userMessage;
 	const issue = MandatoAbertoAPI.postIssue(politicianData.user_id, context.session.user.id, issue_message);
 	userMessage = '';
-	await context.resetState();
-	await context.setState({ dialog: 'issue_created' });
+	// await context.resetState();
+	context.setState({ dialog: 'issue_created' });
 };
 
 
