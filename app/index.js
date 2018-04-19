@@ -371,8 +371,7 @@ bot.onEvent(async (context) => {
 		context.resetState();
 		// context.setState({ dialog: 'issue_created' });
 		// await context.setState({ dialog: 'mainMenu' });
-	},(() => {		await context.setState({ dialog: 'issue_created' });
-}), limit)
+	}, limit);
 	break;
 		case 'aboutMe':
 		const introductionText = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'introduction');
