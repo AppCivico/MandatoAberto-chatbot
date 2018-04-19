@@ -20,6 +20,10 @@ let promptOptions;
 let pollData = {};
 let recipientData = {};
 
+const timeLimit = (10000 * 6);
+let timer;
+let userMessage;
+
 recipientData[
 	'fb_id',
 	'name',
@@ -175,12 +179,8 @@ bot.onEvent(async (context) => {
 		} else if (context.event.isText) {
 			// Ao mandar uma mensagem que não é interpretada como fluxo do chatbot
 			// Devo já criar uma issue
-			const issue_message = context.event.message.text;
-			const issue = await MandatoAbertoAPI.postIssue(politicianData.user_id, context.session.user.id, issue_message);
+			await context.setState({ dialog: 'listening' });
 
-			await context.resetState();
-
-			await context.setState({ dialog: 'issue_created' });
 		}
 	}
 
@@ -345,14 +345,35 @@ bot.onEvent(async (context) => {
 
 		break;
 	case 'mainMenu': // after issue is created we come back to this dialog
-	// introduction and about_me_text aren't declared inside of greetings anymore. What's defined there is accessible here.
-	await getMenuPrompt();
-	await context.sendText('Como posso te ajudar?', {
-		quick_replies: promptOptions,
-	});
-	await context.setState({ dialog: 'prompt' });
+		// introduction and about_me_text aren't declared inside of greetings anymore. What's defined there is accessible here.
+		await getMenuPrompt();
+		await context.sendText('Como posso te ajudar?', {
+			quick_replies: promptOptions,
+		});
+		await context.setState({ dialog: 'prompt' });
 	break;
-	case 'aboutMe':
+	case 'listening':
+	console.log('\naaaa');
+	if(userMessage === '') {
+		await context.sendText('Entendido! Continue enviando dúvidas, ficamos felizes em responder!');
+		console.log('\nbbbb');
+	}
+	userMessage = userMessage + context.event.message.text;
+	await timer = setTimeout(() => {
+		console.log('\ndfdfd');
+		const issue_message = context.event.message.text;
+		const issue = await MandatoAbertoAPI.postIssue(politicianData.user_id, context.session.user.id, issue_message);
+
+		// await context.resetState();
+
+		await context.setState({ dialog: 'issue_created' });
+
+		// await context.setState({ dialog: 'mainMenu' });
+
+	}, limit)
+
+	break;
+		case 'aboutMe':
 		const introductionText = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'introduction');
 		await context.sendText(introductionText.content);
 
