@@ -23,7 +23,7 @@ let recipientData = {};
 const limit = (10000 * 2);
 let timer;
 let userMessage = '';
-let executeNow = false;
+
 recipientData[
 	'fb_id',
 	'name',
@@ -382,15 +382,10 @@ bot.onEvent(async (context) => {
 		console.log('\nAcionado');
 		await MandatoAbertoAPI.postIssue(politicianData.user_id, context.session.user.id, userMessage);
 		userMessage = '';
-		executeNow = true;
+		await context.setState({ dialog: 'issue_created' });
 	}, limit);
-	console.log('\n\n123');
 
-	if(executeNow === true)
-		{
-			console.log('\n\nasdasdasd');
-			await context.setState({ dialog: 'issue_created' });
-		}
+
 break;
 		case 'aboutMe':
 		const introductionText = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'introduction');
