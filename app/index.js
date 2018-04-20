@@ -33,75 +33,6 @@ recipientData[
 	'gender'
 ];
 
-function getMenuPrompt() {
-	// so we can avoid duplicating code
-	// both of these verifications was on greetings dialog, now they're both at greeting and mainMenu
-	if (politicianData.office.name == 'Outros' || politicianData.office.name == 'Candidato' || politicianData.office.name == 'Candidata') {
-		about_me_text = `Sobre ${articles.defined} líder`;
-	} else {
-		about_me_text = `Sobre ${articles.defined} ${politicianData.office.name}`;
-	}
-
-	if (introduction.content && pollData.questions) {
-		promptOptions = [
-			// {
-			// 	content_type: 'text',
-			// 	title: 'Fale conosco',
-			// 	payload: 'issue'
-			// },
-			{
-				content_type: 'text',
-				title: about_me_text,
-				payload: 'aboutMe',
-			},
-			{
-				content_type: 'text',
-				title: 'Dê sua opinião',
-				payload: 'poll',
-			},
-		];
-	} else if (introduction.content && !pollData.questions) {
-		promptOptions = [
-			// {
-			// 	content_type: 'text',
-			// 	title: 'Fale conosco',
-			// 	payload: 'issue'
-			// },
-			{
-				content_type: 'text',
-				title: about_me_text,
-				payload: 'aboutMe',
-			},
-		];
-	} else if (!introduction.content && pollData.questions) {
-		promptOptions = [
-			// {
-			// 	content_type: 'text',
-			// 	title: 'Fale conosco',
-			// 	payload: 'issue'
-			// },
-			{
-				content_type: 'text',
-				title: 'Dê sua opinião',
-				payload: 'poll',
-			},
-		];
-	} else if (!introduction.content && !pollData.questions && politicianData.contact) {
-		promptOptions = [
-			// {
-			// 	content_type: 'text',
-			// 	title: 'Fale conosco',
-			// 	payload: 'issue'
-			// },
-			{
-				content_type: 'text',
-				title: 'Contatos',
-				payload: 'contacts',
-			},
-		];
-	}
-};
-
 const mapPageToAccessToken = (async (pageId) => {
 	politicianData = await MandatoAbertoAPI.getPoliticianData(pageId);
 	pollData = await MandatoAbertoAPI.getPollData(pageId);
@@ -129,6 +60,77 @@ bot.setInitialState({});
 // bot.use(withTyping({ delay: 1000 }));
 
 bot.onEvent(async (context) => {
+
+	function getMenuPrompt() {
+		// so we can avoid duplicating code
+		// both of these verifications was on greetings dialog, now they're both at greeting and mainMenu
+		if (politicianData.office.name == 'Outros' || politicianData.office.name == 'Candidato' || politicianData.office.name == 'Candidata') {
+			about_me_text = `Sobre ${articles.defined} líder`;
+		} else {
+			about_me_text = `Sobre ${articles.defined} ${politicianData.office.name}`;
+		}
+
+		if (introduction.content && pollData.questions) {
+			promptOptions = [
+				// {
+				// 	content_type: 'text',
+				// 	title: 'Fale conosco',
+				// 	payload: 'issue'
+				// },
+				{
+					content_type: 'text',
+					title: about_me_text,
+					payload: 'aboutMe',
+				},
+				{
+					content_type: 'text',
+					title: 'Dê sua opinião',
+					payload: 'poll',
+				},
+			];
+		} else if (introduction.content && !pollData.questions) {
+			promptOptions = [
+				// {
+				// 	content_type: 'text',
+				// 	title: 'Fale conosco',
+				// 	payload: 'issue'
+				// },
+				{
+					content_type: 'text',
+					title: about_me_text,
+					payload: 'aboutMe',
+				},
+			];
+		} else if (!introduction.content && pollData.questions) {
+			promptOptions = [
+				// {
+				// 	content_type: 'text',
+				// 	title: 'Fale conosco',
+				// 	payload: 'issue'
+				// },
+				{
+					content_type: 'text',
+					title: 'Dê sua opinião',
+					payload: 'poll',
+				},
+			];
+		} else if (!introduction.content && !pollData.questions && politicianData.contact) {
+			promptOptions = [
+				// {
+				// 	content_type: 'text',
+				// 	title: 'Fale conosco',
+				// 	payload: 'issue'
+				// },
+				{
+					content_type: 'text',
+					title: 'Contatos',
+					payload: 'contacts',
+				},
+			];
+		}
+	};
+
+
 	// Abrindo bot através de comentários e posts
 	if (context.event.rawEvent.field == 'feed') {
 		let item;
@@ -383,19 +385,19 @@ bot.onEvent(async (context) => {
 		// await context.resetState();
 		// await context.sendText('Terminei');
 		// await context.setState({ dialog: 'issue_created' });
-		const issue_created_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'issue_created');
-		await context.sendText(issue_created_message.content, {
-			quick_replies: [
-				{
-					content_type: 'text',
-					title: 'Voltar ao início',
-					payload: 'mainMenu',
-				},
-			],
-		});
+		// const issue_created_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'issue_created');
+		// await context.sendText(issue_created_message.content, {
+		// 	quick_replies: [
+		// 		{
+		// 			content_type: 'text',
+		// 			title: 'Voltar ao início',
+		// 			payload: 'mainMenu',
+		// 		},
+		// 	],
+		// });
 	}, limit);
 	console.log('\naa');
-	await context.setState({ dialog: 'prompt' });
+	await context.setState({ dialog: 'issue_created' });
 	break;
 		case 'aboutMe':
 		const introductionText = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'introduction');
