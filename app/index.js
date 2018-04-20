@@ -378,7 +378,7 @@ bot.onEvent(async (context) => {
 	clearTimeout(timer);
 	userMessage = userMessage + context.event.message.text  + ' ';
 	console.log('A dúvida é :', userMessage);
-	timer = setTimeout( async () => {
+	await timer = setTimeout( async () => {
 		console.log('\nAcionado');
 		await MandatoAbertoAPI.postIssue(politicianData.user_id, context.session.user.id, userMessage);
 		userMessage = '';
