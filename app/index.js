@@ -364,16 +364,13 @@ bot.onEvent(async (context) => {
 	clearTimeout(timer);
 	userMessage = userMessage + context.event.message.text  + ' ';
 	console.log('A dúvida é :', userMessage);
-	timer = setTimeout( async () => {
+	timer = setTimeout( async (context) => {
 		console.log('\nAcionado');
 		MandatoAbertoAPI.postIssue(politicianData.user_id, context.session.user.id, userMessage);
 		userMessage = '';
 		// await context.resetState();
+		context.setState({ dialog: 'issue_created' });
 	}, limit);
-
-	context.setState({ dialog: 'issue_created' });
-	// context.setState({ dialog: 'mainMenu' });
-
 	break;
 		case 'aboutMe':
 		const introductionText = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'introduction');
