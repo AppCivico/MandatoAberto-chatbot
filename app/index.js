@@ -394,6 +394,7 @@ bot.onEvent(async (context) => {
 			],
 		});
 	}, limit);
+	console.log('\naa');
 	await context.setState({ dialog: 'prompt' });
 	break;
 		case 'aboutMe':
