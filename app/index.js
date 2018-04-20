@@ -178,9 +178,7 @@ bot.onEvent(async (context) => {
 		if (context.event.isQuickReply) {
 			const payload = context.event.message.quick_reply.payload;
 			await context.setState({ dialog: payload });
-		} else if (context.event.isText && context.event.message.quick_reply.payload) {
-			await context.setState({ dialog: context.event.message.quick_reply.payload });
-		} else if (context.event.isText && !context.event.message.quick_reply.payload) {
+		} if (context.event.isText) {
 			// Ao mandar uma mensagem que não é interpretada como fluxo do chatbot
 			// Devo já criar uma issue
 			// We go to the listening dialog to wait for others messages
@@ -390,7 +388,8 @@ bot.onEvent(async (context) => {
 
 	}, limit);
 	if(executeNow === true) {
-		await context.setState({ dialog: 'prompt' });
+		console.log('aasdasd');
+		await context.setState({ dialog: 'mainMenu' });
 	}
 
 break;
