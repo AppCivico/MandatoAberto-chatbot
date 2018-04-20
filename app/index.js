@@ -383,8 +383,8 @@ bot.onEvent(async (context) => {
 		userMessage = '';
 		// await context.resetState();
 		await context.sendText('Terminei');
-
-		await context.setState({ dialog: 'issue_created' });
+		await context.state.dialog = 'issue_created';
+		//await context.setState({ dialog: 'issue_created' });
 	}, limit);
 	break;
 		case 'aboutMe':
@@ -579,7 +579,6 @@ bot.onEvent(async (context) => {
 				});
 				break;
 			case 'cellphoneFail':
-
 				break;
 			case 'end':
 				await context.sendText('Pronto, já guardei seus dados.');
@@ -591,7 +590,6 @@ bot.onEvent(async (context) => {
 		break;
 	case 'trajectory':
 		await context.sendText(trajectory.content);
-
 		if (pollData.questions && politicianData.contact) {
 			promptOptions = [
 				{
@@ -622,24 +620,16 @@ bot.onEvent(async (context) => {
 				},
 			];
 		}
-
 		await context.sendQuickReplies({ text: 'Quer saber mais?' }, promptOptions);
-
 		await context.setState({ dialog: 'prompt' });
-
 		break;
-
 	case 'issue':
 		await context.sendText('Escreva sua mensagem para nossa equipe:');
-
 		await context.setState({
 			dialog: 'prompt',
 			prompt: 'issue',
 		});
-
 		break;
-
-
 	}
 });
 
