@@ -189,7 +189,9 @@ bot.onEvent(async (context) => {
 		const payload = context.event.message.quick_reply.payload;
 		await context.setState({ dialog: payload });
 	}
-
+	if (context.state.dialog2 === 'teste') {
+		await context.setState({ dialog: 'issue_created' });
+	}
 	// Resposta de enquete
 	const propagateIdentifier = 'pollAnswerPropagate';
 	if (context.event.isQuickReply && context.state.dialog == 'pollAnswer') {
@@ -383,8 +385,7 @@ bot.onEvent(async (context) => {
 		userMessage = '';
 		// await context.resetState();
 		await context.sendText('Terminei');
-		await context.state.dialog = 'issue_created';
-		//await context.setState({ dialog: 'issue_created' });
+		await context.setState({ dialog2: 'teste' });
 	}, limit);
 	break;
 		case 'aboutMe':
