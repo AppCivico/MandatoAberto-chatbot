@@ -366,12 +366,10 @@ bot.onEvent(async (context) => {
 	console.log('A dúvida é :', userMessage);
 	timer = setTimeout( async () => {
 		console.log('\nAcionado');
-		// const issue_message = userMessage;
-		const issue = MandatoAbertoAPI.postIssue(politicianData.user_id, context.session.user.id, userMessage);
+		MandatoAbertoAPI.postIssue(politicianData.user_id, context.session.user.id, userMessage);
 		userMessage = '';
 		await context.resetState();
 		await context.setState({ dialog: 'issue_created' });
-		// await context.setState({ dialog: 'mainMenu' });
 	}, limit);
 
 
