@@ -382,21 +382,8 @@ bot.onEvent(async (context) => {
 		console.log('\nAcionado');
 		await MandatoAbertoAPI.postIssue(politicianData.user_id, context.session.user.id, userMessage);
 		userMessage = '';
-		// await context.resetState();
-		// await context.sendText('Terminei');
-		// await context.setState({ dialog: 'issue_created' });
-		// const issue_created_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'issue_created');
-		// await context.sendText(issue_created_message.content, {
-		// 	quick_replies: [
-		// 		{
-		// 			content_type: 'text',
-		// 			title: 'Voltar ao início',
-		// 			payload: 'mainMenu',
-		// 		},
-		// 	],
-		// });
 	}, limit);
-	console.log('\naa');
+	// i'm not sure why but it seems that the next line should be outside of the timeout
 	await context.setState({ dialog: 'issue_created' });
 	break;
 		case 'aboutMe':
