@@ -353,6 +353,19 @@ bot.onEvent(async (context) => {
 		});
 		await context.setState({ dialog: 'prompt' });
 	break;
+	case 'issue_created':
+		const issue_created_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'issue_created');
+		await context.sendText(issue_created_message.content, {
+			quick_replies: [
+				{
+					content_type: 'text',
+					title: 'Voltar ao início',
+					payload: 'mainMenu',
+				},
+			],
+		});
+		await context.setState({ dialog: 'prompt' });
+		break;
 	case 'listening':
 	// When user enters with text, prompt sends us here
 	// if it's the first message we warn the user that we are listening and wait for 60s for a new message
@@ -626,19 +639,7 @@ bot.onEvent(async (context) => {
 
 		break;
 
-	case 'issue_created':
-		const issue_created_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'issue_created');
-		await context.sendText(issue_created_message.content, {
-			quick_replies: [
-				{
-					content_type: 'text',
-					title: 'Voltar ao início',
-					payload: 'mainMenu',
-				},
-			],
-		});
-		await context.setState({ dialog: 'prompt' });
-		break;
+
 	}
 });
 
