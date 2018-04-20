@@ -211,12 +211,15 @@ bot.onEvent(async (context) => {
 
 		context.setState({ dialog: 'pollAnswer' });
 	} else if (context.event.isText && context.state.dialog == 'pollAnswer') {
+		await context.setState({ dialog: 'listening' });
+		// old way
 		// Ao mandar uma mensagem que não é interpretada como fluxo do chatbot
 		// Devo já criar uma issue
-		const issue_message = context.event.message.text;
-		const issue = await MandatoAbertoAPI.postIssue(politicianData.user_id, context.session.user.id, issue_message);
-		await context.resetState();
-		await context.setState({ dialog: 'issue_created' });
+		// const issue_message = context.event.message.text;
+		// const issue = await MandatoAbertoAPI.postIssue(politicianData.user_id, context.session.user.id, issue_message);
+		// await context.resetState();
+		// await context.setState({ dialog: 'issue_created' });
+		// older way
 		// This is the old way of handling text messages during the poll dialog.
 		// It asks for confirmation from user. Whats above creates issue automatically like in 'prompt'.
 		// const issue_acknowledgment_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'issue_acknowledgment');
