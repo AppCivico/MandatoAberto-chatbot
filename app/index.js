@@ -355,22 +355,22 @@ bot.onEvent(async (context) => {
 	break;
 	case 'listening':
 	// When user enters with text, prompt sends us here
-	// if it's the first message when warn the user that we are listening and wait for 60s for a new message
+	// if it's the first message we warn the user that we are listening and wait for 60s for a new message
 	// we keep adding new messages on top of each other until user stops for 60s, then we can save the issue and go back to the menu
 	// TODO size limit and 'end button'?
 	if(userMessage === '') {
 		await context.sendText('Entendido! Continue enviando dúvidas, ficamos felizes em responder!');
 	}
 	clearTimeout(timer);
-	userMessage = userMessage + '\n'+ context.event.message.text;
-	console.log('A dúvida é :',userMessage);
+	userMessage = userMessage + context.event.message.text  + ' ';
+	console.log('A dúvida é :',userMessage );
 	timer = setTimeout(() => {
 		console.log('\nAcionado');
 		const issue_message = userMessage;
 		const issue = MandatoAbertoAPI.postIssue(politicianData.user_id, context.session.user.id, issue_message);
 		userMessage = '';
-		context.resetState();
-		context.setState({ dialog: 'issue_created' });
+		await context.resetState();
+		await context.setState({ dialog: 'issue_created' });
 		// await context.setState({ dialog: 'mainMenu' });
 	}, limit);
 
