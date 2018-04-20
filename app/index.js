@@ -181,7 +181,7 @@ bot.onEvent(async (context) => {
 		} else if (context.event.isText) {
 			// Ao mandar uma mensagem que não é interpretada como fluxo do chatbot
 			// Devo já criar uma issue
-			// We go to the listn dialog to wait for others messages
+			// We go to the listening dialog to wait for others messages
 			await context.setState({ dialog: 'listening' });
 		}
 	}
@@ -354,19 +354,7 @@ bot.onEvent(async (context) => {
 		});
 		await context.setState({ dialog: 'prompt' });
 	break;
-	case 'issue_created':
-		const issue_created_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'issue_created');
-		await context.sendText(issue_created_message.content, {
-			quick_replies: [
-				{
-					content_type: 'text',
-					title: 'Voltar ao início',
-					payload: 'mainMenu',
-				},
-			],
-		});
-		await context.setState({ dialog: 'prompt' });
-		break;
+
 	case 'listening':
 	// When user enters with text, prompt sends us here
 	// if it's the first message we warn the user that we are listening and wait for 60s for a new message
@@ -382,9 +370,11 @@ bot.onEvent(async (context) => {
 		console.log('\nAcionado');
 		await MandatoAbertoAPI.postIssue(politicianData.user_id, context.session.user.id, userMessage);
 		userMessage = '';
+		await context.resetState();
 		await context.setState({ dialog: 'issue_created' });
+		// flag = true
 	}, limit);
-
+	 // if(flag) {bbb}
 
 break;
 		case 'aboutMe':
@@ -630,6 +620,19 @@ break;
 			prompt: 'issue',
 		});
 		break;
+		case 'issue_created':
+			const issue_created_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'issue_created');
+			await context.sendText(issue_created_message.content, {
+				quick_replies: [
+					{
+						content_type: 'text',
+						title: 'Voltar ao início',
+						payload: 'mainMenu',
+					},
+				],
+			});
+			await context.setState({ dialog: 'prompt' });
+			break;
 	}
 });
 
