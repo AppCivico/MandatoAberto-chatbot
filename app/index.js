@@ -393,8 +393,8 @@ bot.onEvent(async (context) => {
 				},
 			],
 		});
-		await context.setState({ dialog: 'prompt' });
 	}, limit);
+	await context.setState({ dialog: 'prompt' });
 	break;
 		case 'aboutMe':
 		const introductionText = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'introduction');
