@@ -368,10 +368,11 @@ bot.onEvent(async (context) => {
 		console.log('\nAcionado');
 		MandatoAbertoAPI.postIssue(politicianData.user_id, context.session.user.id, userMessage);
 		userMessage = '';
-		await context.resetState();
-		await context.setState({ dialog: 'issue_created' });
+		// await context.resetState();
+		context.setState({ dialog: 'issue_created' });
 	}, limit);
 
+	context.setState({ dialog: 'mainMenu' });
 
 	break;
 		case 'aboutMe':
