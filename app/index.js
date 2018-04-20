@@ -362,7 +362,8 @@ bot.onEvent(async (context) => {
 		await context.sendText('Entendido! Continue enviando dúvidas, ficamos felizes em responder!');
 	}
 	clearTimeout(timer);
-	userMessage = userMessage + context.event.message.text;
+	userMessage = userMessage + '\n'+ context.event.message.text;
+	console.log('A dúvida é :',userMessage);
 	timer = setTimeout(() => {
 		console.log('\nAcionado');
 		const issue_message = userMessage;
