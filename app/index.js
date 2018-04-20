@@ -367,9 +367,6 @@ bot.onEvent(async (context) => {
 	if(userMessage === '') {
 		await context.sendText('Entendido! Continue enviando dúvidas, ficamos felizes em responder!');
 	}
-	if(userMessage === 'Voltar ao início') {
-		await context.setState({ dialog: 'mainMenu' });
-	}
 	executeNow = false;
 	clearTimeout(timer);
 	userMessage = userMessage + context.event.message.text  + ' ';
@@ -380,7 +377,6 @@ bot.onEvent(async (context) => {
 		userMessage = '';
 		// await context.resetState();
 		// await context.setState({ dialog: 'issue_created' });
-
 		const issue_created_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'issue_created');
 		await context.sendText(issue_created_message.content, {
 			quick_replies: [
@@ -391,14 +387,7 @@ bot.onEvent(async (context) => {
 				},
 			],
 		});
-		executeNow = true;
-
 	}, limit);
-	// if(executeNow === true) {
-	// 	console.log('aasdasd');
-	// 	await context.setState({ dialog: 'mainMenu' });
-	// }
-
 break;
 		case 'aboutMe':
 		const introductionText = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'introduction');
