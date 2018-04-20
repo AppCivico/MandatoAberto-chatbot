@@ -20,7 +20,7 @@ let promptOptions;
 let pollData = {};
 let recipientData = {};
 
-const limit = (10000 * 2);
+const limit = (10000 * 1);
 let timer;
 let userMessage = '';
 
@@ -363,11 +363,11 @@ bot.onEvent(async (context) => {
 	}
 	clearTimeout(timer);
 	userMessage = userMessage + context.event.message.text  + ' ';
-	console.log('A dúvida é :',userMessage );
+	console.log('A dúvida é :', userMessage);
 	timer = setTimeout( async () => {
 		console.log('\nAcionado');
-		const issue_message = userMessage;
-		const issue = MandatoAbertoAPI.postIssue(politicianData.user_id, context.session.user.id, issue_message);
+		//const issue_message = userMessage;
+		//const issue = MandatoAbertoAPI.postIssue(politicianData.user_id, context.session.user.id, issue_message);
 		userMessage = '';
 		await context.resetState();
 		await context.setState({ dialog: 'issue_created' });
