@@ -23,7 +23,7 @@ let recipientData = {};
 const limit = (10000 * 2);
 let timer;
 let userMessage = '';
-let executeNow = false;
+
 recipientData[
 	'fb_id',
 	'name',
@@ -339,7 +339,6 @@ bot.onEvent(async (context) => {
 		} else {
 			issue_message = issue_message.content;
 		}
-
 		await getMenuPrompt();
 		userMessage = ''; // cleaning up
 		let greeting = politicianData.greeting.replace('${user.office.name}', politicianData.office.name);
@@ -348,9 +347,7 @@ bot.onEvent(async (context) => {
 		await context.sendText(issue_message, {
 			quick_replies: promptOptions,
 		});
-
 		await context.setState({ dialog: 'prompt' });
-
 		break;
 	case 'mainMenu': // after issue is created we come back to this dialog
 		// introduction and about_me_text aren't declared inside of greetings anymore. What's defined there is accessible here.
@@ -361,7 +358,6 @@ bot.onEvent(async (context) => {
 		});
 		await context.setState({ dialog: 'prompt' });
 	break;
-
 	case 'listening':
 	// When user enters with text, prompt sends us here
 	// if it's the first message we warn the user that we are listening and wait for 60s for a new message
@@ -370,12 +366,11 @@ bot.onEvent(async (context) => {
 	if(userMessage === '') {
 		await context.sendText('Entendido! Continue enviando dúvidas, ficamos felizes em responder!');
 	}
-	executeNow = false;
 	clearTimeout(timer);
 	userMessage = userMessage + context.event.message.text  + ' ';
-	console.log('A dúvida é :', userMessage);
+	// console.log('A dúvida é :', userMessage);
 	timer = setTimeout( async () => {
-		console.log('\nAcionado');
+		// console.log('\nAcionado');
 		await MandatoAbertoAPI.postIssue(politicianData.user_id, context.session.user.id, userMessage);
 		userMessage = '';
 		// await context.resetState();
@@ -487,7 +482,6 @@ break;
 	case 'poll':
 		// Verifico se o cidadão já  a enquete atualmente ativa
 		const recipientAnswer = await MandatoAbertoAPI.getPollAnswer(context.session.user.id, pollData.id);
-
 		if (trajectory.content && politicianData.contact) {
 			promptOptions = [
 				{
@@ -518,7 +512,6 @@ break;
 				},
 			];
 		}
-
 		// Agora a enquete poderá ser respondida via propagação ou via dialogo
 		if (recipientAnswer.recipient_answered >= 1) {
 			await context.sendText('Você já respondeu a enquete atualmente ativa.');
