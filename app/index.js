@@ -182,6 +182,7 @@ bot.onEvent(async (context) => {
 			// Ao mandar uma mensagem que não é interpretada como fluxo do chatbot
 			// Devo já criar uma issue
 			// We go to the listening dialog to wait for others messages
+			console.log('\n\n123');
 			await context.setState({ dialog: 'listening' });
 		}
 	}
