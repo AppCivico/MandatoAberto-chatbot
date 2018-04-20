@@ -369,6 +369,8 @@ bot.onEvent(async (context) => {
 		await MandatoAbertoAPI.postIssue(politicianData.user_id, context.session.user.id, userMessage);
 		userMessage = '';
 		// await context.resetState();
+		await context.sendText('Terminei');
+
 		await context.setState({ dialog: 'issue_created' });
 	}, limit);
 	break;
