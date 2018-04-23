@@ -20,7 +20,7 @@ let promptOptions;
 let pollData = {};
 let recipientData = {};
 
-const limit = (10000 * 2);
+const limit = (10000 * 0.7);
 let timer;
 let userMessage = '';
 
@@ -194,7 +194,13 @@ bot.onEvent(async (context) => {
 	else if (context.event.isQuickReply && context.state.dialog == 'listening' ) {
 		await context.typingOff();
 		const payload = context.event.message.quick_reply.payload;
-		await context.setState({ dialog: payload });
+		if(payload === 'mainMenu') {
+			await MandatoAbertoAPI.postIssue(politicianData.user_id, context.session.user.id, userMessage);
+			userMessage = '';
+			await context.setState({ dialog: payload });
+		} else {
+			await context.setState({ dialog: payload });
+		}
 	}
 	// Resposta de enquete
 	const propagateIdentifier = 'pollAnswerPropagate';
@@ -371,10 +377,8 @@ bot.onEvent(async (context) => {
 	clearTimeout(timer);
 	userMessage = userMessage + context.event.message.text  + ' ';
 	timer = setTimeout( async () => {
-		await MandatoAbertoAPI.postIssue(politicianData.user_id, context.session.user.id, userMessage);
-		userMessage = '';
 		const issue_created_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'issue_created');
-		await context.sendText(issue_created_message.content + '\n Escolha uma das opções abaixo', {
+		await context.sendText(issue_created_message.content + '\nEscolha uma das opções abaixo', {
 			quick_replies: [
 				{
 					content_type: 'text',
