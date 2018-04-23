@@ -360,27 +360,21 @@ bot.onEvent(async (context) => {
 		await context.setState({ dialog: 'prompt' });
 	break;
 	case 'listening':
+	// TODO voltar pra 20 segundos
 	// When user enters with text, prompt sends us here
 	// if it's the first message we warn the user that we are listening and wait for 60s for a new message
 	// we keep adding new messages on top of each other until user stops for 60s, then we can save the issue and go back to the menu
-	// TODO size limit and 'end button'?
 	if(userMessage === '') {
 		await context.sendText('Entendido! Continue enviando dúvidas, ficamos felizes em responder!');
 	}
 	await context.typingOn();
-	// await context.sendSenderAction('typing_on');
 	clearTimeout(timer);
 	userMessage = userMessage + context.event.message.text  + ' ';
-	// console.log('A dúvida é :', userMessage);
 	timer = setTimeout( async () => {
-		// console.log('\nAcionado');
 		await MandatoAbertoAPI.postIssue(politicianData.user_id, context.session.user.id, userMessage);
 		userMessage = '';
-		// await context.resetState();
-		// await context.setState({ dialog: 'issue_created' });
 		const issue_created_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'issue_created');
-		await context.sendText(issue_created_message.content + '\n\n Escolha uma das opções abaixo', {
-
+		await context.sendText(issue_created_message.content + '\n Escolha uma das opções abaixo', {
 			quick_replies: [
 				{
 					content_type: 'text',
@@ -390,7 +384,7 @@ bot.onEvent(async (context) => {
 				{
 					content_type: 'text',
 					title: 'Continuar escrevendo',
-					payload: 'mainMenu',
+					payload: 'listening',
 				},
 			],
 		});
