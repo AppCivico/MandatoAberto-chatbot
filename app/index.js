@@ -192,6 +192,7 @@ bot.onEvent(async (context) => {
 		await context.setState({ dialog: payload });
 	}
 	else if (context.event.isQuickReply && context.state.dialog == 'listening' ) {
+		await context.typingOff();
 		const payload = context.event.message.quick_reply.payload;
 		await context.setState({ dialog: payload });
 	}
@@ -379,7 +380,6 @@ bot.onEvent(async (context) => {
 		// await context.setState({ dialog: 'issue_created' });
 		const issue_created_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'issue_created');
 		await context.sendText(issue_created_message.content, {
-			await context.typingOff();
 
 			quick_replies: [
 				{
