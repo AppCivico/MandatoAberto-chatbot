@@ -379,12 +379,17 @@ bot.onEvent(async (context) => {
 		// await context.resetState();
 		// await context.setState({ dialog: 'issue_created' });
 		const issue_created_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'issue_created');
-		await context.sendText(issue_created_message.content, {
+		await context.sendText(issue_created_message.content + '\n\n Escolha uma das opções abaixo', {
 
 			quick_replies: [
 				{
 					content_type: 'text',
 					title: 'Voltar ao início',
+					payload: 'mainMenu',
+				},
+				{
+					content_type: 'text',
+					title: 'Continuar escrevendo',
 					payload: 'mainMenu',
 				},
 			],
