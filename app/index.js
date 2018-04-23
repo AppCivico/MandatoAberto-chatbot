@@ -23,6 +23,7 @@ let recipientData = {};
 const limit = (10000 * 0.7);
 let timer;
 let userMessage = '';
+let sendIntro = true;
 
 recipientData[
 	'fb_id',
@@ -370,15 +371,17 @@ bot.onEvent(async (context) => {
 	// When user enters with text, prompt sends us here
 	// if it's the first message we warn the user that we are listening and wait for 60s for a new message
 	// we keep adding new messages on top of each other until user stops for 60s, then we can save the issue and go back to the menu
-	if(userMessage === '') {
+	if(sendIntro === true) {
 		await context.sendText('Entendido! Continue enviando dúvidas, ficamos felizes em responder!');
+		sendIntro = false;
 	}
 	await context.typingOn();
 	clearTimeout(timer);
 	userMessage = userMessage + context.event.message.text  + ' ';
 	timer = setTimeout( async () => {
+		sendIntro = true;
 		const issue_created_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'issue_created');
-		await context.sendText(issue_created_message.content + '\nEscolha uma das opções abaixo', {
+		await context.sendText(issue_created_message.content + 'Terminou de escrever?\nEscolha uma das opções abaixo', {
 			quick_replies: [
 				{
 					content_type: 'text',
