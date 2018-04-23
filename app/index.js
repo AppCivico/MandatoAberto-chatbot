@@ -379,7 +379,7 @@ bot.onEvent(async (context) => {
 		// await context.setState({ dialog: 'issue_created' });
 		const issue_created_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'issue_created');
 		await context.sendText(issue_created_message.content, {
-			// context.typingOff();
+			await context.typingOff();
 
 			quick_replies: [
 				{
