@@ -198,6 +198,7 @@ bot.onEvent(async (context) => {
 		if(payload === 'mainMenu') {
 			await MandatoAbertoAPI.postIssue(politicianData.user_id, context.session.user.id, userMessage);
 			userMessage = '';
+			context.event.message.text = '';
 			await context.setState({ dialog: payload });
 		} else {
 			await context.setState({ dialog: payload });
@@ -381,7 +382,7 @@ bot.onEvent(async (context) => {
 	timer = setTimeout( async () => {
 		sendIntro = true;
 		const issue_created_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'issue_created');
-		await context.sendText(issue_created_message.content + 'Terminou de escrever?\nEscolha uma das opções abaixo', {
+		await context.sendText(issue_created_message.content + '\nTerminou de escrever?\nEscolha uma das opções abaixo', {
 			quick_replies: [
 				{
 					content_type: 'text',
