@@ -161,7 +161,7 @@ bot.onEvent(async (context) => {
 	// Tratando caso de o poĺítico não ter dados suficientes
 	if (!context.state.dialog) {
 		if (!politicianData.greetings && (!politicianData.contact && !pollData.questions)) {
-			console.log('Politician does not have enough data');
+			console.log('Politician does not have enough data!');
 			return false;
 		}
 		await context.resetState();
