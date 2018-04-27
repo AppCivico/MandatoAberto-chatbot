@@ -407,7 +407,7 @@ bot.onEvent(async (context) => {
 		await context.sendText(flow.whoCanDonate.secondMessage);
 		await context.sendText(flow.whoCanDonate.thirdMessage);
 		await context.sendText(flow.whoCanDonate.fourthMessage);
-		await context.setState({ dialog: 'mainMenu' });
+		await context.setState({ dialog: 'doarMenu' });
 	break;
 	case 'listening':
 	// When user enters with text, prompt sends us here
