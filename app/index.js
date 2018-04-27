@@ -377,17 +377,12 @@ bot.onEvent(async (context) => {
 		const doarOptions = [
 			{
 				type:	"web_url",
-				url:	"https://www.messenger.com",
+				url:	"http://ricardoyoung.eokoe.com/candidato/#/doar",
 				title:"Quero Doar"
 			},
 			{
 				type: 'postback',
-				title: 'aaa!',
-				payload: 'mainMenu',
-			},
-			{
-				type: 'postback',
-				title: 'Agora não',
+				title: 'Voltar',
 				payload: 'mainMenu',
 			},
 		];
