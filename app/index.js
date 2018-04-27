@@ -185,8 +185,11 @@ bot.onEvent(async (context) => {
 	if (context.state.dialog === 'prompt') {
 		console.log('on prompt');
 		if (context.event.isQuickReply) {
-			const payload = context.event.message.quick_reply.payload;
-			await context.setState({ dialog: payload });
+			if (context.event.message.quick_reply.payload.slice(0, -1) === 'donate') {
+				await context.setState({ dialog: 'donate' });
+			} else {
+				await context.setState({ dialog: context.event.message.quick_reply.payload });
+			}
 		} else if (context.event.isText) {
 			// Ao mandar uma mensagem que não é interpretada como fluxo do chatbot
 			// Devo já criar uma issue
