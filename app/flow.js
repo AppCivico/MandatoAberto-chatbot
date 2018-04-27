@@ -1,6 +1,11 @@
 // This class stores text messages, urls and quick_replies options
 
 module.exports = {
+	doarButton: {
+		content_type: 'text',
+		title: 'Doar',
+		payload: 'doarMenu',
+	},
 	greetings: {
 		greetImage: 'https://votolegal.com.br/logo-voto-legal--89fff09e.png',
 		firstMessage: 'Sou o Bot assistente do projeto Voto Legal.',

@@ -90,11 +90,11 @@ bot.onEvent(async (context) => {
 					title: 'Dê sua opinião',
 					payload: 'poll',
 				},
-				{
-					content_type: 'text',
-					title: 'Doar',
-					payload: 'doarMenu',
-				},
+				// {
+				// 	content_type: 'text',
+				// 	title: 'Doar',
+				// 	payload: 'doarMenu',
+				// },
 			];
 		} else if (introduction.content && !pollData.questions) {
 			promptOptions = [
@@ -369,6 +369,7 @@ bot.onEvent(async (context) => {
 			issue_message = issue_message.content;
 		}
 		await getMenuPrompt();
+		promptOptions.append(flow.doarButton);
 		userMessage = ''; // cleaning up
 		let greeting = politicianData.greeting.replace('${user.office.name}', politicianData.office.name);
 		greeting = greeting.replace('${user.name}', politicianData.name);
@@ -381,6 +382,7 @@ bot.onEvent(async (context) => {
 	case 'mainMenu': // after issue is created we come back to this dialog
 		// introduction and about_me_text aren't declared inside of greetings anymore. What's defined there is accessible here.
 		await getMenuPrompt();
+		promptOptions.append(flow.doarButton);
 		userMessage = ''; // cleaning up
 		await context.sendText('Como posso te ajudar?', {
 			quick_replies: promptOptions,
@@ -428,10 +430,10 @@ bot.onEvent(async (context) => {
 		case 'donate3': // 100 temers
 			value = 100;
 			break;
-		case 'donate4':
-			await context.sendText('Legal. Clique no link abaixo.');
-			await context.sendText(flow.donation.donateLink);
-			break;
+		// case 'donate4':
+		// 	await context.sendText('Legal. Clique no link abaixo.');
+		// 	await context.sendText(flow.donation.donateLink);
+		// 	break;
 		}
 		await context.sendText(`você vai doar ${value} reais. Clique no link abaixo.`);
 		await context.sendText(flow.donation.donateLink);
