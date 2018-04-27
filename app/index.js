@@ -90,6 +90,11 @@ bot.onEvent(async (context) => {
 					title: 'Dê sua opinião',
 					payload: 'poll',
 				},
+				{
+					content_type: 'text',
+					title: 'Doar',
+					payload: 'doarMenu',
+				},
 			];
 		} else if (introduction.content && !pollData.questions) {
 			promptOptions = [
