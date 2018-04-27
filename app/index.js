@@ -183,8 +183,13 @@ bot.onEvent(async (context) => {
 			// Ao mandar uma mensagem que não é interpretada como fluxo do chatbot
 			// Devo já criar uma issue
 			// We go to the listening dialog to wait for others messages
-			await context.setState({ dialog: 'listening' });
-		}
+			if (context.event.message.text === '/doar') {
+					await context.sendText('aaa');
+			} else
+				{
+					await context.setState({ dialog: 'listening' });
+				}
+			}
 	}
 
 	// Switch de dialogos
