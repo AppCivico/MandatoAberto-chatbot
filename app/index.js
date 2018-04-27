@@ -436,7 +436,7 @@ bot.onEvent(async (context) => {
 		await context.sendText(`você vai doar ${value} reais. Clique no link abaixo.`);
 		await context.sendText(flow.donation.donateLink);
 		await context.sendText(flow.donation.thanks);
-		await context.setState({ dialog: 'mainMenu' });
+		await context.setState({ dialog: 'doarMenu' });
 		break;
 	case 'whoCanDonate':
 		await context.sendText(flow.whoCanDonate.firstMessage);

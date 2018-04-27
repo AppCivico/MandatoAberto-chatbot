@@ -33,8 +33,8 @@ module.exports = {
 		],
 	},
 	donation: {
-		firstMessage: 'Para fazer a doação basta tal e tal',
-		secondMessage: 'Clique em uma das opções abaixo para doar:',
+		firstMessage: 'Para fazer a doação será necessário o cadastro no nosso site:',
+		secondMessage: 'Quanto dinheiro deseja doar?',
 		donateLink: 'http://ricardoyoung.eokoe.com/candidato/#/doar',
 		thanks: 'Obrigado. Agradecemos o seu apoio.',
 		options: [
@@ -66,8 +66,8 @@ module.exports = {
 		],
 	},
 	status: {
-		firstMessage: 'Temos as metas tal e tal',
-		secondMessage: 'Elas estariam sendo mostradas abaixo:',
+		firstMessage: 'Estou fazendo uma campanha para minha pré-campanha, e minha meta é de R$ XXX,000.',
+		secondMessage: 'Já consegui R$ XX,00. Seria muito importante sua colaboração!',
 	},
 	whoCanDonate: {
 		firstMessage: 'O limite é de 10% de seus rendimentos brutos declarados no Imposto de Renda 2015.',
