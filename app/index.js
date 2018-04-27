@@ -11,8 +11,6 @@ const apiUri = process.env.MANDATOABERTO_API_URL;
 
 const phoneRegex = new RegExp(/^\+55\d{2}(\d{1})?\d{8}$/);
 
-const flow = require('./flow.js');
-
 let articles;
 let politicianData;
 let pollAnswer;
@@ -60,7 +58,7 @@ const bot = new MessengerBot({
 
 bot.setInitialState({});
 
-// bot.use(withTyping({ delay: 1000 }));
+bot.use(withTyping({ delay: 1000 }));
 
 bot.onEvent(async (context) => {
 
@@ -89,11 +87,6 @@ bot.onEvent(async (context) => {
 					content_type: 'text',
 					title: 'Dê sua opinião',
 					payload: 'poll',
-				},
-				{
-					content_type: 'text',
-					title: 'Doar',
-					payload: 'doarMenu',
 				},
 			];
 		} else if (introduction.content && !pollData.questions) {
@@ -182,30 +175,16 @@ bot.onEvent(async (context) => {
 	}
 
 	// Tratando dinâmica de issues
-	if (context.state.dialog === 'prompt') {
-		console.log('on prompt');
+	if (context.state.dialog == 'prompt') {
 		if (context.event.isQuickReply) {
-			if (context.event.message.quick_reply.payload.slice(0, -1) === 'donate') {
-				await context.setState({ dialog: 'donate' });
-			} else {
-				await context.setState({ dialog: context.event.message.quick_reply.payload });
-			}
-		} else if (context.event.isText) {
+			const payload = context.event.message.quick_reply.payload;
+			await context.setState({ dialog: payload });
+		} if (context.event.isText) {
 			// Ao mandar uma mensagem que não é interpretada como fluxo do chatbot
 			// Devo já criar uma issue
 			// We go to the listening dialog to wait for others messages
-			if (context.event.message.text === '/doar') {
-				await context.setState({ dialog: 'doarMenu' });
-			} else
-				{
-					await context.setState({ dialog: 'listening' });
-				}
-			} else {
-				console.log('ahahhaa');
-				console.log(context.state.payload);
-				await context.setState({ dialog: context.state.payload });
-
-			}
+			await context.setState({ dialog: 'listening' });
+		}
 	}
 
 	// Switch de dialogos
@@ -385,79 +364,6 @@ bot.onEvent(async (context) => {
 		await context.sendText('Como posso te ajudar?', {
 			quick_replies: promptOptions,
 		});
-		await context.setState({ dialog: 'prompt' });
-	break;
-		case 'doarMenu':
-		console.log('im here');
-		// await context.sendImage(flow.greetings.greetImage);
-		// await context.sendText(`${misc.getGreet()}, ${context.session.user.first_name}! ` +
-		await context.sendText(flow.greetings.firstMessage);
-		await context.sendText(flow.greetings.secondMessage);
-		// await context.sendText(flow.greetings.thirdMessage);
-		await context.sendText(flow.mainMenu.menuMsg, {
-			quick_replies: flow.mainMenu.promptOptions,
-		});
-		await context.setState({ dialog: 'prompt' });
-		break;
-	case 'status':
-		await context.sendText(flow.status.firstMessage);
-		await context.sendText(flow.status.secondMessage,
-			{ quick_replies: [
-				{
-					content_type: 'text',
-					title: 'OK',
-					payload: 'doarMenu',
-				}
-			]});
-		await context.setState({ dialog: 'prompt' });
-		break;
-	case 'donation':
-	console.log('donation');
-		await context.sendText(flow.donation.firstMessage);
-		await context.sendText(flow.donation.secondMessage, { quick_replies: flow.donation.options });
-		await context.setState({ dialog: 'prompt' });
-		break;
-	case 'donate':
-		switch (context.event.message.quick_reply.payload) { // eslint-disable-line default-case
-		case 'donate1': // 20 temers
-			value = 20;
-			break;
-		case 'donate2': // 50 temers
-			value = 50;
-			break;
-		case 'donate3': // 100 temers
-			value = 100;
-			break;
-		case 'donate4':
-			await context.sendText('Legal. Clique no link abaixo.');
-			await context.sendText(flow.donation.donateLink);
-			break;
-		}
-		await context.sendText(`você vai doar ${value} reais. Clique no link abaixo.`);
-		await context.sendText(flow.donation.donateLink);
-		await context.sendText(flow.donation.thanks,
-			{ quick_replies: [
-				{
-					content_type: 'text',
-					title: 'OK',
-					payload: 'doarMenu',
-				}
-			]});
-		await context.setState({ dialog: 'prompt' });
-		await context.setState({ dialog: 'doarMenu' });
-		break;
-	case 'whoCanDonate':
-		await context.sendText(flow.whoCanDonate.firstMessage);
-		await context.sendText(flow.whoCanDonate.secondMessage);
-		await context.sendText(flow.whoCanDonate.thirdMessage);
-		await context.sendText(flow.whoCanDonate.fourthMessage,
-			{ quick_replies: [
-				{
-					content_type: 'text',
-					title: 'OK',
-					payload: 'doarMenu',
-				}
-			]});
 		await context.setState({ dialog: 'prompt' });
 	break;
 	case 'listening':
