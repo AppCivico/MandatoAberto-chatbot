@@ -378,9 +378,19 @@ bot.onEvent(async (context) => {
 		// await context.sendText(`${misc.getGreet()}, ${context.session.user.first_name}! ` +
 		await context.sendText(flow.greetings.firstMessage);
 		await context.sendText(flow.greetings.secondMessage);
-		await context.sendText(flow.greetings.thirdMessage);
+		// await context.sendText(flow.greetings.thirdMessage);
 		await context.sendButtonTemplate(flow.mainMenu.menuMsg, flow.mainMenu.promptOptions);
 		await context.setState({ dialog: 'prompt' });
+		break;
+	case 'status':
+		await context.sendText(flow.status.firstMessage);
+		await context.sendText(flow.status.secondMessage);
+		await context.setState({ dialog: 'doarMenu' });
+		break;
+	case 'donation':
+	await context.sendText(flow.donation.firstMessage);
+	await context.sendText(flow.donation.secondMessage, { quick_replies: flow.donation.options });
+	await context.setState({ dialog: 'prompt' });
 		break;
 	case 'listening':
 	// When user enters with text, prompt sends us here
