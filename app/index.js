@@ -399,8 +399,15 @@ bot.onEvent(async (context) => {
 	case 'status':
 	console.log('im status');
 		await context.sendText(flow.status.firstMessage);
-		await context.sendText(flow.status.secondMessage);
-		await context.setState({ dialog: 'doarMenu' });
+		await context.sendText(flow.status.secondMessage,
+			{ quick_replies: [
+				{
+					content_type: 'text',
+					title: 'OK',
+					payload: 'doarMenu',
+				}
+			]});
+		await context.setState({ dialog: 'prompt' });
 		break;
 	case 'donation':
 	console.log('donation');
