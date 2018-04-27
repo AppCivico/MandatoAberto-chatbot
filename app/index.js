@@ -21,7 +21,7 @@ let postbackOptions;
 let pollData = {};
 let recipientData = {};
 
-const limit = (10000 * 0.7);
+const limit = (10000 * 2);
 let timer;
 let userMessage = '';
 let sendIntro = true;
@@ -393,8 +393,6 @@ bot.onEvent(async (context) => {
 		await context.setState({ dialog: 'prompt' });
 	break;
 	case 'listening':
-	// TODO voltar pra 20 segundos
-	// TODO bug: o continuar escrevendo conta como texto
 	// When user enters with text, prompt sends us here
 	// if it's the first message we warn the user that we are listening and wait for 60s for a new message
 	// we keep adding new messages on top of each other until user stops for 60s, then we can save the issue and go back to the menu
