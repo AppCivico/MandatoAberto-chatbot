@@ -184,7 +184,7 @@ bot.onEvent(async (context) => {
 			// Devo já criar uma issue
 			// We go to the listening dialog to wait for others messages
 			if (context.event.message.text === '/doar') {
-					await context.sendText('aaa');
+				await context.setState({ dialog: 'doarMenu' });
 			} else
 				{
 					await context.setState({ dialog: 'listening' });
@@ -371,6 +371,15 @@ bot.onEvent(async (context) => {
 		});
 		await context.setState({ dialog: 'prompt' });
 	break;
+		case 'doarMenu':
+		await context.sendImage(flow.greetings.greetImage);
+		// await context.sendText(`${misc.getGreet()}, ${context.session.user.first_name}! ` +
+		await context.sendText(flow.greetings.firstMessage);
+		await context.sendText(flow.greetings.secondMessage);
+		await context.sendText(flow.greetings.thirdMessage);
+		await context.sendButtonTemplate(flow.mainMenu.menuMsg, flow.mainMenu.promptOptions);
+		await context.setState({ dialog: 'prompt' });
+		break;
 	case 'listening':
 	// When user enters with text, prompt sends us here
 	// if it's the first message we warn the user that we are listening and wait for 60s for a new message
