@@ -1,13 +1,11 @@
 // This class stores text messages, urls and quick_replies options
 
-const emoji = require('node-emoji');
-
 module.exports = {
 	greetings: {
 		greetImage: 'https://votolegal.com.br/logo-voto-legal--89fff09e.png',
 		firstMessage: 'Sou o Bot assistente do projeto Voto Legal.',
 		secondMessage: 'Estou aqui para tirar dúvidas, comunicar metas e facilitar sua doação.',
-		thirdMessage: `Utilize os botões abaixo para interagir ${emoji.get('arrow_down')}`,
+		thirdMessage: `Utilize os botões abaixo para interagir`,
 	},
 	mainMenu: {
 		menuMsg: 'Como posso te ajudar?',
@@ -72,6 +70,6 @@ module.exports = {
 		fourthMessage: 'Todo doador deve ser brasileiro, maior de idade, não possuir nenhuma concessão de serviço público e ter o CPF em situação regular junto a Receita Federal Brasileira, e ser proprietário do cartão de crédito sendo que não pode ser um cartão de crédito corporativo. ',
 	},
 	error: {
-		NoFreeText: `Perdão, eu não entendo o que vocẽ digita! Por favor, só clique nos botões. ${emoji.get('arrow_down')}`,
+		NoFreeText: `Perdão, eu não entendo o que vocẽ digita! Por favor, só clique nos botões.`,
 	},
 };
