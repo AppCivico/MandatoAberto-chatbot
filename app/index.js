@@ -178,6 +178,7 @@ bot.onEvent(async (context) => {
 
 	// Tratando dinâmica de issues
 	if (context.state.dialog == 'prompt') {
+		console.log('on prompt');
 		if (context.event.isQuickReply) {
 			const payload = context.event.message.quick_reply.payload;
 			await context.setState({ dialog: payload });
@@ -374,6 +375,7 @@ bot.onEvent(async (context) => {
 		await context.setState({ dialog: 'prompt' });
 	break;
 		case 'doarMenu':
+		console.log('im here');
 		await context.sendImage(flow.greetings.greetImage);
 		// await context.sendText(`${misc.getGreet()}, ${context.session.user.first_name}! ` +
 		await context.sendText(flow.greetings.firstMessage);
@@ -383,6 +385,7 @@ bot.onEvent(async (context) => {
 		await context.setState({ dialog: 'prompt' });
 		break;
 	case 'status':
+	console.log('im status');
 		await context.sendText(flow.status.firstMessage);
 		await context.sendText(flow.status.secondMessage);
 		await context.setState({ dialog: 'doarMenu' });
