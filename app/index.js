@@ -412,9 +412,16 @@ bot.onEvent(async (context) => {
 	console.log('whoCanDonate');
 		await context.sendText(flow.whoCanDonate.firstMessage);
 		await context.sendText(flow.whoCanDonate.secondMessage);
-		// await context.sendText(flow.whoCanDonate.thirdMessage);
-		// await context.sendText(flow.whoCanDonate.fourthMessage);
-		await context.setState({ dialog: 'doarMenu' });
+		await context.sendText(flow.whoCanDonate.thirdMessage);
+		await context.sendText(flow.whoCanDonate.fourthMessage,
+			{ quick_replies: [
+				{
+					content_type: 'text',
+					title: 'OK',
+					payload: 'doarMenu',
+				}
+			]});
+		await context.setState({ dialog: 'prompt' });
 	break;
 	case 'listening':
 	// When user enters with text, prompt sends us here
