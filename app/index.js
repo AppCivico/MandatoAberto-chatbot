@@ -88,6 +88,11 @@ bot.onEvent(async (context) => {
 					title: 'Dê sua opinião',
 					payload: 'poll',
 				},
+				{
+					content_type: 'text',
+					title: 'Quero ajudar',
+					payload: 'votoLegal',
+				},
 			];
 		} else if (introduction.content && !pollData.questions) {
 			promptOptions = [
@@ -364,6 +369,24 @@ bot.onEvent(async (context) => {
 		await context.sendText('Como posso te ajudar?', {
 			quick_replies: promptOptions,
 		});
+		await context.setState({ dialog: 'prompt' });
+	break;
+	case 'votoLegal':
+		const doarOptions = [
+			{
+				type: 'postback',
+				title: 'Quero doar!',
+				payload: 'mainMenu',
+			},
+			{
+				type: 'postback',
+				title: 'Agora não',
+				payload: 'mainMenu',
+			},
+		];
+		await context.sendText('Estou fazendo uma campanha para minha pré-campanha, e minha meta é de R$ XXX,000.');
+		await context.sendText(' Já consegui R$ XX,00. Seria muito importante sua colaboração!');
+		await context.sendButtonTemplate('Utilizamos a plataforma VotoLegal para realizar as doações:', doarOptions);
 		await context.setState({ dialog: 'prompt' });
 	break;
 	case 'listening':
