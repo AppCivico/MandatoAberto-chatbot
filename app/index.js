@@ -16,6 +16,7 @@ let politicianData;
 let pollAnswer;
 let trajectory;
 let promptOptions;
+let postbackOptions;
 
 let pollData = {};
 let recipientData = {};
@@ -374,7 +375,7 @@ bot.onEvent(async (context) => {
 		await context.setState({ dialog: 'prompt' });
 	break;
 	case 'votoLegal':
-		const doarOptions = [
+		postbackOptions = [
 			{
 				type:	"web_url",
 				url:	"http://ricardoyoung.eokoe.com/candidato/#/doar",
@@ -388,7 +389,7 @@ bot.onEvent(async (context) => {
 		];
 		await context.sendText('Estou fazendo uma campanha para minha pré-campanha, e minha meta é de R$ XXX,000.');
 		await context.sendText(' Já consegui R$ XX,00. Seria muito importante sua colaboração!');
-		await context.sendButtonTemplate('Utilizamos a plataforma VotoLegal para realizar as doações:', doarOptions);
+		await context.sendButtonTemplate('Utilizamos a plataforma VotoLegal para realizar as doações:', postbackOptions);
 		await context.setState({ dialog: 'prompt' });
 	break;
 	case 'listening':
