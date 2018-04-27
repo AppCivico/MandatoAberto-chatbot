@@ -11,6 +11,8 @@ const apiUri = process.env.MANDATOABERTO_API_URL;
 
 const phoneRegex = new RegExp(/^\+55\d{2}(\d{1})?\d{8}$/);
 
+const flow = require('./flow.js');
+
 let articles;
 let politicianData;
 let pollAnswer;
@@ -58,7 +60,7 @@ const bot = new MessengerBot({
 
 bot.setInitialState({});
 
-bot.use(withTyping({ delay: 1000 }));
+// bot.use(withTyping({ delay: 1000 }));
 
 bot.onEvent(async (context) => {
 
