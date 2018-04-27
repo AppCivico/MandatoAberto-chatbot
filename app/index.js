@@ -386,7 +386,9 @@ bot.onEvent(async (context) => {
 		await context.sendText(flow.greetings.firstMessage);
 		await context.sendText(flow.greetings.secondMessage);
 		// await context.sendText(flow.greetings.thirdMessage);
-		await context.sendButtonTemplate(flow.mainMenu.menuMsg, flow.mainMenu.promptOptions);
+		await context.sendText(flow.mainMenu.menuMsg, {
+			quick_replies: flow.mainMenu.promptOptions,
+		});
 		await context.setState({ dialog: 'prompt' });
 		break;
 	case 'status':
@@ -396,10 +398,17 @@ bot.onEvent(async (context) => {
 		await context.setState({ dialog: 'doarMenu' });
 		break;
 	case 'donation':
-	await context.sendText(flow.donation.firstMessage);
-	await context.sendText(flow.donation.secondMessage, { quick_replies: flow.donation.options });
-	await context.setState({ dialog: 'prompt' });
+		await context.sendText(flow.donation.firstMessage);
+		await context.sendText(flow.donation.secondMessage, { quick_replies: flow.donation.options });
+		await context.setState({ dialog: 'prompt' });
 		break;
+	case 'whoCanDonate':
+		await context.sendText(flow.whoCanDonate.firstMessage);
+		await context.sendText(flow.whoCanDonate.secondMessage);
+		await context.sendText(flow.whoCanDonate.thirdMessage);
+		await context.sendText(flow.whoCanDonate.fourthMessage);
+		await context.setState({ dialog: 'mainMenu' });
+	break;
 	case 'listening':
 	// When user enters with text, prompt sends us here
 	// if it's the first message we warn the user that we are listening and wait for 60s for a new message

@@ -11,19 +11,24 @@ module.exports = {
 		menuMsg: 'Como posso te ajudar?',
 		promptOptions: [
 			{
-				type: 'postback',
+				content_type: 'text',
 				title: 'Doação',
 				payload: 'donation',
 			},
 			{
-				type: 'postback',
+				content_type: 'text',
 				title: 'Status',
 				payload: 'status',
 			},
 			{
-				type: 'postback',
+				content_type: 'text',
 				title: 'Quem pode doar?',
 				payload: 'whoCanDonate',
+			},
+			{
+				content_type: 'text',
+				title: 'Voltar',
+				payload: 'mainMenu',
 			},
 		],
 	},
