@@ -181,16 +181,13 @@ bot.onEvent(async (context) => {
 		await context.setState({ dialog: 'greetings' });
 	}
 
-	if (context.state.dialog === 'doarMenu') {
-		await context.setState({ dialog: 'doarMenu' });
-	}
 	// Tratando dinâmica de issues
 	if (context.state.dialog === 'prompt') {
 		console.log('on prompt');
 		if (context.event.isQuickReply) {
 			const payload = context.event.message.quick_reply.payload;
 			await context.setState({ dialog: payload });
-		} if (context.event.isText) {
+		} else if (context.event.isText) {
 			// Ao mandar uma mensagem que não é interpretada como fluxo do chatbot
 			// Devo já criar uma issue
 			// We go to the listening dialog to wait for others messages
@@ -200,6 +197,11 @@ bot.onEvent(async (context) => {
 				{
 					await context.setState({ dialog: 'listening' });
 				}
+			} else {
+				console.log('ahahhaa');
+				console.log(context.state.payload);
+				await context.setState({ dialog: context.state.payload });
+
 			}
 	}
 
@@ -412,7 +414,7 @@ bot.onEvent(async (context) => {
 		await context.sendText(flow.whoCanDonate.secondMessage);
 		await context.sendText(flow.whoCanDonate.thirdMessage);
 		await context.sendText(flow.whoCanDonate.fourthMessage);
-		await context.setState({ dialog: 'doarMenu' });
+		await context.setState({ dialog: 'prompt', payload: 'doarMenu' });
 	break;
 	case 'listening':
 	// When user enters with text, prompt sends us here
