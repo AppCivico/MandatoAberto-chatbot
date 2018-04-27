@@ -435,7 +435,15 @@ bot.onEvent(async (context) => {
 		}
 		await context.sendText(`você vai doar ${value} reais. Clique no link abaixo.`);
 		await context.sendText(flow.donation.donateLink);
-		await context.sendText(flow.donation.thanks);
+		await context.sendText(flow.donation.thanks,
+			{ quick_replies: [
+				{
+					content_type: 'text',
+					title: 'OK',
+					payload: 'doarMenu',
+				}
+			]});
+		await context.setState({ dialog: 'prompt' });
 		await context.setState({ dialog: 'doarMenu' });
 		break;
 	case 'whoCanDonate':
