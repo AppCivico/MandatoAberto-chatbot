@@ -184,7 +184,9 @@ bot.onEvent(async (context) => {
 		if (context.event.isQuickReply) {
 			const payload = context.event.message.quick_reply.payload;
 			await context.setState({ dialog: payload });
-		} if (context.event.isText) {
+		}	else if (context.event.isPostback) {
+			await context.setState({ dialog: context.event.postback.payload });
+		} else if (context.event.isText) {
 			// Ao mandar uma mensagem que não é interpretada como fluxo do chatbot
 			// Devo já criar uma issue
 			// We go to the listening dialog to wait for others messages
@@ -374,8 +376,13 @@ bot.onEvent(async (context) => {
 	case 'votoLegal':
 		const doarOptions = [
 			{
+				type:	"web_url",
+				url:	"https://www.messenger.com",
+				title:"Quero Doar"
+			},
+			{
 				type: 'postback',
-				title: 'Quero doar!',
+				title: 'aaa!',
 				payload: 'mainMenu',
 			},
 			{
