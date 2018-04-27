@@ -36,6 +36,7 @@ module.exports = {
 		firstMessage: 'Para fazer a doação basta tal e tal',
 		secondMessage: 'Clique em uma das opções abaixo para doar:',
 		donateLink: 'http://ricardoyoung.eokoe.com/candidato/#/doar',
+		thanks: 'Obrigado. Agradecemos o seu apoio.',
 		options: [
 			{
 				content_type: 'text',

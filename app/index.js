@@ -397,7 +397,6 @@ bot.onEvent(async (context) => {
 		await context.setState({ dialog: 'prompt' });
 		break;
 	case 'status':
-	console.log('im status');
 		await context.sendText(flow.status.firstMessage);
 		await context.sendText(flow.status.secondMessage,
 			{ quick_replies: [
@@ -415,8 +414,28 @@ bot.onEvent(async (context) => {
 		await context.sendText(flow.donation.secondMessage, { quick_replies: flow.donation.options });
 		await context.setState({ dialog: 'prompt' });
 		break;
+	case 'donate':
+		switch (context.event.message.quick_reply.payload) { // eslint-disable-line default-case
+		case 'donate1': // 20 temers
+			value = 20;
+			break;
+		case 'donate2': // 50 temers
+			value = 50;
+			break;
+		case 'donate3': // 100 temers
+			value = 100;
+			break;
+		case 'donate4':
+			await context.sendText('Legal. Clique no link abaixo.');
+			await context.sendText(flow.donation.donateLink);
+			break;
+		}
+		await context.sendText(`você vai doar ${value} reais. Clique no link abaixo.`);
+		await context.sendText(flow.donation.donateLink);
+		await context.sendText(flow.donation.thanks);
+		await context.setState({ dialog: 'mainMenu' });
+		break;
 	case 'whoCanDonate':
-	console.log('whoCanDonate');
 		await context.sendText(flow.whoCanDonate.firstMessage);
 		await context.sendText(flow.whoCanDonate.secondMessage);
 		await context.sendText(flow.whoCanDonate.thirdMessage);
