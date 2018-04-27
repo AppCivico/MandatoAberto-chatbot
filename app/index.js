@@ -181,8 +181,11 @@ bot.onEvent(async (context) => {
 		await context.setState({ dialog: 'greetings' });
 	}
 
+	if (context.state.dialog === 'doarMenu') {
+		await context.setState({ dialog: 'doarMenu' });
+	}
 	// Tratando dinâmica de issues
-	if (context.state.dialog == 'prompt') {
+	if (context.state.dialog === 'prompt') {
 		console.log('on prompt');
 		if (context.event.isQuickReply) {
 			const payload = context.event.message.quick_reply.payload;
