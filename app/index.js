@@ -381,7 +381,7 @@ bot.onEvent(async (context) => {
 	break;
 		case 'doarMenu':
 		console.log('im here');
-		await context.sendImage(flow.greetings.greetImage);
+		// await context.sendImage(flow.greetings.greetImage);
 		// await context.sendText(`${misc.getGreet()}, ${context.session.user.first_name}! ` +
 		await context.sendText(flow.greetings.firstMessage);
 		await context.sendText(flow.greetings.secondMessage);
@@ -398,11 +398,13 @@ bot.onEvent(async (context) => {
 		await context.setState({ dialog: 'doarMenu' });
 		break;
 	case 'donation':
+	console.log('donation');
 		await context.sendText(flow.donation.firstMessage);
 		await context.sendText(flow.donation.secondMessage, { quick_replies: flow.donation.options });
 		await context.setState({ dialog: 'prompt' });
 		break;
 	case 'whoCanDonate':
+	console.log('whoCanDonate');
 		await context.sendText(flow.whoCanDonate.firstMessage);
 		await context.sendText(flow.whoCanDonate.secondMessage);
 		await context.sendText(flow.whoCanDonate.thirdMessage);
