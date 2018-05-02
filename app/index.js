@@ -37,7 +37,6 @@ recipientData[
 
 const mapPageToAccessToken = (async (pageId) => {
 	politicianData = await MandatoAbertoAPI.getPoliticianData(pageId);
-	console.dir(politicianData);
 	pollData = await MandatoAbertoAPI.getPollData(pageId);
 	trajectory = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'trajectory');
 
@@ -131,7 +130,8 @@ bot.onEvent(async (context) => {
 				},
 			];
 		}
-		if(!politicianData.votolegal_url) {
+		if(politicianData.votolegal_url) { // check if integration to votoLegal exists to add the donation option
+			// politicianData.votolegal_url will be used in a future web_url button to link to the donation page
 			const doarOption = 	{
 					content_type: 'text',
 					title: 'Quero ajudar',
@@ -139,8 +139,6 @@ bot.onEvent(async (context) => {
 				};
 			promptOptions.push(doarOption);
 		}
-		console.log('\npromptOptions');
-		console.dir(promptOptions);
 	};
 
 
