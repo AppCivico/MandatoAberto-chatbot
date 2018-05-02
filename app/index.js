@@ -130,8 +130,8 @@ bot.onEvent(async (context) => {
 				},
 			];
 		}
-		if(politicianData.votolegal_url) { // check if integration to votoLegal exists to add the donation option
-			// politicianData.votolegal_url will be used in a future web_url button to link to the donation page
+		if(politicianData.votolegal_integration.votolegal_url) { // check if integration to votoLegal exists to add the donation option
+			// politicianData.votolegal_integration.votolegal_url will be used in a future web_url button to link to the donation page
 			const doarOption = 	{
 					content_type: 'text',
 					title: 'Quero ajudar',
@@ -382,7 +382,7 @@ bot.onEvent(async (context) => {
 		postbackOptions = [
 			{
 				type:	"web_url",
-				url:	politicianData.votolegal_url,
+				url:	politicianData.votolegal_integration.votolegal_url,
 				title:"Quero Doar"
 			},
 			{
@@ -392,7 +392,7 @@ bot.onEvent(async (context) => {
 			},
 		];
 		await context.sendText('Estou fazendo uma campanha para minha pré-campanha, e minha meta é de R$ XXX,000.');
-		await context.sendText(' Já consegui R$ XX,00. Seria muito importante sua colaboração!');
+		await context.sendText(' Já consegui R$ XXX,00. Seria muito importante sua colaboração!');
 		await context.sendButtonTemplate('Utilizamos a plataforma VotoLegal para realizar as doações:', postbackOptions);
 		await context.setState({ dialog: 'prompt' });
 	break;
@@ -688,3 +688,5 @@ const server = createServer(bot, { verifyToken: config.verifyToken });
 server.listen(process.env.API_PORT, () => {
 	console.log(`server is running on ${process.env.API_PORT} port...`);
 });
+
+// https://dapi.votolegal.com.br/api/candidate/josehernandes#/
