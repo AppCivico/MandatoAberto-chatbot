@@ -37,6 +37,7 @@ recipientData[
 
 const mapPageToAccessToken = (async (pageId) => {
 	politicianData = await MandatoAbertoAPI.getPoliticianData(pageId);
+	console.dir(politicianData);
 	pollData = await MandatoAbertoAPI.getPollData(pageId);
 	trajectory = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'trajectory');
 
