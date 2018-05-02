@@ -345,8 +345,8 @@ bot.onEvent(async (context) => {
 	case 'greetings':
 		// Criando um cidadão
 
-		const values = await VotoLegalAPI.getVotoLegalValues(politicianData.votolegal_integration.votolegal_username);
-		console.log(values);
+		// const valuesaa = await VotoLegalAPI.getVotoLegalValues(politicianData.votolegal_integration.votolegal_username);
+		// console.log(valuesaa);
 		recipientData.fb_id = context.session.user.id;
 		recipientData.name = `${context.session.user.first_name} ${context.session.user.last_name}`;
 		recipientData.gender = context.session.user.gender == 'male' ? 'M' : 'F';
