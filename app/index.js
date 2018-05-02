@@ -137,7 +137,7 @@ bot.onEvent(async (context) => {
 					title: 'Quero ajudar',
 					payload: 'votoLegal',
 				};
-			promptOptions.append(doarOption);
+			promptOptions.push(doarOption);
 		}
 		console.log('\npromptOptions');
 		console.dir(promptOptions);
