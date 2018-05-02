@@ -12,8 +12,16 @@ const apiUri = process.env.MANDATOABERTO_API_URL;
 
 const phoneRegex = new RegExp(/^\+55\d{2}(\d{1})?\d{8}$/);
 
-function formataDinheiro(n) {
-	return "R$ " + n.toFixed(2).replace('.', ',').replace(/(\d)(?=(\d{3})+\,)/g, "$1.");
+function getMoney(str) {
+        return parseInt( str.replace(/[\D]+/g,'') );
+}
+function formatReal(int) {
+        var tmp = int+'';
+        tmp = tmp.replace(/([0-9]{2})$/g, ",$1");
+        if( tmp.length > 6 )
+                tmp = tmp.replace(/([0-9]{3}),([0-9]{2}$)/g, ".$1,$2");
+
+        return tmp;
 }
 
 let articles;
@@ -399,7 +407,7 @@ bot.onEvent(async (context) => {
 			},
 		];
 		const valueLegal = await VotoLegalAPI.getVotoLegalValues(politicianData.votolegal_integration.votolegal_username);
-		await context.sendText(`Estou fazendo uma campanha para minha pré-campanha, e minha meta é de R$${formataDinheiro(valueLegal.candidate.raising_goal)}.`);
+		await context.sendText(`Estou fazendo uma campanha para minha pré-campanha, e minha meta é de R$${formatReal(getMoney(valueLegal.candidate.raising_goal))}.`);
 		await context.sendText(`Já consegui R$${valueLegal.candidate.total_donated / 100}. Seria muito importante sua colaboração!`);
 		await context.sendButtonTemplate('Utilizamos a plataforma VotoLegal para realizar as doações:', postbackOptions);
 		await context.setState({ dialog: 'prompt' });
