@@ -5,7 +5,8 @@ const VotoLegalapiUri = process.env.VOTO_LEGAL_API_URL;
 module.exports = {
 	async getVotoLegalValues(username) {
 		// ?id=josehernandes#/
-		const res = await request(`${VotoLegalapiUri}/api/candidate/?nickname=${username}`);
+		console.log(`${VotoLegalapiUri}/api/candidate/${username}`);
+		const res = await request(`${VotoLegalapiUri}/api/candidate/${username}`);
 		const votolegal = await res.json();
 		return votolegal;
 	},
