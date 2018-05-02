@@ -131,7 +131,8 @@ bot.onEvent(async (context) => {
 				},
 			];
 		}
-		if(politicianData.votolegal_integration.votolegal_url) { // check if integration to votoLegal exists to add the donation option
+		if(politicianData.votolegal_integration.votolegal_url && politicianData.votolegal_integration.votolegal_username) {
+			// check if integration to votoLegal exists to add the donation option
 			// politicianData.votolegal_integration.votolegal_url will be used in a future web_url button to link to the donation page
 			const doarOption = 	{
 					content_type: 'text',
@@ -345,11 +346,6 @@ bot.onEvent(async (context) => {
 	case 'greetings':
 		// Criando um cidadão
 
-		if(politicianData.votolegal_integration.votolegal_username) 
-		{
-			const valuesaa = await VotoLegalAPI.getVotoLegalValues(politicianData.votolegal_integration.votolegal_username);
-			console.log(valuesaa);
-		}
 		recipientData.fb_id = context.session.user.id;
 		recipientData.name = `${context.session.user.first_name} ${context.session.user.last_name}`;
 		recipientData.gender = context.session.user.gender == 'male' ? 'M' : 'F';
@@ -398,6 +394,8 @@ bot.onEvent(async (context) => {
 				payload: 'mainMenu',
 			},
 		];
+		const valuesaa = await VotoLegalAPI.getVotoLegalValues(politicianData.votolegal_integration.votolegal_username);
+		console.log(valuesaa);
 		await context.sendText('Estou fazendo uma campanha para minha pré-campanha, e minha meta é de R$ XXX,000.');
 		await context.sendText(' Já consegui R$ XXX,00. Seria muito importante sua colaboração!');
 		await context.sendButtonTemplate('Utilizamos a plataforma VotoLegal para realizar as doações:', postbackOptions);
