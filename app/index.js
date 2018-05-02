@@ -131,7 +131,7 @@ bot.onEvent(async (context) => {
 				},
 			];
 		}
-		if(politicianData.votolegal_url) {
+		if(!politicianData.votolegal_url) {
 			const doarOption = 	{
 					content_type: 'text',
 					title: 'Quero ajudar',
