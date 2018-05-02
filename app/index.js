@@ -408,7 +408,7 @@ bot.onEvent(async (context) => {
 		];
 		const valueLegal = await VotoLegalAPI.getVotoLegalValues(politicianData.votolegal_integration.votolegal_username);
 		await context.sendText(`Estou fazendo uma campanha para minha pré-campanha, e minha meta é de R$${formatReal(getMoney(valueLegal.candidate.raising_goal))}.`);
-		await context.sendText(`Já consegui R$${formatReal(valueLegal.candidate.total_donated / 100)}. Seria muito importante sua colaboração!`);
+		await context.sendText(`Já consegui R$${formatReal(valueLegal.candidate.total_donated)}. Seria muito importante sua colaboração!`);
 		await context.sendButtonTemplate('Utilizamos a plataforma VotoLegal para realizar as doações:', postbackOptions);
 		await context.setState({ dialog: 'prompt' });
 	break;
