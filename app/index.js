@@ -379,7 +379,7 @@ bot.onEvent(async (context) => {
 		postbackOptions = [
 			{
 				type:	"web_url",
-				url:	"http://ricardoyoung.eokoe.com/candidato/#/doar",
+				url:	politicianData.votolegal_url,
 				title:"Quero Doar"
 			},
 			{
