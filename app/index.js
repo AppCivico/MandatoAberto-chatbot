@@ -345,7 +345,7 @@ bot.onEvent(async (context) => {
 	case 'greetings':
 		// Criando um cidadão
 
-		const values = await VotoLegalAPI.getVotoLegalValues(politicianData.votolegal_integration.votolegal_username);
+		// const values = await VotoLegalAPI.getVotoLegalValues(politicianData.votolegal_integration.votolegal_username);
 
 		recipientData.fb_id = context.session.user.id;
 		recipientData.name = `${context.session.user.first_name} ${context.session.user.last_name}`;
