@@ -4,6 +4,7 @@ const { MessengerBot, FileSessionStore, withTyping } = require('bottender');
 const { createServer } = require('bottender/restify');
 const config = require('./bottender.config.js').messenger;
 const MandatoAbertoAPI = require('./mandatoaberto_api.js');
+const VotoLegalAPI = require('./votolegal_api.js');
 const Articles = require('./utils/articles.js');
 const request = require('requisition');
 
@@ -343,6 +344,9 @@ bot.onEvent(async (context) => {
 	switch (context.state.dialog) {
 	case 'greetings':
 		// Criando um cidadão
+
+		const values = await VotoLegalAPI.getVotoLegalValues(politicianData.votolegal_integration.votolegal_username);
+
 		recipientData.fb_id = context.session.user.id;
 		recipientData.name = `${context.session.user.first_name} ${context.session.user.last_name}`;
 		recipientData.gender = context.session.user.gender == 'male' ? 'M' : 'F';

@@ -60,12 +60,4 @@ module.exports = {
 		const privateReply = await res.json();
 		return privateReply;
 	}
-	//
-	// async getVotoUrl(politician_id) {
-	// 	const res = await request.post(`${apiUri}/api/chatbot/private-reply?politician_id=${politician_id}`);
-	// 	const issue = await res.json();
-	// 	return issue;
-	// 	// /api/chatbot/private-reply?politician_id=${politician_id}
-	// }
-
 };
