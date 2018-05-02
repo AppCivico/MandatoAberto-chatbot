@@ -90,11 +90,6 @@ bot.onEvent(async (context) => {
 					title: 'Dê sua opinião',
 					payload: 'poll',
 				},
-				{
-					content_type: 'text',
-					title: 'Quero ajudar',
-					payload: 'votoLegal',
-				},
 			];
 		} else if (introduction.content && !pollData.questions) {
 			promptOptions = [
@@ -136,6 +131,16 @@ bot.onEvent(async (context) => {
 				},
 			];
 		}
+		if(politicianData.votolegal_url) {
+			const doarOption = 	{
+					content_type: 'text',
+					title: 'Quero ajudar',
+					payload: 'votoLegal',
+				};
+			promptOptions.append(doarOption);
+		}
+		console.log('\npromptOptions');
+		console.dir(promptOptions);
 	};
 
 
