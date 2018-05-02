@@ -1,7 +1,7 @@
 const request = require('requisition');
 
 const VotoLegalapiUri = process.env.VOTO_LEGAL_API_URL;
-console.log(`${VotoLegalapiUri}/api/candidate/${username}`);
+console.log(`${VotoLegalapiUri}/api/candidate/`);
 
 module.exports = {
 	async getVotoLegalValues(username) {
