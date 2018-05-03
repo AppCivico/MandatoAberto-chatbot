@@ -143,16 +143,18 @@ bot.onEvent(async (context) => {
 				},
 			];
 		}
-		if(politicianData.votolegal_integration.votolegal_url && politicianData.votolegal_integration.votolegal_username) {
-			// check if integration to votoLegal exists to add the donation option
-			// politicianData.votolegal_integration.votolegal_url will be used in a future web_url button to link to the donation page
-			const doarOption = 	{
-					content_type: 'text',
-					title: 'Quero ajudar',
-					payload: 'votoLegal',
-				};
-			promptOptions.push(doarOption);
-		}
+    if (politicianData.votolegal_integration2) {
+  		if(politicianData.votolegal_integration.votolegal_url && politicianData.votolegal_integration.votolegal_username) {
+  			// check if integration to votoLegal exists to add the donation option
+  			// politicianData.votolegal_integration.votolegal_url will be used in a future web_url button to link to the donation page
+  			const doarOption = 	{
+  					content_type: 'text',
+  					title: 'Quero ajudar',
+  					payload: 'votoLegal',
+  				};
+  			promptOptions.push(doarOption);
+  		}
+  }
 	};
 
 
