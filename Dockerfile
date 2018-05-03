@@ -1,4 +1,4 @@
-FROM node:8.1.4
+FROM node:latest
 ENV NPM_CONFIG_LOGLEVEL warn
 
 EXPOSE 8080
