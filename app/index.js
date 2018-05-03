@@ -417,7 +417,7 @@ bot.onEvent(async (context) => {
 	// if it's the first message we warn the user that we are listening and wait for 60s for a new message
 	// we keep adding new messages on top of each other until user stops for 60s, then we can save the issue and go back to the menu
 	if(sendIntro === true) {
-		await context.sendText('Entendido! Continue enviando dúvidas, ficamos felizes em responder!');
+		await context.sendText('Vejo que você está escrevendo. Seu contato é muito importante. Quando terminar, entrego sua mensagem para nossa equipe.');
 		sendIntro = false;
 	}
 	await context.typingOn();
