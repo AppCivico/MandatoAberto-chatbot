@@ -430,12 +430,12 @@ bot.onEvent(async (context) => {
 			quick_replies: [
 				{
 					content_type: 'text',
-					title: 'Sim, terminei a mensagem',
+					title: 'Terminei a mensagem',
 					payload: 'mainMenu',
 				},
 				{
 					content_type: 'text',
-					title: 'Não, continuar escrevendo',
+					title: 'Continuar escrevendo',
 					payload: 'listening',
 				},
 			],
