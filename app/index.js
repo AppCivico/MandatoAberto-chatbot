@@ -426,9 +426,15 @@ bot.onEvent(async (context) => {
 	clearTimeout(timer);
 	userMessage = userMessage + context.event.message.text  + ' ';
 	timer = setTimeout( async () => {
-		sendIntro = true;
+    sendIntro = true;
 		const issue_created_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'issue_created');
-		await context.sendText(issue_created_message.content + '\nVocê terminou de escrever sua mensagem?', {
+    let endMessage;
+    if(issue_created_message.content) {
+      endMessage = issue_created_message.content + '\nVocê terminou de escrever sua mensagem?';
+    } else {
+      endMessage = 'Você terminou de escrever sua mensagem?';
+    }
+    await context.sendText(endMessage, {
 			quick_replies: [
 				{
 					content_type: 'text',
