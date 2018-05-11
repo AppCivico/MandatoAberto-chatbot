@@ -429,7 +429,7 @@ bot.onEvent(async (context) => {
     sendIntro = true;
 		const issue_created_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'issue_created');
     let endMessage;
-    if(issue_created_message.content2) {
+    if(issue_created_message.content) {
       endMessage = issue_created_message.content + '\nVocê terminou de escrever sua mensagem?';
     } else {
       endMessage = 'Você terminou de escrever sua mensagem?';
