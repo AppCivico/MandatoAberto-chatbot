@@ -77,7 +77,7 @@ bot.use(withTyping({ delay: 1000 }));
 bot.onEvent(async (context) => {
 
 	function getMenuPrompt() {
-    console.log(sessionStore);
+    console.log(bot.sessionStore);
 		// so we can avoid duplicating code
 		// both of these verifications was on greetings dialog, now they're both at greeting and mainMenu
 		if (politicianData.office.name == 'Outros' || politicianData.office.name == 'Candidato' || politicianData.office.name == 'Candidata') {
