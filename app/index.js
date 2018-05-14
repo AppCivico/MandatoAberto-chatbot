@@ -77,7 +77,6 @@ bot.use(withTyping({ delay: 1000 }));
 bot.onEvent(async (context) => {
 
 	function getMenuPrompt() {
-    console.log(bot.sessionStore);
 		// so we can avoid duplicating code
 		// both of these verifications was on greetings dialog, now they're both at greeting and mainMenu
 		if (politicianData.office.name == 'Outros' || politicianData.office.name == 'Candidato' || politicianData.office.name == 'Candidata') {
@@ -329,8 +328,8 @@ bot.onEvent(async (context) => {
 						recipientData: 'cellphonePrompt',
 					});
 
-					await context.sendText('Desculpa, mas seu telefone não parece estar correto. Não esqueça de incluir o DDD.');
-
+					await context.sendText('Desculpa, mas seu telefone não parece estar correto. Não esqueça de incluir o DDD.' +
+        'Por exemplo: 1199999-8888');
 					await context.sendQuickReplies({ text: 'Vamos tentar de novo?' }, [
 						{
 							content_type: 'text',
