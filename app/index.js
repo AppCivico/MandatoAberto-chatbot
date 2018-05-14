@@ -77,6 +77,7 @@ bot.use(withTyping({ delay: 1000 }));
 bot.onEvent(async (context) => {
 
 	function getMenuPrompt() {
+    console.log(sessionStore);
 		// so we can avoid duplicating code
 		// both of these verifications was on greetings dialog, now they're both at greeting and mainMenu
 		if (politicianData.office.name == 'Outros' || politicianData.office.name == 'Candidato' || politicianData.office.name == 'Candidata') {
@@ -328,7 +329,7 @@ bot.onEvent(async (context) => {
 						recipientData: 'cellphonePrompt',
 					});
 
-					await context.sendText('Desculpa, mas seu telefone não parece estar correto.');
+					await context.sendText('Desculpa, mas seu telefone não parece estar correto. Não esqueça de incluir o DDD.');
 
 					await context.sendQuickReplies({ text: 'Vamos tentar de novo?' }, [
 						{
@@ -497,7 +498,7 @@ break;
 		await context.sendText(`Você pode entrar em contato com ${articles.defined} ${politicianData.office.name} ${politicianData.name} pelos seguintes canais:`);
 
 		if (politicianData.contact.email) {
-			await context.sendText(` - Através do email: ${politicianData.contact.email}`);
+			await context.sendText(` - Através do e-mail: ${politicianData.contact.email}`);
 		}
 		if (politicianData.contact.cellphone) {
 			await context.sendText(` - Através do WhatsApp: ${politicianData.contact.cellphone}`);
@@ -598,7 +599,7 @@ break;
 		}
 		break;
 	case 'pollAnswer':
-		await context.sendQuickReplies({ text: 'Muito obrigado por sua reposta. Você gostaria de deixar seu email e telefone  para nossa equipe?' }, [
+		await context.sendQuickReplies({ text: 'Muito obrigado por sua resposta. Você gostaria de deixar seu e-mail e telefone para nossa equipe?' }, [
 			{
 				content_type: 'text',
 				title: 'Vamos lá!',
@@ -632,7 +633,7 @@ break;
 				});
 				break;
 			case 'cellphone':
-				await context.sendText('Qual é o seu telefone?');
+				await context.sendText('Qual é o seu telefone? Não deixe de incluir o DDD.');
 				await context.setState({
 					dialog: 'recipientData',
 					recipientData: 'cellphone',
