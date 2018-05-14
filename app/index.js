@@ -328,7 +328,7 @@ bot.onEvent(async (context) => {
 						recipientData: 'cellphonePrompt',
 					});
 
-					await context.sendText('Desculpa, mas seu telefone não parece estar correto. Não esqueça de incluir o DDD.' +
+					await context.sendText('Desculpa, mas seu telefone não parece estar correto. Não esqueça de incluir o DDD. ' +
         'Por exemplo: 1199999-8888');
 					await context.sendQuickReplies({ text: 'Vamos tentar de novo?' }, [
 						{
