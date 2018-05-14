@@ -543,7 +543,7 @@ break;
 		await context.setState({ dialog: 'prompt' });
 		break;
 	case 'poll':
-		// Verifico se o cidadão já  a enquete atualmente ativa
+		// Verifico se o cidadão já respondeu a enquete atualmente ativa
 		const recipientAnswer = await MandatoAbertoAPI.getPollAnswer(context.session.user.id, pollData.id);
 		if (trajectory.content && politicianData.contact) {
 			promptOptions = [
