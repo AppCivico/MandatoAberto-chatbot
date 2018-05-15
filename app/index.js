@@ -328,8 +328,8 @@ bot.onEvent(async (context) => {
 						recipientData: 'cellphonePrompt',
 					});
 
-					await context.sendText('Desculpa, mas seu telefone não parece estar correto.');
-
+					await context.sendText('Desculpa, mas seu telefone não parece estar correto. Não esqueça de incluir o DDD. ' +
+        'Por exemplo: 1199999-8888');
 					await context.sendQuickReplies({ text: 'Vamos tentar de novo?' }, [
 						{
 							content_type: 'text',
@@ -426,9 +426,15 @@ bot.onEvent(async (context) => {
 	clearTimeout(timer);
 	userMessage = userMessage + context.event.message.text  + ' ';
 	timer = setTimeout( async () => {
-		sendIntro = true;
+    sendIntro = true;
 		const issue_created_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, 'issue_created');
-		await context.sendText(issue_created_message.content + '\nVocê terminou de escrever sua mensagem?', {
+    let endMessage;
+    if(issue_created_message.content) {
+      endMessage = issue_created_message.content + '\nVocê terminou de escrever sua mensagem?';
+    } else {
+      endMessage = 'Você terminou de escrever sua mensagem?';
+    }
+    await context.sendText(endMessage, {
 			quick_replies: [
 				{
 					content_type: 'text',
@@ -491,7 +497,7 @@ break;
 		await context.sendText(`Você pode entrar em contato com ${articles.defined} ${politicianData.office.name} ${politicianData.name} pelos seguintes canais:`);
 
 		if (politicianData.contact.email) {
-			await context.sendText(` - Através do email: ${politicianData.contact.email}`);
+			await context.sendText(` - Através do e-mail: ${politicianData.contact.email}`);
 		}
 		if (politicianData.contact.cellphone) {
 			await context.sendText(` - Através do WhatsApp: ${politicianData.contact.cellphone}`);
@@ -537,7 +543,7 @@ break;
 		await context.setState({ dialog: 'prompt' });
 		break;
 	case 'poll':
-		// Verifico se o cidadão já  a enquete atualmente ativa
+		// Verifico se o cidadão já respondeu a enquete atualmente ativa
 		const recipientAnswer = await MandatoAbertoAPI.getPollAnswer(context.session.user.id, pollData.id);
 		if (trajectory.content && politicianData.contact) {
 			promptOptions = [
@@ -592,7 +598,7 @@ break;
 		}
 		break;
 	case 'pollAnswer':
-		await context.sendQuickReplies({ text: 'Muito obrigado por sua reposta. Você gostaria de deixar seu email e telefone  para nossa equipe?' }, [
+		await context.sendQuickReplies({ text: 'Muito obrigado por sua resposta. Você gostaria de deixar seu e-mail e telefone para nossa equipe?' }, [
 			{
 				content_type: 'text',
 				title: 'Vamos lá!',
@@ -626,7 +632,7 @@ break;
 				});
 				break;
 			case 'cellphone':
-				await context.sendText('Qual é o seu telefone?');
+				await context.sendText('Qual é o seu telefone? Não deixe de incluir o DDD.');
 				await context.setState({
 					dialog: 'recipientData',
 					recipientData: 'cellphone',
@@ -706,5 +712,3 @@ const server = createServer(bot, { verifyToken: config.verifyToken });
 server.listen(process.env.API_PORT, () => {
 	console.log(`server is running on ${process.env.API_PORT} port...`);
 });
-
-// https://dapi.votolegal.com.br/api/candidate/josehernandes#/
