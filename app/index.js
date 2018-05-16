@@ -427,6 +427,27 @@ bot.onEvent(async (context) => {
 		await context.sendButtonTemplate('Quer fazer parte?', participateOptions);
 		await context.setState({ dialog: 'prompt' });
 	break;
+  case 'WannaHelp':
+  participateOptions = [
+    {
+      type: 'postback',
+      title: 'Quero Doar',
+      payload: 'WannaDonate'
+    },
+    {
+      type: 'postback',
+      title: 'Quero Divulgar',
+      payload: 'WannaDivulgate'
+    },
+    {
+      type: 'postback',
+      title: 'Voltar',
+      payload: 'mainMenu'
+    }
+  ]
+
+  await context.sendButtonTemplate('Muito bom poder contar com você! Como deseja participar?', participateOptions);
+  break;
 	case 'listening':
 	// When user enters with text, prompt sends us here
 	// if it's the first message we warn the user that we are listening and wait for 60s for a new message
