@@ -398,14 +398,14 @@ bot.onEvent(async (context) => {
 	case 'votoLegal':
     participateOptions = [
       {
-        type = 'postback',
-        title = 'Sim',
-        payload = 'WannaHelp'
+        type: 'postback',
+        title: 'Sim',
+        payload: 'WannaHelp'
       },
       {
-        type = 'postback',
-        title = 'Não',
-        payload = 'mainMenu'
+        type: 'postback',
+        title: 'Não',
+        payload: 'mainMenu'
       }
     ];
 		// postbackOptions = [
