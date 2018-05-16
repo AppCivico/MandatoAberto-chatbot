@@ -451,6 +451,7 @@ bot.onEvent(async (context) => {
     await context.sendText(`Já consegui R$${formatReal(valueLegal.candidate.total_donated)} da `+
       `minha meta de R$${formatReal(getMoney(valueLegal.candidate.raising_goal))}.`)
       await context.sendButtonTemplate('Você deseja doar agora?', participateOptions);
+      await context.setState({ dialog: 'prompt' });
   break;
 	case 'listening':
 	// When user enters with text, prompt sends us here
