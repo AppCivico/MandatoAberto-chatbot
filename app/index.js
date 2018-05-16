@@ -30,7 +30,6 @@ let pollAnswer;
 let trajectory;
 let promptOptions;
 let participateOptions;
-let postbackOptions;
 
 let pollData = {};
 let recipientData = {};
@@ -408,18 +407,6 @@ bot.onEvent(async (context) => {
         payload: 'mainMenu'
       }
     ];
-		// postbackOptions = [
-		// 	{
-		// 		type:	"web_url",
-		// 		url:	politicianData.votolegal_integration.votolegal_url,
-		// 		title:"Quero Doar"
-		// 	},
-		// 	{
-		// 		type: 'postback',
-		// 		title: 'Voltar',
-		// 		payload: 'mainMenu',
-		// 	},
-		// ];
 		const valueLegal = await VotoLegalAPI.getVotoLegalValues(politicianData.votolegal_integration.votolegal_username);
     await context.sendText('Você sabia que estamos em pré-campanha e contamos com sua participação?');
     // await context.sendText(`Estou fazendo uma campanha para minha pré-campanha, e minha meta é de R$${formatReal(getMoney(valueLegal.candidate.raising_goal))}.`);
@@ -428,25 +415,44 @@ bot.onEvent(async (context) => {
 		await context.setState({ dialog: 'prompt' });
 	break;
   case 'WannaHelp':
+    participateOptions = [
+      {
+        type: 'postback',
+        title: 'Quero Doar',
+        payload: 'WannaDonate'
+      },
+      {
+        type: 'postback',
+        title: 'Quero Divulgar',
+        payload: 'WannaDivulgate'
+      },
+      {
+        type: 'postback',
+        title: 'Voltar',
+        payload: 'mainMenu'
+      }
+    ]
+    await context.sendButtonTemplate('Muito bom poder contar com você! Como deseja participar?', participateOptions);
+    await context.setState({ dialog: 'prompt' });
+  break;
+  case 'WannaDonate':
   participateOptions = [
-    {
-      type: 'postback',
-      title: 'Quero Doar',
-      payload: 'WannaDonate'
-    },
-    {
-      type: 'postback',
-      title: 'Quero Divulgar',
-      payload: 'WannaDivulgate'
-    },
-    {
-      type: 'postback',
-      title: 'Voltar',
-      payload: 'mainMenu'
-    }
-  ]
-  await context.sendButtonTemplate('Muito bom poder contar com você! Como deseja participar?', participateOptions);
-  await context.setState({ dialog: 'prompt' });
+  	{
+  		type:	"web_url",
+  		url:	politicianData.votolegal_integration.votolegal_url,
+  		title:"Vamos lá!"
+  	},
+  	{
+  		type: 'postback',
+  		title: 'Voltar',
+  		payload: 'WannaHelp',
+  	},
+  ];
+    await context.sendText('Utilizamos a plataforma Voto lega para realizar as doações. '+
+      'Um ambiente seguro e transparente para você realizar sua doação.');
+    await context.sendText(`Já consegui R$${formatReal(valueLegal.candidate.total_donated)} da `+
+      `minha meta de R$${formatReal(getMoney(valueLegal.candidate.raising_goal))}.`)
+      await context.sendButtonTemplate('Você deseja doar agora?', participateOptions);
   break;
 	case 'listening':
 	// When user enters with text, prompt sends us here
