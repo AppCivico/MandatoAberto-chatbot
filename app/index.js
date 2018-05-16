@@ -453,6 +453,23 @@ bot.onEvent(async (context) => {
       await context.sendButtonTemplate('Você deseja doar agora?', participateOptions);
       await context.setState({ dialog: 'prompt' });
   break;
+  case 'WannaDivulgate':
+  participateOptions = [
+    {
+      type:	"web_url",
+      url:	'https://www.facebook.com/profilepicframes?query=Randolfe%20%20doPovo%20Senador%20de%20novo&selected_overlay_id=1762860830463022',
+      title:"Atualizar foto"
+    },
+    {
+      type: 'postback',
+      title: 'Voltar',
+      payload: 'WannaHelp',
+    },
+  ];
+    await context.sendButtonTemplate('Que legal! Seu apoio é muito importante para nós! '+
+    '\nVocê quer mudar foto (avatar) do seu perfil?', participateOptions);
+    await context.setState({ dialog: 'prompt' });
+  break;
 	case 'listening':
 	// When user enters with text, prompt sends us here
 	// if it's the first message we warn the user that we are listening and wait for 60s for a new message
