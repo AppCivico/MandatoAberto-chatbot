@@ -445,7 +445,7 @@ bot.onEvent(async (context) => {
   		payload: 'mainMenu',
   	},
   ];
-    await context.sendText('Utilizamos a plataforma Voto lega para as doações. '+
+    await context.sendText('Utilizamos a plataforma Voto Legal para as doações. '+
       'Um ambiente seguro e transparente para você realizar sua doação.');
       const valueLegal = await VotoLegalAPI.getVotoLegalValues(politicianData.votolegal_integration.votolegal_username);
     await context.sendText(`Já consegui R$${formatReal(valueLegal.candidate.total_donated)} da `+
