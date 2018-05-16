@@ -442,7 +442,7 @@ bot.onEvent(async (context) => {
   	{
   		type: 'postback',
   		title: 'Voltar',
-  		payload: 'WannaHelp',
+  		payload: 'mainMenu',
   	},
   ];
     await context.sendText('Utilizamos a plataforma Voto lega para as doações. '+
@@ -463,7 +463,7 @@ bot.onEvent(async (context) => {
     {
       type: 'postback',
       title: 'Voltar',
-      payload: 'WannaHelp',
+      payload: 'mainMenu',
     },
   ];
     await context.sendButtonTemplate('Que legal! Seu apoio é muito importante para nós! '+
