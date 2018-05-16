@@ -424,7 +424,7 @@ bot.onEvent(async (context) => {
     await context.sendText('Você sabia que estamos em pré-campanha e contamos com sua participação?');
     // await context.sendText(`Estou fazendo uma campanha para minha pré-campanha, e minha meta é de R$${formatReal(getMoney(valueLegal.candidate.raising_goal))}.`);
 		// await context.sendText(`Já consegui R$${formatReal(valueLegal.candidate.total_donated)}. Seria muito importante sua colaboração!`);
-		await context.sendButtonTemplate('Quer fazer parte?', postbackOptions);
+		await context.sendButtonTemplate('Quer fazer parte?', participateOptions);
 		await context.setState({ dialog: 'prompt' });
 	break;
 	case 'listening':
