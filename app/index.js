@@ -445,8 +445,8 @@ bot.onEvent(async (context) => {
       payload: 'mainMenu'
     }
   ]
-
   await context.sendButtonTemplate('Muito bom poder contar com você! Como deseja participar?', participateOptions);
+  await context.setState({ dialog: 'prompt' });
   break;
 	case 'listening':
 	// When user enters with text, prompt sends us here
