@@ -29,6 +29,7 @@ let politicianData;
 let pollAnswer;
 let trajectory;
 let promptOptions;
+let participateOptions;
 let postbackOptions;
 
 let pollData = {};
@@ -149,14 +150,13 @@ bot.onEvent(async (context) => {
   			// politicianData.votolegal_integration.votolegal_url will be used in a future web_url button to link to the donation page
   			const doarOption = 	{
   					content_type: 'text',
-  					title: 'Quero ajudar',
+  					title: 'Participar',
   					payload: 'votoLegal',
   				};
   			promptOptions.push(doarOption);
   		}
   }
 	};
-
 
 	// Abrindo bot através de comentários e posts
 	if (context.event.rawEvent.field == 'feed') {
@@ -396,22 +396,35 @@ bot.onEvent(async (context) => {
 		await context.setState({ dialog: 'prompt' });
 	break;
 	case 'votoLegal':
-		postbackOptions = [
-			{
-				type:	"web_url",
-				url:	politicianData.votolegal_integration.votolegal_url,
-				title:"Quero Doar"
-			},
-			{
-				type: 'postback',
-				title: 'Voltar',
-				payload: 'mainMenu',
-			},
-		];
+    participateOptions = [
+      {
+        type = 'postback',
+        title = 'Sim',
+        payload = 'WannaHelp'
+      },
+      {
+        type = 'postback',
+        title = 'Não',
+        payload = 'mainMenu'
+      }
+    ];
+		// postbackOptions = [
+		// 	{
+		// 		type:	"web_url",
+		// 		url:	politicianData.votolegal_integration.votolegal_url,
+		// 		title:"Quero Doar"
+		// 	},
+		// 	{
+		// 		type: 'postback',
+		// 		title: 'Voltar',
+		// 		payload: 'mainMenu',
+		// 	},
+		// ];
 		const valueLegal = await VotoLegalAPI.getVotoLegalValues(politicianData.votolegal_integration.votolegal_username);
-		await context.sendText(`Estou fazendo uma campanha para minha pré-campanha, e minha meta é de R$${formatReal(getMoney(valueLegal.candidate.raising_goal))}.`);
-		await context.sendText(`Já consegui R$${formatReal(valueLegal.candidate.total_donated)}. Seria muito importante sua colaboração!`);
-		await context.sendButtonTemplate('Utilizamos a plataforma VotoLegal para realizar as doações:', postbackOptions);
+    await context.sendText('Você sabia que estamos em pré-campanha e contamos com sua participação?');
+    // await context.sendText(`Estou fazendo uma campanha para minha pré-campanha, e minha meta é de R$${formatReal(getMoney(valueLegal.candidate.raising_goal))}.`);
+		// await context.sendText(`Já consegui R$${formatReal(valueLegal.candidate.total_donated)}. Seria muito importante sua colaboração!`);
+		await context.sendButtonTemplate('Quer fazer parte?', postbackOptions);
 		await context.setState({ dialog: 'prompt' });
 	break;
 	case 'listening':
