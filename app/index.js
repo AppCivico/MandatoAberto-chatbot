@@ -439,6 +439,11 @@ bot.onEvent(async (context) => {
   		url:	politicianData.votolegal_integration.votolegal_url,
   		title:"Vamos lá!"
   	},
+    {
+      type: 'postback',
+      title: 'Quero Divulgar',
+      payload: 'WannaDivulgate'
+    },
   	{
   		type: 'postback',
   		title: 'Voltar',
@@ -457,8 +462,13 @@ bot.onEvent(async (context) => {
   participateOptions = [
     {
       type:	"web_url",
-      url:	'https://www.facebook.com/profilepicframes?query=Randolfe%20%20doPovo%20Senador%20de%20novo&selected_overlay_id=1762860830463022',
+      url:	'https://www.facebook.com/profilepicframes?query=Randolfe%25do%25Povo%25Senador%25de%25novo&selected_overlay_id=1762860830463022',
       title:"Atualizar foto"
+    },
+    {
+      type: 'postback',
+      title: 'Quero Doar',
+      payload: 'WannaDonate'
     },
     {
       type: 'postback',
