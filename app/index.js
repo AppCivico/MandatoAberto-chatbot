@@ -540,6 +540,18 @@ break;
 				},
 			];
 		}
+    if (politicianData.votolegal_integration) {
+      if(politicianData.votolegal_integration.votolegal_url && politicianData.votolegal_integration.votolegal_username) {
+        // check if integration to votoLegal exists to add the donation option
+        // politicianData.votolegal_integration.votolegal_url will be used in a future web_url button to link to the donation page
+        const doarOption = 	{
+            content_type: 'text',
+            title: 'Participar',
+            payload: 'votoLegal',
+          };
+        promptOptions.push(doarOption);
+      }
+  }
 		await context.sendQuickReplies({ text: `O que mais deseja saber sobre ${articles.defined} ${politicianData.office.name}?` }, promptOptions);
 		await context.setState({ dialog: 'prompt' });
 		break;
@@ -595,6 +607,18 @@ break;
 				},
 			];
 		}
+    if (politicianData.votolegal_integration) {
+      if(politicianData.votolegal_integration.votolegal_url && politicianData.votolegal_integration.votolegal_username) {
+        // check if integration to votoLegal exists to add the donation option
+        // politicianData.votolegal_integration.votolegal_url will be used in a future web_url button to link to the donation page
+        const doarOption = 	{
+            content_type: 'text',
+            title: 'Participar',
+            payload: 'votoLegal',
+          };
+        promptOptions.push(doarOption);
+      }
+  }
 		await context.sendQuickReplies({ text: 'Quer saber mais?' }, promptOptions);
 		await context.setState({ dialog: 'prompt' });
 		break;
@@ -631,6 +655,18 @@ break;
 				},
 			];
 		}
+    if (politicianData.votolegal_integration) {
+      if(politicianData.votolegal_integration.votolegal_url && politicianData.votolegal_integration.votolegal_username) {
+        // check if integration to votoLegal exists to add the donation option
+        // politicianData.votolegal_integration.votolegal_url will be used in a future web_url button to link to the donation page
+        const doarOption = 	{
+            content_type: 'text',
+            title: 'Participar',
+            payload: 'votoLegal',
+          };
+        promptOptions.push(doarOption);
+      }
+  }
 		// Agora a enquete poderá ser respondida via propagação ou via dialogo
 		if (recipientAnswer.recipient_answered >= 1) {
 			await context.sendText('Você já respondeu a enquete atualmente ativa.');
@@ -737,6 +773,18 @@ break;
 				},
 			];
 		}
+    if (politicianData.votolegal_integration) {
+      if(politicianData.votolegal_integration.votolegal_url && politicianData.votolegal_integration.votolegal_username) {
+        // check if integration to votoLegal exists to add the donation option
+        // politicianData.votolegal_integration.votolegal_url will be used in a future web_url button to link to the donation page
+        const doarOption = 	{
+            content_type: 'text',
+            title: 'Participar',
+            payload: 'votoLegal',
+          };
+        promptOptions.push(doarOption);
+      }
+  }
 		await context.sendQuickReplies({ text: 'Quer saber mais?' }, promptOptions);
 		await context.setState({ dialog: 'prompt' });
 		break;
