@@ -34,10 +34,12 @@ let participateOptions;
 let pollData = {};
 let recipientData = {};
 
-const limit = 30;// 10000 * 2;
+const limit = 10000 * 2;
 let timer;
 let userMessage = "";
 let sendIntro = true;
+// areWeListening is used to diferenciate messages that come from
+// the standard flow and messages from comment/post
 let areWeListening = false;
 
 recipientData[
@@ -177,38 +179,13 @@ bot.onEvent(async context => {
     let about_me_text;
     const post_id = context.event.rawEvent.value.post_id;
     const page_id = post_id.substr(0, post_id.indexOf("_"));
+    areWeListening = false;
 
     switch (context.event.rawEvent.value.item) {
       case "comment":
         item = "comment";
         comment_id = context.event.rawEvent.value.comment_id;
         permalink = context.event.rawEvent.value.post.permalink_url;
-        areWeListening = false;
-
-        // recipientData.fb_id = context.session.user.id;
-        // recipientData.name = `${context.session.user.first_name} ${
-        //   context.session.user.last_name
-        // }`;
-        // recipientData.gender = context.session.user.gender == "male" ? "M" : "F";
-        // recipientData.origin_dialog = "greetings";
-        // recipientData.picture = context.session.user.profile_pic;
-        // const recipient = await MandatoAbertoAPI.postRecipient(
-        //   politicianData.user_id,
-        //   recipientData
-        // );
-        // recipientData = {};
-        //
-        // introduction = await MandatoAbertoAPI.getAnswer(
-        //   politicianData.user_id,
-        //   "introduction"
-        // );
-        // let issue_message = await MandatoAbertoAPI.getAnswer(
-        //   politicianData.user_id,
-        //   "issue_acknowledgment"
-        // );
-
-
-
         await MandatoAbertoAPI.postPrivateReply(
           item,
           page_id,
@@ -219,7 +196,6 @@ bot.onEvent(async context => {
         break;
       case "post":
         item = "post";
-
         await MandatoAbertoAPI.postPrivateReply(
           item,
           page_id,
@@ -261,11 +237,9 @@ bot.onEvent(async context => {
       // Ao mandar uma mensagem que não é interpretada como fluxo do chatbot
       // Devo já criar uma issue
       // We go to the listening dialog to wait for others messages
-      if (areWeListening === true) {
-        console.log('Vamos pro listening');
+      if (areWeListening === true) { // check if message came from standard flow or from post/comment
         await context.setState({ dialog: "listening" });
       } else {
-        console.log('Vamos pro mainMenu');
         await context.setState({ dialog: "greetings" });
       }
     }
