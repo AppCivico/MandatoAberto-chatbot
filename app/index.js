@@ -74,6 +74,7 @@ bot.setInitialState({});
 bot.use(withTyping({ delay: 1000 }));
 
 bot.onEvent(async context => {
+
   function getMenuPrompt() {
     // so we can avoid duplicating code
     // both of these verifications was on greetings dialog, now they're both at greeting and mainMenu
@@ -183,6 +184,31 @@ bot.onEvent(async context => {
         areWeListening = false;
         comment_id = context.event.rawEvent.value.comment_id;
         permalink = context.event.rawEvent.value.post.permalink_url;
+
+        // recipientData.fb_id = context.session.user.id;
+        // recipientData.name = `${context.session.user.first_name} ${
+        //   context.session.user.last_name
+        // }`;
+        // recipientData.gender = context.session.user.gender == "male" ? "M" : "F";
+        // recipientData.origin_dialog = "greetings";
+        // recipientData.picture = context.session.user.profile_pic;
+        // const recipient = await MandatoAbertoAPI.postRecipient(
+        //   politicianData.user_id,
+        //   recipientData
+        // );
+        // recipientData = {};
+        //
+        // introduction = await MandatoAbertoAPI.getAnswer(
+        //   politicianData.user_id,
+        //   "introduction"
+        // );
+        // let issue_message = await MandatoAbertoAPI.getAnswer(
+        //   politicianData.user_id,
+        //   "issue_acknowledgment"
+        // );
+
+
+
         await MandatoAbertoAPI.postPrivateReply(
           item,
           page_id,
@@ -240,7 +266,7 @@ bot.onEvent(async context => {
         await context.setState({ dialog: "listening" });
       } else {
         console.log('Vamos pro mainMenu');
-        await context.setState({ dialog: "mainMenu" });
+        await context.setState({ dialog: "greetings" });
       }
     }
   }
