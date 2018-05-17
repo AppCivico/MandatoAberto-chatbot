@@ -183,6 +183,7 @@ bot.onEvent(async context => {
         item = "comment";
         comment_id = context.event.rawEvent.value.comment_id;
         permalink = context.event.rawEvent.value.post.permalink_url;
+        areWeListening = false;
 
         // recipientData.fb_id = context.session.user.id;
         // recipientData.name = `${context.session.user.first_name} ${
@@ -215,7 +216,6 @@ bot.onEvent(async context => {
           comment_id,
           permalink
         );
-        areWeListening = false;
         break;
       case "post":
         item = "post";
