@@ -240,7 +240,7 @@ bot.onEvent(async context => {
         await context.setState({ dialog: "listening" });
       } else {
         console.log('Vamos pro mainMenu');
-        await context.setState({ dialog: mainMenu });
+        await context.setState({ dialog: "mainMenu" });
       }
     }
   }
