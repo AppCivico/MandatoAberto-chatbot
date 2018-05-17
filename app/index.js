@@ -38,6 +38,7 @@ const limit = 30;// 10000 * 2;
 let timer;
 let userMessage = "";
 let sendIntro = true;
+let areWeListening = false;
 
 recipientData[
   ("fb_id", "name", "origin_dialog", "email", "cellphone", "gender")
@@ -76,6 +77,7 @@ bot.onEvent(async context => {
   function getMenuPrompt() {
     // so we can avoid duplicating code
     // both of these verifications was on greetings dialog, now they're both at greeting and mainMenu
+    areWeListening = true;
     if (
       politicianData.office.name == "Outros" ||
       politicianData.office.name == "Candidato" ||
@@ -178,9 +180,9 @@ bot.onEvent(async context => {
     switch (context.event.rawEvent.value.item) {
       case "comment":
         item = "comment";
+        areWeListening = false;
         comment_id = context.event.rawEvent.value.comment_id;
         permalink = context.event.rawEvent.value.post.permalink_url;
-
         await MandatoAbertoAPI.postPrivateReply(
           item,
           page_id,
@@ -233,7 +235,13 @@ bot.onEvent(async context => {
       // Ao mandar uma mensagem que não é interpretada como fluxo do chatbot
       // Devo já criar uma issue
       // We go to the listening dialog to wait for others messages
-      await context.setState({ dialog: "listening" });
+      if (areWeListening === true) {
+        console.log('Vamos pro listening');
+        await context.setState({ dialog: "listening" });
+      } else {
+        console.log('Vamos pro mainMenu');
+        await context.setState({ dialog: mainMenu });
+      }
     }
   }
 
