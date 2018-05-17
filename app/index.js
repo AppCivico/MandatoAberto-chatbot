@@ -181,7 +181,6 @@ bot.onEvent(async context => {
     switch (context.event.rawEvent.value.item) {
       case "comment":
         item = "comment";
-        areWeListening = false;
         comment_id = context.event.rawEvent.value.comment_id;
         permalink = context.event.rawEvent.value.post.permalink_url;
 
@@ -216,6 +215,7 @@ bot.onEvent(async context => {
           comment_id,
           permalink
         );
+        areWeListening = false;
         break;
       case "post":
         item = "post";
