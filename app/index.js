@@ -461,7 +461,8 @@ bot.onEvent(async context => {
         "A qualquer momento você pode digitar uma mensagem e eu enviarei para o gabinete.";
     } else {
       issue_message = issue_message.content;
-    }      await getMenuPrompt();
+    }
+      await getMenuPrompt();
       userMessage = ""; // cleaning up
       let greeting = politicianData.greeting.replace(
         "${user.office.name}",
@@ -513,10 +514,24 @@ bot.onEvent(async context => {
       });
       await context.setState({ dialog: "prompt" });
       break;
-    // case "intermediate":
-    //
-    //
-    //   break;
+    case "intermediate":
+      await context.sendText('Você gostaria de enviar essa mensagem e escrever mais para o gabinete ou conhecer nosso assistente digital?' +
+      'Vocẽ também pode digitar qualquer mensagem que tiver ou utilizar o pequeno menu no canto direito.');
+        promptOptions = [
+          {
+            type: "postback",
+            title: "Mandar mensagem",
+            payload: "listening"
+          },
+          {
+            type: "postback",
+            title: "Conhecer assistente",
+            payload: "mainMenu"
+          }
+        ];
+        await context sendText('Escolha com um dos botões abaixo:', promptOptions);
+        await context.setState({ dialog: "prompt" });
+      break;
     case "votoLegal":
       participateOptions = [
         {
