@@ -78,7 +78,6 @@ bot.setInitialState({});
 bot.use(withTyping({ delay: 1000 }));
 
 bot.onEvent(async context => {
-
   function getMenuPrompt() {
     // so we can avoid duplicating code
     // both of these verifications was on greetings dialog, now they're both at greeting and mainMenu
@@ -239,7 +238,8 @@ bot.onEvent(async context => {
       // Ao mandar uma mensagem que não é interpretada como fluxo do chatbot
       // Devo já criar uma issue
       // We go to the listening dialog to wait for others messages
-      if (areWeListening === true) { // check if message came from standard flow or from post/comment
+      if (areWeListening === true) {
+        // check if message came from standard flow or from post/comment
         await context.setState({ dialog: "listening" });
       } else {
         await context.setState({ dialog: "intermediate" });
@@ -432,36 +432,36 @@ bot.onEvent(async context => {
 
   switch (context.state.dialog) {
     case "greetings":
-    // Criando um cidadão
+      // Criando um cidadão
 
-    recipientData.fb_id = context.session.user.id;
-    recipientData.name = `${context.session.user.first_name} ${
-      context.session.user.last_name
-    }`;
-    recipientData.gender = context.session.user.gender == "male" ? "M" : "F";
-    recipientData.origin_dialog = "greetings";
-    recipientData.picture = context.session.user.profile_pic;
-    recipient = await MandatoAbertoAPI.postRecipient(
-      politicianData.user_id,
-      recipientData
-    );
-    recipientData = {};
+      recipientData.fb_id = context.session.user.id;
+      recipientData.name = `${context.session.user.first_name} ${
+        context.session.user.last_name
+      }`;
+      recipientData.gender = context.session.user.gender == "male" ? "M" : "F";
+      recipientData.origin_dialog = "greetings";
+      recipientData.picture = context.session.user.profile_pic;
+      recipient = await MandatoAbertoAPI.postRecipient(
+        politicianData.user_id,
+        recipientData
+      );
+      recipientData = {};
 
-    introduction = await MandatoAbertoAPI.getAnswer(
-      politicianData.user_id,
-      "introduction"
-    );
-    issue_message = await MandatoAbertoAPI.getAnswer(
-      politicianData.user_id,
-      "issue_acknowledgment"
-    );
+      introduction = await MandatoAbertoAPI.getAnswer(
+        politicianData.user_id,
+        "introduction"
+      );
+      issue_message = await MandatoAbertoAPI.getAnswer(
+        politicianData.user_id,
+        "issue_acknowledgment"
+      );
 
-    if (Object.keys(issue_message).length === 0) {
-      issue_message =
-        "A qualquer momento você pode digitar uma mensagem e eu enviarei para o gabinete.";
-    } else {
-      issue_message = issue_message.content;
-    }
+      if (Object.keys(issue_message).length === 0) {
+        issue_message =
+          "A qualquer momento você pode digitar uma mensagem e eu enviarei para o gabinete.";
+      } else {
+        issue_message = issue_message.content;
+      }
       await getMenuPrompt();
       userMessage = ""; // cleaning up
       let greeting = politicianData.greeting.replace(
@@ -507,7 +507,8 @@ bot.onEvent(async context => {
           "A qualquer momento você pode digitar uma mensagem e eu enviarei para o gabinete.";
       } else {
         issue_message = issue_message.content;
-      }      await getMenuPrompt();
+      }
+      await getMenuPrompt();
       userMessage = ""; // cleaning up
       await context.sendText("Como posso te ajudar?", {
         quick_replies: promptOptions
@@ -515,23 +516,26 @@ bot.onEvent(async context => {
       await context.setState({ dialog: "prompt" });
       break;
     case "intermediate":
-      await context.sendText('Você gostaria de enviar essa mensagem e escrever mais para o gabinete ou conhecer nosso assistente digital? ' +
-      'Vocẽ também pode digitar qualquer mensagem que tiver ou utilizar o pequeno menu no canto direito.');
-        promptOptions = [
-          {
-            type: "postback",
-            title: "Mandar mensagem",
-            payload: "listening"
-          },
-          {
-            type: "postback",
-            title: "Conhecer assistente",
-            payload: "mainMenu"
-          }
-        ];
-        await context.sendText('Escolha com um dos botões abaixo:', promptOptions);
-        await context.resetState();
-        await context.setState({ dialog: "mainMenu" });
+      await context.sendText(
+        "Você gostaria de enviar essa mensagem e escrever mais para o gabinete ou conhecer nosso assistente digital? " +
+          "Vocẽ também pode digitar qualquer mensagem que tiver ou utilizar o pequeno menu no canto direito."
+      );
+      promptOptions = [
+        {
+          content_type: "text",
+          title: "Escrever Mensagem",
+          payload: "listening"
+        },
+        {
+          content_type: "text",
+          title: "Conhcer Assistente",
+          payload: "mainMenu"
+        }
+      ];
+      await context.sendText("Escolha com um dos botões abaixo:", {
+        quick_replies: promptOptions
+      });
+      await context.setState({ dialog: "mainMenu" });
       break;
     case "votoLegal":
       participateOptions = [
