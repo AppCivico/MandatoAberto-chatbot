@@ -529,7 +529,7 @@ bot.onEvent(async context => {
         },
         {
           content_type: "text",
-          title: "Conhcer Assistente",
+          title: "Conhecer Assistente",
           payload: "mainMenu"
         }
       ];
