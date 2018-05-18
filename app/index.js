@@ -530,6 +530,7 @@ bot.onEvent(async context => {
           }
         ];
         await context.sendText('Escolha com um dos botões abaixo:', promptOptions);
+        await context.resetState();
         await context.setState({ dialog: "mainMenu" });
       break;
     case "votoLegal":
