@@ -30,6 +30,8 @@ let pollAnswer;
 let trajectory;
 let promptOptions;
 let participateOptions;
+let recipient;
+let issue_message;
 
 let pollData = {};
 let recipientData = {};
@@ -428,6 +430,7 @@ bot.onEvent(async context => {
     }
   }
 
+
   switch (context.state.dialog) {
     case "greetings":
       // Criando um cidadão
@@ -439,7 +442,7 @@ bot.onEvent(async context => {
       recipientData.gender = context.session.user.gender == "male" ? "M" : "F";
       recipientData.origin_dialog = "greetings";
       recipientData.picture = context.session.user.profile_pic;
-      let recipient = await MandatoAbertoAPI.postRecipient(
+      recipient = await MandatoAbertoAPI.postRecipient(
         politicianData.user_id,
         recipientData
       );
@@ -449,7 +452,7 @@ bot.onEvent(async context => {
         politicianData.user_id,
         "introduction"
       );
-      let issue_message = await MandatoAbertoAPI.getAnswer(
+      issue_message = await MandatoAbertoAPI.getAnswer(
         politicianData.user_id,
         "issue_acknowledgment"
       );
@@ -475,12 +478,13 @@ bot.onEvent(async context => {
       break;
     case "mainMenu": // after issue is created we come back to this dialog
       // introduction and about_me_text aren't declared inside of greetings anymore. What's defined there is accessible here.
+
       recipientData.fb_id = context.session.user.id;
       recipientData.name = `${context.session.user.first_name} ${
         context.session.user.last_name
       }`;
       recipientData.gender = context.session.user.gender == "male" ? "M" : "F";
-      recipientData.origin_dialog = "mainMenu";
+      recipientData.origin_dialog = "greetings";
       recipientData.picture = context.session.user.profile_pic;
       recipient = await MandatoAbertoAPI.postRecipient(
         politicianData.user_id,
@@ -492,7 +496,7 @@ bot.onEvent(async context => {
         politicianData.user_id,
         "introduction"
       );
-      let issue_message = await MandatoAbertoAPI.getAnswer(
+      issue_message = await MandatoAbertoAPI.getAnswer(
         politicianData.user_id,
         "issue_acknowledgment"
       );
@@ -503,8 +507,7 @@ bot.onEvent(async context => {
       } else {
         issue_message = issue_message.content;
       }
-
-
+      
       await getMenuPrompt();
       userMessage = ""; // cleaning up
       await context.sendText("Como posso te ajudar?", {
