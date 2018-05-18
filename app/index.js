@@ -661,11 +661,6 @@ bot.onEvent(async context => {
               content_type: "text",
               title: "Continuar escrevendo",
               payload: "listening"
-            },
-            {
-              content_type: "text",
-              title: "Cancelar",
-              paylaod: "Cancel"
             }
           ]
         });
