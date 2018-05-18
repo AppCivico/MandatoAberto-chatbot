@@ -430,39 +430,42 @@ bot.onEvent(async context => {
     }
   }
 
+  function loadStart() {
+    // Criando um cidadão
+
+    recipientData.fb_id = context.session.user.id;
+    recipientData.name = `${context.session.user.first_name} ${
+      context.session.user.last_name
+    }`;
+    recipientData.gender = context.session.user.gender == "male" ? "M" : "F";
+    recipientData.origin_dialog = "greetings";
+    recipientData.picture = context.session.user.profile_pic;
+    recipient = await MandatoAbertoAPI.postRecipient(
+      politicianData.user_id,
+      recipientData
+    );
+    recipientData = {};
+
+    introduction = await MandatoAbertoAPI.getAnswer(
+      politicianData.user_id,
+      "introduction"
+    );
+    issue_message = await MandatoAbertoAPI.getAnswer(
+      politicianData.user_id,
+      "issue_acknowledgment"
+    );
+
+    if (Object.keys(issue_message).length === 0) {
+      issue_message =
+        "A qualquer momento você pode digitar uma mensagem e eu enviarei para o gabinete.";
+    } else {
+      issue_message = issue_message.content;
+    }
+  }
 
   switch (context.state.dialog) {
     case "greetings":
-      // Criando um cidadão
-
-      recipientData.fb_id = context.session.user.id;
-      recipientData.name = `${context.session.user.first_name} ${
-        context.session.user.last_name
-      }`;
-      recipientData.gender = context.session.user.gender == "male" ? "M" : "F";
-      recipientData.origin_dialog = "greetings";
-      recipientData.picture = context.session.user.profile_pic;
-      recipient = await MandatoAbertoAPI.postRecipient(
-        politicianData.user_id,
-        recipientData
-      );
-      recipientData = {};
-
-      introduction = await MandatoAbertoAPI.getAnswer(
-        politicianData.user_id,
-        "introduction"
-      );
-      issue_message = await MandatoAbertoAPI.getAnswer(
-        politicianData.user_id,
-        "issue_acknowledgment"
-      );
-
-      if (Object.keys(issue_message).length === 0) {
-        issue_message =
-          "A qualquer momento você pode digitar uma mensagem e eu enviarei para o gabinete.";
-      } else {
-        issue_message = issue_message.content;
-      }
+      await loadStart();
       await getMenuPrompt();
       userMessage = ""; // cleaning up
       let greeting = politicianData.greeting.replace(
@@ -479,35 +482,7 @@ bot.onEvent(async context => {
     case "mainMenu": // after issue is created we come back to this dialog
       // introduction and about_me_text aren't declared inside of greetings anymore. What's defined there is accessible here.
 
-      recipientData.fb_id = context.session.user.id;
-      recipientData.name = `${context.session.user.first_name} ${
-        context.session.user.last_name
-      }`;
-      recipientData.gender = context.session.user.gender == "male" ? "M" : "F";
-      recipientData.origin_dialog = "greetings";
-      recipientData.picture = context.session.user.profile_pic;
-      recipient = await MandatoAbertoAPI.postRecipient(
-        politicianData.user_id,
-        recipientData
-      );
-      recipientData = {};
-
-      introduction = await MandatoAbertoAPI.getAnswer(
-        politicianData.user_id,
-        "introduction"
-      );
-      issue_message = await MandatoAbertoAPI.getAnswer(
-        politicianData.user_id,
-        "issue_acknowledgment"
-      );
-
-      if (Object.keys(issue_message).length === 0) {
-        issue_message =
-          "A qualquer momento você pode digitar uma mensagem e eu enviarei para o gabinete.";
-      } else {
-        issue_message = issue_message.content;
-      }
-      
+      await loadStart();
       await getMenuPrompt();
       userMessage = ""; // cleaning up
       await context.sendText("Como posso te ajudar?", {
