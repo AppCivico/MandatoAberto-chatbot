@@ -242,7 +242,7 @@ bot.onEvent(async context => {
       if (areWeListening === true) { // check if message came from standard flow or from post/comment
         await context.setState({ dialog: "listening" });
       } else {
-        await context.setState({ dialog: "mainMenu" });
+        await context.setState({ dialog: "intermediate" });
       }
     }
   }
