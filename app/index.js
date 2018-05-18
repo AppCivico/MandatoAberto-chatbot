@@ -535,7 +535,7 @@ bot.onEvent(async context => {
       await context.sendText("Escolha com um dos botões abaixo:", {
         quick_replies: promptOptions
       });
-      await context.setState({ dialog: "mainMenu" });
+      await context.setState({ dialog: "prompt" });
       break;
     case "votoLegal":
       participateOptions = [
