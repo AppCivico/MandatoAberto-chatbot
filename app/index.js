@@ -516,6 +516,7 @@ bot.onEvent(async context => {
       await context.setState({ dialog: "prompt" });
       break;
     case "intermediate":
+    userMessage = context.event.message.text + " ";
       await context.sendText(
         "Você gostaria de enviar essa mensagem e escrever mais para o gabinete ou conhecer nosso assistente digital? " +
           "Vocẽ também pode digitar qualquer mensagem que tiver ou utilizar o pequeno menu no canto direito."
