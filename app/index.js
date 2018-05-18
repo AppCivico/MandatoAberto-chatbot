@@ -515,7 +515,7 @@ bot.onEvent(async context => {
       await context.setState({ dialog: "prompt" });
       break;
     case "intermediate":
-      await context.sendText('Você gostaria de enviar essa mensagem e escrever mais para o gabinete ou conhecer nosso assistente digital?' +
+      await context.sendText('Você gostaria de enviar essa mensagem e escrever mais para o gabinete ou conhecer nosso assistente digital? ' +
       'Vocẽ também pode digitar qualquer mensagem que tiver ou utilizar o pequeno menu no canto direito.');
         promptOptions = [
           {
@@ -530,7 +530,7 @@ bot.onEvent(async context => {
           }
         ];
         await context.sendText('Escolha com um dos botões abaixo:', promptOptions);
-        await context.setState({ dialog: "prompt" });
+        await context.setState({ dialog: "mainMenu" });
       break;
     case "votoLegal":
       participateOptions = [
