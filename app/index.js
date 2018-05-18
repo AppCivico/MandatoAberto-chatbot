@@ -439,7 +439,7 @@ bot.onEvent(async context => {
       recipientData.gender = context.session.user.gender == "male" ? "M" : "F";
       recipientData.origin_dialog = "greetings";
       recipientData.picture = context.session.user.profile_pic;
-      const recipient = await MandatoAbertoAPI.postRecipient(
+      let recipient = await MandatoAbertoAPI.postRecipient(
         politicianData.user_id,
         recipientData
       );
@@ -482,7 +482,7 @@ bot.onEvent(async context => {
       recipientData.gender = context.session.user.gender == "male" ? "M" : "F";
       recipientData.origin_dialog = "mainMenu";
       recipientData.picture = context.session.user.profile_pic;
-      const recipient = await MandatoAbertoAPI.postRecipient(
+      recipient = await MandatoAbertoAPI.postRecipient(
         politicianData.user_id,
         recipientData
       );
