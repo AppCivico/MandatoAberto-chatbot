@@ -88,6 +88,11 @@ bot.onEvent(async context => {
       politicianData.office.name == "Candidata"
     ) {
       about_me_text = `Sobre ${articles.defined} líder`;
+    } else if (
+      politicianData.office.name == "pré-candidato" ||
+      politicianData.office.name == "pré-candidata"
+    ) {
+      about_me_text = `${articles.defined} ${politicianData.office.name}`;
     } else {
       about_me_text = `Sobre ${articles.defined} ${politicianData.office.name}`;
     }
