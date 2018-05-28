@@ -282,7 +282,6 @@ bot.onEvent(async context => {
   const propagateIdentifier = "pollAnswerPropagate";
   if (context.event.isPostback && context.state.dialog == "pollAnswer") {
     poll_question_option_id = context.event.postback.payload;
-    console.log('user votou em', poll_question_option_id)
     const origin = "dialog";
     await MandatoAbertoAPI.postPollAnswer(
       context.session.user.id,
@@ -839,7 +838,7 @@ bot.onEvent(async context => {
         }
       }
       // Agora a enquete poderá ser respondida via propagação ou via dialogo
-      if (recipientAnswer.recipient_answered >= 1) {
+      if (recipientAnswer.recipient_answered >= 33) { // DONT FORGET TO CHANGE THIS
         await context.sendText("Ah, que pena! Você já respondeu essa enquete.");
         await context.sendButtonTemplate("Se quiser, eu posso te ajudar com outra coisa.", promptOptions);
         await context.setState({ dialog: "prompt" });
