@@ -227,7 +227,7 @@ bot.onEvent(async context => {
   }
 
   // Tratando botão GET STARTED
-  if (context.event.postback && context.event.postback.payload == "greetings") {
+  if (context.event.postback && context.event.postback.payload === "greetings") {
     await context.resetState();
     await context.setState({ dialog: "greetings" });
   }
@@ -887,8 +887,8 @@ bot.onEvent(async context => {
       break;
     case "recipientData":
       if (
-        context.event.postback.payload == "Agora não" ||
-        context.event.postback.payload == "Não"
+        context.event.postback.title == "Agora não" ||
+        context.event.postback.title == "Não"
       ) {
         await context.sendButtonTemplate("Está bem! Posso te ajudar com mais alguma informação?", promptOptions);
 
