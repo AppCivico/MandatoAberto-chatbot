@@ -318,8 +318,9 @@ bot.onEvent(async context => {
       switch (context.state.recipientData) {
         case "email":
           recipientData.fb_id = context.session.user.id;
-          recipientData.email = context.event.message.text;
-          console.log('i am here3');
+          // recipientData.email = context.event.message.text;
+          recipientData.email = context.event.postback.title;
+          console.log('i am here3', recipientData.email);
           await MandatoAbertoAPI.postRecipient(
             politicianData.user_id,
             recipientData
