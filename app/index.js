@@ -189,11 +189,6 @@ bot.onEvent(async context => {
     switch (context.event.rawEvent.value.item) {
       
       case "comment":
-       console.log('inside');
-        // console.log('value', context.event.rawEvent.value);
-        // console.log('raw', context.event.rawEvent);
-        console.log('session', context.session);
-
         item = "comment";
         comment_id = context.event.rawEvent.value.comment_id;
         permalink = context.event.rawEvent.value.post.permalink_url;
@@ -258,6 +253,7 @@ bot.onEvent(async context => {
   }
 
   // Switch de dialogos
+  console.log('session', context.session);
   if (context.event.isPostback && (context.state.dialog === "prompt" || context.event.postback.payload === "greetings")) {
     const payload = context.event.postback.payload;
     await context.setState({ dialog: payload });
