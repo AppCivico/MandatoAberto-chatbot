@@ -235,7 +235,7 @@ bot.onEvent(async context => {
   // Tratando dinâmica de issues
   if (context.state.dialog == "prompt") {
     if (context.event.isPostback) {
-      const payload = context.event.message.postback.payload;
+      const payload = context.event.postback.payload;
       await context.setState({ dialog: payload });
     } else if (context.event.isPostback) {
       await context.setState({ dialog: context.event.postback.payload });
@@ -256,16 +256,16 @@ bot.onEvent(async context => {
   if (
     context.event.isPostback &&
     (context.state.dialog === "prompt" ||
-      context.event.message.postback.payload === "greetings")
+      context.event.postback.payload === "greetings")
   ) {
-    const payload = context.event.message.postback.payload;
+    const payload = context.event.postback.payload;
     await context.setState({ dialog: payload });
   } else if (
     context.event.isPostback &&
     context.state.dialog === "listening"
   ) {
     await context.typingOff();
-    const payload = context.event.message.postback.payload;
+    const payload = context.event.postback.payload;
     if (payload === "mainMenu") {
       await MandatoAbertoAPI.postIssue(
         politicianData.user_id,
