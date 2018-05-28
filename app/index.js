@@ -406,7 +406,7 @@ bot.onEvent(async context => {
             });
 
             await context.sendText(
-              "Desculpa, mas seu telefone não parece estar correto. Não esqueça de incluir o DDD. " +
+              "Desculpe-me, mas seu telefone não parece estar correto. Não esqueça de incluir o DDD. " +
                 "Por exemplo: 1199999-8888"
             );
             await context.sendQuickReplies({ text: "Vamos tentar de novo?" }, [
@@ -522,8 +522,7 @@ bot.onEvent(async context => {
       break;
     case "intermediate":
     userMessage = context.event.message.text + " ";
-      // politicianData = await MandatoAbertoAPI.getPoliticianData(context.event._rawEvent.recipient.id);
-      await context.sendText(`Vocês gostaria de enviar uma mensagem para nossa equipe ou conhecer mais sobre` + 
+      await context.sendText(`Vocês gostaria de enviar uma mensagem para nossa equipe ou conhecer mais sobre ` + 
         `${articles.defined} ${politicianData.office.name} ${politicianData.name}?` +
         `\nSelecione a opção desejada em um dos botões abaixo.`
       );
@@ -898,7 +897,7 @@ bot.onEvent(async context => {
       }
       // Agora a enquete poderá ser respondida via propagação ou via dialogo
       if (recipientAnswer.recipient_answered >= 1) {
-        await context.sendText("Você já respondeu a enquete atualmente ativa.");
+        await context.sendText("Ah que pena! Você já respondeu essa enquete.");
         await context.sendQuickReplies(
           { text: "Se quiser, eu posso te ajudar com outra coisa." },
           promptOptions
