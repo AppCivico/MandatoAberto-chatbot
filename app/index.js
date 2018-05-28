@@ -272,8 +272,9 @@ bot.onEvent(async context => {
     if (context.event.isQuickReply) { // because of the issue response
       const payload = context.event.quick_reply.payload;
       await context.setState({ dialog: payload });
+    } else {
+      await context.setState({ dialog: payload });
     }
-    await context.setState({ dialog: payload });
   }
   // Resposta de enquete
   const propagateIdentifier = "pollAnswerPropagate";
