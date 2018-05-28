@@ -280,7 +280,7 @@ bot.onEvent(async context => {
   }
   // Resposta de enquete
   const propagateIdentifier = "pollAnswerPropagate";
-  if (context.event.isPostback && context.state.dialog == "pollAnswer") {
+  if (context.event.isPostback && context.state.dialog === "pollAnswer") {
     poll_question_option_id = context.event.postback.payload;
     const origin = "dialog";
     await MandatoAbertoAPI.postPollAnswer(
@@ -290,11 +290,11 @@ bot.onEvent(async context => {
     );
   } else if (
     context.event.isPostback &&
-    context.event.message.postback.payload &&
-    context.event.message.postback.payload.includes(propagateIdentifier)
+    context.event.postback.payload &&
+    context.event.postback.payload.includes(propagateIdentifier)
   ) {
     // Tratando resposta da enquete através de propagação
-    const payload = context.event.message.postback.payload;
+    const payload = context.event.postback.payload;
 
     poll_question_option_id = payload.substr(
       payload.indexOf("_") + 1,
@@ -313,7 +313,7 @@ bot.onEvent(async context => {
   }
 
   // Tratando dados adicionais do recipient
-  if (context.state.dialog == "recipientData" && context.state.recipientData) {
+  if (context.state.dialog === "recipientData" && context.state.recipientData) {
     if (context.state.recipientData) {
       switch (context.state.recipientData) {
         case "email":
@@ -403,7 +403,7 @@ bot.onEvent(async context => {
       recipientData.name = `${context.session.user.first_name} ${
         context.session.user.last_name
       }`;
-      recipientData.gender = context.session.user.gender == "male" ? "M" : "F";
+      recipientData.gender = context.session.user.gender === "male" ? "M" : "F";
       recipientData.origin_dialog = "greetings";
       recipientData.picture = context.session.user.profile_pic;
       recipient = await MandatoAbertoAPI.postRecipient(
@@ -447,7 +447,7 @@ bot.onEvent(async context => {
       recipientData.name = `${context.session.user.first_name} ${
         context.session.user.last_name
       }`;
-      recipientData.gender = context.session.user.gender == "male" ? "M" : "F";
+      recipientData.gender = context.session.user.gender === "male" ? "M" : "F";
       recipientData.origin_dialog = "greetings";
       recipientData.picture = context.session.user.profile_pic;
       recipient = await MandatoAbertoAPI.postRecipient(
