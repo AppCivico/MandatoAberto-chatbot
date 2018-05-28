@@ -92,7 +92,7 @@ bot.onEvent(async context => {
       politicianData.office.name == "pré-candidato" ||
       politicianData.office.name == "pré-candidata"
     ) {
-      about_me_text = `Sobre ${articles.defined} ${politicianData.office.name}`;
+      about_me_text = `${articles.defined} ${politicianData.office.name}`;
     } else {
       about_me_text = `Sobre ${articles.defined} ${politicianData.office.name}`;
     }
