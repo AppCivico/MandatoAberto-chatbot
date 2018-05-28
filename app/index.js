@@ -341,7 +341,8 @@ bot.onEvent(async context => {
           );
           await context.setState({
             dialog: "recipientData",
-            recipientData: "cellphonePrompt",
+            // recipientData: "cellphonePrompt",
+            recipientData: "cellphone",
             dataPrompt: ""
           });
           break;
