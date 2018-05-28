@@ -522,6 +522,7 @@ bot.onEvent(async context => {
       break;
     case "intermediate":
     userMessage = context.event.message.text + " ";
+      console.log(context.event.recipient);
       politicianData = await MandatoAbertoAPI.getPoliticianData(context.event.recipient);
       await context.sendText(`Vocês gostaria de enviar uma mensagem para nossa equipe ou conhecer mais sobre` 
         `${articles.defined} ${politicianData.office.name} ${politicianData.name}?`
