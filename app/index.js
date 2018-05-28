@@ -522,10 +522,10 @@ bot.onEvent(async context => {
       break;
     case "intermediate":
     userMessage = context.event.message.text + " ";
-      await context.sendText(
-        `Vocês gostaria de enviar uma mensagem para nossa equipe ou conhecer mais sobre` 
+      politicianData = await MandatoAbertoAPI.getPoliticianData(pageId);
+      await context.sendText(`Vocês gostaria de enviar uma mensagem para nossa equipe ou conhecer mais sobre` 
         `${articles.defined} ${politicianData.office.name} ${politicianData.name}?`
-        `\nSelecione a opção desejada em um dos botões abaixo. `
+        `\nSelecione a opção desejada em um dos botões abaixo.`
       );
       promptOptions = [
         {
