@@ -281,7 +281,7 @@ bot.onEvent(async context => {
   // Resposta de enquete
   const propagateIdentifier = "pollAnswerPropagate";
   if (context.event.isPostback && context.state.dialog == "pollAnswer") {
-    poll_question_option_id = context.event.message.postback.payload;
+    poll_question_option_id = context.event.postback.payload;
     console.log('user votou em', poll_question_option_id)
     const origin = "dialog";
     await MandatoAbertoAPI.postPollAnswer(
