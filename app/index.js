@@ -194,7 +194,8 @@ bot.onEvent(async context => {
         // console.log('value', context.event.rawEvent.value);
         // console.log('raw', context.event.rawEvent);
         // console.log('event', context.event);
-        console.log('context', context);
+        console.log('context', context.getUserField);
+        console.log('context22', context.getUserProfile);
 
         item = "comment";
         comment_id = context.event.rawEvent.value.comment_id;
