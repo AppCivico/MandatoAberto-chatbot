@@ -521,10 +521,14 @@ bot.onEvent(async context => {
       await context.setState({ dialog: "prompt" });
       break;
     case "intermediate":
+      `Você pode entrar em contato com ${articles.defined} ${
+        politicianData.office.name
+        } ${politicianData.name} pelos seguintes canais:`
     userMessage = context.event.message.text + " ";
       await context.sendText(
-        "Você gostaria de enviar essa mensagem e escrever mais para o gabinete ou conhecer nosso assistente digital? " +
-          "Vocẽ também pode digitar qualquer mensagem que tiver ou utilizar o pequeno menu no canto direito."
+        `Vocês gostaria de enviar uma mensagem para nossa equipe ou conhecer mais sobre` 
+        `${articles.defined} ${politicianData.office.name} ${politicianData.name}?`
+        `\nSelecione a opção desejada em um dos botões abaixo. `
       );
       promptOptions = [
         {
@@ -605,8 +609,7 @@ bot.onEvent(async context => {
         }
       ];
       await context.sendText(
-        "Utilizamos a plataforma Voto Legal para as doações. " +
-          "Um ambiente seguro e transparente para você realizar sua doação."
+        "Muito bom! Fico muito feliz com sua contribuição."
       );
       const valueLegal = await VotoLegalAPI.getVotoLegalValues(
         politicianData.votolegal_integration.votolegal_username
