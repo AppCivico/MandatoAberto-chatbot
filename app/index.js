@@ -186,16 +186,13 @@ bot.onEvent(async context => {
     const post_id = context.event.rawEvent.value.post_id;
     const page_id = post_id.substr(0, post_id.indexOf("_"));
     areWeListening = false;
-    console.log('here');
     switch (context.event.rawEvent.value.item) {
       
       case "comment":
        console.log('inside');
         // console.log('value', context.event.rawEvent.value);
         // console.log('raw', context.event.rawEvent);
-        // console.log('event', context.event);
-        console.log('context', context.getUserField());
-        console.log('context22', context.getUserProfile());
+        console.log('session', context.session);
 
         item = "comment";
         comment_id = context.event.rawEvent.value.comment_id;
