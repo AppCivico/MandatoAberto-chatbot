@@ -58,7 +58,7 @@ const mapPageToAccessToken = async pageId => {
 
   // Deve-se indentificar o sexo do representante público
   // e selecionar os artigos (definido e possesivo) adequados
-  if (politicianData.gender == "F") {
+  if (politicianData.gender === "F") {
     articles = Articles.feminine;
   } else {
     articles = Articles.masculine;
@@ -83,14 +83,14 @@ bot.onEvent(async context => {
     // both of these verifications was on greetings dialog, now they're both at greeting and mainMenu
     areWeListening = true;
     if (
-      politicianData.office.name == "Outros" ||
-      politicianData.office.name == "Candidato" ||
-      politicianData.office.name == "Candidata"
+      politicianData.office.name === "Outros" ||
+      politicianData.office.name === "Candidato" ||
+      politicianData.office.name === "Candidata"
     ) {
       about_me_text = `Sobre ${articles.defined} líder`;
     } else if (
-      politicianData.office.name == "pré-candidato" ||
-      politicianData.office.name == "pré-candidata"
+      politicianData.office.name === "pré-candidato" ||
+      politicianData.office.name === "pré-candidata"
     ) {
       about_me_text = `${articles.defined} ${politicianData.office.name}`;
     } else {
@@ -105,12 +105,12 @@ bot.onEvent(async context => {
         // 	payload: 'issue'
         // },
         {
-           type: "postback",
+          type: "postback",
           title: about_me_text,
           payload: "aboutMe"
         },
         {
-           type: "postback",
+          type: "postback",
           title: "Dê sua opinião",
           payload: "poll"
         }
@@ -123,7 +123,7 @@ bot.onEvent(async context => {
         // 	payload: 'issue'
         // },
         {
-           type: "postback",
+          type: "postback",
           title: about_me_text,
           payload: "aboutMe"
         }
@@ -136,7 +136,7 @@ bot.onEvent(async context => {
         // 	payload: 'issue'
         // },
         {
-           type: "postback",
+          type: "postback",
           title: "Dê sua opinião",
           payload: "poll"
         }
@@ -153,7 +153,7 @@ bot.onEvent(async context => {
         // 	payload: 'issue'
         // },
         {
-           type: "postback",
+          type: "postback",
           title: "Contatos",
           payload: "contacts"
         }
@@ -167,7 +167,7 @@ bot.onEvent(async context => {
         // check if integration to votoLegal exists to add the donation option
         // politicianData.votolegal_integration.votolegal_url will be used in a future web_url button to link to the donation page
         const doarOption = {
-           type: "postback",
+          type: "postback",
           title: "Participar",
           payload: "votoLegal"
         };
@@ -177,7 +177,7 @@ bot.onEvent(async context => {
   }
 
   // Abrindo bot através de comentários e posts
-  if (context.event.rawEvent.field == "feed") {
+  if (context.event.rawEvent.field === "feed") {
     let item;
     let comment_id;
     let permalink;
@@ -227,13 +227,13 @@ bot.onEvent(async context => {
   }
 
   // Tratando botão GET STARTED
-  if (context.event.postback && context.event.postback.payload == "greetings") {
+  if (context.event.postback && context.event.postback.payload === "greetings") {
     await context.resetState();
     await context.setState({ dialog: "greetings" });
   }
 
   // Tratando dinâmica de issues
-  if (context.state.dialog == "prompt") {
+  if (context.state.dialog === "prompt") {
     if (context.event.isPostback) {
       const payload = context.event.postback.payload;
       await context.setState({ dialog: payload });
@@ -242,8 +242,8 @@ bot.onEvent(async context => {
     } else if (context.event.isText) {
       // Ao mandar uma mensagem que não é interpretada como fluxo do chatbot
       // Devo já criar uma issue
-      // We go to the listening dialog to wait for others messages
-      if (areWeListening == true) {
+      // We go to the listening dialog to wait for other messages
+      if (areWeListening === true) {
         // check if message came from standard flow or from post/comment
         await context.setState({ dialog: "listening" });
       } else {
@@ -253,20 +253,13 @@ bot.onEvent(async context => {
   }
 
   // Switch de dialogos
-  if (
-    context.event.isPostback &&
-    (context.state.dialog == "prompt" ||
-      context.event.postback.payload == "greetings")
-  ) {
+  if (context.event.isPostback && (context.state.dialog === "prompt" || context.event.postback.payload === "greetings")) {
     const payload = context.event.postback.payload;
     await context.setState({ dialog: payload });
-  } else if (
-    context.event.isPostback &&
-    context.state.dialog == "listening"
-  ) {
+  } else if ( context.event.isPostback && context.state.dialog === "listening" ) {
     await context.typingOff();
     const payload = context.event.postback.payload;
-    if (payload == "mainMenu") {
+    if (payload === "mainMenu") {
       await MandatoAbertoAPI.postIssue(
         politicianData.user_id,
         context.session.user.id,
@@ -280,7 +273,7 @@ bot.onEvent(async context => {
   }
   // Resposta de enquete
   const propagateIdentifier = "pollAnswerPropagate";
-  if (context.event.isPostback && context.state.dialog == "pollAnswer") {
+  if (context.event.isPostback && context.state.dialog === "pollAnswer") {
     poll_question_option_id = context.event.postback.payload;
     const origin = "dialog";
     await MandatoAbertoAPI.postPollAnswer(
@@ -295,7 +288,6 @@ bot.onEvent(async context => {
   ) {
     // Tratando resposta da enquete através de propagação
     const payload = context.event.postback.payload;
-
     poll_question_option_id = payload.substr(
       payload.indexOf("_") + 1,
       payload.length
@@ -306,14 +298,12 @@ bot.onEvent(async context => {
       poll_question_option_id,
       origin
     );
-
     context.setState({ dialog: "pollAnswer" });
-  } else if (context.event.isText && context.state.dialog == "pollAnswer") {
+  } else if (context.event.isText && context.state.dialog === "pollAnswer") {
     await context.setState({ dialog: "listening" });
   }
-
   // Tratando dados adicionais do recipient
-  if (context.state.dialog == "recipientData" && context.state.recipientData) {
+  if (context.state.dialog === "recipientData" && context.state.recipientData) {
     if (context.state.recipientData) {
       switch (context.state.recipientData) {
         case "email":
@@ -401,12 +391,9 @@ bot.onEvent(async context => {
   switch (context.state.dialog) {
     case "greetings":
       // Criando um cidadão
-
       recipientData.fb_id = context.session.user.id;
-      recipientData.name = `${context.session.user.first_name} ${
-        context.session.user.last_name
-      }`;
-      recipientData.gender = context.session.user.gender == "male" ? "M" : "F";
+      recipientData.name = `${context.session.user.first_name} ${ context.session.user.last_name}`;
+      recipientData.gender = context.session.user.gender === "male" ? "M" : "F";
       recipientData.origin_dialog = "greetings";
       recipientData.picture = context.session.user.profile_pic;
       recipient = await MandatoAbertoAPI.postRecipient(
@@ -414,17 +401,9 @@ bot.onEvent(async context => {
         recipientData
       );
       recipientData = {};
-
-      introduction = await MandatoAbertoAPI.getAnswer(
-        politicianData.user_id,
-        "introduction"
-      );
-      issue_message = await MandatoAbertoAPI.getAnswer(
-        politicianData.user_id,
-        "issue_acknowledgment"
-      );
-
-      if (Object.keys(issue_message).length == 0) {
+      introduction = await MandatoAbertoAPI.getAnswer(politicianData.user_id, "introduction");
+      issue_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, "issue_acknowledgment");
+      if (Object.keys(issue_message).length === 0) {
         issue_message =
           "A qualquer momento você pode digitar uma mensagem e eu enviarei para o gabinete.";
       } else {
@@ -447,10 +426,8 @@ bot.onEvent(async context => {
       // Criando um cidadão
 
       recipientData.fb_id = context.session.user.id;
-      recipientData.name = `${context.session.user.first_name} ${
-        context.session.user.last_name
-      }`;
-      recipientData.gender = context.session.user.gender == "male" ? "M" : "F";
+      recipientData.name = `${context.session.user.first_name} ${context.session.user.last_name}`;
+      recipientData.gender = context.session.user.gender === "male" ? "M" : "F";
       recipientData.origin_dialog = "greetings";
       recipientData.picture = context.session.user.profile_pic;
       recipient = await MandatoAbertoAPI.postRecipient(
@@ -468,9 +445,8 @@ bot.onEvent(async context => {
         "issue_acknowledgment"
       );
 
-      if (Object.keys(issue_message).length == 0) {
-        issue_message =
-          "A qualquer momento você pode digitar uma mensagem e eu enviarei para o gabinete.";
+      if (Object.keys(issue_message).length === 0) {
+        issue_message = "A qualquer momento você pode digitar uma mensagem e eu enviarei para o gabinete.";
       } else {
         issue_message = issue_message.content;
       }
@@ -607,7 +583,7 @@ bot.onEvent(async context => {
       // When user enters with text, prompt sends us here
       // if it's the first message we warn the user that we are listening and wait for 60s for a new message
       // we keep adding new messages on top of each other until user stops for 60s, then we can save the issue and go back to the menu
-      if (sendIntro == true) {
+      if (sendIntro === true) {
         await context.sendText(
           "Vejo que você está escrevendo. Seu contato é muito importante. Quando terminar, entrego sua mensagem para nossa equipe."
         );
@@ -887,7 +863,7 @@ bot.onEvent(async context => {
 
       break;
     case "recipientData":
-    if (context.event.postback.title == "Agora não" || context.event.postback.title == "Não") {
+    if (context.event.postback.title === "Agora não" || context.event.postback.title === "Não") {
         await context.sendButtonTemplate("Está bem! Posso te ajudar com mais alguma informação?", promptOptions);
         await context.setState({ dialog: "prompt" });
       } else if (context.state.dataPrompt) {
