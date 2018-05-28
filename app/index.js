@@ -253,7 +253,6 @@ bot.onEvent(async context => {
   }
 
   // Switch de dialogos
-  console.log('session', context.session);
   if (context.event.isPostback && (context.state.dialog === "prompt" || context.event.postback.payload === "greetings")) {
     const payload = context.event.postback.payload;
     await context.setState({ dialog: payload });
