@@ -274,7 +274,7 @@ bot.onEvent(async context => {
       );
       userMessage = "";
     } else {
-      context.event.postback.title = "";
+      context.event.message.text = "";
     }
     await context.setState({ dialog: payload });
   }
@@ -318,8 +318,7 @@ bot.onEvent(async context => {
       switch (context.state.recipientData) {
         case "email":
           recipientData.fb_id = context.session.user.id;
-          // recipientData.email = context.event.message.text;
-          recipientData.email = context.event.postback.title;
+          recipientData.email = context.event.message.text;
           console.log('i am here3', recipientData.email);
           await MandatoAbertoAPI.postRecipient(
             politicianData.user_id,
