@@ -274,7 +274,7 @@ bot.onEvent(async context => {
       );
       userMessage = "";
     } else {
-      context.event.message.text = "";
+      context.event.postback.title = "";
     }
     await context.setState({ dialog: payload });
   }
