@@ -339,10 +339,11 @@ bot.onEvent(async context => {
               }
             ]
           );
+          console.log('i am here2');
           await context.setState({
             dialog: "recipientData",
-            recipientData: "cellphonePrompt",
-            dataPrompt: ""
+            recipientData: "cellphonePrompt"
+            // dataPrompt: ""
           });
           break;
         case "cellphone":
@@ -886,12 +887,11 @@ bot.onEvent(async context => {
 
       break;
     case "recipientData":
-      if (context.event.postback) {
     if (context.event.postback.title == "Agora não" || context.event.postback.title == "Não") {
         await context.sendButtonTemplate("Está bem! Posso te ajudar com mais alguma informação?", promptOptions);
-
         await context.setState({ dialog: "prompt" });
-      } } else if (context.state.dataPrompt) {
+      } else if (context.state.dataPrompt) {
+        console.log('asdasd');
         switch (context.state.dataPrompt) {
           case "email":
             await context.sendText("Qual é o seu e-mail?");
@@ -901,7 +901,6 @@ bot.onEvent(async context => {
             });
             break;
           case "cellphone":
-            console.log('asdasd');
             await context.sendText(
               "Qual é o seu telefone? Não deixe de incluir o DDD."
             );
