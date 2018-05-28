@@ -521,7 +521,7 @@ bot.onEvent(async context => {
       await context.setState({ dialog: "prompt" });
       break;
     case "intermediate":
-    userMessage = context.event.message.text + " ";
+    // userMessage = context.event.message.text + " ";
       await context.sendText(`Vocês gostaria de enviar uma mensagem para nossa equipe ou conhecer mais sobre ` + 
         `${articles.defined} ${politicianData.office.name} ${politicianData.name}?` +
         `\nSelecione a opção desejada em um dos botões abaixo.`
