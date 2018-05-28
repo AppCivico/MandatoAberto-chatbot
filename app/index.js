@@ -233,7 +233,7 @@ bot.onEvent(async context => {
   }
 
   // Tratando dinâmica de issues
-  if (context.state.dialog == "prompt") {
+  if (context.state.dialog === "prompt") {
     if (context.event.isPostback) {
       const payload = context.event.postback.payload;
       await context.setState({ dialog: payload });
@@ -319,7 +319,7 @@ bot.onEvent(async context => {
         case "email":
           recipientData.fb_id = context.session.user.id;
           recipientData.email = context.event.message.text;
-          console.log('o email do user é:', recipientData.email);
+          console.log('i am here3');
           await MandatoAbertoAPI.postRecipient(
             politicianData.user_id,
             recipientData
@@ -346,6 +346,7 @@ bot.onEvent(async context => {
           });
           break;
         case "cellphone":
+          console.log('i am here2');
           recipientData.fb_id = context.session.user.id;
           recipientData.cellphone = context.event.message.text;
           recipientData.cellphone = recipientData.cellphone.replace(
@@ -386,6 +387,7 @@ bot.onEvent(async context => {
           recipientData = {};
           break;
         case "cellphonePrompt":
+        console.log('i am here');
           await context.setState({
             dialog: "recipientData",
             dataPrompt: "cellphone"
