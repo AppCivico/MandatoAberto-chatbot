@@ -521,9 +521,6 @@ bot.onEvent(async context => {
       await context.setState({ dialog: "prompt" });
       break;
     case "intermediate":
-      `Você pode entrar em contato com ${articles.defined} ${
-        politicianData.office.name
-        } ${politicianData.name} pelos seguintes canais:`
     userMessage = context.event.message.text + " ";
       await context.sendText(
         `Vocês gostaria de enviar uma mensagem para nossa equipe ou conhecer mais sobre` 
