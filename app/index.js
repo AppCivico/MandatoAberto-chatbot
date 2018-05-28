@@ -863,7 +863,7 @@ bot.onEvent(async context => {
 
       break;
     case "recipientData":
-    if (context.event.postback.title === "Agora não" || context.event.postback.title === "Não") {
+    if (context.event.postback && (context.event.postback.title === "Agora não" || context.event.postback.title === "Não")) {
         await context.sendButtonTemplate("Está bem! Posso te ajudar com mais alguma informação?", promptOptions);
         await context.setState({ dialog: "prompt" });
       } else if (context.state.dataPrompt) {
