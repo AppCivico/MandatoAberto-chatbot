@@ -319,6 +319,7 @@ bot.onEvent(async context => {
         case "email":
           recipientData.fb_id = context.session.user.id;
           recipientData.email = context.event.message.text;
+          console.log('o email do user é:', recipientData.email);
           await MandatoAbertoAPI.postRecipient(
             politicianData.user_id,
             recipientData
