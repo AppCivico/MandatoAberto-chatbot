@@ -256,7 +256,7 @@ bot.onEvent(async context => {
   if (
     context.event.isQuickReply &&
     (context.state.dialog == "prompt" ||
-      context.event.message.quick_reply.payload == "greetings")
+      context.event.message.quick_reply.payload === "greetings")
   ) {
     const payload = context.event.message.quick_reply.payload;
     await context.setState({ dialog: payload });
@@ -360,11 +360,8 @@ bot.onEvent(async context => {
           );
           recipientData = {};
 
-          await context.sendQuickReplies(
-            {
-              text:
-                "Legal, agora quer me informar seu telefone, para lhe manter informado sobre outras enquetes?"
-            },
+
+          await context.sendButtonTemplate("Legal, agora quer me informar seu telefone, para lhe manter informado sobre outras enquetes?",
             [
               {
                 content_type: "text",
@@ -409,7 +406,7 @@ bot.onEvent(async context => {
               "Desculpe-me, mas seu telefone não parece estar correto. Não esqueça de incluir o DDD. " +
                 "Por exemplo: 1199999-8888"
             );
-            await context.sendQuickReplies({ text: "Vamos tentar de novo?" }, [
+            await context.sendButtonTemplate("Vamos tentar de novo?", [
               {
                 content_type: "text",
                 title: "Sim",
@@ -523,9 +520,7 @@ bot.onEvent(async context => {
     case "intermediate":
     // userMessage = context.event.message.text + " ";
       await context.sendText(`Vocês gostaria de enviar uma mensagem para nossa equipe ou conhecer mais sobre ` + 
-        `${articles.defined} ${politicianData.office.name} ${politicianData.name}?` +
-        `\nSelecione a opção desejada em um dos botões abaixo.`
-      );
+        `${articles.defined} ${politicianData.office.name} ${politicianData.name}?`);
       promptOptions = [
         {
           content_type: "text",
@@ -538,7 +533,7 @@ bot.onEvent(async context => {
           payload: "mainMenu"
         }
       ];
-      await context.sendText("Escolha com um dos botões abaixo:", {
+      await context.sendText("elecione a opção desejada em um dos botões abaixo:", {
         quick_replies: promptOptions
       });
       await context.setState({ dialog: "prompt" });
@@ -743,14 +738,7 @@ bot.onEvent(async context => {
           promptOptions.push(doarOption);
         }
       }
-      await context.sendQuickReplies(
-        {
-          text: `O que mais deseja saber sobre ${articles.defined} ${
-            politicianData.office.name
-          }?`
-        },
-        promptOptions
-      );
+      await context.sendButtonTemplate(`O que mais deseja saber sobre ${articles.defined} ${politicianData.office.name}?`, promptOptions);
       await context.setState({ dialog: "prompt" });
       break;
     case "contacts":
@@ -838,10 +826,7 @@ bot.onEvent(async context => {
           promptOptions.push(doarOption);
         }
       }
-      await context.sendQuickReplies(
-        { text: "Quer saber mais?" },
-        promptOptions
-      );
+      await context.sendButtonTemplate("Quer saber mais?", promptOptions);
       await context.setState({ dialog: "prompt" });
       break;
     case "poll":
@@ -898,17 +883,13 @@ bot.onEvent(async context => {
       // Agora a enquete poderá ser respondida via propagação ou via dialogo
       if (recipientAnswer.recipient_answered >= 1) {
         await context.sendText("Ah que pena! Você já respondeu essa enquete.");
-        await context.sendQuickReplies(
-          { text: "Se quiser, eu posso te ajudar com outra coisa." },
-          promptOptions
-        );
+        await context.sendButtonTemplate("Se quiser, eu posso te ajudar com outra coisa.", promptOptions);
         await context.setState({ dialog: "prompt" });
       } else {
         await context.sendText(
           "Quero conhecer você melhor. Deixe sua resposta e participe deste debate."
         );
-        await context.sendQuickReplies(
-          { text: `Pergunta: ${pollData.questions[0].content}` },
+        await context.sendButtonTemplate(`Pergunta: ${pollData.questions[0].content}` ,
           [
             {
               content_type: "text",
@@ -926,11 +907,7 @@ bot.onEvent(async context => {
       }
       break;
     case "pollAnswer":
-      await context.sendQuickReplies(
-        {
-          text:
-            "Muito obrigado por sua resposta. Você gostaria de deixar seu e-mail e telefone para nossa equipe?"
-        },
+      await context.sendButtonTemplate( "Muito obrigado por sua resposta. Você gostaria de deixar seu e-mail e telefone para nossa equipe?",
         [
           {
             content_type: "text",
@@ -956,10 +933,7 @@ bot.onEvent(async context => {
         context.event.message.text == "Agora não" ||
         context.event.message.text == "Não"
       ) {
-        await context.sendQuickReplies(
-          { text: "Está bem! Posso te ajudar com mais alguma informação?" },
-          promptOptions
-        );
+        await context.sendButtonTemplate("Está bem! Posso te ajudar com mais alguma informação?", promptOptions);
 
         await context.setState({ dialog: "prompt" });
       } else if (context.state.dataPrompt) {
@@ -985,10 +959,7 @@ bot.onEvent(async context => {
             break;
           case "end":
             await context.sendText("Pronto, já guardei seus dados.");
-            await context.sendQuickReplies(
-              { text: "Quer saber mais?" },
-              promptOptions
-            );
+            await context.sendButtonTemplate("Quer saber mais?", promptOptions);
             await context.setState({ dialog: "prompt" });
             break;
         }
@@ -1041,10 +1012,7 @@ bot.onEvent(async context => {
           promptOptions.push(doarOption);
         }
       }
-      await context.sendQuickReplies(
-        { text: "Quer saber mais?" },
-        promptOptions
-      );
+      await context.sendButtonTemplate("Quer saber mais?" , promptOptions);
       await context.setState({ dialog: "prompt" });
       break;
     case "issue":
