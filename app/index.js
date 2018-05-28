@@ -587,7 +587,9 @@ bot.onEvent(async context => {
       }
       await context.typingOn();
       clearTimeout(timer);
+      if (context.event.message) {
       userMessage = userMessage + context.event.message.text + " ";
+      }
       timer = setTimeout(async () => {
         sendIntro = true;
         const issue_created_message = await MandatoAbertoAPI.getAnswer(
