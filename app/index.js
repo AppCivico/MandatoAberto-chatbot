@@ -92,7 +92,7 @@ bot.onEvent(async context => {
       politicianData.office.name == "pré-candidato" ||
       politicianData.office.name == "pré-candidata"
     ) {
-      about_me_text = `${articles.defined} ${politicianData.office.name}`;
+      about_me_text = `Sobre ${articles.defined} ${politicianData.office.name}`;
     } else {
       about_me_text = `Sobre ${articles.defined} ${politicianData.office.name}`;
     }
@@ -688,7 +688,7 @@ bot.onEvent(async context => {
           // check if integration to votoLegal exists to add the donation option
           // politicianData.votolegal_integration.votolegal_url will be used in a future web_url button to link to the donation page
           const doarOption = {
-             type: "postback",
+            type: "postback",
             title: "Participar",
             payload: "votoLegal"
           };
