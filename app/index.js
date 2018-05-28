@@ -269,6 +269,10 @@ bot.onEvent(async context => {
     } else if (context.event.message) {
         context.event.message.text = "";
     }
+    if (context.event.isQuickReply) { // because of the issue response
+      const payload = context.event.quick_reply.payload;
+      await context.setState({ dialog: payload });
+    }
     await context.setState({ dialog: payload });
   }
   // Resposta de enquete
