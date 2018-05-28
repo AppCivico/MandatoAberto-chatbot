@@ -266,8 +266,8 @@ bot.onEvent(async context => {
         userMessage
       );
       userMessage = "";
-    } else {
-      context.event.message.text = "";
+    } else if (context.event.message) {
+        context.event.message.text = "";
     }
     await context.setState({ dialog: payload });
   }
@@ -309,7 +309,6 @@ bot.onEvent(async context => {
         case "email":
           recipientData.fb_id = context.session.user.id;
           recipientData.email = context.event.message.text;
-          console.log('i am here3', recipientData.email);
           await MandatoAbertoAPI.postRecipient(
             politicianData.user_id,
             recipientData
@@ -329,7 +328,6 @@ bot.onEvent(async context => {
               }
             ]
           );
-          console.log('i am here2');
           await context.setState({
             recipientData: "cellphonePrompt",
             dialog: "recipientData",
@@ -337,7 +335,6 @@ bot.onEvent(async context => {
           });
           break;
         case "cellphone":
-          console.log('i am here2');
           recipientData.fb_id = context.session.user.id;
           recipientData.cellphone = context.event.message.text;
           recipientData.cellphone = recipientData.cellphone.replace(
@@ -378,7 +375,6 @@ bot.onEvent(async context => {
           recipientData = {};
           break;
         case "cellphonePrompt":
-        console.log('i am here');
           await context.setState({
             dialog: "recipientData",
             dataPrompt: "cellphone"
@@ -815,7 +811,7 @@ bot.onEvent(async context => {
         }
       }
       // Agora a enquete poderá ser respondida via propagação ou via dialogo
-      if (recipientAnswer.recipient_answered >= 33) { // DONT FORGET TO CHANGE THIS
+      if (recipientAnswer.recipient_answered >= 1) {
         await context.sendText("Ah, que pena! Você já respondeu essa enquete.");
         await context.sendButtonTemplate("Se quiser, eu posso te ajudar com outra coisa.", promptOptions);
         await context.setState({ dialog: "prompt" });
@@ -867,7 +863,6 @@ bot.onEvent(async context => {
         await context.sendButtonTemplate("Está bem! Posso te ajudar com mais alguma informação?", promptOptions);
         await context.setState({ dialog: "prompt" });
       } else if (context.state.dataPrompt) {
-        console.log('asdasd');
         switch (context.state.dataPrompt) {
           case "email":
             await context.sendText("Qual é o seu e-mail?");
