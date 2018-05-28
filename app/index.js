@@ -238,7 +238,7 @@ bot.onEvent(async context => {
       const payload = context.event.postback.payload;
       await context.setState({ dialog: payload });
     } else if (context.event.isQuickReply) {
-      await context.setState({ dialog: context.event.quick_reply.payload });
+      await context.setState({ dialog: context.event.message.quick_reply.payload });
     } else if (context.event.isText) {
       // Ao mandar uma mensagem que não é interpretada como fluxo do chatbot
       // Devo já criar uma issue
