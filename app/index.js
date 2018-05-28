@@ -24,6 +24,7 @@ function formatReal(int) {
   return tmp;
 }
 
+// nano messenger\:1938538852857638.json
 let articles;
 let politicianData;
 let pollAnswer;
@@ -79,8 +80,7 @@ bot.use(withTyping({ delay: 1000 }));
 
 bot.onEvent(async context => {
   function getMenuPrompt() {
-    // so we can avoid duplicating code
-    // both of these verifications was on greetings dialog, now they're both at greeting and mainMenu
+    // both of these verifications were on greetings dialog, now they're both at greeting and mainMenu
     areWeListening = true;
     if (
       politicianData.office.name === "Outros" ||
@@ -185,6 +185,7 @@ bot.onEvent(async context => {
     let about_me_text;
     const post_id = context.event.rawEvent.value.post_id;
     const page_id = post_id.substr(0, post_id.indexOf("_"));
+    console.log(context);
     areWeListening = false;
 
     switch (context.event.rawEvent.value.item) {
