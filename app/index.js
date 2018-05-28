@@ -280,8 +280,9 @@ bot.onEvent(async context => {
   }
   // Resposta de enquete
   const propagateIdentifier = "pollAnswerPropagate";
-  if (context.event.isQuickReply && context.state.dialog == "pollAnswer") {
-    poll_question_option_id = context.event.message.quick_reply.payload;
+  if (context.event.isPostback && context.state.dialog == "pollAnswer") {
+    poll_question_option_id = context.event.message.postback.payload;
+    console.log('user votou em', poll_question_option_id)
     const origin = "dialog";
     await MandatoAbertoAPI.postPollAnswer(
       context.session.user.id,
@@ -849,12 +850,12 @@ bot.onEvent(async context => {
         await context.sendButtonTemplate(`Pergunta: ${pollData.questions[0].content}` ,
           [
             {
-               type: "postback",
+              type: "postback",
               title: pollData.questions[0].options[0].content,
               payload: `${pollData.questions[0].options[0].id}`
             },
             {
-               type: "postback",
+              type: "postback",
               title: pollData.questions[0].options[1].content,
               payload: `${pollData.questions[0].options[1].id}`
             }
@@ -867,12 +868,12 @@ bot.onEvent(async context => {
       await context.sendButtonTemplate( "Muito obrigado por sua resposta. Você gostaria de deixar seu e-mail e telefone para nossa equipe?",
         [
           {
-             type: "postback",
+            type: "postback",
             title: "Vamos lá!",
             payload: "recipientData"
           },
           {
-             type: "postback",
+            type: "postback",
             title: "Agora não",
             payload: "recipientData"
           }
@@ -927,12 +928,12 @@ bot.onEvent(async context => {
       if (pollData.questions && politicianData.contact) {
         promptOptions = [
           {
-             type: "postback",
+            type: "postback",
             title: "Dê sua opinião",
             payload: "poll"
           },
           {
-             type: "postback",
+            type: "postback",
             title: "Contatos",
             payload: "contacts"
           }
@@ -940,7 +941,7 @@ bot.onEvent(async context => {
       } else if (pollData.questions && !politicianData.contact) {
         promptOptions = [
           {
-             type: "postback",
+            type: "postback",
             title: "Dê sua opinião",
             payload: "poll"
           }
@@ -948,7 +949,7 @@ bot.onEvent(async context => {
       } else if (!pollData.questions && politicianData.contact) {
         promptOptions = [
           {
-             type: "postback",
+            type: "postback",
             title: "Contatos",
             payload: "contacts"
           }
@@ -962,7 +963,7 @@ bot.onEvent(async context => {
           // check if integration to votoLegal exists to add the donation option
           // politicianData.votolegal_integration.votolegal_url will be used in a future web_url button to link to the donation page
           const doarOption = {
-             type: "postback",
+            type: "postback",
             title: "Participar",
             payload: "votoLegal"
           };
@@ -986,7 +987,7 @@ bot.onEvent(async context => {
       );
       await context.sendButtonTemplate(issue_created_message.content, [
           {
-             type: "postback",
+            type: "postback",
             title: "Voltar ao início",
             payload: "mainMenu"
           }
