@@ -462,12 +462,12 @@ bot.onEvent(async context => {
         `${articles.defined} ${politicianData.office.name} ${politicianData.name}?`);
       promptOptions = [
         {
-           type: "postback",
+          type: "postback",
           title: "Escrever Mensagem",
           payload: "listening"
         },
         {
-           type: "postback",
+          type: "postback",
           title: "Conhecer Assistente",
           payload: "mainMenu"
         }
@@ -611,12 +611,12 @@ bot.onEvent(async context => {
         }
         await context.sendButtonTemplate(endMessage, [
             {
-               type: "postback",
+              type: "postback",
               title: "Terminei a mensagem",
               payload: "mainMenu"
             },
             {
-               type: "postback",
+              type: "postback",
               title: "Continuar escrevendo",
               payload: "listening"
             }
@@ -633,12 +633,12 @@ bot.onEvent(async context => {
       if (trajectory.content && pollData.questions) {
         promptOptions = [
           {
-             type: "postback",
+            type: "postback",
             title: "Trajetória",
             payload: "trajectory"
           },
           {
-             type: "postback",
+            type: "postback",
             title: "Contatos",
             payload: "contacts"
           }
@@ -646,7 +646,7 @@ bot.onEvent(async context => {
       } else if (trajectory.content && !pollData.questions) {
         promptOptions = [
           {
-             type: "postback",
+            type: "postback",
             title: "Trajetória",
             payload: "trajectory"
           }
@@ -654,7 +654,7 @@ bot.onEvent(async context => {
       } else if (!trajectory.content && pollData.questions) {
         promptOptions = [
           {
-             type: "postback",
+            type: "postback",
             title: "Contatos",
             payload: "contacts"
           }
@@ -721,12 +721,12 @@ bot.onEvent(async context => {
       if (trajectory.content && pollData.questions) {
         promptOptions = [
           {
-             type: "postback",
+            type: "postback",
             title: "Trajetória",
             payload: "trajectory"
           },
           {
-             type: "postback",
+            type: "postback",
             title: "Dê sua opinião",
             payload: "poll"
           }
@@ -734,7 +734,7 @@ bot.onEvent(async context => {
       } else if (trajectory.content && !pollData.questions) {
         promptOptions = [
           {
-             type: "postback",
+            type: "postback",
             title: "Trajetória",
             payload: "trajectory"
           }
@@ -742,7 +742,7 @@ bot.onEvent(async context => {
       } else if (!trajectory.content && pollData.questions) {
         promptOptions = [
           {
-             type: "postback",
+            type: "postback",
             title: "Dê sua opinião",
             payload: "poll"
           }
@@ -756,7 +756,7 @@ bot.onEvent(async context => {
           // check if integration to votoLegal exists to add the donation option
           // politicianData.votolegal_integration.votolegal_url will be used in a future web_url button to link to the donation page
           const doarOption = {
-             type: "postback",
+            type: "postback",
             title: "Participar",
             payload: "votoLegal"
           };
@@ -775,12 +775,12 @@ bot.onEvent(async context => {
       if (trajectory.content && politicianData.contact) {
         promptOptions = [
           {
-             type: "postback",
+            type: "postback",
             title: "Trajetória",
             payload: "trajectory"
           },
           {
-             type: "postback",
+            type: "postback",
             title: "Contatos",
             payload: "contacts"
           }
@@ -788,7 +788,7 @@ bot.onEvent(async context => {
       } else if (trajectory.content && !politicianData.contact) {
         promptOptions = [
           {
-             type: "postback",
+            type: "postback",
             title: "Trajetória",
             payload: "trajectory"
           }
@@ -796,7 +796,7 @@ bot.onEvent(async context => {
       } else if (!trajectory.content && politicianData.contact) {
         promptOptions = [
           {
-             type: "postback",
+            type: "postback",
             title: "Contatos",
             payload: "contacts"
           }
@@ -810,7 +810,7 @@ bot.onEvent(async context => {
           // check if integration to votoLegal exists to add the donation option
           // politicianData.votolegal_integration.votolegal_url will be used in a future web_url button to link to the donation page
           const doarOption = {
-             type: "postback",
+            type: "postback",
             title: "Participar",
             payload: "votoLegal"
           };
