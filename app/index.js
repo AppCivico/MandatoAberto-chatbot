@@ -341,8 +341,7 @@ bot.onEvent(async context => {
           );
           await context.setState({
             dialog: "recipientData",
-            // recipientData: "cellphonePrompt",
-            recipientData: "cellphone",
+            recipientData: "cellphonePrompt",
             dataPrompt: ""
           });
           break;
@@ -904,6 +903,7 @@ bot.onEvent(async context => {
             });
             break;
           case "cellphone":
+            console.log('asdasd');
             await context.sendText(
               "Qual é o seu telefone? Não deixe de incluir o DDD."
             );
