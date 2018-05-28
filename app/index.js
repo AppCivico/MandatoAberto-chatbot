@@ -234,8 +234,8 @@ bot.onEvent(async context => {
 
   // Tratando dinâmica de issues
   if (context.state.dialog == "prompt") {
-    if (context.event.isQuickReply) {
-      const payload = context.event.message.quick_reply.payload;
+    if (context.event.isPostback) {
+      const payload = context.event.message.postback.payload;
       await context.setState({ dialog: payload });
     } else if (context.event.isPostback) {
       await context.setState({ dialog: context.event.postback.payload });
@@ -254,18 +254,18 @@ bot.onEvent(async context => {
 
   // Switch de dialogos
   if (
-    context.event.isQuickReply &&
-    (context.state.dialog == "prompt" ||
-      context.event.message.quick_reply.payload === "greetings")
+    context.event.isPostback &&
+    (context.state.dialog === "prompt" ||
+      context.event.message.postback.payload === "greetings")
   ) {
-    const payload = context.event.message.quick_reply.payload;
+    const payload = context.event.message.postback.payload;
     await context.setState({ dialog: payload });
   } else if (
-    context.event.isQuickReply &&
-    context.state.dialog == "listening"
+    context.event.isPostback &&
+    context.state.dialog === "listening"
   ) {
     await context.typingOff();
-    const payload = context.event.message.quick_reply.payload;
+    const payload = context.event.message.postback.payload;
     if (payload === "mainMenu") {
       await MandatoAbertoAPI.postIssue(
         politicianData.user_id,
@@ -289,12 +289,12 @@ bot.onEvent(async context => {
       origin
     );
   } else if (
-    context.event.isQuickReply &&
-    context.event.message.quick_reply.payload &&
-    context.event.message.quick_reply.payload.includes(propagateIdentifier)
+    context.event.isPostback &&
+    context.event.message.postback.payload &&
+    context.event.message.postback.payload.includes(propagateIdentifier)
   ) {
     // Tratando resposta da enquete através de propagação
-    const payload = context.event.message.quick_reply.payload;
+    const payload = context.event.message.postback.payload;
 
     poll_question_option_id = payload.substr(
       payload.indexOf("_") + 1,
@@ -308,7 +308,7 @@ bot.onEvent(async context => {
     );
 
     context.setState({ dialog: "pollAnswer" });
-  } else if (context.event.isText && context.state.dialog == "pollAnswer") {
+  } else if (context.event.isText && context.state.dialog === "pollAnswer") {
     await context.setState({ dialog: "listening" });
   }
 
@@ -325,23 +325,20 @@ bot.onEvent(async context => {
             recipientData
           );
           recipientData = {};
-
-
           await context.sendButtonTemplate("Legal, agora quer me informar seu telefone, para lhe manter informado sobre outras enquetes?",
             [
               {
-                 type: "postback",
+                type: "postback",
                 title: "Sim",
                 payload: "recipientData"
               },
               {
-                 type: "postback",
+                type: "postback",
                 title: "Não",
                 payload: "recipientData"
               }
             ]
           );
-
           await context.setState({
             dialog: "recipientData",
             recipientData: "cellphonePrompt",
