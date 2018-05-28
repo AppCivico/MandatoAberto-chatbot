@@ -523,9 +523,10 @@ bot.onEvent(async context => {
     case "intermediate":
     userMessage = context.event.message.text + " ";
       console.log('context.event:', context.event);
-      console.log('context.event.re:', context.event.recipient);
-      console.log('context.event.reID:', context.event.recipient.id);
-      console.log('context.event.raw:', context.event._rawEvent.recipient.id);
+      console.log('context.event.re:', context.event.MessengerEvent);
+      console.log('context.event.re:', context.event.MessengerEvent._rawEvent);
+      console.log('context.event.re:', context.event.MessengerEvent._rawEvent.recipient);
+      console.log('context.event.re:', context.event.MessengerEvent._rawEvent.recipient.id);
       politicianData = await MandatoAbertoAPI.getPoliticianData(context.event.recipient.id);
       await context.sendText(`Vocês gostaria de enviar uma mensagem para nossa equipe ou conhecer mais sobre` 
         `${articles.defined} ${politicianData.office.name} ${politicianData.name}?`
