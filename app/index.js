@@ -186,6 +186,8 @@ bot.onEvent(async context => {
     const post_id = context.event.rawEvent.value.post_id;
     const page_id = post_id.substr(0, post_id.indexOf("_"));
     areWeListening = false;
+    console.log('con eve',context.event);
+    console.log('raw', context.event.rawEvent);
     switch (context.event.rawEvent.value.item) {
       
       case "comment":
@@ -256,7 +258,7 @@ bot.onEvent(async context => {
   if (context.event.isPostback && (context.state.dialog === "prompt" || context.event.postback.payload === "greetings")) {
     const payload = context.event.postback.payload;
     await context.setState({ dialog: payload });
-  } else if ( context.event.isPostback && context.state.dialog === "listening" ) {
+  } else if (context.event.isPostback && context.state.dialog === "listening" ) {
     await context.typingOff();
     const payload = context.event.postback.payload;
     if (payload === "mainMenu") {
