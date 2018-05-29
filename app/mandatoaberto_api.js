@@ -58,6 +58,7 @@ module.exports = {
 	async postPrivateReply(item, page_id, post_id, comment_id, permalink) {
 		const res = await request.post(`${apiUri}/api/chatbot/private-reply?page_id=${page_id}&item=${item}&post_id=${post_id}&comment_id=${comment_id}&permalink=${permalink}&security_token=${security_token}`);
 		const privateReply = await res.json();
+		console.log('privateReply', privateReply);
 		return privateReply;
 	}
 };
