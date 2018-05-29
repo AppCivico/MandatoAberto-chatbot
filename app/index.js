@@ -185,6 +185,8 @@ bot.onEvent(async context => {
     let about_me_text;
     const post_id = context.event.rawEvent.value.post_id;
     const page_id = post_id.substr(0, post_id.indexOf("_"));
+    console.log('context.event', context.event);
+    console.log('context.raw', context.event.rawEvent);
     areWeListening = false;
 
     switch (context.event.rawEvent.value.item) {
@@ -214,7 +216,7 @@ bot.onEvent(async context => {
     }
   }
 
-  // Tratando caso de o poĺítico não ter dados suficientes
+  // Tratando caso de o político não ter dados suficientes
   if (!context.state.dialog) {
     if (
       !politicianData.greetings &&
