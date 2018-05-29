@@ -186,6 +186,7 @@ bot.onEvent(async context => {
     const post_id = context.event.rawEvent.value.post_id;
     const page_id = post_id.substr(0, post_id.indexOf("_"));
     areWeListening = false;
+    console.log('con',context);
     console.log('con eve',context.event);
     console.log('raw', context.event.rawEvent);
     switch (context.event.rawEvent.value.item) {
