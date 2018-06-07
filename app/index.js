@@ -542,9 +542,8 @@ bot.onEvent(async context => {
       await context.sendText(
         "Muito bom! Fico muito feliz com sua contribuição."
       );
-      const valueLegal = await VotoLegalAPI.getVotoLegalValues(
-        politicianData.votolegal_integration.votolegal_username
-      );
+      const valueLegal = await VotoLegalAPI.getVotoLegalValues(politicianData.votolegal_integration.votolegal_username);
+      console.log('dfsdf');
       console.log(valueLegal);
       console.dir(valueLegal);
       await context.sendText(
