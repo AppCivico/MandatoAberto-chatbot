@@ -164,6 +164,7 @@ bot.onEvent(async context => {
         politicianData.votolegal_integration.votolegal_url &&
         politicianData.votolegal_integration.votolegal_username
       ) {
+        console.log(politicianData);
         // check if integration to votoLegal exists to add the donation option
         // politicianData.votolegal_integration.votolegal_url will be used in a future web_url button to link to the donation page
         const doarOption = {
@@ -185,8 +186,8 @@ bot.onEvent(async context => {
     let about_me_text;
     const post_id = context.event.rawEvent.value.post_id;
     const page_id = post_id.substr(0, post_id.indexOf("_"));
-    console.log('context.event', context.event);
-    console.log('context.raw', context.event.rawEvent.value.from.id);
+    // console.log('context.event', context.event);
+    // console.log('context.raw', context.event.rawEvent.value.from.id);
     areWeListening = false;
 
     switch (context.event.rawEvent.value.item) {
@@ -543,9 +544,6 @@ bot.onEvent(async context => {
         "Muito bom! Fico muito feliz com sua contribuição."
       );
       const valueLegal = await VotoLegalAPI.getVotoLegalValues(politicianData.votolegal_integration.votolegal_username);
-      console.log('dfsdf');
-      console.log(valueLegal);
-      console.dir(valueLegal);
       await context.sendText(
         `Já consegui R$${formatReal(valueLegal.candidate.total_donated)} da ` +
           `minha meta de R$${formatReal(
