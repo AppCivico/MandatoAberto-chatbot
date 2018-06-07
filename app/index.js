@@ -545,6 +545,8 @@ bot.onEvent(async context => {
       const valueLegal = await VotoLegalAPI.getVotoLegalValues(
         politicianData.votolegal_integration.votolegal_username
       );
+      console.log(valueLegal);
+      console.dir(valueLegal);
       await context.sendText(
         `Já consegui R$${formatReal(valueLegal.candidate.total_donated)} da ` +
           `minha meta de R$${formatReal(
