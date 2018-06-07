@@ -162,9 +162,9 @@ bot.onEvent(async context => {
     if (politicianData.votolegal_integration) {
       if (
         politicianData.votolegal_integration.votolegal_url &&
-        politicianData.votolegal_integration.votolegal_username
+        politicianData.votolegal_integration.votolegal_username &&
+        politicianData.picframe_url
       ) {
-        console.log(politicianData);
         // check if integration to votoLegal exists to add the donation option
         // politicianData.votolegal_integration.votolegal_url will be used in a future web_url button to link to the donation page
         const doarOption = {
@@ -560,8 +560,7 @@ bot.onEvent(async context => {
       participateOptions = [
         {
           type: "web_url",
-          url:
-            "https://www.facebook.com/profilepicframes?query=Randolfe%25do%25Povo%25Senador%25de%25novo&selected_overlay_id=1762860830463022",
+          url: politicianData.picframe_url,
           title: "Atualizar foto"
         },
         {
