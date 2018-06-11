@@ -460,9 +460,9 @@ bot.onEvent(async context => {
         issue_message = issue_message.content;
       }
       await getMenuPrompt();
-      console.log('antes de limpar:', context.state.userMessage);
+      console.log('antes de limpar2:', context.state.userMessage);
       await context.setState({ userMessage: "" }) // cleaning up
-      console.log('depois de limpar:', context.state.userMessage);
+      console.log('depois de limpar2:', context.state.userMessage);
       await context.sendButtonTemplate("Como posso te ajudar?", promptOptions);
       await context.setState({ dialog: "prompt" });
       break;
@@ -601,7 +601,7 @@ bot.onEvent(async context => {
       clearTimeout(timer);
       if (context.event.message) {
         console.log('antes de timer:', context.state.userMessage);
-        await context.setState({ userMessage: `${context.state.userMessage} + " "`});;
+        await context.setState({ userMessage: `${context.state.userMessage} `});;
         console.log('depois de timer:', context.state.userMessage);
       }
       timer = setTimeout(async () => {
