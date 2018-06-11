@@ -230,7 +230,7 @@ bot.onEvent(async context => {
   // Tratando botão GET STARTED
   if (context.event.postback && context.event.postback.payload === "greetings") {
     await context.resetState();
-    // await context.setState({ areWeListening: true });
+    await context.setState({ areWeListening: true });
     await context.setState({ dialog: "greetings" });
   }
 
