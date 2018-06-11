@@ -40,6 +40,7 @@ const limit = 10000 * 2;
 let timer;
 // userMessage -> context.state.userMessage -> stores the texts the user wirtes before sending them to politician [issue] 
 // sendIntro = true -> context.state.sendIntro -> verifies if we should send the intro text for issue creation.
+let areWeListening;
 // areWeListening -> user.state.areWeListening(doesn't work) -> diferenciates messages that come from
 // the standard flow and messages from comment/post
 // let areWeListening = false;
@@ -186,7 +187,7 @@ bot.onEvent(async context => {
     const page_id = post_id.substr(0, post_id.indexOf("_"));
     // console.log('context.event', context.event);
     // console.log('context.raw', context.event.rawEvent.value.from.id);
-    await context.setState({ areWeListening: false });
+    areWeListening = false;
     
     switch (context.event.rawEvent.value.item) {
       case "comment":
@@ -230,7 +231,6 @@ bot.onEvent(async context => {
   // Tratando botão GET STARTED
   if (context.event.postback && context.event.postback.payload === "greetings") {
     await context.resetState();
-    await context.setState({ areWeListening: true });
     await context.setState({ dialog: "greetings" });
   }
 
@@ -245,8 +245,7 @@ bot.onEvent(async context => {
       // Ao mandar uma mensagem que não é interpretada como fluxo do chatbot
       // Devo já criar uma issue
       // We go to the listening dialog to wait for other messages
-      console.log('check', context.state.areWeListening);
-      if (context.state.areWeListening === true) {
+      if (areWeListening === true) {
         // check if message came from standard flow or from post/comment
         await context.setState({ dialog: "listening" });
       } else {
@@ -396,7 +395,7 @@ bot.onEvent(async context => {
   switch (context.state.dialog) {
     case "greetings":
       await context.setState({ sendIntro: true });
-      // await context.setState({ areWeListening: true });
+      areWeListening = true;
       // Criando um cidadão
       recipientData.fb_id = context.session.user.id;
       recipientData.name = `${context.session.user.first_name} ${ context.session.user.last_name}`;
@@ -430,6 +429,7 @@ bot.onEvent(async context => {
     case "mainMenu": // after issue is created we come back to this dialog
       // introduction and about_me_text aren't declared inside of greetings anymore. What's defined there is accessible here.
       await context.setState({ sendIntro: true });
+      areWeListening = true;
       // await context.setState({ areWeListening: true });
       // Criando um cidadão
        recipientData.fb_id = context.session.user.id;
