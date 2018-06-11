@@ -187,6 +187,7 @@ bot.onEvent(async context => {
     // console.log('context.event', context.event);
     // console.log('context.raw', context.event.rawEvent.value.from.id);
     await context.setState({ areWeListening: false });
+    console.log('feed',context.state.areWeListening);
 
     switch (context.event.rawEvent.value.item) {
       
@@ -201,6 +202,8 @@ bot.onEvent(async context => {
           comment_id,
           permalink
         );
+        console.log('comment', context.state.areWeListening);
+
         break;
       case "post":
         item = "post";
@@ -245,6 +248,7 @@ bot.onEvent(async context => {
       // Ao mandar uma mensagem que não é interpretada como fluxo do chatbot
       // Devo já criar uma issue
       // We go to the listening dialog to wait for other messages
+      console.log('check', context.state.areWeListening);
       if (context.state.areWeListening === true || typeof context.state.areWeListening === "undefined") {
         // check if message came from standard flow or from post/comment
         await context.setState({ dialog: "listening" });
