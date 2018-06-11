@@ -879,7 +879,7 @@ bot.onEvent(async context => {
       //   dataPrompt: "email"
       // });
 
-      // break;   
+      break;   
       case "pollAnswer":
       await context.sendButtonTemplate( context.state.dataMessage,
         [
