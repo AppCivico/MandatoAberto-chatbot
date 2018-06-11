@@ -24,7 +24,6 @@ function formatReal(int) {
   return tmp;
 }
 
-// nano messenger\:1938538852857638.json
 let articles;
 let politicianData;
 let pollAnswer;
@@ -39,7 +38,7 @@ let recipientData = {};
 
 const limit = 10000 * 2;
 let timer;
-let userMessage = "";
+// let userMessage = "";
 let sendIntro = true;
 // areWeListening is used to diferenciate messages that come from
 // the standard flow and messages from comment/post
@@ -267,9 +266,9 @@ bot.onEvent(async context => {
       await MandatoAbertoAPI.postIssue(
         politicianData.user_id,
         context.session.user.id,
-        userMessage
+        context.state.userMessage
       );
-      userMessage = "";
+      await context.setState({ userMessage: ''});
     } else if (context.event.message) {
         context.event.message.text = "";
     }
@@ -415,7 +414,7 @@ bot.onEvent(async context => {
         issue_message = issue_message.content;
       }
       await getMenuPrompt();
-      userMessage = ""; // cleaning up
+      await context.setState({userMessage: ""}) // cleaning up
       let greeting = politicianData.greeting.replace(
         "${user.office.name}",
         politicianData.office.name
@@ -455,12 +454,12 @@ bot.onEvent(async context => {
         issue_message = issue_message.content;
       }
       await getMenuPrompt();
-      userMessage = ""; // cleaning up
+      await context.setState({userMessage: "" }); // cleaning up
       await context.sendButtonTemplate("Como posso te ajudar?", promptOptions);
       await context.setState({ dialog: "prompt" });
       break;
     case "intermediate":
-    // userMessage = context.event.message.text + " ";
+    // await context.setState({ userMessage: `${context.state.userMessage} + " "`});;
       await context.sendText(`Vocês gostaria de enviar uma mensagem para nossa equipe ou conhecer mais sobre ` + 
         `${articles.defined} ${politicianData.office.name} ${politicianData.name}?`);
       promptOptions = [
@@ -479,10 +478,6 @@ bot.onEvent(async context => {
       await context.setState({ dialog: "prompt" });
       break;
     case "votoLegal":
-      console.log('sdfsdfsdf');
-      console.log(context.state.userMessage);
-      await context.setState({ userMessage: 'asdasd' });
-      console.log(context.state.userMessage);
       participateOptions = [
         {
           type: "postback",
@@ -597,7 +592,7 @@ bot.onEvent(async context => {
       await context.typingOn();
       clearTimeout(timer);
       if (context.event.message) {
-      userMessage = userMessage + context.event.message.text + " ";
+        await context.setState({ userMessage: `${context.state.userMessage} + " "`});;
       }
       timer = setTimeout(async () => {
         sendIntro = true;
