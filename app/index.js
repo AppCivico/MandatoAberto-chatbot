@@ -261,6 +261,7 @@ bot.onEvent(async context => {
     await context.typingOff();
     const payload = context.event.postback.payload;
     if (payload === "mainMenu") {
+      await context.sendText('sdfsdf');
       await MandatoAbertoAPI.postIssue(
         politicianData.user_id,
         context.session.user.id,
