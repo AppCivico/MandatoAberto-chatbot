@@ -395,7 +395,7 @@ bot.onEvent(async context => {
   switch (context.state.dialog) {
     case "greetings":
       await context.setState({ sendIntro: true });
-      await context.setState({ areWeListening: false });
+      await context.setState({ areWeListening: true });
       // Criando um cidadão
       recipientData.fb_id = context.session.user.id;
       recipientData.name = `${context.session.user.first_name} ${ context.session.user.last_name}`;
