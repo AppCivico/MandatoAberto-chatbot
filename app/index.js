@@ -601,7 +601,7 @@ bot.onEvent(async context => {
       clearTimeout(timer);
       if (context.event.message) {
         console.log('antes de timer:', context.state.userMessage);
-        await context.setState({ userMessage: `${context.state.userMessage} `});;
+        await context.setState({ userMessage: `${context.state.userMessage}${context.event.message.text} `});;
         console.log('depois de timer:', context.state.userMessage);
       }
       timer = setTimeout(async () => {
