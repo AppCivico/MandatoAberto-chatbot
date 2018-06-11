@@ -80,7 +80,6 @@ bot.use(withTyping({ delay: 1000 }));
 bot.onEvent(async context => {
   function getMenuPrompt() {
     // both of these verifications were on greetings dialog, now they're both at greeting and mainMenu
-    await context.setState({areWeListening: true});
     if (
       politicianData.office.name === "Outros" ||
       politicianData.office.name === "Candidato" ||
