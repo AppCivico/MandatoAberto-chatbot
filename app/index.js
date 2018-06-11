@@ -245,7 +245,7 @@ bot.onEvent(async context => {
       // Ao mandar uma mensagem que não é interpretada como fluxo do chatbot
       // Devo já criar uma issue
       // We go to the listening dialog to wait for other messages
-      if (context.state.areWeListening === true) {
+      if (context.state.areWeListening === true || typeof context.state.areWeListening === "undefined") {
         // check if message came from standard flow or from post/comment
         await context.setState({ dialog: "listening" });
       } else {
