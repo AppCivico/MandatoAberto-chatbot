@@ -261,14 +261,14 @@ bot.onEvent(async context => {
     await context.typingOff();
     const payload = context.event.postback.payload;
     if (payload === "mainMenu") {
-      await context.setState({ dataMessage: "Muito obrigado por sua mensagem. Você gostaria de deixar ou atualizar seu e-mail e telefone para nossa equipe?" });
       await MandatoAbertoAPI.postIssue(
         politicianData.user_id,
         context.session.user.id,
         context.state.userMessage
       );
       await context.setState({ userMessage: ''});
-      await context.setState({ dialog: pollAnswer});
+      await context.setState({ dataMessage: "Muito obrigado por sua mensagem. Você gostaria de deixar ou atualizar seu e-mail e telefone para nossa equipe?" });
+      await context.setState({ dialog: 'pollAnswer'});
     } else if (context.event.message) {
         context.event.message.text = "";
     }
@@ -846,7 +846,7 @@ bot.onEvent(async context => {
       }
       break;
     case "pollAnswer":
-      await context.sendButtonTemplate( "Muito obrigado por sua resposta. Você gostaria de deixar seu e-mail e telefone para nossa equipe?",
+      await context.sendButtonTemplate( context.state.dataMessage,
         [
           {
             type: "postback",
