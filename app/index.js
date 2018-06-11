@@ -40,7 +40,7 @@ const limit = 10000 * 2;
 let timer;
 // userMessage -> context.state.userMessage -> stores the texts the user wirtes before sending them to politician [issue] 
 // sendIntro = true -> context.state.sendIntro -> verifies if we should send the intro text for issue creation.
-// areWeListening -> user.state.areWeListening -> diferenciates messages that come from
+// areWeListening -> user.state.areWeListening(doesn't work) -> diferenciates messages that come from
 // the standard flow and messages from comment/post
 // let areWeListening = false;
 
@@ -230,6 +230,7 @@ bot.onEvent(async context => {
   // Tratando botão GET STARTED
   if (context.event.postback && context.event.postback.payload === "greetings") {
     await context.resetState();
+    await context.setState({ areWeListening: true });
     await context.setState({ dialog: "greetings" });
   }
 
@@ -245,7 +246,7 @@ bot.onEvent(async context => {
       // Devo já criar uma issue
       // We go to the listening dialog to wait for other messages
       console.log('check', context.state.areWeListening);
-      if (context.state.areWeListening === true || typeof context.state.areWeListening === "undefined") {
+      if (context.state.areWeListening === true) {
         // check if message came from standard flow or from post/comment
         await context.setState({ dialog: "listening" });
       } else {
