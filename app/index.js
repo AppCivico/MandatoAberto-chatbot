@@ -263,12 +263,15 @@ bot.onEvent(async context => {
     await context.typingOff();
     const payload = context.event.postback.payload;
     if (payload === "mainMenu") {
+      console.log('antes de mandar:', context.state.userMessage);
       await MandatoAbertoAPI.postIssue(
         politicianData.user_id,
         context.session.user.id,
         context.state.userMessage
       );
       await context.setState({ userMessage: ''});
+      console.log('depois de mandar:', context.state.userMessage);
+
     } else if (context.event.message) {
         context.event.message.text = "";
     }
@@ -414,7 +417,9 @@ bot.onEvent(async context => {
         issue_message = issue_message.content;
       }
       await getMenuPrompt();
+      console.log('antes de limpar:', context.state.userMessage);
       await context.setState({userMessage: ""}) // cleaning up
+      console.log('depois de limpar:', context.state.userMessage);
       let greeting = politicianData.greeting.replace(
         "${user.office.name}",
         politicianData.office.name
@@ -454,7 +459,9 @@ bot.onEvent(async context => {
         issue_message = issue_message.content;
       }
       await getMenuPrompt();
-      await context.setState({userMessage: "" }); // cleaning up
+      console.log('antes de limpar:', context.state.userMessage);
+      await context.setState({ userMessage: "" }) // cleaning up
+      console.log('depois de limpar:', context.state.userMessage);
       await context.sendButtonTemplate("Como posso te ajudar?", promptOptions);
       await context.setState({ dialog: "prompt" });
       break;
@@ -592,7 +599,9 @@ bot.onEvent(async context => {
       await context.typingOn();
       clearTimeout(timer);
       if (context.event.message) {
+        console.log('antes de timer:', context.state.userMessage);
         await context.setState({ userMessage: `${context.state.userMessage} + " "`});;
+        console.log('depois de timer:', context.state.userMessage);
       }
       timer = setTimeout(async () => {
         sendIntro = true;
