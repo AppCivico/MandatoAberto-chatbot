@@ -260,18 +260,19 @@ bot.onEvent(async context => {
   } else if (context.event.isPostback && context.state.dialog === "listening" ) {
     await context.typingOff();
     const payload = context.event.postback.payload;
-    if (payload === "listeningAnswer") {
-      await MandatoAbertoAPI.postIssue(
-        politicianData.user_id,
-        context.session.user.id,
-        context.state.userMessage
-      );
+    // if (payload === "listeningAnswer") {
+    //   await MandatoAbertoAPI.postIssue(
+    //     politicianData.user_id,
+    //     context.session.user.id,
+    //     context.state.userMessage
+    //   );
 
-      await context.setState({ userMessage: ''});
-      await context.setState({ dataMessage: 'Agradecemos a sua mensagem. Deseja nos enviar ou atualizar seu e-mail e telefone?'});
-      console.log('ss', context.state.dataMessage);
-      await context.setState({ dialog: 'pollAnswer'});
-    } else if (context.event.message) {
+    //   await context.setState({ userMessage: ''});
+    //   await context.setState({ dataMessage: 'Agradecemos a sua mensagem. Deseja nos enviar ou atualizar seu e-mail e telefone?'});
+    //   console.log('ss', context.state.dataMessage);
+    //   await context.setState({ dialog: 'pollAnswer'});
+    // } else 
+    if (context.event.message) {
         context.event.message.text = "";
     }
     if (context.event.isQuickReply) { // because of the issue response
@@ -847,7 +848,37 @@ bot.onEvent(async context => {
         await context.setState({ dialog: "pollAnswer" });
       }
       break;
-    case "pollAnswer":
+      case 'listeningAnswer':
+      await MandatoAbertoAPI.postIssue(
+        politicianData.user_id,
+        context.session.user.id,
+        context.state.userMessage
+      );
+
+      await context.setState({ userMessage: '' });
+      await context.setState({ dataMessage: 'Agradecemos a sua mensagem. Deseja nos enviar ou atualizar seu e-mail e telefone?' });
+      console.log('ss', context.state.dataMessage);
+      await context.sendButtonTemplate(context.state.dataMessage,
+        [
+          {
+            type: "postback",
+            title: "Vamos lá!",
+            payload: "recipientData"
+          },
+          {
+            type: "postback",
+            title: "Agora não",
+            payload: "recipientData"
+          }
+        ]
+      );
+
+      await context.setState({
+        dialog: "prompt",
+        dataPrompt: "email"
+      });
+
+      break;    case "pollAnswer":
       await context.sendButtonTemplate( context.state.dataMessage,
         [
           {
