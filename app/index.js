@@ -273,6 +273,7 @@ bot.onEvent(async context => {
       console.log('depois de mandar:', context.state.userMessage);
 
     } else if (context.event.message) {
+        console.log('Passei aqui');
         context.event.message.text = "";
     }
     if (context.event.isQuickReply) { // because of the issue response
