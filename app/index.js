@@ -858,27 +858,29 @@ bot.onEvent(async context => {
       await context.setState({ userMessage: '' });
       await context.setState({ dataMessage: 'Agradecemos a sua mensagem. Deseja nos enviar ou atualizar seu e-mail e telefone?' });
       console.log('ss', context.state.dataMessage);
-      await context.sendButtonTemplate(context.state.dataMessage,
-        [
-          {
-            type: "postback",
-            title: "Vamos lá!",
-            payload: "recipientData"
-          },
-          {
-            type: "postback",
-            title: "Agora não",
-            payload: "recipientData"
-          }
-        ]
-      );
+      await context.setState({ dialog: 'pollAnswer'});
+      // await context.sendButtonTemplate(context.state.dataMessage,
+      //   [
+      //     {
+      //       type: "postback",
+      //       title: "Vamos lá!",
+      //       payload: "recipientData"
+      //     },
+      //     {
+      //       type: "postback",
+      //       title: "Agora não",
+      //       payload: "recipientData"
+      //     }
+      //   ]
+      // );
 
-      await context.setState({
-        dialog: "prompt",
-        dataPrompt: "email"
-      });
+      // await context.setState({
+      //   dialog: "prompt",
+      //   dataPrompt: "email"
+      // });
 
-      break;    case "pollAnswer":
+      // break;   
+      case "pollAnswer":
       await context.sendButtonTemplate( context.state.dataMessage,
         [
           {
