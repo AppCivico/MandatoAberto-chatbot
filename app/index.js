@@ -429,7 +429,9 @@ bot.onEvent(async context => {
       // introduction and about_me_text aren't declared inside of greetings anymore. What's defined there is accessible here.
 
       // Criando um cidadão
-
+      console.log(context.state.userMessage);
+      await context.setState({ userMessage: 'asdasd'});
+      console.log(context.state.userMessage);
       recipientData.fb_id = context.session.user.id;
       recipientData.name = `${context.session.user.first_name} ${context.session.user.last_name}`;
       recipientData.gender = context.session.user.gender === "male" ? "M" : "F";
