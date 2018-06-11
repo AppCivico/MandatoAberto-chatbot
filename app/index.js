@@ -38,8 +38,8 @@ let recipientData = {};
 
 const limit = 10000 * 2;
 let timer;
-// let userMessage = "";
 let sendIntro = true;
+// context.state.userMessage -> stores the texts the user wirtes before sending them to politician [issue] 
 // areWeListening is used to diferenciate messages that come from
 // the standard flow and messages from comment/post
 let areWeListening = false;
@@ -427,7 +427,7 @@ bot.onEvent(async context => {
       break;
     case "mainMenu": // after issue is created we come back to this dialog
       // introduction and about_me_text aren't declared inside of greetings anymore. What's defined there is accessible here.
-
+      await context.setState({ sendIntro: true });
       // Criando um cidadão
        recipientData.fb_id = context.session.user.id;
       recipientData.name = `${context.session.user.first_name} ${context.session.user.last_name}`;
@@ -584,11 +584,11 @@ bot.onEvent(async context => {
       // When user enters with text, prompt sends us here
       // if it's the first message we warn the user that we are listening and wait for 60s for a new message
       // we keep adding new messages on top of each other until user stops for 60s, then we can save the issue and go back to the menu
-      if (sendIntro === true) {
+      if (context.state.sendIntro === true) {
         await context.sendText(
           "Vejo que você está escrevendo. Seu contato é muito importante. Quando terminar, entrego sua mensagem para nossa equipe."
         );
-        sendIntro = false;
+        await context.setState({sendIntro: false});
       }
       await context.typingOn();
       clearTimeout(timer);
@@ -596,8 +596,8 @@ bot.onEvent(async context => {
         await context.setState({ userMessage: `${context.state.userMessage}${context.event.message.text} `});
       }
       timer = setTimeout(async () => {
-        sendIntro = true;
-        const issue_created_message = await MandatoAbertoAPI.getAnswer(
+        await context.setState({ sendIntro: true });    
+          const issue_created_message = await MandatoAbertoAPI.getAnswer(
           politicianData.user_id,
           "issue_created"
         );
