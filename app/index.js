@@ -430,7 +430,7 @@ bot.onEvent(async context => {
     case "mainMenu": // after issue is created we come back to this dialog
       // introduction and about_me_text aren't declared inside of greetings anymore. What's defined there is accessible here.
       await context.setState({ sendIntro: true });
-      await context.setState({ areWeListening: true });
+      // await context.setState({ areWeListening: true });
       // Criando um cidadão
        recipientData.fb_id = context.session.user.id;
       recipientData.name = `${context.session.user.first_name} ${context.session.user.last_name}`;
