@@ -260,15 +260,16 @@ bot.onEvent(async context => {
   } else if (context.event.isPostback && context.state.dialog === "listening" ) {
     await context.typingOff();
     const payload = context.event.postback.payload;
-    if (payload === "mainMenu") {
-      await context.sendText('sdfsdf');
+    if (payload === "listeningAnswer") {
       await MandatoAbertoAPI.postIssue(
         politicianData.user_id,
         context.session.user.id,
         context.state.userMessage
       );
+
       await context.setState({ userMessage: ''});
-      await context.setState({ dataMessage: "Muito obrigado por sua mensagem. Você gostaria de deixar ou atualizar seu e-mail e telefone para nossa equipe?" });
+      await context.setState({ dataMessage: 'Agradecemos a sua mensagem. Deseja nos enviar ou atualizar seu e-mail e telefone?'});
+      console.log('ss', context.state.dataMessage);
       await context.setState({ dialog: 'pollAnswer'});
     } else if (context.event.message) {
         context.event.message.text = "";
@@ -615,7 +616,7 @@ bot.onEvent(async context => {
             {
               type: "postback",
               title: "Terminei a mensagem",
-              payload: "mainMenu"
+              payload: "listeningAnswer"
             },
             {
               type: "postback",
