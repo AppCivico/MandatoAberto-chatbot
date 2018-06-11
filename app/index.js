@@ -325,7 +325,7 @@ bot.onEvent(async context => {
             recipientData
           );
           recipientData = {};
-          await context.sendButtonTemplate("Legal, agora quer me informar seu telefone, para lhe manter informado sobre outras enquetes?",
+          await context.sendButtonTemplate(context.state.emailDialog,
             [
               {
                 type: "postback",
@@ -853,7 +853,8 @@ bot.onEvent(async context => {
         context.session.user.id,
         context.state.userMessage
       );
-
+      await 
+      await context.setState({ emailDialog: "Legal, agora quer me informar seu telefone, para lhe manter informado das nossas novidades?" });
       await context.setState({ userMessage: '' });
       await context.sendButtonTemplate('Agradecemos a sua mensagem. Deseja nos enviar ou atualizar seu e-mail e telefone?',
         [
@@ -890,7 +891,7 @@ bot.onEvent(async context => {
           }
         ]
       );
-
+      await context.setState({ emailDialog: "Legal, agora quer me informar seu telefone, para lhe manter informado sobre outras enquetes?"});
       await context.setState({
         dialog: "prompt",
         dataPrompt: "email"
