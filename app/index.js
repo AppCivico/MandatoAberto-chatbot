@@ -40,10 +40,9 @@ const limit = 10000 * 2;
 let timer;
 // userMessage -> context.state.userMessage -> stores the texts the user wirtes before sending them to politician [issue] 
 // sendIntro = true -> context.state.sendIntro -> verifies if we should send the intro text for issue creation.
-let areWeListening;
+let areWeListening = false;
 // areWeListening -> user.state.areWeListening(doesn't work) -> diferenciates messages that come from
 // the standard flow and messages from comment/post
-// let areWeListening = false;
 
 recipientData[
   ("fb_id", "name", "origin_dialog", "email", "cellphone", "gender")
