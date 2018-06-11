@@ -38,11 +38,11 @@ let recipientData = {};
 
 const limit = 10000 * 2;
 let timer;
-let sendIntro = true;
-// context.state.userMessage -> stores the texts the user wirtes before sending them to politician [issue] 
-// areWeListening is used to diferenciate messages that come from
+// userMessage -> context.state.userMessage -> stores the texts the user wirtes before sending them to politician [issue] 
+// sendIntro = true -> context.state.sendIntro -> verifies if we should send the intro text for issue creation.
+// areWeListening -> user.state.areWeListening -> diferenciates messages that come from
 // the standard flow and messages from comment/post
-let areWeListening = false;
+// let areWeListening = false;
 
 recipientData[
   ("fb_id", "name", "origin_dialog", "email", "cellphone", "gender")
@@ -80,7 +80,7 @@ bot.use(withTyping({ delay: 1000 }));
 bot.onEvent(async context => {
   function getMenuPrompt() {
     // both of these verifications were on greetings dialog, now they're both at greeting and mainMenu
-    areWeListening = true;
+    await context.setState({areWeListening: true});
     if (
       politicianData.office.name === "Outros" ||
       politicianData.office.name === "Candidato" ||
@@ -187,7 +187,7 @@ bot.onEvent(async context => {
     const page_id = post_id.substr(0, post_id.indexOf("_"));
     // console.log('context.event', context.event);
     // console.log('context.raw', context.event.rawEvent.value.from.id);
-    areWeListening = false;
+    await context.setState({ areWeListening: false });
 
     switch (context.event.rawEvent.value.item) {
       
@@ -246,7 +246,7 @@ bot.onEvent(async context => {
       // Ao mandar uma mensagem que não é interpretada como fluxo do chatbot
       // Devo já criar uma issue
       // We go to the listening dialog to wait for other messages
-      if (areWeListening === true) {
+      if (context.state.areWeListening === true) {
         // check if message came from standard flow or from post/comment
         await context.setState({ dialog: "listening" });
       } else {
@@ -396,6 +396,7 @@ bot.onEvent(async context => {
   switch (context.state.dialog) {
     case "greetings":
       await context.setState({ sendIntro: true });
+      await context.setState({ areWeListening: false });
       // Criando um cidadão
       recipientData.fb_id = context.session.user.id;
       recipientData.name = `${context.session.user.first_name} ${ context.session.user.last_name}`;
@@ -429,6 +430,7 @@ bot.onEvent(async context => {
     case "mainMenu": // after issue is created we come back to this dialog
       // introduction and about_me_text aren't declared inside of greetings anymore. What's defined there is accessible here.
       await context.setState({ sendIntro: true });
+      await context.setState({ areWeListening: true });
       // Criando um cidadão
        recipientData.fb_id = context.session.user.id;
       recipientData.name = `${context.session.user.first_name} ${context.session.user.last_name}`;
@@ -586,9 +588,7 @@ bot.onEvent(async context => {
       // if it's the first message we warn the user that we are listening and wait for 60s for a new message
       // we keep adding new messages on top of each other until user stops for 60s, then we can save the issue and go back to the menu
       if (context.state.sendIntro === true) {
-        await context.sendText(
-          "Vejo que você está escrevendo. Seu contato é muito importante. Quando terminar, entrego sua mensagem para nossa equipe."
-        );
+        await context.sendText("Vejo que você está escrevendo. Seu contato é muito importante. Quando terminar, entrego sua mensagem para nossa equipe.");
         await context.setState({sendIntro: false});
       }
       await context.typingOn();
