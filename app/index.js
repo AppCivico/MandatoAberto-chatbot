@@ -158,11 +158,8 @@ bot.onEvent(async context => {
       ];
     }
     if (politicianData.votolegal_integration) {
-      if (
-        politicianData.votolegal_integration.votolegal_url &&
-        politicianData.votolegal_integration.votolegal_username &&
-        politicianData.picframe_url
-      ) {
+      if (politicianData.votolegal_integration.votolegal_url &&
+        politicianData.votolegal_integration.votolegal_username) {
         // check if integration to votoLegal exists to add the donation option
         // politicianData.votolegal_integration.votolegal_url will be used in a future web_url button to link to the donation page
         const doarOption = {
@@ -510,21 +507,22 @@ bot.onEvent(async context => {
           title: "Quero Doar",
           payload: "WannaDonate"
         },
-        {
-          type: "postback",
-          title: "Quero Divulgar",
-          payload: "WannaDivulgate"
-        },
-        {
+         {
           type: "postback",
           title: "Voltar",
           payload: "mainMenu"
         }
       ];
-      await context.sendButtonTemplate(
-        "Muito bom poder contar com você! Como deseja participar?",
-        participateOptions
-      );
+      // checking for picframe_url so we can only show this option when it's available but still show the votoLegal option
+      if (politicianData.picframe_url) {
+        const divulgateOption = {
+          type: "postback",
+          title: "Quero Divulgar",
+          payload: "WannaDivulgate"
+        };
+        await participateOptions.push(divulgateOption);
+      }
+      await context.sendButtonTemplate("Muito bom poder contar com você! Como deseja participar?", participateOptions);
       await context.setState({ dialog: "prompt" });
       break;
     case "WannaDonate":
