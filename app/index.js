@@ -506,12 +506,7 @@ bot.onEvent(async context => {
           type: "postback",
           title: "Quero Doar",
           payload: "WannaDonate"
-        },
-         {
-          type: "postback",
-          title: "Voltar",
-          payload: "mainMenu"
-        }
+        }        
       ];
       // checking for picframe_url so we can only show this option when it's available but still show the votoLegal option
       if (politicianData.picframe_url) {
@@ -522,6 +517,11 @@ bot.onEvent(async context => {
         };
         await participateOptions.push(divulgateOption);
       }
+      await participateOptions.push({
+        type: "postback",
+        title: "Voltar",
+        payload: "mainMenu"
+      });
       await context.sendButtonTemplate("Muito bom poder contar com você! Como deseja participar?", participateOptions);
       await context.setState({ dialog: "prompt" });
       break;
