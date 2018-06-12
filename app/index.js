@@ -509,7 +509,7 @@ bot.onEvent(async context => {
         }        
       ];
       // checking for picframe_url so we can only show this option when it's available but still show the votoLegal option
-      if (politicianData.picframe_url2) {
+      if (politicianData.picframe_url) {
         const divulgateOption = {
           type: "postback",
           title: "Quero Divulgar",
