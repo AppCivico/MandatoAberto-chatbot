@@ -184,7 +184,6 @@ bot.onEvent(async context => {
     let user_id = context.event.rawEvent.value.from.id;
     
     areWeListening = false;
-    console.log(user_id);
     
     switch (context.event.rawEvent.value.item) {
       case "comment":
