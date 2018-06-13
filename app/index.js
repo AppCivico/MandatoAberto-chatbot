@@ -184,9 +184,9 @@ bot.onEvent(async context => {
     // console.log('context.event', context.event);
     // console.log('context.raw', context.event.rawEvent.value.from.id);
     areWeListening = false;
-    console.log(context.event.MessengerEvent.value);
-    console.log(context.event.MessengerEvent.value.from);
-    console.log(context.event.MessengerEvent.value.post);
+    console.log(context.event.rawEvent.value);
+    console.log(context.event.rawEvent.value.from);
+    console.log(context.event.rawEvent.value.post);
     
     switch (context.event.rawEvent.value.item) {
       case "comment":
