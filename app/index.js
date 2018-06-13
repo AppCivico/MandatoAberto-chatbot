@@ -181,12 +181,10 @@ bot.onEvent(async context => {
     let about_me_text;
     const post_id = context.event.rawEvent.value.post_id;
     const page_id = post_id.substr(0, post_id.indexOf("_"));
-    // console.log('context.event', context.event);
-    // console.log('context.raw', context.event.rawEvent.value.from.id);
+    let user_id = context.event.rawEvent.value.from.id;
+    
     areWeListening = false;
-    console.log(context.event.rawEvent.value);
-    console.log(context.event.rawEvent.value.from);
-    console.log(context.event.rawEvent.value.post);
+    console.log(user_id);
     
     switch (context.event.rawEvent.value.item) {
       case "comment":
@@ -198,7 +196,8 @@ bot.onEvent(async context => {
           page_id,
           post_id,
           comment_id,
-          permalink
+          permalink,
+          user_id
         );
         break;
       case "post":
@@ -208,7 +207,8 @@ bot.onEvent(async context => {
           page_id,
           post_id,
           comment_id,
-          permalink
+          permalink,
+          user_id
         );
         break;
     }
