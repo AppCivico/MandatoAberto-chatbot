@@ -182,9 +182,7 @@ bot.onEvent(async context => {
     const post_id = context.event.rawEvent.value.post_id;
     const page_id = post_id.substr(0, post_id.indexOf("_"));
     let user_id = context.event.rawEvent.value.from.id;
-    
     areWeListening = false;
-    
     switch (context.event.rawEvent.value.item) {
       case "comment":
         item = "comment";
@@ -534,17 +532,21 @@ bot.onEvent(async context => {
           url: politicianData.votolegal_integration.votolegal_url,
           title: "Vamos lá!"
         },
-        {
+      ];
+      // checking for picframe_url so we can only show this option when it's available but still show the votoLegal option
+      if (politicianData.picframe_url) {
+        const divulgateOption = {
           type: "postback",
           title: "Quero Divulgar",
           payload: "WannaDivulgate"
-        },
-        {
-          type: "postback",
-          title: "Voltar",
-          payload: "mainMenu"
-        }
-      ];
+        };
+        await participateOptions.push(divulgateOption);
+      }
+      await participateOptions.push({
+        type: "postback",
+        title: "Voltar",
+        payload: "mainMenu"
+      });
       await context.sendText(
         "Muito bom! Fico muito feliz com sua contribuição."
       );
@@ -823,7 +825,7 @@ bot.onEvent(async context => {
       }
       // Agora a enquete poderá ser respondida via propagação ou via dialogo
       if (recipientAnswer.recipient_answered >= 1) {
-        await context.sendText("Ah, que pena! Você já respondeu essa enquete.");
+        await context.sendText("Ah, que pena! Você já respondeu essa pergunta.");
         await context.sendButtonTemplate("Se quiser, eu posso te ajudar com outra coisa.", promptOptions);
         await context.setState({ dialog: "prompt" });
       } else {
@@ -891,7 +893,7 @@ bot.onEvent(async context => {
           }
         ]
       );
-      await context.setState({ emailDialog: "Legal, agora quer me informar seu telefone, para lhe manter informado sobre outras enquetes?"});
+      await context.setState({ emailDialog: "Legal, agora quer me informar seu telefone, para lhe manter informado sobre outras perguntas?"});
       await context.setState({
         dialog: "prompt",
         dataPrompt: "email"
