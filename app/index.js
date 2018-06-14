@@ -182,7 +182,6 @@ bot.onEvent(async context => {
     const post_id = context.event.rawEvent.value.post_id;
     const page_id = post_id.substr(0, post_id.indexOf("_"));
     let user_id = context.event.rawEvent.value.from.id;
-    console.log(user_id);
     areWeListening = false;
     switch (context.event.rawEvent.value.item) {
       case "comment":
@@ -535,7 +534,7 @@ bot.onEvent(async context => {
         },
       ];
       // checking for picframe_url so we can only show this option when it's available but still show the votoLegal option
-      if (politicianData.picframe_url1) {
+      if (politicianData.picframe_url) {
         const divulgateOption = {
           type: "postback",
           title: "Quero Divulgar",
