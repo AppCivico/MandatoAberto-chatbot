@@ -825,7 +825,7 @@ bot.onEvent(async context => {
       }
       // Agora a enquete poderá ser respondida via propagação ou via dialogo
       if (recipientAnswer.recipient_answered >= 1) {
-        await context.sendText("Ah, que pena! Você já respondeu essa enquete.");
+        await context.sendText("Ah, que pena! Você já respondeu essa pergunta.");
         await context.sendButtonTemplate("Se quiser, eu posso te ajudar com outra coisa.", promptOptions);
         await context.setState({ dialog: "prompt" });
       } else {
@@ -893,7 +893,7 @@ bot.onEvent(async context => {
           }
         ]
       );
-      await context.setState({ emailDialog: "Legal, agora quer me informar seu telefone, para lhe manter informado sobre outras enquetes?"});
+      await context.setState({ emailDialog: "Legal, agora quer me informar seu telefone, para lhe manter informado sobre outras perguntas?"});
       await context.setState({
         dialog: "prompt",
         dataPrompt: "email"
