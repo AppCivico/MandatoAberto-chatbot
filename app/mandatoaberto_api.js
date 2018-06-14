@@ -55,8 +55,8 @@ module.exports = {
 		return issue;
 	},
 
-	async postPrivateReply(item, page_id, post_id, comment_id, permalink) {
-		const res = await request.post(`${apiUri}/api/chatbot/private-reply?page_id=${page_id}&item=${item}&post_id=${post_id}&comment_id=${comment_id}&permalink=${permalink}&security_token=${security_token}`);
+	async postPrivateReply(item, page_id, post_id, comment_id, permalink, user_id) {
+		const res = await request.post(`${apiUri}/api/chatbot/private-reply?page_id=${page_id}&item=${item}&post_id=${post_id}&comment_id=${comment_id}&permalink=${permalink}&user_id=${user_id}&security_token=${security_token}`);
 		const privateReply = await res.json();
 		return privateReply;
 	}
