@@ -495,7 +495,7 @@ bot.onEvent(async context => {
         }
       ];
       await context.sendText(
-        "Você sabia que estamos em pré-campanha e contamos com sua participação?"
+        "Estamos em pré-campanha e contamos com você."
       );
       await context.sendButtonTemplate("Quer fazer parte?", participateOptions);
       await context.setState({ dialog: "prompt" });
@@ -522,7 +522,7 @@ bot.onEvent(async context => {
         title: "Voltar",
         payload: "mainMenu"
       });
-      await context.sendButtonTemplate("Muito bom poder contar com você! Como deseja participar?", participateOptions);
+      await context.sendButtonTemplate("Ficamos felizes com seu apoio! Como deseja participar?", participateOptions);
       await context.setState({ dialog: "prompt" });
       break;
     case "WannaDonate":
@@ -548,7 +548,7 @@ bot.onEvent(async context => {
         payload: "mainMenu"
       });
       await context.sendText(
-        "Muito bom! Fico muito feliz com sua contribuição."
+        "Seu apoio é fundamental para nossa pré-campanha! Por isso, cuidamos da segurança de todos os doadores. Saiba mais em: www.votolegal.com.br"
       );
       const valueLegal = await VotoLegalAPI.getVotoLegalValues(politicianData.votolegal_integration.votolegal_username);
       await context.sendText(
