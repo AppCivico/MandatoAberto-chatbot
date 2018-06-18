@@ -157,6 +157,7 @@ bot.onEvent(async context => {
         }
       ];
     }
+    console.log('votolegal: \n', politicianData.votolegal_integration);
     if (politicianData.votolegal_integration) {
       if (politicianData.votolegal_integration.votolegal_url &&
         politicianData.votolegal_integration.votolegal_username) {
