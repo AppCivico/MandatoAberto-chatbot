@@ -3,13 +3,6 @@ const queryString = require('query-string');
 
 const security_token = process.env.SECURITY_TOKEN;
 const apiUri = process.env.MANDATOABERTO_API_URL;
-console.log(process.env.SECURITY_TOKEN);
-console.log(process.env.MANDATOABERTO_API_URL);
-console.log(process.env.VOTO_LEGAL_API_URL);
-console.log(process.env.VERIFY_TOKEN);
-console.log(process.env.APP_ID);
-console.log(process.env.APP_SECRET);
-console.log(process.env.SECURITY_TOKEN);
 
 module.exports = {
 	async getPoliticianData(pageId) {
