@@ -412,7 +412,7 @@ bot.onEvent(async context => {
       issue_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, "issue_acknowledgment");
       if (Object.keys(issue_message).length === 0) {
         issue_message =
-          "A qualquer momento você pode digitar uma mensagem e eu enviarei para o gabinete.";
+          "A qualquer momento você pode digitar uma mensagem que enviarei para nosso time.";
       } else {
         issue_message = issue_message.content;
       }
