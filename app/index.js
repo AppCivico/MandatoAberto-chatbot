@@ -493,6 +493,11 @@ bot.onEvent(async context => {
           type: "postback",
           title: "Não",
           payload: "mainMenu"
+        },
+        {
+          type: "postback",
+          title: "Quero saber mais",
+          payload: "knowMore"
         }
       ];
       await context.sendText(
@@ -500,6 +505,27 @@ bot.onEvent(async context => {
       );
       await context.sendButtonTemplate("Quer fazer parte?", participateOptions);
       await context.setState({ dialog: "prompt" });
+      break;
+    case 'knowMore':
+    const knowMoreOptions = [
+        {
+        type: "postback",
+          title: "Quero",
+            payload: "WannaHelp"
+      },
+      {
+        type: "postback",
+          title: "Agora não",
+            payload: "mainMenu"
+      },
+    ];
+      await context.sendText('Existem diversas formas de participar da construção de uma candidatura. ' +
+      'Posso ajudá-lo a realizar uma doação ou divulgar a pré-campanha.');
+      await context.sendText('Aqui no site, você pode doar por meio do cartão de crédito ou boleto bancário. ' +
+      'Com o pagamento aprovado, enviaremos um recibo provisório por e-mail. Cada pessoa pode doar até 10% da renda declarada referente ao ano anterior. ' + 
+      'O limite de doação diária é de R$ 1.064,10.');
+      await context.sendText('Para ajudar na divulgação, você pode deixar seus contatos comigo ou mudar seu avatar.');
+      await context.sendButtonTemplate('Você quer participar?', knowMoreOptions);
       break;
     case "WannaHelp":
       participateOptions = [
