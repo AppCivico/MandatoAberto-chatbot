@@ -973,6 +973,7 @@ bot.onEvent(async context => {
           }
             break;
           case "cellphone":
+          console.log('chegamos até aqui');
           try {
             await context.sendText("Qual é o seu telefone? Não deixe de incluir o DDD.", {
               quick_replies: [
