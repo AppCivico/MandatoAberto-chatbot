@@ -309,6 +309,7 @@ bot.onEvent(async context => {
           await MandatoAbertoAPI.postRecipient(politicianData.user_id, recipientData);
           recipientData = {};
           // await context.setState({ email: undefined});
+          console.log('i am here');
           await context.sendButtonTemplate(context.state.emailDialog, [
               {
                 type: "postback",
@@ -319,13 +320,10 @@ bot.onEvent(async context => {
                 type: "postback",
                 title: "Não",
                 payload: "recipientData"
-              }
+              },
             ]);
-          await context.setState({
-            recipientData: "cellphonePrompt",
-            dialog: "recipientData",
-            dataPrompt: ""
-          });
+          console.log('get over here?');
+          await context.setState({ recipientData: "cellphonePrompt", dialog: "recipientData", dataPrompt: "" });
           break;
         case "cellphone":
           recipientData.fb_id = context.session.user.id;
@@ -353,7 +351,7 @@ bot.onEvent(async context => {
                 type: "postback",
                 title: "Não",
                 payload: "recipientData"
-              }
+              },
             ]);
           }
 
@@ -872,7 +870,7 @@ bot.onEvent(async context => {
         }
       }
       // Agora a enquete poderá ser respondida via propagação ou via dialogo
-      if (recipientAnswer.recipient_answered >= 1) {
+      if (recipientAnswer.recipient_answered >= 100) {
         await context.sendText("Ah, que pena! Você já respondeu essa pergunta.");
         await context.sendButtonTemplate("Se quiser, eu posso te ajudar com outra coisa.", promptOptions);
         await context.setState({ dialog: "prompt" });
