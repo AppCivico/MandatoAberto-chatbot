@@ -530,7 +530,7 @@ bot.onEvent(async context => {
         {
           type: "postback",
           title: "Quero Doar",
-          payload: "wannaDonate"
+          payload: "WannaDonate"
         },
         {
           type: "postback",
