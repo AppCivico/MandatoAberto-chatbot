@@ -315,12 +315,9 @@ bot.onEvent(async context => {
         case "email":
           recipientData.fb_id = context.session.user.id;
           recipientData.email = context.state.email;
-          console.log('asdasddddddddd')
-          console.log(recipientData.email);
-
           await MandatoAbertoAPI.postRecipient(politicianData.user_id, recipientData);
           recipientData = {};
-          await context.setState({ email: undefined});
+          // await context.setState({ email: undefined});
           await context.sendButtonTemplate(context.state.emailDialog,
             [
               {
@@ -974,8 +971,9 @@ bot.onEvent(async context => {
             break;
           case "cellphone":
           console.log('chegamos até aqui');
+          
           try {
-            await context.sendText("Qual é o seu telefone? Não deixe de incluir o DDD.", {
+            await context.sendTesdfsdfsdfxt("Qual é o seu telefone? Não deixe de incluir o DDD.", {
               quick_replies: [
                 {
                   content_type: 'user_phone_number',
