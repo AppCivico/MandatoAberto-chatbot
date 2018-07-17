@@ -75,7 +75,7 @@ const bot = new MessengerBot({
 
 bot.setInitialState({});
 
-bot.use(withTyping({ delay: 1000 }));
+bot.use(withTyping({ delay: 100 }));
 
 bot.onEvent(async context => {
   function getMenuPrompt() {
@@ -90,7 +90,7 @@ bot.onEvent(async context => {
       politicianData.office.name === "pré-candidato" ||
       politicianData.office.name === "pré-candidata"
     ) {
-      about_me_text = `${articles.defined} ${politicianData.office.name}`;
+      about_me_text = `${articles.defined.toUpperCase()} ${politicianData.office.name}`;
     } else {
       about_me_text = `Sobre ${articles.defined} ${politicianData.office.name}`;
     }
@@ -157,6 +157,7 @@ bot.onEvent(async context => {
         }
       ];
     }
+    // console.log('votolegal: \n', politicianData.votolegal_integration);
     if (politicianData.votolegal_integration) {
       if (politicianData.votolegal_integration.votolegal_url &&
         politicianData.votolegal_integration.votolegal_username) {
@@ -317,10 +318,7 @@ bot.onEvent(async context => {
         case "email":
           recipientData.fb_id = context.session.user.id;
           recipientData.email = context.event.message.text;
-          await MandatoAbertoAPI.postRecipient(
-            politicianData.user_id,
-            recipientData
-          );
+          await MandatoAbertoAPI.postRecipient(politicianData.user_id, recipientData);
           recipientData = {};
           await context.sendButtonTemplate(context.state.emailDialog,
             [
@@ -411,7 +409,7 @@ bot.onEvent(async context => {
       issue_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, "issue_acknowledgment");
       if (Object.keys(issue_message).length === 0) {
         issue_message =
-          "A qualquer momento você pode digitar uma mensagem e eu enviarei para o gabinete.";
+          "A qualquer momento você pode digitar uma mensagem que enviarei para nosso time.";
       } else {
         issue_message = issue_message.content;
       }
@@ -492,14 +490,86 @@ bot.onEvent(async context => {
           type: "postback",
           title: "Não",
           payload: "mainMenu"
+        },
+        {
+          type: "postback",
+          title: "Saber mais",
+          payload: "knowMore"
         }
       ];
       await context.sendText(
-        "Você sabia que estamos em pré-campanha e contamos com sua participação?"
+        "Estamos em pré-campanha e contamos com você."
       );
       await context.sendButtonTemplate("Quer fazer parte?", participateOptions);
       await context.setState({ dialog: "prompt" });
       break;
+    case 'knowMore': {
+    const knowMoreOptions = [
+      {
+        type: "postback",
+        title: "Sobre doações",
+        payload: "aboutDonation"
+      },
+      {
+        type: "postback",
+        title: "Sobre divulgar",
+        payload: "aboutDivulgation"
+      },
+      {
+        type: "postback",
+        title: "Voltar",
+        payload: "mainMenu"
+      }
+    ];
+      await context.sendButtonTemplate('Existem diversas formas de participar da construção de uma candidatura. ' +
+      'Posso ajudá-lo a realizar uma doação ou divulgar a pré-campanha. Quer entender melhor?', knowMoreOptions);
+      await context.setState({ dialog: "prompt" });
+      break; }
+    case "aboutDonation":
+      const aboutDonationOptions = [
+        {
+          type: "postback",
+          title: "Quero Doar",
+          payload: "WannaDonate"
+        },
+        {
+          type: "postback",
+          title: "Voltar",
+          payload: "knowMore"
+        }
+      ];
+      await context.sendText('Doar é importante para campanhas mais justas.');
+      await context.sendText('Aqui no site, você pode doar por meio do cartão de crédito ou boleto bancário.');
+      await context.sendButtonTemplate('Com o pagamento aprovado, enviaremos um recibo provisório por e-mail. Cada pessoa pode doar até 10% da renda declarada referente ao ano anterior. ' + 
+        'O limite de doação diária é de R$ 1.064,10.', aboutDonationOptions);
+      await context.setState({ dialog: "prompt" });
+      break;
+    case "aboutDivulgation":
+      const aboutDivulgationOptions = [
+        {
+          type: "postback",
+          title: "Deixar Contato",
+          payload: "recipientData"
+        },
+      ];
+      if (politicianData.picframe_url) {
+        const divulgateOption = {
+        type: "web_url",
+        url: politicianData.picframe_url,
+        title: "Mudar Avatar"
+        };
+        await aboutDivulgationOptions.push(divulgateOption);
+      }
+      await aboutDivulgationOptions.push({
+        type: "postback",
+        title: "Voltar",
+        payload: "knowMore"
+      });
+      await context.sendButtonTemplate('Para ajudar na divulgação, você pode deixar seus contatos comigo ou mudar sua imagem de avatar. Você quer participar?',
+      aboutDivulgationOptions);
+      // await context.setState({ dialog: "prompt" });
+      await context.setState({ dialog: "prompt", dataPrompt: "email" });
+    break;
     case "WannaHelp":
       participateOptions = [
         {
@@ -522,7 +592,7 @@ bot.onEvent(async context => {
         title: "Voltar",
         payload: "mainMenu"
       });
-      await context.sendButtonTemplate("Muito bom poder contar com você! Como deseja participar?", participateOptions);
+      await context.sendButtonTemplate("Ficamos felizes com seu apoio! Como deseja participar?", participateOptions);
       await context.setState({ dialog: "prompt" });
       break;
     case "WannaDonate":
@@ -548,7 +618,7 @@ bot.onEvent(async context => {
         payload: "mainMenu"
       });
       await context.sendText(
-        "Muito bom! Fico muito feliz com sua contribuição."
+        "Seu apoio é fundamental para nossa pré-campanha! Por isso, cuidamos da segurança de todos os doadores. Saiba mais em: www.votolegal.com.br"
       );
       const valueLegal = await VotoLegalAPI.getVotoLegalValues(politicianData.votolegal_integration.votolegal_username);
       await context.sendText(
@@ -1011,5 +1081,5 @@ bot.onEvent(async context => {
 const server = createServer(bot, { verifyToken: config.verifyToken });
 
 server.listen(process.env.API_PORT, () => {
-  console.log(`server is running on ${process.env.API_PORT} port...`);
+  console.log(`Server is running on ${process.env.API_PORT} port...`);
 });
