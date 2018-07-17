@@ -289,13 +289,13 @@ bot.onEvent(async context => {
     if (context.state.recipientData) {
       switch (context.state.recipientData) {
         case "email":
-          await context.setState({ emailDialog: "Legal, agora quer me informar seu telefone, para lhe manter informado sobre outras perguntas?" });
+          // await context.setState({ emailDialog: "Legal, agora quer me informar seu telefone, para lhe manter informado sobre outras perguntas?" });
           recipientData.fb_id = context.session.user.id;
           recipientData.email = context.state.email;
           await MandatoAbertoAPI.postRecipient(politicianData.user_id, recipientData);
           recipientData = {};
           await context.setState({ email: undefined});
-          await context.sendButtonTemplate(context.state.emailDialog, [
+          await context.sendButtonTemplate("Legal, agora quer me informar seu telefone, para lhe manter informado sobre outras perguntas?", [
               {
                 type: "postback",
                 title: "Sim",
@@ -321,11 +321,8 @@ bot.onEvent(async context => {
           } else {
             await context.setState({dataPrompt: "", recipientData: "cellphonePrompt"});
 
-            await context.sendText(
-              "Desculpe-me, mas seu telefone não parece estar correto. Não esqueça de incluir o DDD. " +
-                "Por exemplo: 1199999-8888"
-            );
-              await context.sendButtonTemplate("Vamos tentar de novo?", [
+            await context.sendText("Desculpe-me, mas seu telefone não parece estar correto. Não esqueça de incluir o DDD. Por exemplo: 1199999-8888");
+            await context.sendButtonTemplate("Vamos tentar de novo?", [
               {
                 type: "postback",
                 title: "Sim",
@@ -342,10 +339,7 @@ bot.onEvent(async context => {
           recipientData = {};
           break;
         case "cellphonePrompt":
-          await context.setState({
-            dialog: "recipientData",
-            dataPrompt: "cellphone"
-          });
+          await context.setState({ dialog: "recipientData", dataPrompt: "cellphone" });
           break;
       }
     }
@@ -357,29 +351,22 @@ bot.onEvent(async context => {
       areWeListening = true;
       // Criando um cidadão
       recipientData.fb_id = context.session.user.id;
-      recipientData.name = `${context.session.user.first_name} ${ context.session.user.last_name}`;
+      recipientData.name = `${context.session.user.first_name} ${context.session.user.last_name}`;
       recipientData.gender = context.session.user.gender === "male" ? "M" : "F";
       recipientData.origin_dialog = "greetings";
       recipientData.picture = context.session.user.profile_pic;
-      recipient = await MandatoAbertoAPI.postRecipient(
-        politicianData.user_id,
-        recipientData
-      );
+      recipient = await MandatoAbertoAPI.postRecipient(politicianData.user_id, recipientData);
       recipientData = {};
       introduction = await MandatoAbertoAPI.getAnswer(politicianData.user_id, "introduction");
       issue_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, "issue_acknowledgment");
       if (Object.keys(issue_message).length === 0) {
-        issue_message =
-          "A qualquer momento você pode digitar uma mensagem que enviarei para nosso time.";
+        issue_message = "A qualquer momento você pode digitar uma mensagem que enviarei para nosso time.";
       } else {
         issue_message = issue_message.content;
       }
       await getMenuPrompt();
-      await context.setState({userMessage: ""}); // cleaning up
-      let greeting = politicianData.greeting.replace(
-        "${user.office.name}",
-        politicianData.office.name
-      );
+      await context.setState({ userMessage: "" }); // cleaning up
+      let greeting = politicianData.greeting.replace("${user.office.name}", politicianData.office.name);
       greeting = greeting.replace("${user.name}", politicianData.name);
       await context.sendText(greeting);
       await context.sendButtonTemplate(issue_message, promptOptions);
@@ -396,20 +383,10 @@ bot.onEvent(async context => {
       recipientData.gender = context.session.user.gender === "male" ? "M" : "F";
       recipientData.origin_dialog = "greetings";
       recipientData.picture = context.session.user.profile_pic;
-      recipient = await MandatoAbertoAPI.postRecipient(
-        politicianData.user_id,
-        recipientData
-      );
+      recipient = await MandatoAbertoAPI.postRecipient(politicianData.user_id, recipientData);
       recipientData = {};
-
-      introduction = await MandatoAbertoAPI.getAnswer(
-        politicianData.user_id,
-        "introduction"
-      );
-      issue_message = await MandatoAbertoAPI.getAnswer(
-        politicianData.user_id,
-        "issue_acknowledgment"
-      );
+      introduction = await MandatoAbertoAPI.getAnswer(politicianData.user_id,"introduction");
+      issue_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id,"issue_acknowledgment");
 
       if (Object.keys(issue_message).length === 0) {
         issue_message = "A qualquer momento você pode digitar uma mensagem e eu enviarei para o gabinete.";
@@ -881,7 +858,6 @@ bot.onEvent(async context => {
       break;
       case 'listeningAnswer':
       await MandatoAbertoAPI.postIssue( politicianData.user_id,context.session.user.id, context.state.userMessage);
-      await context.setState({ emailDialog: "Legal, agora quer me informar seu telefone, para lhe manter informado das nossas novidades?" });
       await context.setState({ userMessage: '' });
       await context.sendButtonTemplate('Agradecemos a sua mensagem. Deseja nos enviar ou atualizar seu e-mail e telefone?',
         [
