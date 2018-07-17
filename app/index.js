@@ -970,7 +970,8 @@ bot.onEvent(async context => {
               dialog: "recipientData",
               recipientData: "email"
             });
-          } catch {
+          } catch(err) {
+            console.log('Error =>', err)
             await context.sendText("Qual é o seu e-mail?");
             await context.setState({
               dialog: "recipientData",
