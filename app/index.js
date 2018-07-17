@@ -318,6 +318,7 @@ bot.onEvent(async context => {
         case "email":
           recipientData.fb_id = context.session.user.id;
           recipientData.email = context.state.email;//context.event.message.text;
+          console.log(recipientData.email);
           await MandatoAbertoAPI.postRecipient(politicianData.user_id, recipientData);
           recipientData = {};
           await context.sendButtonTemplate(context.state.emailDialog,
@@ -893,7 +894,7 @@ bot.onEvent(async context => {
         }
       }
       // Agora a enquete poderá ser respondida via propagação ou via dialogo
-      if (recipientAnswer.recipient_answered >= 1) {
+      if (recipientAnswer.recipient_answered >= 100) {
         await context.sendText("Ah, que pena! Você já respondeu essa pergunta.");
         await context.sendButtonTemplate("Se quiser, eu posso te ajudar com outra coisa.", promptOptions);
         await context.setState({ dialog: "prompt" });
