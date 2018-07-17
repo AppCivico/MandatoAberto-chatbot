@@ -75,7 +75,7 @@ const bot = new MessengerBot({
 
 bot.setInitialState({});
 
-bot.use(withTyping({ delay: 1000 }));
+bot.use(withTyping({ delay: 100 }));
 
 bot.onEvent(async context => {
   function getMenuPrompt() {
@@ -90,7 +90,7 @@ bot.onEvent(async context => {
       politicianData.office.name === "pré-candidato" ||
       politicianData.office.name === "pré-candidata"
     ) {
-      about_me_text = `${articles.defined} ${politicianData.office.name}`;
+      about_me_text = `${articles.defined.toUpperCase()} ${politicianData.office.name}`;
     } else {
       about_me_text = `Sobre ${articles.defined} ${politicianData.office.name}`;
     }
@@ -1081,5 +1081,5 @@ bot.onEvent(async context => {
 const server = createServer(bot, { verifyToken: config.verifyToken });
 
 server.listen(process.env.API_PORT, () => {
-  console.log(`server is running on ${process.env.API_PORT} port...`);
+  console.log(`Server is running on ${process.env.API_PORT} port...`);
 });
