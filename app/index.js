@@ -308,8 +308,7 @@ bot.onEvent(async context => {
           recipientData.email = context.state.email;
           await MandatoAbertoAPI.postRecipient(politicianData.user_id, recipientData);
           recipientData = {};
-          // await context.setState({ email: undefined});
-          console.log('i am here');
+          await context.setState({ email: undefined});
           await context.sendButtonTemplate(context.state.emailDialog, [
               {
                 type: "postback",
@@ -322,15 +321,14 @@ bot.onEvent(async context => {
                 payload: "recipientData"
               },
             ]);
-          console.log('get over here?');
           await context.setState({ recipientData: "cellphonePrompt", dialog: "recipientData", dataPrompt: "" });
           break;
         case "cellphone":
           recipientData.fb_id = context.session.user.id;
           recipientData.cellphone = context.state.cellphone;//context.event.message.text;
-          console.log(context.state.cellphone);
           recipientData.cellphone = recipientData.cellphone.replace(/[- .)(]/g, "");
           recipientData.cellphone = `+55${recipientData.cellphone}`;
+          await context.setState({ cellphone: undefined });
 
           if (phoneRegex.test(recipientData.cellphone)) {
             await MandatoAbertoAPI.postRecipient(politicianData.user_id, recipientData);
@@ -870,7 +868,7 @@ bot.onEvent(async context => {
         }
       }
       // Agora a enquete poderá ser respondida via propagação ou via dialogo
-      if (recipientAnswer.recipient_answered >= 100) {
+      if (recipientAnswer.recipient_answered >= 1) {
         await context.sendText("Ah, que pena! Você já respondeu essa pergunta.");
         await context.sendButtonTemplate("Se quiser, eu posso te ajudar com outra coisa.", promptOptions);
         await context.setState({ dialog: "prompt" });
@@ -957,8 +955,6 @@ bot.onEvent(async context => {
           }
             break;
           case "cellphone":
-          console.log('chegamos até aqui');
-          
           try {
             await context.sendText("Qual é o seu telefone? Não deixe de incluir o DDD.", {
               quick_replies: [
@@ -966,7 +962,7 @@ bot.onEvent(async context => {
                   content_type: 'user_phone_number',
                 },
               ],
-              });
+            });
           } catch(err) {
             console.log('Cellphone button catch error =>', err)
             await context.sendText("Qual é o seu telefone? Não deixe de incluir o DDD.");
