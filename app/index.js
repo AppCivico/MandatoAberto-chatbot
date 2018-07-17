@@ -237,8 +237,9 @@ bot.onEvent(async context => {
       const payload = context.event.postback.payload;
       await context.setState({ dialog: payload });
     } else if (context.event.isQuickReply) {
-      if (context.state.dataPrompt) {
+      if (context.state.dialog === "recipientData" && context.state.recipientData) {
         if (context.state.dataPrompt === 'email') {
+          console.log('i am here');
           console.log(context.event.message.quick_reply.payload);
           await context.setState({ email: context.event.message.quick_reply.payload})
         }
@@ -246,7 +247,7 @@ bot.onEvent(async context => {
       await context.setState({ dialog: context.event.message.quick_reply.payload });
     }
     } else if (context.event.isText) {
-      if (context.state.dataPrompt) {
+      if (context.state.dialog === "recipientData" && context.state.recipientData) {
         if (context.state.dataPrompt === 'email') {
           await context.setState({ email: context.event.message.text })
         }
