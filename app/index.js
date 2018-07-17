@@ -244,10 +244,7 @@ bot.onEvent(async context => {
       // We go to the listening dialog to wait for other messages
       if (areWeListening === true) {
         // check if message came from standard flow or from post/comment
-        console.log('sdkaskds');
-        await context.setState({ dialog: "prompt", dataPrompt: "email" });
-
-        // await context.setState({ dialog: "listening" });
+        await context.setState({ dialog: "listening" });
       } else {
         await context.setState({ dialog: "intermediate" });
       }
