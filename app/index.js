@@ -297,13 +297,14 @@ bot.onEvent(async context => {
   if (context.state.dialog === "recipientData" && context.state.recipientData) {
     if (context.event.isQuickReply) { 
       if (context.state.dataPrompt === 'email') {
+        console.log('asdasd')
         await context.setState({ email: context.event.message.quick_reply.payload })
       } else if (context.state.dataPrompt === 'end') {
-        console.log('i am here');
         await context.setState({ cellphone: context.event.message.quick_reply.payload })
       }
     } else if (context.event.isText) {
       if (context.state.dataPrompt === 'email') {
+        
         await context.setState({ email: context.event.message.text })
       } else if (context.state.dataPrompt === 'end') {
         await context.setState({ cellphone: context.event.message.text })
@@ -315,6 +316,7 @@ bot.onEvent(async context => {
         case "email":
           recipientData.fb_id = context.session.user.id;
           recipientData.email = context.state.email;
+          console.log('asdasdasd')
           console.log(context.state.email);
 
           await MandatoAbertoAPI.postRecipient(politicianData.user_id, recipientData);
@@ -559,8 +561,7 @@ bot.onEvent(async context => {
       });
       await context.sendButtonTemplate('Para ajudar na divulgação, você pode deixar seus contatos comigo ou mudar sua imagem de avatar. Você quer participar?',
       aboutDivulgationOptions);
-      // await context.setState({ dialog: "prompt", dataPrompt: "email" });
-      await context.setState({ dialog: "prompt" });
+      await context.setState({ dialog: "prompt", dataPrompt: "email" });
     break;
     case "WannaHelp":
       participateOptions = [
@@ -912,12 +913,7 @@ bot.onEvent(async context => {
       }
       break;
       case 'listeningAnswer':
-      await MandatoAbertoAPI.postIssue(
-        politicianData.user_id,
-        context.session.user.id,
-        context.state.userMessage
-      );
-      await 
+      await MandatoAbertoAPI.postIssue( politicianData.user_id,context.session.user.id, context.state.userMessage);
       await context.setState({ emailDialog: "Legal, agora quer me informar seu telefone, para lhe manter informado das nossas novidades?" });
       await context.setState({ userMessage: '' });
       await context.sendButtonTemplate('Agradecemos a sua mensagem. Deseja nos enviar ou atualizar seu e-mail e telefone?',
@@ -934,11 +930,7 @@ bot.onEvent(async context => {
           }
         ]
       );
-
-      await context.setState({
-        dialog: "prompt",
-        dataPrompt: "email"
-      });
+      await context.setState({ dialog: "prompt", dataPrompt: "email" });
       break;   
       case "pollAnswer":
       await context.sendButtonTemplate("Muito obrigado por sua resposta. Você gostaria de deixar seu e-mail e telefone para nossa equipe?",
@@ -956,10 +948,7 @@ bot.onEvent(async context => {
         ]
       );
       await context.setState({ emailDialog: "Legal, agora quer me informar seu telefone, para lhe manter informado sobre outras perguntas?"});
-      await context.setState({
-        dialog: "prompt",
-        dataPrompt: "email"
-      });
+      await context.setState({ dialog: "prompt", dataPrompt: "email" });
 
       break;
     case "recipientData":
