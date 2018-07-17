@@ -305,7 +305,7 @@ bot.onEvent(async context => {
     if (context.event.isQuickReply) { 
       if (context.state.dataPrompt === 'email') {
         await context.setState({ email: context.event.message.quick_reply.payload })
-      } else if (context.state.dataPrompt === 'cellphone') {
+      } else if (context.state.dataPrompt === 'end') {
         console.log('i am here');
         await context.setState({ cellphone: context.event.message.quick_reply.payload })
       }
@@ -313,7 +313,6 @@ bot.onEvent(async context => {
       if (context.state.dataPrompt === 'email') {
         await context.setState({ email: context.event.message.text })
       } else if (context.state.dataPrompt === 'end') {
-        console.log('i am here too');
         await context.setState({ cellphone: context.event.message.text })
       }
   }
@@ -323,9 +322,11 @@ bot.onEvent(async context => {
         case "email":
           recipientData.fb_id = context.session.user.id;
           recipientData.email = context.state.email;
+          console.log(context.state.email);
 
           await MandatoAbertoAPI.postRecipient(politicianData.user_id, recipientData);
           recipientData = {};
+          await context.setState({ email: undefined});
           await context.sendButtonTemplate(context.state.emailDialog,
             [
               {
@@ -975,24 +976,18 @@ bot.onEvent(async context => {
         switch (context.state.dataPrompt) {
           case "email":
           try {
-            await context.sendText("Clique no botão abaixo para nos mandar seu e-mail. Se não for esse, digite e nos mande!", {
+            await context.sendText("Qual o seu e-mail? Pode digita-lo e nos mandar.", {
               quick_replies: [
                 {
                   content_type: 'user_email',
                 },
               ],
             });
-            await context.setState({
-              dialog: "recipientData",
-              recipientData: "email"
-            });
           } catch(err) {
             console.log('E-mail button catch error =>', err)
             await context.sendText("Qual é o seu e-mail?");
-            await context.setState({
-              dialog: "recipientData",
-              recipientData: "email"
-            });
+          } finally {
+              await context.setState({ dialog: "recipientData", recipientData: "email"});
           }
             break;
           case "cellphone":
@@ -1004,19 +999,11 @@ bot.onEvent(async context => {
                   },
                 ],
               });
-            await context.setState({
-              dialog: "recipientData",
-              recipientData: "cellphone",
-              dataPrompt: "end"
-            });
           } catch(err) {
             console.log('Cellphone button catch error =>', err)
             await context.sendText("Qual é o seu telefone? Não deixe de incluir o DDD.");
-            await context.setState({
-              dialog: "recipientData",
-              recipientData: "cellphone",
-              dataPrompt: "end"
-            });
+          } finally {
+            await context.setState({ dialog: "recipientData", recipientData: "cellphone", dataPrompt: "end"});
           }
             break;
           case "cellphoneFail":
