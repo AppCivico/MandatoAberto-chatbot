@@ -286,16 +286,9 @@ bot.onEvent(async context => {
   ) {
     // Tratando resposta da enquete através de propagação
     const payload = context.event.postback.payload;
-    poll_question_option_id = payload.substr(
-      payload.indexOf("_") + 1,
-      payload.length
-    );
+    poll_question_option_id = payload.substr(payload.indexOf("_") + 1, payload.length);
     const origin = "propagate";
-    await MandatoAbertoAPI.postPollAnswer(
-      context.session.user.id,
-      poll_question_option_id,
-      origin
-    );
+    await MandatoAbertoAPI.postPollAnswer(context.session.user.id,poll_question_option_id,origin);
     context.setState({ dialog: "pollAnswer" });
   } else if (context.event.isText && context.state.dialog === "pollAnswer") {
     await context.setState({ dialog: "listening" });
@@ -566,7 +559,8 @@ bot.onEvent(async context => {
       });
       await context.sendButtonTemplate('Para ajudar na divulgação, você pode deixar seus contatos comigo ou mudar sua imagem de avatar. Você quer participar?',
       aboutDivulgationOptions);
-      await context.setState({ dialog: "prompt", dataPrompt: "email" });
+      // await context.setState({ dialog: "prompt", dataPrompt: "email" });
+      await context.setState({ dialog: "prompt" });
     break;
     case "WannaHelp":
       participateOptions = [
