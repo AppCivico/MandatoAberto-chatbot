@@ -496,7 +496,7 @@ bot.onEvent(async context => {
         },
         {
           type: "postback",
-          title: "Quero saber mais",
+          title: "Saber mais",
           payload: "knowMore"
         }
       ];
@@ -506,28 +506,72 @@ bot.onEvent(async context => {
       await context.sendButtonTemplate("Quer fazer parte?", participateOptions);
       await context.setState({ dialog: "prompt" });
       break;
-    case 'knowMore':
+    case 'knowMore': {
     const knowMoreOptions = [
-        {
+      {
         type: "postback",
-          title: "Quero",
-            payload: "WannaHelp"
+        title: "Sobre doações",
+        payload: "aboutDonation"
       },
       {
         type: "postback",
-          title: "Agora não",
-            payload: "mainMenu"
+        title: "Sobre divulgar",
+        payload: "aboutDivulgation"
       },
+      {
+        type: "postback",
+        title: "Voltar",
+        payload: "mainMenu"
+      }
     ];
-      await context.sendText('Existem diversas formas de participar da construção de uma candidatura. ' +
-      'Posso ajudá-lo a realizar uma doação ou divulgar a pré-campanha.');
-      await context.sendText('Aqui no site, você pode doar por meio do cartão de crédito ou boleto bancário. ' +
-      'Com o pagamento aprovado, enviaremos um recibo provisório por e-mail. Cada pessoa pode doar até 10% da renda declarada referente ao ano anterior. ' + 
-      'O limite de doação diária é de R$ 1.064,10.');
-      await context.sendText('Para ajudar na divulgação, você pode deixar seus contatos comigo ou mudar seu avatar.');
-      await context.sendButtonTemplate('Você quer participar?', knowMoreOptions);
+      await context.sendButtonTemplate('Existem diversas formas de participar da construção de uma candidatura. ' +
+      'Posso ajudá-lo a realizar uma doação ou divulgar a pré-campanha. Quer entender melhor?', knowMoreOptions);
       await context.setState({ dialog: "prompt" });
-      break;
+      break; }
+    case "aboutDonation": {
+      const aboutDonationOptions = [
+        {
+          type: "postback",
+          title: "Quero Doar",
+          payload: "wannaDonate"
+        },
+        {
+          type: "postback",
+          title: "Voltar",
+          payload: "knowMore"
+        },
+      ];
+      await context.sendText('Doar é importante para campanhas mais justas.');
+      await context.sendText('Aqui no site, você pode doar por meio do cartão de crédito ou boleto bancário.');
+      await context.sendButtonTemplate('Com o pagamento aprovado, enviaremos um recibo provisório por e-mail. Cada pessoa pode doar até 10% da renda declarada referente ao ano anterior. ' + 
+        'O limite de doação diária é de R$ 1.064,10.', aboutDonationOptions);
+      await context.setState({ dialog: "prompt" });
+      break; }
+    case "aboutDivulgation": {
+      const aboutDivulgationOptions = [
+        {
+          type: "postback",
+          title: "Deixar Contato",
+          payload: "recipientData"
+        },
+      ];
+      if (politicianData.picframe_url) {
+        const divulgateOption = {
+        type: "web_url",
+        url: politicianData.picframe_url,
+        title: "Mudar Avatar"
+        };
+        await aboutDivulgationOptions.push(divulgateOption);
+      }
+      await aboutDivulgationOptions.push({
+        type: "postback",
+        title: "Voltar",
+        payload: "knowMore"
+      });
+      await context.sendButtonTemplate('Para ajudar na divulgação, você pode deixar seus contatos comigo ou mudar sua imagem de avatar. Você quer participar?',
+      aboutDivulgationOptions);
+      await context.setState({ dialog: "prompt" });
+    break; }
     case "WannaHelp":
       participateOptions = [
         {
