@@ -75,7 +75,7 @@ const bot = new MessengerBot({
 
 bot.setInitialState({});
 
-// bot.use(withTyping({ delay: 100 }));
+// bot.use(withTyping({ delay: 1000 }));
 
 bot.onEvent(async context => {
   function getMenuPrompt() {
@@ -237,21 +237,8 @@ bot.onEvent(async context => {
       const payload = context.event.postback.payload;
       await context.setState({ dialog: payload });
     } else if (context.event.isQuickReply) {
-      if (context.state.dialog === "recipientData" && context.state.recipientData) {
-        if (context.state.dataPrompt === 'email') {
-          console.log('i am here');
-          console.log(context.event.message.quick_reply.payload);
-          await context.setState({ email: context.event.message.quick_reply.payload})
-        }
-      } else {
       await context.setState({ dialog: context.event.message.quick_reply.payload });
-    }
     } else if (context.event.isText) {
-      if (context.state.dialog === "recipientData" && context.state.recipientData) {
-        if (context.state.dataPrompt === 'email') {
-          await context.setState({ email: context.event.message.text })
-        }
-      } else {
       // Ao mandar uma mensagem que não é interpretada como fluxo do chatbot
       // Devo já criar uma issue
       // We go to the listening dialog to wait for other messages
@@ -263,7 +250,7 @@ bot.onEvent(async context => {
       }
     }
   }
-  }
+  
 
   // Switch de dialogos
   if (context.event.isPostback && (context.state.dialog === "prompt" || context.event.postback.payload === "greetings")) {
@@ -315,6 +302,18 @@ bot.onEvent(async context => {
   }
   // Tratando dados adicionais do recipient
   if (context.state.dialog === "recipientData" && context.state.recipientData) {
+    if (context.event.isQuickReply) { 
+      if (context.state.dataPrompt === 'email') {
+      console.log('i am here');
+      console.log(context.event.message.quick_reply.payload);
+      await context.setState({ email: context.event.message.quick_reply.payload })
+    }
+  } else if (context.event.isText) {
+      if (context.state.dataPrompt === 'email') {
+        await context.setState({ email: context.event.message.text })
+      }
+  }
+
     if (context.state.recipientData) {
       switch (context.state.recipientData) {
         case "email":
