@@ -274,21 +274,13 @@ bot.onEvent(async context => {
   if (context.event.isPostback && context.state.dialog === "pollAnswer") {
     poll_question_option_id = context.event.postback.payload;
     const origin = "dialog";
-    await MandatoAbertoAPI.postPollAnswer(
-      context.session.user.id,
-      poll_question_option_id,
-      origin
-    );
-  } else if (
-    context.event.isPostback &&
-    context.event.postback.payload &&
-    context.event.postback.payload.includes(propagateIdentifier)
-  ) {
+    await MandatoAbertoAPI.postPollAnswer( context.session.user.id, poll_question_option_id, origin);
+  } else if (context.event.isPostback && context.event.postback.payload && context.event.postback.payload.includes(propagateIdentifier)) {
     // Tratando resposta da enquete através de propagação
     const payload = context.event.postback.payload;
     poll_question_option_id = payload.substr(payload.indexOf("_") + 1, payload.length);
     const origin = "propagate";
-    await MandatoAbertoAPI.postPollAnswer(context.session.user.id,poll_question_option_id,origin);
+    await MandatoAbertoAPI.postPollAnswer(context.session.user.id, poll_question_option_id, origin);
     context.setState({ dialog: "pollAnswer" });
   } else if (context.event.isText && context.state.dialog === "pollAnswer") {
     await context.setState({ dialog: "listening" });
@@ -303,7 +295,6 @@ bot.onEvent(async context => {
       }
     } else if (context.event.isText) {
       if (context.state.dataPrompt === 'email') {
-        
         await context.setState({ email: context.event.message.text })
       } else if (context.state.dataPrompt === 'end') {
         await context.setState({ cellphone: context.event.message.text })
@@ -318,8 +309,7 @@ bot.onEvent(async context => {
           await MandatoAbertoAPI.postRecipient(politicianData.user_id, recipientData);
           recipientData = {};
           // await context.setState({ email: undefined});
-          await context.sendButtonTemplate(context.state.emailDialog,
-            [
+          await context.sendButtonTemplate(context.state.emailDialog, [
               {
                 type: "postback",
                 title: "Sim",
@@ -330,8 +320,7 @@ bot.onEvent(async context => {
                 title: "Não",
                 payload: "recipientData"
               }
-            ]
-          );
+            ]);
           await context.setState({
             recipientData: "cellphonePrompt",
             dialog: "recipientData",
@@ -354,7 +343,7 @@ bot.onEvent(async context => {
               "Desculpe-me, mas seu telefone não parece estar correto. Não esqueça de incluir o DDD. " +
                 "Por exemplo: 1199999-8888"
             );
-                  await context.sendButtonTemplate("Vamos tentar de novo?", [
+              await context.sendButtonTemplate("Vamos tentar de novo?", [
               {
                 type: "postback",
                 title: "Sim",
@@ -973,7 +962,7 @@ bot.onEvent(async context => {
           console.log('chegamos até aqui');
           
           try {
-            await context.sendTesdfsdfsdfxt("Qual é o seu telefone? Não deixe de incluir o DDD.", {
+            await context.sendText("Qual é o seu telefone? Não deixe de incluir o DDD.", {
               quick_replies: [
                 {
                   content_type: 'user_phone_number',
