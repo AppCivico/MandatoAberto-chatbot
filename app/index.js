@@ -157,7 +157,7 @@ bot.onEvent(async context => {
         }
       ];
     }
-    console.log('votolegal: \n', politicianData.votolegal_integration);
+    // console.log('votolegal: \n', politicianData.votolegal_integration);
     if (politicianData.votolegal_integration) {
       if (politicianData.votolegal_integration.votolegal_url &&
         politicianData.votolegal_integration.votolegal_username) {
@@ -526,6 +526,7 @@ bot.onEvent(async context => {
       'O limite de doação diária é de R$ 1.064,10.');
       await context.sendText('Para ajudar na divulgação, você pode deixar seus contatos comigo ou mudar seu avatar.');
       await context.sendButtonTemplate('Você quer participar?', knowMoreOptions);
+      await context.setState({ dialog: "prompt" });
       break;
     case "WannaHelp":
       participateOptions = [
