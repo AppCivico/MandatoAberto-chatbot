@@ -237,18 +237,30 @@ bot.onEvent(async context => {
       const payload = context.event.postback.payload;
       await context.setState({ dialog: payload });
     } else if (context.event.isQuickReply) {
+      if (context.state.dataPrompt) {
+        if (context.state.dataPrompt === 'email') {
+          await context.setState({ email: context.event.message.quick_reply.payload})
+        }
+      } else {
       await context.setState({ dialog: context.event.message.quick_reply.payload });
+    }
     } else if (context.event.isText) {
+      if (context.state.dataPrompt) {
+        if (context.state.dataPrompt === 'email') {
+          await context.setState({ email: context.event.message.text })
+        }
+      } else {
       // Ao mandar uma mensagem que não é interpretada como fluxo do chatbot
       // Devo já criar uma issue
       // We go to the listening dialog to wait for other messages
       if (areWeListening === true) {
         // check if message came from standard flow or from post/comment
-        await context.setState({ dialog: "listening" });
+        // await context.setState({ dialog: "listening" });
       } else {
         await context.setState({ dialog: "intermediate" });
       }
     }
+  }
   }
 
   // Switch de dialogos
@@ -305,7 +317,7 @@ bot.onEvent(async context => {
       switch (context.state.recipientData) {
         case "email":
           recipientData.fb_id = context.session.user.id;
-          recipientData.email = context.event.message.text;
+          recipientData.email = context.state.email;//context.event.message.text;
           await MandatoAbertoAPI.postRecipient(politicianData.user_id, recipientData);
           recipientData = {};
           await context.sendButtonTemplate(context.state.emailDialog,
@@ -965,11 +977,13 @@ bot.onEvent(async context => {
         switch (context.state.dataPrompt) {
           case "email":
           try {
-            await context.sendText("Clique no botão abaixo para nos mandar seu e-mail. Se não for esse, digite e nos mande!", [
-              {
-                content_type: 'user_email',
-              }
-            ]);
+            await context.sendText("Clique no botão abaixo para nos mandar seu e-mail. Se não for esse, digite e nos mande!", {
+              quick_replies: [
+                {
+                  content_type: 'user_email',
+                },
+              ],
+            });
             await context.setState({
               dialog: "recipientData",
               recipientData: "email"
