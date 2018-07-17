@@ -75,7 +75,7 @@ const bot = new MessengerBot({
 
 bot.setInitialState({});
 
-bot.use(withTyping({ delay: 100 }));
+// bot.use(withTyping({ delay: 100 }));
 
 bot.onEvent(async context => {
   function getMenuPrompt() {
