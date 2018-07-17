@@ -189,29 +189,14 @@ bot.onEvent(async context => {
         item = "comment";
         comment_id = context.event.rawEvent.value.comment_id;
         permalink = context.event.rawEvent.value.post.permalink_url;
-        await MandatoAbertoAPI.postPrivateReply(
-          item,
-          page_id,
-          post_id,
-          comment_id,
-          permalink,
-          user_id
-        );
+        await MandatoAbertoAPI.postPrivateReply(item,page_id,post_id,comment_id,permalink,user_id);
         break;
       case "post":
         item = "post";
-        await MandatoAbertoAPI.postPrivateReply(
-          item,
-          page_id,
-          post_id,
-          comment_id,
-          permalink,
-          user_id
-        );
+        await MandatoAbertoAPI.postPrivateReply(item,page_id,post_id,comment_id,permalink,user_id);
         break;
     }
   }
-
   // Tratando caso de o político não ter dados suficientes
   if (!context.state.dialog) {
     if (
@@ -304,6 +289,7 @@ bot.onEvent(async context => {
     if (context.state.recipientData) {
       switch (context.state.recipientData) {
         case "email":
+          await context.setState({ emailDialog: "Legal, agora quer me informar seu telefone, para lhe manter informado sobre outras perguntas?" });
           recipientData.fb_id = context.session.user.id;
           recipientData.email = context.state.email;
           await MandatoAbertoAPI.postRecipient(politicianData.user_id, recipientData);
@@ -928,7 +914,6 @@ bot.onEvent(async context => {
           }
         ]
       );
-      await context.setState({ emailDialog: "Legal, agora quer me informar seu telefone, para lhe manter informado sobre outras perguntas?"});
       await context.setState({ dialog: "prompt", dataPrompt: "email" });
 
       break;
