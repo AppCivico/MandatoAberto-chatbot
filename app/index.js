@@ -993,11 +993,11 @@ bot.onEvent(async context => {
           case "cellphone":
           try {
             await context.sendText("Qual é o seu telefone? Não deixe de incluir o DDD.", {
-                quick_replies: [
-                  {
-                    content_type: 'user_phone_number',
-                  },
-                ],
+              quick_replies: [
+                {
+                  content_type: 'user_phone_numberxxx',
+                },
+              ],
               });
           } catch(err) {
             console.log('Cellphone button catch error =>', err)
