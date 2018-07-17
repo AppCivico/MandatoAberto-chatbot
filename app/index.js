@@ -228,8 +228,7 @@ bot.onEvent(async context => {
   // Tratando botão GET STARTED
   if (context.event.postback && context.event.postback.payload === "greetings") {
     await context.resetState();
-    // await context.setState({ dialog: "greetings" });
-    await context.setState({ dialog: "prompt", dataPrompt: "email" });
+    await context.setState({ dialog: "greetings" });
   }
 
   // Tratando dinâmica de issues
@@ -245,7 +244,9 @@ bot.onEvent(async context => {
       // We go to the listening dialog to wait for other messages
       if (areWeListening === true) {
         // check if message came from standard flow or from post/comment
-        await context.setState({ dialog: "listening" });
+        await context.setState({ dialog: "prompt", dataPrompt: "email" });
+
+        // await context.setState({ dialog: "listening" });
       } else {
         await context.setState({ dialog: "intermediate" });
       }
