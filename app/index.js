@@ -305,11 +305,16 @@ bot.onEvent(async context => {
     if (context.event.isQuickReply) { 
       if (context.state.dataPrompt === 'email') {
         await context.setState({ email: context.event.message.quick_reply.payload })
+      } else if (context.state.dataPrompt === 'cellphone') {
+        console.log('i am here');
+        await context.setState({ cellphone: context.event.message.quick_reply.payload })
       }
     } else if (context.event.isText) {
       if (context.state.dataPrompt === 'email') {
-        console.log('i am here');
         await context.setState({ email: context.event.message.text })
+      } else if (context.state.dataPrompt === 'cellphone') {
+        console.log('i am here too');
+        await context.setState({ cellphone: context.event.message.text })
       }
   }
 
@@ -317,8 +322,8 @@ bot.onEvent(async context => {
       switch (context.state.recipientData) {
         case "email":
           recipientData.fb_id = context.session.user.id;
-          recipientData.email = context.state.email;//context.event.message.text;
-          console.log(recipientData.email);
+          recipientData.email = context.state.email;
+
           await MandatoAbertoAPI.postRecipient(politicianData.user_id, recipientData);
           recipientData = {};
           await context.sendButtonTemplate(context.state.emailDialog,
@@ -343,23 +348,15 @@ bot.onEvent(async context => {
           break;
         case "cellphone":
           recipientData.fb_id = context.session.user.id;
-          recipientData.cellphone = context.event.message.text;
-          recipientData.cellphone = recipientData.cellphone.replace(
-            /[- .)(]/g,
-            ""
-          );
+          recipientData.cellphone = context.state.cellphone;//context.event.message.text;
+          console.log(context.state.cellphone);
+          recipientData.cellphone = recipientData.cellphone.replace(/[- .)(]/g, "");
           recipientData.cellphone = `+55${recipientData.cellphone}`;
 
           if (phoneRegex.test(recipientData.cellphone)) {
-            await MandatoAbertoAPI.postRecipient(
-              politicianData.user_id,
-              recipientData
-            );
+            await MandatoAbertoAPI.postRecipient(politicianData.user_id, recipientData);
           } else {
-            await context.setState({
-              dataPrompt: "",
-              recipientData: "cellphonePrompt"
-            });
+            await context.setState({dataPrompt: "", recipientData: "cellphonePrompt"});
 
             await context.sendText(
               "Desculpe-me, mas seu telefone não parece estar correto. Não esqueça de incluir o DDD. " +
@@ -1000,8 +997,13 @@ bot.onEvent(async context => {
             break;
           case "cellphone":
             await context.sendText(
-              "Qual é o seu telefone? Não deixe de incluir o DDD."
-            );
+              "Qual é o seu telefone? Não deixe de incluir o DDD.", {
+                quick_replies: [
+                  {
+                    content_type: 'user_email',
+                  },
+                ],
+              });
             await context.setState({
               dialog: "recipientData",
               recipientData: "cellphone",
