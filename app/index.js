@@ -75,7 +75,7 @@ const bot = new MessengerBot({
 
 bot.setInitialState({});
 
-// bot.use(withTyping({ delay: 1000 }));
+bot.use(withTyping({ delay: 1000 }));
 
 bot.onEvent(async context => {
   function getMenuPrompt() {
@@ -892,7 +892,7 @@ bot.onEvent(async context => {
         }
       }
       // Agora a enquete poderá ser respondida via propagação ou via dialogo
-      if (recipientAnswer.recipient_answered >= 100) {
+      if (recipientAnswer.recipient_answered >= 1) {
         await context.sendText("Ah, que pena! Você já respondeu essa pergunta.");
         await context.sendButtonTemplate("Se quiser, eu posso te ajudar com outra coisa.", promptOptions);
         await context.setState({ dialog: "prompt" });
@@ -995,7 +995,7 @@ bot.onEvent(async context => {
             await context.sendText("Qual é o seu telefone? Não deixe de incluir o DDD.", {
               quick_replies: [
                 {
-                  content_type: 'user_phone_numberxxx',
+                  content_type: 'user_phone_number',
                 },
               ],
               });
