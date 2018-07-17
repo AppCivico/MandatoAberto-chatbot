@@ -258,18 +258,6 @@ bot.onEvent(async context => {
   } else if (context.event.isPostback && context.state.dialog === "listening" ) {
     await context.typingOff();
     const payload = context.event.postback.payload;
-    // if (payload === "listeningAnswer") {
-    //   await MandatoAbertoAPI.postIssue(
-    //     politicianData.user_id,
-    //     context.session.user.id,
-    //     context.state.userMessage
-    //   );
-
-    //   await context.setState({ userMessage: ''});
-    //   await context.setState({ dataMessage: 'Agradecemos a sua mensagem. Deseja nos enviar ou atualizar seu e-mail e telefone?'});
-    //   console.log('ss', context.state.dataMessage);
-    //   await context.setState({ dialog: 'pollAnswer'});
-    // } else 
     if (context.event.message) {
         context.event.message.text = "";
     }
@@ -567,7 +555,6 @@ bot.onEvent(async context => {
       });
       await context.sendButtonTemplate('Para ajudar na divulgação, você pode deixar seus contatos comigo ou mudar sua imagem de avatar. Você quer participar?',
       aboutDivulgationOptions);
-      // await context.setState({ dialog: "prompt" });
       await context.setState({ dialog: "prompt", dataPrompt: "email" });
     break;
     case "WannaHelp":
@@ -977,11 +964,19 @@ bot.onEvent(async context => {
       } else if (context.state.dataPrompt) {
         switch (context.state.dataPrompt) {
           case "email":
+          try {
+            await context.send3333Text("Qual é o seu e-mail?");
+            await context.setState({
+              dialog: "recipientData",
+              recipientData: "email"
+            });
+          } catch {
             await context.sendText("Qual é o seu e-mail?");
             await context.setState({
               dialog: "recipientData",
               recipientData: "email"
             });
+          }
             break;
           case "cellphone":
             await context.sendText(
