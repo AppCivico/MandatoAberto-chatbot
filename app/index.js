@@ -297,7 +297,6 @@ bot.onEvent(async context => {
   if (context.state.dialog === "recipientData" && context.state.recipientData) {
     if (context.event.isQuickReply) { 
       if (context.state.dataPrompt === 'email') {
-        console.log('asdasd')
         await context.setState({ email: context.event.message.quick_reply.payload })
       } else if (context.state.dataPrompt === 'end') {
         await context.setState({ cellphone: context.event.message.quick_reply.payload })
@@ -316,8 +315,8 @@ bot.onEvent(async context => {
         case "email":
           recipientData.fb_id = context.session.user.id;
           recipientData.email = context.state.email;
-          console.log('asdasdasd')
-          console.log(context.state.email);
+          console.log('asdasddddddddd')
+          console.log(recipientData.email);
 
           await MandatoAbertoAPI.postRecipient(politicianData.user_id, recipientData);
           recipientData = {};
