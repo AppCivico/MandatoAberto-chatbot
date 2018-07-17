@@ -304,12 +304,11 @@ bot.onEvent(async context => {
   if (context.state.dialog === "recipientData" && context.state.recipientData) {
     if (context.event.isQuickReply) { 
       if (context.state.dataPrompt === 'email') {
-      console.log('i am here');
-      console.log(context.event.message.quick_reply.payload);
-      await context.setState({ email: context.event.message.quick_reply.payload })
-    }
-  } else if (context.event.isText) {
+        await context.setState({ email: context.event.message.quick_reply.payload })
+      }
+    } else if (context.event.isText) {
       if (context.state.dataPrompt === 'email') {
+        console.log('i am here');
         await context.setState({ email: context.event.message.text })
       }
   }
