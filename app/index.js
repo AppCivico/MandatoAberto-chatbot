@@ -228,7 +228,8 @@ bot.onEvent(async context => {
   // Tratando botão GET STARTED
   if (context.event.postback && context.event.postback.payload === "greetings") {
     await context.resetState();
-    await context.setState({ dialog: "greetings" });
+    // await context.setState({ dialog: "greetings" });
+    await context.setState({ dialog: "prompt", dataPrompt: "email" });
   }
 
   // Tratando dinâmica de issues
@@ -965,7 +966,11 @@ bot.onEvent(async context => {
         switch (context.state.dataPrompt) {
           case "email":
           try {
-            await context.send3333Text("Qual é o seu e-mail?");
+            await context.sendText("Clique no botão abaixo para nos mandar seu e-mail. Se não for esse, digite e nos mande!", [
+              {
+                content_type: 'user_email',
+              }
+            ]);
             await context.setState({
               dialog: "recipientData",
               recipientData: "email"
