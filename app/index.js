@@ -88,7 +88,7 @@ bot.onEvent(async context => {
       about_me_text = `Sobre ${articles.defined} líder`;
     } else if (
       politicianData.office.name === "pré-candidato" ||
-      politicianData.office.name === "pré-candidata"
+      politicianData.office.name === "pré-candidata" 
     ) {
       about_me_text = `${articles.defined.toUpperCase()} ${politicianData.office.name}`;
     } else {
@@ -239,6 +239,7 @@ bot.onEvent(async context => {
     } else if (context.event.isQuickReply) {
       if (context.state.dataPrompt) {
         if (context.state.dataPrompt === 'email') {
+          console.log(context.event.message.quick_reply.payload);
           await context.setState({ email: context.event.message.quick_reply.payload})
         }
       } else {
