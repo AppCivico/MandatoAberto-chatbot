@@ -312,7 +312,7 @@ bot.onEvent(async context => {
     } else if (context.event.isText) {
       if (context.state.dataPrompt === 'email') {
         await context.setState({ email: context.event.message.text })
-      } else if (context.state.dataPrompt === 'cellphone') {
+      } else if (context.state.dataPrompt === 'end') {
         console.log('i am here too');
         await context.setState({ cellphone: context.event.message.text })
       }
