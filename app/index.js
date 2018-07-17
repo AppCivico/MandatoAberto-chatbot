@@ -318,10 +318,7 @@ bot.onEvent(async context => {
         case "email":
           recipientData.fb_id = context.session.user.id;
           recipientData.email = context.event.message.text;
-          await MandatoAbertoAPI.postRecipient(
-            politicianData.user_id,
-            recipientData
-          );
+          await MandatoAbertoAPI.postRecipient(politicianData.user_id, recipientData);
           recipientData = {};
           await context.sendButtonTemplate(context.state.emailDialog,
             [
@@ -528,7 +525,7 @@ bot.onEvent(async context => {
       'Posso ajudá-lo a realizar uma doação ou divulgar a pré-campanha. Quer entender melhor?', knowMoreOptions);
       await context.setState({ dialog: "prompt" });
       break; }
-    case "aboutDonation": {
+    case "aboutDonation":
       const aboutDonationOptions = [
         {
           type: "postback",
@@ -539,15 +536,15 @@ bot.onEvent(async context => {
           type: "postback",
           title: "Voltar",
           payload: "knowMore"
-        },
+        }
       ];
       await context.sendText('Doar é importante para campanhas mais justas.');
       await context.sendText('Aqui no site, você pode doar por meio do cartão de crédito ou boleto bancário.');
       await context.sendButtonTemplate('Com o pagamento aprovado, enviaremos um recibo provisório por e-mail. Cada pessoa pode doar até 10% da renda declarada referente ao ano anterior. ' + 
         'O limite de doação diária é de R$ 1.064,10.', aboutDonationOptions);
       await context.setState({ dialog: "prompt" });
-      break; }
-    case "aboutDivulgation": {
+      break;
+    case "aboutDivulgation":
       const aboutDivulgationOptions = [
         {
           type: "postback",
@@ -570,8 +567,9 @@ bot.onEvent(async context => {
       });
       await context.sendButtonTemplate('Para ajudar na divulgação, você pode deixar seus contatos comigo ou mudar sua imagem de avatar. Você quer participar?',
       aboutDivulgationOptions);
-      await context.setState({ dialog: "prompt" });
-    break; }
+      // await context.setState({ dialog: "prompt" });
+      await context.setState({ dialog: "prompt", dataPrompt: "email" });
+    break;
     case "WannaHelp":
       participateOptions = [
         {
