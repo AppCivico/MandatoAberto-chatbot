@@ -987,7 +987,7 @@ bot.onEvent(async context => {
               recipientData: "email"
             });
           } catch(err) {
-            console.log('Error =>', err)
+            console.log('E-mail button catch error =>', err)
             await context.sendText("Qual é o seu e-mail?");
             await context.setState({
               dialog: "recipientData",
@@ -996,11 +996,11 @@ bot.onEvent(async context => {
           }
             break;
           case "cellphone":
-            await context.sendText(
-              "Qual é o seu telefone? Não deixe de incluir o DDD.", {
+          try {
+            await context.sendText("Qual é o seu telefone? Não deixe de incluir o DDD.", {
                 quick_replies: [
                   {
-                    content_type: 'user_email',
+                    content_type: 'user_phone_number',
                   },
                 ],
               });
@@ -1009,6 +1009,15 @@ bot.onEvent(async context => {
               recipientData: "cellphone",
               dataPrompt: "end"
             });
+          } catch(err) {
+            console.log('Cellphone button catch error =>', err)
+            await context.sendText("Qual é o seu telefone? Não deixe de incluir o DDD.");
+            await context.setState({
+              dialog: "recipientData",
+              recipientData: "cellphone",
+              dataPrompt: "end"
+            });
+          }
             break;
           case "cellphoneFail":
             break;
