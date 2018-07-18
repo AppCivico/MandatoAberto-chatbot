@@ -224,6 +224,8 @@ bot.onEvent(async context => {
     } else if (context.event.isQuickReply) {
       await context.setState({ dialog: context.event.message.quick_reply.payload });
     } else if (context.event.isText) {
+      console.log('recebemos um texto');
+      console.log(context.event.message.text);
       // Ao mandar uma mensagem que não é interpretada como fluxo do chatbot
       // Devo já criar uma issue
       // We go to the listening dialog to wait for other messages
