@@ -106,11 +106,6 @@ bot.onEvent(async context => {
           payload: "aboutMe"
         },
         opt.poll_suaOpiniao,
-        // {
-        //   type: "postback",
-        //   title: "Dê sua opinião",
-        //   payload: "poll"
-        // }
       ];
     } else if (context.state.introduction.content && !pollData.questions) {
       promptOptions = [
@@ -121,14 +116,7 @@ bot.onEvent(async context => {
         }
       ];
     } else if (!context.state.introduction.content && pollData.questions) {
-      promptOptions = [
-        opt.poll_suaOpiniao
-        // {
-        //   type: "postback",
-        //   title: "Dê sua opinião",
-        //   payload: "poll"
-        // }
-      ];
+      promptOptions = [opt.poll_suaOpiniao];
     } else if (!context.state.introduction.content && !pollData.questions && politicianData.contact) {
       promptOptions = [
         {
@@ -678,11 +666,7 @@ bot.onEvent(async context => {
             title: "Trajetória",
             payload: "trajectory"
           },
-          {
-            type: "postback",
-            title: "Dê sua opinião",
-            payload: "poll"
-          }
+          opt.poll_suaOpiniao,
         ];
       } else if (trajectory.content && !pollData.questions) {
         promptOptions = [
@@ -693,13 +677,7 @@ bot.onEvent(async context => {
           }
         ];
       } else if (!trajectory.content && pollData.questions) {
-        promptOptions = [
-          {
-            type: "postback",
-            title: "Dê sua opinião",
-            payload: "poll"
-          }
-        ];
+        promptOptions = [opt.poll_suaOpiniao];
       }
       if (politicianData.votolegal_integration) {
         if (politicianData.votolegal_integration.votolegal_url && politicianData.votolegal_integration.votolegal_username) {
@@ -882,11 +860,7 @@ bot.onEvent(async context => {
       await context.sendText(trajectory.content);
       if (pollData.questions && politicianData.contact) {
         promptOptions = [
-          {
-            type: "postback",
-            title: "Dê sua opinião",
-            payload: "poll"
-          },
+          opt.poll_suaOpiniao,
           {
             type: "postback",
             title: "Contatos",
@@ -894,13 +868,7 @@ bot.onEvent(async context => {
           }
         ];
       } else if (pollData.questions && !politicianData.contact) {
-        promptOptions = [
-          {
-            type: "postback",
-            title: "Dê sua opinião",
-            payload: "poll"
-          }
-        ];
+        promptOptions = [opt.poll_suaOpiniao];
       } else if (!pollData.questions && politicianData.contact) {
         promptOptions = [
           {
@@ -930,16 +898,10 @@ bot.onEvent(async context => {
       break;
     case "issue":
       await context.sendText("Escreva sua mensagem para nossa equipe:");
-      await context.setState({
-        dialog: "prompt",
-        prompt: "issue"
-      });
+      await context.setState({ dialog: "prompt", prompt: "issue" });
       break;
     case "issue_created":
-      const issue_created_message = await MandatoAbertoAPI.getAnswer(
-        politicianData.user_id,
-        "issue_created"
-      );
+      const issue_created_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, "issue_created");
       await context.sendButtonTemplate(issue_created_message.content, [
           {
             type: "postback",
