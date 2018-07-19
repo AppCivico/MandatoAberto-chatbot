@@ -86,21 +86,6 @@ function getAboutMe(politicianData, articles) {
 
 bot.onEvent(async context => {
   function getMenuPrompt() {
-    // both of these verifications were on greetings dialog, now they're both at greeting and mainMenu
-    // if (
-    //   politicianData.office.name === "Outros" ||
-    //   politicianData.office.name === "Candidato" ||
-    //   politicianData.office.name === "Candidata"
-    // ) {
-    //   about_me_text = `Sobre ${articles.defined} líder`;
-    // } else if (
-    //   politicianData.office.name === "pré-candidato" ||
-    //   politicianData.office.name === "pré-candidata" 
-    // ) {
-    //   about_me_text = `${articles.defined.toUpperCase()} ${politicianData.office.name}`;
-    // } else {
-    //   about_me_text = `Sobre ${articles.defined} ${politicianData.office.name}`;
-    // }
     if (introduction.content && pollData.questions) {
       promptOptions = [
         // {
@@ -185,7 +170,6 @@ bot.onEvent(async context => {
     let comment_id;
     let permalink;
     let introduction;
-    let about_me_text;
     const post_id = context.event.rawEvent.value.post_id;
     const page_id = post_id.substr(0, post_id.indexOf("_"));
     let user_id = context.event.rawEvent.value.from.id;
@@ -380,7 +364,7 @@ bot.onEvent(async context => {
       await context.setState({ dialog: "prompt" });
       break;
     case "mainMenu": // after issue is created we come back to this dialog
-      // introduction and about_me_text aren't declared inside of greetings anymore. What's defined there is accessible here.
+      // introduction isn't declared inside of greetings anymore. What's defined there is accessible here.
       await context.setState({ sendIntro: true });
       areWeListening = true;
       // await context.setState({ areWeListening: true });
