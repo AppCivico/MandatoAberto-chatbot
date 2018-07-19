@@ -399,9 +399,7 @@ bot.onEvent(async context => {
           payload: "knowMore"
         }
       ];
-      await context.sendText(
-        "Estamos em pré-campanha e contamos com você."
-      );
+      await context.sendText("Estamos em pré-campanha e contamos com você.");
       await context.sendButtonTemplate("Quer fazer parte?", participateOptions);
       await context.setState({ dialog: "prompt" });
       break;
@@ -442,8 +440,8 @@ bot.onEvent(async context => {
       ];
       await context.sendText('Doar é importante para campanhas mais justas.');
       await context.sendText('Aqui no site, você pode doar por meio do cartão de crédito ou boleto bancário.');
-      await context.sendButtonTemplate('Com o pagamento aprovado, enviaremos um recibo provisório por e-mail. Cada pessoa pode doar até 10% da renda declarada referente ao ano anterior. ' + 
-        'O limite de doação diária é de R$ 1.064,10.', aboutDonationOptions);
+      await context.sendButtonTemplate('Com o pagamento aprovado, enviaremos um recibo provisório por e-mail. Cada pessoa pode doar até 10% da renda declarada ' +
+      'referente ao ano anterior. O limite de doação diária é de R$ 1.064,10.', aboutDonationOptions);
       await context.setState({ dialog: "prompt" });
       break;
     case "aboutDivulgation":
@@ -654,41 +652,21 @@ bot.onEvent(async context => {
     case "contacts":
       // Tratando o formato do telefone
       if (politicianData.contact.cellphone) {
-        politicianData.contact.cellphone = politicianData.contact.cellphone.replace(
-          /(?:\+55)+/g,
-          ""
-        );
-        politicianData.contact.cellphone = politicianData.contact.cellphone.replace(
-          /^(\d{2})/g,
-          "($1)"
-        );
+        politicianData.contact.cellphone = politicianData.contact.cellphone.replace(/(?:\+55)+/g, "");
+        politicianData.contact.cellphone = politicianData.contact.cellphone.replace(/^(\d{2})/g, "($1)");
       }
-
-      await context.sendText(
-        `Você pode entrar em contato com ${articles.defined} ${
-          politicianData.office.name
-        } ${politicianData.name} pelos seguintes canais:`
-      );
-
+      await context.sendText(`Você pode entrar em contato com ${articles.defined} ${politicianData.office.name} ${politicianData.name} pelos seguintes canais:`);
       if (politicianData.contact.email) {
-        await context.sendText(
-          ` - Através do e-mail: ${politicianData.contact.email}`
-        );
+        await context.sendText(` - Através do e-mail: ${politicianData.contact.email}`);
       }
       if (politicianData.contact.cellphone) {
-        await context.sendText(
-          ` - Através do WhatsApp: ${politicianData.contact.cellphone}`
-        );
+        await context.sendText(` - Através do WhatsApp: ${politicianData.contact.cellphone}`);
       }
       if (politicianData.contact.twitter) {
-        await context.sendText(
-          ` - Através do Twitter: ${politicianData.contact.twitter}`
-        );
+        await context.sendText(` - Através do Twitter: ${politicianData.contact.twitter}`);
       }
       if (politicianData.contact.url) {
-        await context.sendText(
-          ` - Através do site: ${politicianData.contact.url}`
-        );
+        await context.sendText(` - Através do site: ${politicianData.contact.url}`);
       }
 
       if (trajectory.content && pollData.questions) {
@@ -722,10 +700,7 @@ bot.onEvent(async context => {
         ];
       }
       if (politicianData.votolegal_integration) {
-        if (
-          politicianData.votolegal_integration.votolegal_url &&
-          politicianData.votolegal_integration.votolegal_username
-        ) {
+        if (politicianData.votolegal_integration.votolegal_url && politicianData.votolegal_integration.votolegal_username) {
           // check if integration to votoLegal exists to add the donation option
           // politicianData.votolegal_integration.votolegal_url will be used in a future web_url button to link to the donation page
           const doarOption = {
