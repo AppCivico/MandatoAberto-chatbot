@@ -52,15 +52,7 @@ const mapPageToAccessToken = async pageId => {
   politicianData = await MandatoAbertoAPI.getPoliticianData(pageId);
   pollData = await MandatoAbertoAPI.getPollData(pageId);
   trajectory = await MandatoAbertoAPI.getAnswer(politicianData.user_id, "trajectory");
-
-  // Deve-se indentificar o sexo do representante público
-  // e selecionar os artigos (definido e possesivo) adequados
-  // if (politicianData.gender === "F") {
-  //   articles = Articles.feminine;
-  // } else {
-  //   articles = Articles.masculine;
-  // }
-
+  console.log('i am here');
   return politicianData.fb_access_token;
 };
 
@@ -76,6 +68,7 @@ bot.use(withTyping({ delay: 1000 }));
 
 function getAboutMe(politicianData) {
   let articles; 
+  // Deve-se indentificar o sexo do representante público e selecionar os artigos (definido e possesivo) adequados
   if (politicianData.gender === "F") {
     articles = Articles.feminine;
   } else {
