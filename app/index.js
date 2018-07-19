@@ -52,7 +52,7 @@ const mapPageToAccessToken = async pageId => {
   politicianData = await MandatoAbertoAPI.getPoliticianData(pageId);
   pollData = await MandatoAbertoAPI.getPollData(pageId);
   trajectory = await MandatoAbertoAPI.getAnswer(politicianData.user_id, "trajectory");
-  console.log('i am here');
+
   return politicianData.fb_access_token;
 };
 
@@ -66,8 +66,16 @@ bot.setInitialState({});
 
 bot.use(withTyping({ delay: 1000 }));
 
+function getArticles(gender) {
+  if (gender === "F") {
+    return Articles.feminine;
+  } else {
+    return Articles.masculine;
+  }
+};
+
 function getAboutMe(politicianData) {
-  let articles; 
+  let articles = await getArticles(politicianData.gender); 
   // Deve-se indentificar o sexo do representante público e selecionar os artigos (definido e possesivo) adequados
   if (politicianData.gender === "F") {
     articles = Articles.feminine;
@@ -320,6 +328,7 @@ bot.onEvent(async context => {
       recipientData.picture = context.session.user.profile_pic;
       recipient = await MandatoAbertoAPI.postRecipient(politicianData.user_id, recipientData);
       recipientData = {};
+      await context.setState({ articles: getArticles(politicianData) });
       await context.setState({ introduction: await MandatoAbertoAPI.getAnswer(politicianData.user_id, "introduction") });
       issue_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, "issue_acknowledgment");
       if (Object.keys(issue_message).length === 0) {
@@ -327,7 +336,7 @@ bot.onEvent(async context => {
       } else {
         issue_message = issue_message.content;
       }
-      await context.setState({ aboutMeText: await getAboutMe(politicianData, articles) });
+      await context.setState({ aboutMeText: await getAboutMe(politicianData) });
       await getMenuPrompt(context);
       await context.setState({ userMessage: "" }); // cleaning up
       let greeting = politicianData.greeting.replace("${user.office.name}", politicianData.office.name);
@@ -347,6 +356,7 @@ bot.onEvent(async context => {
       recipientData.picture = context.session.user.profile_pic;
       recipient = await MandatoAbertoAPI.postRecipient(politicianData.user_id, recipientData);
       recipientData = {};
+      await context.setState({ articles: getArticles(politicianData)});
       await context.setState({ introduction: await MandatoAbertoAPI.getAnswer(politicianData.user_id, "introduction") });
       issue_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id,"issue_acknowledgment");
 
@@ -355,7 +365,7 @@ bot.onEvent(async context => {
       } else {
         issue_message = issue_message.content;
       }
-      await context.setState({ aboutMeText: await getAboutMe(politicianData, articles) });
+      await context.setState({ aboutMeText: await getAboutMe(politicianData) });
       await getMenuPrompt(context);
       await context.setState({ userMessage: "" }); // cleaning up
       await context.sendButtonTemplate("Como posso te ajudar?", promptOptions);
@@ -364,7 +374,7 @@ bot.onEvent(async context => {
     case "intermediate":
     // await context.setState({ userMessage: `${context.state.userMessage} + " "`});;
       await context.sendText(`Vocês gostaria de enviar uma mensagem para nossa equipe ou conhecer mais sobre ` + 
-        `${articles.defined} ${politicianData.office.name} ${politicianData.name}?`);
+        `${context.state.articles.defined} ${politicianData.office.name} ${politicianData.name}?`);
       promptOptions = [
         {
           type: "postback",
@@ -645,7 +655,7 @@ bot.onEvent(async context => {
           promptOptions.push(doarOption);
         }
       }
-      await context.sendButtonTemplate(`O que mais deseja saber sobre ${articles.defined} ${politicianData.office.name}?`, promptOptions);
+      await context.sendButtonTemplate(`O que mais deseja saber sobre ${context.state.articles.defined} ${politicianData.office.name}?`, promptOptions);
       await context.setState({ dialog: "prompt" });
       break;
     case "contacts":
@@ -654,7 +664,7 @@ bot.onEvent(async context => {
         politicianData.contact.cellphone = politicianData.contact.cellphone.replace(/(?:\+55)+/g, "");
         politicianData.contact.cellphone = politicianData.contact.cellphone.replace(/^(\d{2})/g, "($1)");
       }
-      await context.sendText(`Você pode entrar em contato com ${articles.defined} ${politicianData.office.name} ${politicianData.name} pelos seguintes canais:`);
+      await context.sendText(`Você pode entrar em contato com ${context.state.articles.defined} ${politicianData.office.name} ${politicianData.name} pelos seguintes canais:`);
       if (politicianData.contact.email) {
         await context.sendText(` - Através do e-mail: ${politicianData.contact.email}`);
       }
