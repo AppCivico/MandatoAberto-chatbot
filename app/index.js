@@ -237,9 +237,12 @@ bot.onEvent(async context => {
       switch (context.state.recipientData) {
         case "email":
           // await context.setState({ emailDialog: "Legal, agora quer me informar seu telefone, para lhe manter informado sobre outras perguntas?" });
-          recipientData.fb_id = context.session.user.id;
-          recipientData.email = context.state.email;
-          await MandatoAbertoAPI.postRecipient(politicianData.user_id, recipientData);
+          // recipientData.fb_id = context.session.user.id;
+          // recipientData.email = context.state.email;
+          await MandatoAbertoAPI.postRecipient(politicianData.user_id, {
+            fb_id: context.session.user.id,
+            email: context.state.email
+          });
           recipientData = {};
           await context.setState({ email: undefined});
           await context.sendButtonTemplate("Legal, agora quer me informar seu telefone, para lhe manter informado sobre outras perguntas?", [
@@ -257,14 +260,18 @@ bot.onEvent(async context => {
           await context.setState({ recipientData: "cellphonePrompt", dialog: "recipientData", dataPrompt: "" });
           break;
         case "cellphone":
-          recipientData.fb_id = context.session.user.id;
-          recipientData.cellphone = context.state.cellphone;//context.event.message.text;
-          recipientData.cellphone = recipientData.cellphone.replace(/[- .)(]/g, "");
-          recipientData.cellphone = `+55${recipientData.cellphone}`;
-          await context.setState({ cellphone: undefined });
+          // recipientData.fb_id = context.session.user.id;
 
+          // recipientData.cellphone = context.state.cellphone;//context.event.message.text;
+          // recipientData.cellphone = recipientData.cellphone.replace(/[- .)(]/g, "");
+          // recipientData.cellphone = `+55${recipientData.cellphone}`;
+          await context.setState({ cellphone: `+55${context.state.cellphone.replace(/[- .)(]/g, "")}`})
           if (phoneRegex.test(recipientData.cellphone)) {
-            await MandatoAbertoAPI.postRecipient(politicianData.user_id, recipientData);
+            await MandatoAbertoAPI.postRecipient(politicianData.user_id, {
+              fb_id: context.session.user.id,
+              cellphone: context.state.cellphone
+            });
+            await context.setState({ cellphone: undefined });
           } else {
             await context.setState({dataPrompt: "", recipientData: "cellphonePrompt"});
 
@@ -297,13 +304,13 @@ bot.onEvent(async context => {
       await context.setState({ sendIntro: true });
       areWeListening = true;
       // Criando um cidadão
-      recipientData.fb_id = context.session.user.id;
-      recipientData.name = `${context.session.user.first_name} ${context.session.user.last_name}`;
-      recipientData.gender = context.session.user.gender === "male" ? "M" : "F";
-      recipientData.origin_dialog = "greetings";
-      recipientData.picture = context.session.user.profile_pic;
-      recipient = await MandatoAbertoAPI.postRecipient(politicianData.user_id, recipientData);
-      recipientData = {};
+      recipient = await MandatoAbertoAPI.postRecipient(politicianData.user_id, {
+        fb_id: context.session.user.id,
+        name: `${context.session.user.first_name} ${context.session.user.last_name}`,
+        gender: context.session.user.gender === "male" ? "M" : "F",
+        origin_dialog: "greetings",
+        picture: context.session.user.profile_pic
+      });
       await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id)});
       await context.setState({ trajectory: await MandatoAbertoAPI.getAnswer(politicianData.user_id, "trajectory") });
       await context.setState({ articles: getArticles(politicianData.gender) });
@@ -322,11 +329,6 @@ bot.onEvent(async context => {
       await context.setState({ sendIntro: true });
       areWeListening = true;
       // Criando um cidadão
-      // recipientData.fb_id = context.session.user.id;
-      // recipientData.name = `${context.session.user.first_name} ${context.session.user.last_name}`;
-      // recipientData.gender = context.session.user.gender === "male" ? "M" : "F";
-      // recipientData.origin_dialog = "greetings";
-      // recipientData.picture = context.session.user.profile_pic;
       recipient = await MandatoAbertoAPI.postRecipient(politicianData.user_id, {
         fb_id: context.session.user.id,
         name: `${context.session.user.first_name} ${context.session.user.last_name}`,
@@ -334,7 +336,6 @@ bot.onEvent(async context => {
         origin_dialog: "greetings",
         picture: context.session.user.profile_pic
       });
-      recipientData = {};
       await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
       await context.setState({ trajectory: await MandatoAbertoAPI.getAnswer(politicianData.user_id, "trajectory") });
       await context.setState({ articles: getArticles(politicianData.gender)});
