@@ -65,6 +65,7 @@ bot.setInitialState({});
 
 bot.use(withTyping({ delay: 1000 }));
 
+// Deve-se indentificar o sexo do representante público e selecionar os artigos (definido e possesivo) adequados
 function getArticles(gender) {
   if (gender === "F") {
     return Articles.feminine;
@@ -75,12 +76,7 @@ function getArticles(gender) {
 
 function getAboutMe(politicianData) {
   let articles = getArticles(politicianData.gender); 
-  // Deve-se indentificar o sexo do representante público e selecionar os artigos (definido e possesivo) adequados
-  // if (politicianData.gender === "F") {
-  //   articles = Articles.feminine;
-  // } else {
-  //   articles = Articles.masculine;
-  // }
+
   if (politicianData.office.name === "Outros" || politicianData.office.name === "Candidato" || politicianData.office.name === "Candidata") {
     return `Sobre ${articles.defined} líder`;
   } else if (politicianData.office.name === "pré-candidato" || politicianData.office.name === "pré-candidata") {
@@ -327,7 +323,7 @@ bot.onEvent(async context => {
       recipientData.picture = context.session.user.profile_pic;
       recipient = await MandatoAbertoAPI.postRecipient(politicianData.user_id, recipientData);
       recipientData = {};
-      await context.setState({ articles: getArticles(politicianData) });
+      await context.setState({ articles: getArticles(politicianData.gender) });
       await context.setState({ introduction: await MandatoAbertoAPI.getAnswer(politicianData.user_id, "introduction") });
       issue_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, "issue_acknowledgment");
       if (Object.keys(issue_message).length === 0) {
@@ -355,7 +351,7 @@ bot.onEvent(async context => {
       recipientData.picture = context.session.user.profile_pic;
       recipient = await MandatoAbertoAPI.postRecipient(politicianData.user_id, recipientData);
       recipientData = {};
-      await context.setState({ articles: getArticles(politicianData)});
+      await context.setState({ articles: getArticles(politicianData.gender)});
       await context.setState({ introduction: await MandatoAbertoAPI.getAnswer(politicianData.user_id, "introduction") });
       issue_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id,"issue_acknowledgment");
 
