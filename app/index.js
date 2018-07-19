@@ -601,10 +601,8 @@ bot.onEvent(async context => {
       }, limit);
       break;
     case "aboutMe":
-      const introductionText = await MandatoAbertoAPI.getAnswer(politicianData.user_id, "introduction").content;
-
-      await context.sendText(introductionText);
-
+      const introductionText = await MandatoAbertoAPI.getAnswer(politicianData.user_id, "introduction");
+      await context.sendText(introductionText.content);
       if (trajectory.content && pollData.questions) {
         promptOptions = [
           {
