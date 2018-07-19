@@ -75,21 +75,21 @@ bot.setInitialState({});
 bot.use(withTyping({ delay: 1000 }));
 
 bot.onEvent(async context => {
-  function getMenuPrompt(context) {
+  function getMenuPrompt() {
     // both of these verifications were on greetings dialog, now they're both at greeting and mainMenu
     if (
       politicianData.office.name === "Outros" ||
       politicianData.office.name === "Candidato" ||
       politicianData.office.name === "Candidata"
     ) {
-      await context.setState({ aboutMeText : `Sobre ${articles.defined} líder`});
+      about_me_text = `Sobre ${articles.defined} líder`;
     } else if (
       politicianData.office.name === "pré-candidato" ||
       politicianData.office.name === "pré-candidata" 
     ) {
-      await context.setState({ aboutMeText: `${articles.defined.toUpperCase()} ${politicianData.office.name}` });
+      about_me_text = `${articles.defined.toUpperCase()} ${politicianData.office.name}`;
     } else {
-      await context.setState({ aboutMeText: `Sobre ${articles.defined} ${politicianData.office.name}` });
+      about_me_text = `Sobre ${articles.defined} ${politicianData.office.name}`;
     }
 
     if (introduction.content && pollData.questions) {
@@ -101,7 +101,7 @@ bot.onEvent(async context => {
         // },
         {
           type: "postback",
-          title: context.state.aboutMeText,
+          title: about_me_text,
           payload: "aboutMe"
         },
         {
@@ -119,7 +119,7 @@ bot.onEvent(async context => {
         // },
         {
           type: "postback",
-          title: context.state.aboutMeText,
+          title: about_me_text,
           payload: "aboutMe"
         }
       ];
@@ -176,7 +176,7 @@ bot.onEvent(async context => {
     let comment_id;
     let permalink;
     let introduction;
-    // let context.state.aboutMeText;
+    let about_me_text;
     const post_id = context.event.rawEvent.value.post_id;
     const page_id = post_id.substr(0, post_id.indexOf("_"));
     let user_id = context.event.rawEvent.value.from.id;
@@ -361,7 +361,7 @@ bot.onEvent(async context => {
       } else {
         issue_message = issue_message.content;
       }
-      await getMenuPrompt(context);
+      await getMenuPrompt();
       await context.setState({ userMessage: "" }); // cleaning up
       let greeting = politicianData.greeting.replace("${user.office.name}", politicianData.office.name);
       greeting = greeting.replace("${user.name}", politicianData.name);
@@ -370,7 +370,7 @@ bot.onEvent(async context => {
       await context.setState({ dialog: "prompt" });
       break;
     case "mainMenu": // after issue is created we come back to this dialog
-      // introduction and aboutMeText aren't declared inside of greetings anymore. What's defined there is accessible here.
+      // introduction and about_me_text aren't declared inside of greetings anymore. What's defined there is accessible here.
       await context.setState({ sendIntro: true });
       areWeListening = true;
       // await context.setState({ areWeListening: true });
@@ -390,7 +390,7 @@ bot.onEvent(async context => {
       } else {
         issue_message = issue_message.content;
       }
-      await getMenuPrompt(context);
+      await getMenuPrompt();
       await context.setState({ userMessage: "" }); // cleaning up
       await context.sendButtonTemplate("Como posso te ajudar?", promptOptions);
       await context.setState({ dialog: "prompt" });
