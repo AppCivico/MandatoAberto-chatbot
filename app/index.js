@@ -43,7 +43,7 @@ let timer;
 let areWeListening = false;
 // areWeListening -> user.state.areWeListening(doesn't work) -> diferenciates messages that come from
 // the standard flow and messages from comment/post
-
+// 
 recipientData[
   ("fb_id", "name", "origin_dialog", "email", "cellphone", "gender")
 ];
@@ -51,10 +51,7 @@ recipientData[
 const mapPageToAccessToken = async pageId => {
   politicianData = await MandatoAbertoAPI.getPoliticianData(pageId);
   pollData = await MandatoAbertoAPI.getPollData(pageId);
-  trajectory = await MandatoAbertoAPI.getAnswer(
-    politicianData.user_id,
-    "trajectory"
-  );
+  trajectory = await MandatoAbertoAPI.getAnswer(politicianData.user_id, "trajectory");
 
   // Deve-se indentificar o sexo do representante público
   // e selecionar os artigos (definido e possesivo) adequados
@@ -85,14 +82,14 @@ bot.onEvent(async context => {
       politicianData.office.name === "Candidato" ||
       politicianData.office.name === "Candidata"
     ) {
-      about_me_text = `Sobre ${articles.defined} líder`;
+      await context.setState({ aboutMeText : `Sobre ${articles.defined} líder`});
     } else if (
       politicianData.office.name === "pré-candidato" ||
       politicianData.office.name === "pré-candidata" 
     ) {
-      about_me_text = `${articles.defined.toUpperCase()} ${politicianData.office.name}`;
+      await context.setState({ aboutMeText: `${articles.defined.toUpperCase()} ${politicianData.office.name}` });
     } else {
-      about_me_text = `Sobre ${articles.defined} ${politicianData.office.name}`;
+      await context.setState({ aboutMeText: `Sobre ${articles.defined} ${politicianData.office.name}` });
     }
 
     if (introduction.content && pollData.questions) {
@@ -104,7 +101,7 @@ bot.onEvent(async context => {
         // },
         {
           type: "postback",
-          title: about_me_text,
+          title: context.state.aboutMeText,
           payload: "aboutMe"
         },
         {
@@ -122,7 +119,7 @@ bot.onEvent(async context => {
         // },
         {
           type: "postback",
-          title: about_me_text,
+          title: context.state.aboutMeText,
           payload: "aboutMe"
         }
       ];
@@ -179,7 +176,7 @@ bot.onEvent(async context => {
     let comment_id;
     let permalink;
     let introduction;
-    let about_me_text;
+    // let context.state.aboutMeText;
     const post_id = context.event.rawEvent.value.post_id;
     const page_id = post_id.substr(0, post_id.indexOf("_"));
     let user_id = context.event.rawEvent.value.from.id;
@@ -373,7 +370,7 @@ bot.onEvent(async context => {
       await context.setState({ dialog: "prompt" });
       break;
     case "mainMenu": // after issue is created we come back to this dialog
-      // introduction and about_me_text aren't declared inside of greetings anymore. What's defined there is accessible here.
+      // introduction and aboutMeText aren't declared inside of greetings anymore. What's defined there is accessible here.
       await context.setState({ sendIntro: true });
       areWeListening = true;
       // await context.setState({ areWeListening: true });
