@@ -173,6 +173,7 @@ bot.onEvent(async context => {
       // We go to the listening dialog to wait for other messages
       // check if message came from standard flow or from post/comment
       if (areWeListening === true) {
+        await context.setState({ dataPrompt: undefined });
         await context.setState({ dialog: "listening"});
       } else {
         await context.setState({ dialog: "intermediate" });
@@ -288,7 +289,6 @@ bot.onEvent(async context => {
       break;
     case "mainMenu": // after issue is created we come back to this dialog
       await context.setState({ sendIntro: true });
-      await context.setState({ dataPrompt: undefined });
       areWeListening = true;
       // Criando um cidadão
       recipient = await MandatoAbertoAPI.postRecipient(politicianData.user_id, {
