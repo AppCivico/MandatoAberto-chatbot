@@ -24,7 +24,6 @@ function formatReal(int) {
   return tmp;
 }
 
-let articles;
 let politicianData;
 let pollAnswer;
 let trajectory;
@@ -66,7 +65,7 @@ bot.setInitialState({});
 
 bot.use(withTyping({ delay: 1000 }));
 
-function getArticles(gender) {
+async function getArticles(gender) {
   if (gender === "F") {
     return Articles.feminine;
   } else {
