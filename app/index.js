@@ -55,11 +55,11 @@ const mapPageToAccessToken = async pageId => {
 
   // Deve-se indentificar o sexo do representante público
   // e selecionar os artigos (definido e possesivo) adequados
-  if (politicianData.gender === "F") {
-    articles = Articles.feminine;
-  } else {
-    articles = Articles.masculine;
-  }
+  // if (politicianData.gender === "F") {
+  //   articles = Articles.feminine;
+  // } else {
+  //   articles = Articles.masculine;
+  // }
 
   return politicianData.fb_access_token;
 };
@@ -74,7 +74,13 @@ bot.setInitialState({});
 
 bot.use(withTyping({ delay: 1000 }));
 
-function getAboutMe(politicianData, articles) {
+function getAboutMe(politicianData) {
+  let articles; 
+  if (politicianData.gender === "F") {
+    articles = Articles.feminine;
+  } else {
+    articles = Articles.masculine;
+  }
   if (politicianData.office.name === "Outros" || politicianData.office.name === "Candidato" || politicianData.office.name === "Candidata") {
     return `Sobre ${articles.defined} líder`;
   } else if (politicianData.office.name === "pré-candidato" || politicianData.office.name === "pré-candidata") {
