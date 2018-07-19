@@ -101,7 +101,6 @@ bot.onEvent(async context => {
     // } else {
     //   about_me_text = `Sobre ${articles.defined} ${politicianData.office.name}`;
     // }
-    await context.setState({ aboutMeText: await getAboutMe(politicianData, articles)});
     if (introduction.content && pollData.questions) {
       promptOptions = [
         // {
@@ -371,6 +370,7 @@ bot.onEvent(async context => {
       } else {
         issue_message = issue_message.content;
       }
+      await context.setState({ aboutMeText: await getAboutMe(politicianData, articles) });
       await getMenuPrompt();
       await context.setState({ userMessage: "" }); // cleaning up
       let greeting = politicianData.greeting.replace("${user.office.name}", politicianData.office.name);
@@ -400,6 +400,7 @@ bot.onEvent(async context => {
       } else {
         issue_message = issue_message.content;
       }
+      await context.setState({ aboutMeText: await getAboutMe(politicianData, articles) });
       await getMenuPrompt();
       await context.setState({ userMessage: "" }); // cleaning up
       await context.sendButtonTemplate("Como posso te ajudar?", promptOptions);
