@@ -65,7 +65,7 @@ bot.setInitialState({});
 
 bot.use(withTyping({ delay: 1000 }));
 
-async function getArticles(gender) {
+function getArticles(gender) {
   if (gender === "F") {
     return Articles.feminine;
   } else {
@@ -74,7 +74,7 @@ async function getArticles(gender) {
 };
 
 function getAboutMe(politicianData) {
-  let articles = await getArticles(politicianData.gender); 
+  let articles = getArticles(politicianData.gender); 
   // Deve-se indentificar o sexo do representante público e selecionar os artigos (definido e possesivo) adequados
   // if (politicianData.gender === "F") {
   //   articles = Articles.feminine;
