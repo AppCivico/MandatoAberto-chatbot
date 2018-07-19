@@ -30,7 +30,6 @@ let promptOptions;
 let participateOptions;
 let recipient;
 
-// let pollData = {};
 let recipientData = {};
 
 const limit = 10000 * 2;
@@ -323,12 +322,18 @@ bot.onEvent(async context => {
       await context.setState({ sendIntro: true });
       areWeListening = true;
       // Criando um cidadão
-      recipientData.fb_id = context.session.user.id;
-      recipientData.name = `${context.session.user.first_name} ${context.session.user.last_name}`;
-      recipientData.gender = context.session.user.gender === "male" ? "M" : "F";
-      recipientData.origin_dialog = "greetings";
-      recipientData.picture = context.session.user.profile_pic;
-      recipient = await MandatoAbertoAPI.postRecipient(politicianData.user_id, recipientData);
+      // recipientData.fb_id = context.session.user.id;
+      // recipientData.name = `${context.session.user.first_name} ${context.session.user.last_name}`;
+      // recipientData.gender = context.session.user.gender === "male" ? "M" : "F";
+      // recipientData.origin_dialog = "greetings";
+      // recipientData.picture = context.session.user.profile_pic;
+      recipient = await MandatoAbertoAPI.postRecipient(politicianData.user_id, {
+        fb_id: context.session.user.id,
+        name: `${context.session.user.first_name} ${context.session.user.last_name}`,
+        gender: context.session.user.gender === "male" ? "M" : "F",
+        origin_dialog: "greetings",
+        picture: context.session.user.profile_pic
+      });
       recipientData = {};
       await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
       await context.setState({ trajectory: await MandatoAbertoAPI.getAnswer(politicianData.user_id, "trajectory") });
@@ -488,10 +493,7 @@ bot.onEvent(async context => {
       }
       timer = setTimeout(async () => {
         await context.setState({ sendIntro: true });    
-          const issue_created_message = await MandatoAbertoAPI.getAnswer(
-          politicianData.user_id,
-          "issue_created"
-        );
+          const issue_created_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, "issue_created");
         let endMessage;
         if (issue_created_message.content) {
           endMessage = issue_created_message.content + "\nVocê terminou de escrever sua mensagem?";
