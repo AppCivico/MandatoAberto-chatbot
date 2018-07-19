@@ -118,13 +118,7 @@ bot.onEvent(async context => {
     } else if (!context.state.introduction.content && pollData.questions) {
       promptOptions = [opt.poll_suaOpiniao];
     } else if (!context.state.introduction.content && !pollData.questions && politicianData.contact) {
-      promptOptions = [
-        {
-          type: "postback",
-          title: "Contatos",
-          payload: "contacts"
-        }
-      ];
+      promptOptions = [opt.contacts];
     }
     // console.log('votolegal: \n', politicianData.votolegal_integration);
     if (politicianData.votolegal_integration) {
@@ -601,11 +595,7 @@ bot.onEvent(async context => {
             title: "Trajetória",
             payload: "trajectory"
           },
-          {
-            type: "postback",
-            title: "Contatos",
-            payload: "contacts"
-          }
+          opt.contacts
         ];
       } else if (trajectory.content && !pollData.questions) {
         promptOptions = [
@@ -616,13 +606,7 @@ bot.onEvent(async context => {
           }
         ];
       } else if (!trajectory.content && pollData.questions) {
-        promptOptions = [
-          {
-            type: "postback",
-            title: "Contatos",
-            payload: "contacts"
-          }
-        ];
+        promptOptions = [opt.contacts];
       }
       if (politicianData.votolegal_integration) {
         if (politicianData.votolegal_integration.votolegal_url && politicianData.votolegal_integration.votolegal_username) {
@@ -707,11 +691,7 @@ bot.onEvent(async context => {
             title: "Trajetória",
             payload: "trajectory"
           },
-          {
-            type: "postback",
-            title: "Contatos",
-            payload: "contacts"
-          }
+          opt.contacts
         ];
       } else if (trajectory.content && !politicianData.contact) {
         promptOptions = [
@@ -722,13 +702,7 @@ bot.onEvent(async context => {
           }
         ];
       } else if (!trajectory.content && politicianData.contact) {
-        promptOptions = [
-          {
-            type: "postback",
-            title: "Contatos",
-            payload: "contacts"
-          }
-        ];
+        promptOptions = [opt.contacts];
       }
       if (politicianData.votolegal_integration) {
         if (
@@ -859,24 +833,11 @@ bot.onEvent(async context => {
     case "trajectory":
       await context.sendText(trajectory.content);
       if (pollData.questions && politicianData.contact) {
-        promptOptions = [
-          opt.poll_suaOpiniao,
-          {
-            type: "postback",
-            title: "Contatos",
-            payload: "contacts"
-          }
-        ];
+        promptOptions = [ opt.poll_suaOpiniao, opt.contacts];
       } else if (pollData.questions && !politicianData.contact) {
         promptOptions = [opt.poll_suaOpiniao];
       } else if (!pollData.questions && politicianData.contact) {
-        promptOptions = [
-          {
-            type: "postback",
-            title: "Contatos",
-            payload: "contacts"
-          }
-        ];
+        promptOptions = [opt.contacts];
       }
       if (politicianData.votolegal_integration) {
         if (
