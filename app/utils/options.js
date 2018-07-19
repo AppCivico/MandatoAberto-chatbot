@@ -29,4 +29,19 @@ module.exports = {
         title: "Voltar ao início",
         payload: "mainMenu"
     },
+    backToKnowMore: {
+        type: "postback",
+        title: "Voltar",
+        payload: "knowMore"
+    },
+    wannaDivulgate: {
+        type: "postback",
+        title: "Quero Divulgar",
+        payload: "WannaDivulgate"
+    },
+    wannaDonate: {
+        type: "postback",
+        title: "Quero Doar",
+        payload: "WannaDonate"
+    },
 }

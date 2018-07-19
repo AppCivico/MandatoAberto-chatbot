@@ -26,7 +26,6 @@ function formatReal(int) {
 }
 
 let politicianData;
-let pollAnswer;
 let promptOptions;
 let participateOptions;
 let recipient;
@@ -48,7 +47,6 @@ recipientData[
 
 const mapPageToAccessToken = async pageId => {
   politicianData = await MandatoAbertoAPI.getPoliticianData(pageId);
-  // pollData = await MandatoAbertoAPI.getPollData(pageId);
 
   return politicianData.fb_access_token;
 };
@@ -403,18 +401,7 @@ bot.onEvent(async context => {
       await context.setState({ dialog: "prompt" });
       break; }
     case "aboutDonation":
-      const aboutDonationOptions = [
-        {
-          type: "postback",
-          title: "Quero Doar",
-          payload: "WannaDonate"
-        },
-        {
-          type: "postback",
-          title: "Voltar",
-          payload: "knowMore"
-        }
-      ];
+      const aboutDonationOptions = [opt.wannaDonate, opt.backToKnowMore];
       await context.sendText('Doar é importante para campanhas mais justas.');
       await context.sendText('Aqui no site, você pode doar por meio do cartão de crédito ou boleto bancário.');
       await context.sendButtonTemplate('Com o pagamento aprovado, enviaremos um recibo provisório por e-mail. Cada pessoa pode doar até 10% da renda declarada ' +
@@ -437,31 +424,16 @@ bot.onEvent(async context => {
         };
         await aboutDivulgationOptions.push(divulgateOption);
       }
-      await aboutDivulgationOptions.push({
-        type: "postback",
-        title: "Voltar",
-        payload: "knowMore"
-      });
+      await aboutDivulgationOptions.push(opt.backToKnowMore);
       await context.sendButtonTemplate('Para ajudar na divulgação, você pode deixar seus contatos comigo ou mudar sua imagem de avatar. Você quer participar?',
       aboutDivulgationOptions);
       await context.setState({ dialog: "prompt", dataPrompt: "email" });
     break;
     case "WannaHelp":
-      participateOptions = [
-        {
-          type: "postback",
-          title: "Quero Doar",
-          payload: "WannaDonate"
-        }        
-      ];
+      participateOptions = [opt.wannaDonate];
       // checking for picframe_url so we can only show this option when it's available but still show the votoLegal option
       if (politicianData.picframe_url) {
-        const divulgateOption = {
-          type: "postback",
-          title: "Quero Divulgar",
-          payload: "WannaDivulgate"
-        };
-        await participateOptions.push(divulgateOption);
+        await participateOptions.push(opt.wannaDivulgate);
       }
       await participateOptions.push(opt.goBackMainMenu);
       await context.sendButtonTemplate("Ficamos felizes com seu apoio! Como deseja participar?", participateOptions);
@@ -477,12 +449,7 @@ bot.onEvent(async context => {
       ];
       // checking for picframe_url so we can only show this option when it's available but still show the votoLegal option
       if (politicianData.picframe_url) {
-        const divulgateOption = {
-          type: "postback",
-          title: "Quero Divulgar",
-          payload: "WannaDivulgate"
-        };
-        await participateOptions.push(divulgateOption);
+        await participateOptions.push(opt.wannaDivulgate);
       }
       await participateOptions.push(opt.goBackMainMenu);
       await context.sendText("Seu apoio é fundamental para nossa pré-campanha! Por isso, cuidamos da segurança de todos os doadores. " + 
@@ -500,11 +467,7 @@ bot.onEvent(async context => {
           url: politicianData.picframe_url,
           title: "Atualizar foto"
         },
-        {
-          type: "postback",
-          title: "Quero Doar",
-          payload: "WannaDonate"
-        },
+        opt.wannaDonate,
         opt.goBackMainMenu
       ];
       await context.sendButtonTemplate("Que legal! Seu apoio é muito importante para nós! Você quer mudar foto (avatar) do seu perfil?", participateOptions);
