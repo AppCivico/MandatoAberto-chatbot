@@ -266,7 +266,7 @@ bot.onEvent(async context => {
           // recipientData.cellphone = recipientData.cellphone.replace(/[- .)(]/g, "");
           // recipientData.cellphone = `+55${recipientData.cellphone}`;
           await context.setState({ cellphone: `+55${context.state.cellphone.replace(/[- .)(]/g, "")}`})
-          if (phoneRegex.test(recipientData.cellphone)) {
+          if (phoneRegex.test(context.state.cellphone)) {
             await MandatoAbertoAPI.postRecipient(politicianData.user_id, {
               fb_id: context.session.user.id,
               cellphone: context.state.cellphone
@@ -609,6 +609,7 @@ bot.onEvent(async context => {
             }
           ]
         );
+        await context.typingOff();
         await context.setState({ dialog: "pollAnswer" });
       }
       break;
