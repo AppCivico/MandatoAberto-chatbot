@@ -88,11 +88,6 @@ bot.onEvent(async context => {
   function getMenuPrompt(context) {
     if (context.state.introduction.content && pollData.questions) {
       promptOptions = [
-        // {
-        // 	content_type: 'text',
-        // 	title: 'Fale conosco',
-        // 	payload: 'issue'
-        // },
         {
           type: "postback",
           title: context.state.aboutMeText,
@@ -106,11 +101,6 @@ bot.onEvent(async context => {
       ];
     } else if (context.state.introduction.content && !pollData.questions) {
       promptOptions = [
-        // {
-        // 	content_type: 'text',
-        // 	title: 'Fale conosco',
-        // 	payload: 'issue'
-        // },
         {
           type: "postback",
           title: context.state.aboutMeText,
@@ -119,11 +109,6 @@ bot.onEvent(async context => {
       ];
     } else if (!context.state.introduction.content && pollData.questions) {
       promptOptions = [
-        // {
-        // 	content_type: 'text',
-        // 	title: 'Fale conosco',
-        // 	payload: 'issue'
-        // },
         {
           type: "postback",
           title: "Dê sua opinião",
@@ -132,11 +117,6 @@ bot.onEvent(async context => {
       ];
     } else if (!context.state.introduction.content && !pollData.questions && politicianData.contact) {
       promptOptions = [
-        // {
-        // 	content_type: 'text',
-        // 	title: 'Fale conosco',
-        // 	payload: 'issue'
-        // },
         {
           type: "postback",
           title: "Contatos",
@@ -161,6 +141,7 @@ bot.onEvent(async context => {
   }
 
   // Abrindo bot através de comentários e posts
+  // ** no context here **
   if (context.event.rawEvent.field === "feed") {
     let item;
     let comment_id;
@@ -357,12 +338,10 @@ bot.onEvent(async context => {
       await context.setState({ dialog: "prompt" });
       break;
     case "mainMenu": // after issue is created we come back to this dialog
-      // introduction isn't declared inside of greetings anymore. What's defined there is accessible here.
       await context.setState({ sendIntro: true });
       areWeListening = true;
-      // await context.setState({ areWeListening: true });
       // Criando um cidadão
-       recipientData.fb_id = context.session.user.id;
+      recipientData.fb_id = context.session.user.id;
       recipientData.name = `${context.session.user.first_name} ${context.session.user.last_name}`;
       recipientData.gender = context.session.user.gender === "male" ? "M" : "F";
       recipientData.origin_dialog = "greetings";
@@ -622,11 +601,9 @@ bot.onEvent(async context => {
       }, limit);
       break;
     case "aboutMe":
-      const introductionText = await MandatoAbertoAPI.getAnswer(
-        politicianData.user_id,
-        "introduction"
-      );
-      await context.sendText(introductionText.content);
+      const introductionText = await MandatoAbertoAPI.getAnswer(politicianData.user_id, "introduction").content;
+
+      await context.sendText(introductionText);
 
       if (trajectory.content && pollData.questions) {
         promptOptions = [
