@@ -85,8 +85,8 @@ function getAboutMe(politicianData, articles) {
 };
 
 bot.onEvent(async context => {
-  function getMenuPrompt() {
-    if (introduction.content && pollData.questions) {
+  function getMenuPrompt(context2) {
+    if (context2.state.introduction.content && pollData.questions) {
       promptOptions = [
         // {
         // 	content_type: 'text',
@@ -189,10 +189,7 @@ bot.onEvent(async context => {
   }
   // Tratando caso de o político não ter dados suficientes
   if (!context.state.dialog) {
-    if (
-      !politicianData.greetings &&
-      (!politicianData.contact && !pollData.questions)
-    ) {
+    if (!politicianData.greetings && (!politicianData.contact && !pollData.questions)) {
       console.log("Politician does not have enough data");
       return false;
     }
@@ -347,7 +344,7 @@ bot.onEvent(async context => {
       recipientData.picture = context.session.user.profile_pic;
       recipient = await MandatoAbertoAPI.postRecipient(politicianData.user_id, recipientData);
       recipientData = {};
-      introduction = await MandatoAbertoAPI.getAnswer(politicianData.user_id, "introduction");
+      await context.setState({ introduction: await MandatoAbertoAPI.getAnswer(politicianData.user_id, "introduction") });
       issue_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, "issue_acknowledgment");
       if (Object.keys(issue_message).length === 0) {
         issue_message = "A qualquer momento você pode digitar uma mensagem que enviarei para nosso time.";
@@ -376,7 +373,7 @@ bot.onEvent(async context => {
       recipientData.picture = context.session.user.profile_pic;
       recipient = await MandatoAbertoAPI.postRecipient(politicianData.user_id, recipientData);
       recipientData = {};
-      introduction = await MandatoAbertoAPI.getAnswer(politicianData.user_id,"introduction");
+      await context.setState({ introduction: await MandatoAbertoAPI.getAnswer(politicianData.user_id, "introduction") });
       issue_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id,"issue_acknowledgment");
 
       if (Object.keys(issue_message).length === 0) {
