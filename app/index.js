@@ -86,6 +86,16 @@ function getAboutMe(politicianData) {
   }
 };
 
+function getIssueMessage(issueMessage) {
+  // issueMessage = await MandatoAbertoAPI.getAnswer(politicianData.user_id, "issue_acknowledgment");
+  if (Object.keys(issueMessage).length === 0) {
+    return "A qualquer momento você pode digitar uma mensagem que enviarei para nosso time.";
+  } else {
+    return issueMessage.content;
+  }
+
+};
+
 bot.onEvent(async context => {
   function getMenuPrompt(context) {
     if (context.state.introduction.content && pollData.questions) {
@@ -325,19 +335,20 @@ bot.onEvent(async context => {
       recipientData = {};
       await context.setState({ articles: getArticles(politicianData.gender) });
       await context.setState({ introduction: await MandatoAbertoAPI.getAnswer(politicianData.user_id, "introduction") });
-      issue_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, "issue_acknowledgment");
-      if (Object.keys(issue_message).length === 0) {
-        issue_message = "A qualquer momento você pode digitar uma mensagem que enviarei para nosso time.";
-      } else {
-        issue_message = issue_message.content;
-      }
       await context.setState({ aboutMeText: await getAboutMe(politicianData) });
+      await context.setState({ issueMessage: getIssueMessage(await MandatoAbertoAPI.getAnswer(politicianData.user_id, "issue_acknowledgment")) });
+      // issue_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, "issue_acknowledgment");
+      // if (Object.keys(issue_message).length === 0) {
+      //   issue_message = "A qualquer momento você pode digitar uma mensagem que enviarei para nosso time.";
+      // } else {
+      //   issue_message = issue_message.content;
+      // }
       await getMenuPrompt(context);
       await context.setState({ userMessage: "" }); // cleaning up
       let greeting = politicianData.greeting.replace("${user.office.name}", politicianData.office.name);
       greeting = greeting.replace("${user.name}", politicianData.name);
       await context.sendText(greeting);
-      await context.sendButtonTemplate(issue_message, promptOptions);
+      await context.sendButtonTemplate(context.state.issueMessage, promptOptions);
       await context.setState({ dialog: "prompt" });
       break;
     case "mainMenu": // after issue is created we come back to this dialog
@@ -353,14 +364,8 @@ bot.onEvent(async context => {
       recipientData = {};
       await context.setState({ articles: getArticles(politicianData.gender)});
       await context.setState({ introduction: await MandatoAbertoAPI.getAnswer(politicianData.user_id, "introduction") });
-      issue_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id,"issue_acknowledgment");
-
-      if (Object.keys(issue_message).length === 0) {
-        issue_message = "A qualquer momento você pode digitar uma mensagem e eu enviarei para o gabinete.";
-      } else {
-        issue_message = issue_message.content;
-      }
       await context.setState({ aboutMeText: await getAboutMe(politicianData) });
+      // await context.setState({ issueMessage: getIssueMessage(await MandatoAbertoAPI.getAnswer(politicianData.user_id, "issue_acknowledgment")) });
       await getMenuPrompt(context);
       await context.setState({ userMessage: "" }); // cleaning up
       await context.sendButtonTemplate("Como posso te ajudar?", promptOptions);
