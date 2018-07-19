@@ -49,7 +49,6 @@ recipientData[
 const mapPageToAccessToken = async pageId => {
   politicianData = await MandatoAbertoAPI.getPoliticianData(pageId);
   pollData = await MandatoAbertoAPI.getPollData(pageId);
-  // trajectory = await MandatoAbertoAPI.getAnswer(politicianData.user_id, "trajectory");
 
   return politicianData.fb_access_token;
 };
@@ -311,6 +310,7 @@ bot.onEvent(async context => {
       recipientData.picture = context.session.user.profile_pic;
       recipient = await MandatoAbertoAPI.postRecipient(politicianData.user_id, recipientData);
       recipientData = {};
+      await context.setState({ trajectory: await MandatoAbertoAPI.getAnswer(politicianData.user_id, "trajectory") });
       await context.setState({ articles: getArticles(politicianData.gender) });
       await context.setState({ introduction: await MandatoAbertoAPI.getAnswer(politicianData.user_id, "introduction") });
       await context.setState({ aboutMeText: await getAboutMe(politicianData) });
@@ -334,6 +334,7 @@ bot.onEvent(async context => {
       recipientData.picture = context.session.user.profile_pic;
       recipient = await MandatoAbertoAPI.postRecipient(politicianData.user_id, recipientData);
       recipientData = {};
+      await context.setState({ trajectory: await MandatoAbertoAPI.getAnswer(politicianData.user_id, "trajectory") });
       await context.setState({ articles: getArticles(politicianData.gender)});
       await context.setState({ introduction: await MandatoAbertoAPI.getAnswer(politicianData.user_id, "introduction") });
       await context.setState({ aboutMeText: await getAboutMe(politicianData) });
@@ -568,7 +569,6 @@ bot.onEvent(async context => {
     case "aboutMe":
       const introductionText = await MandatoAbertoAPI.getAnswer(politicianData.user_id, "introduction");
       await context.sendText(introductionText.content);
-      await context.setState({ trajectory: await MandatoAbertoAPI.getAnswer(politicianData.user_id, "trajectory")});
       if (context.state.trajectory.content && pollData.questions) {
         promptOptions = [opt.trajectory, opt.contacts];
       } else if (context.state.trajectory.content && !pollData.questions) {
@@ -605,7 +605,6 @@ bot.onEvent(async context => {
       if (politicianData.contact.url) {
         await context.sendText(` - Através do site: ${politicianData.contact.url}`);
       }
-      await context.setState({ trajectory: await MandatoAbertoAPI.getAnswer(politicianData.user_id, "trajectory") });
       if (context.state.trajectory.content && pollData.questions) {
         promptOptions = [opt.trajectory, opt.poll_suaOpiniao];
       } else if (context.state.trajectory.content && !pollData.questions) {
@@ -629,7 +628,6 @@ bot.onEvent(async context => {
         context.session.user.id,
         pollData.id
       );
-      await context.setState({ trajectory: await MandatoAbertoAPI.getAnswer(politicianData.user_id, "trajectory") });
       if (context.state.trajectory.content && politicianData.contact) {
         promptOptions = [opt.trajectory, opt.contacts];
       } else if (context.state.trajectory.content && !politicianData.contact) {
