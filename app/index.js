@@ -75,7 +75,7 @@ bot.setInitialState({});
 bot.use(withTyping({ delay: 1000 }));
 
 bot.onEvent(async context => {
-  function getMenuPrompt() {
+  function getMenuPrompt(context) {
     // both of these verifications were on greetings dialog, now they're both at greeting and mainMenu
     if (
       politicianData.office.name === "Outros" ||
@@ -361,7 +361,7 @@ bot.onEvent(async context => {
       } else {
         issue_message = issue_message.content;
       }
-      await getMenuPrompt();
+      await getMenuPrompt(context);
       await context.setState({ userMessage: "" }); // cleaning up
       let greeting = politicianData.greeting.replace("${user.office.name}", politicianData.office.name);
       greeting = greeting.replace("${user.name}", politicianData.name);
@@ -390,7 +390,7 @@ bot.onEvent(async context => {
       } else {
         issue_message = issue_message.content;
       }
-      await getMenuPrompt();
+      await getMenuPrompt(context);
       await context.setState({ userMessage: "" }); // cleaning up
       await context.sendButtonTemplate("Como posso te ajudar?", promptOptions);
       await context.setState({ dialog: "prompt" });
