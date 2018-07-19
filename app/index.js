@@ -74,24 +74,34 @@ bot.setInitialState({});
 
 bot.use(withTyping({ delay: 1000 }));
 
+function getAboutMe(politicianData, articles) {
+  if (politicianData.office.name === "Outros" || politicianData.office.name === "Candidato" || politicianData.office.name === "Candidata") {
+    return `Sobre ${articles.defined} líder`;
+  } else if (politicianData.office.name === "pré-candidato" || politicianData.office.name === "pré-candidata") {
+    return `${articles.defined.toUpperCase()} ${politicianData.office.name}`;
+  } else {
+    return `Sobre ${articles.defined} ${politicianData.office.name}`;
+  }
+};
+
 bot.onEvent(async context => {
   function getMenuPrompt() {
     // both of these verifications were on greetings dialog, now they're both at greeting and mainMenu
-    if (
-      politicianData.office.name === "Outros" ||
-      politicianData.office.name === "Candidato" ||
-      politicianData.office.name === "Candidata"
-    ) {
-      about_me_text = `Sobre ${articles.defined} líder`;
-    } else if (
-      politicianData.office.name === "pré-candidato" ||
-      politicianData.office.name === "pré-candidata" 
-    ) {
-      about_me_text = `${articles.defined.toUpperCase()} ${politicianData.office.name}`;
-    } else {
-      about_me_text = `Sobre ${articles.defined} ${politicianData.office.name}`;
-    }
-
+    // if (
+    //   politicianData.office.name === "Outros" ||
+    //   politicianData.office.name === "Candidato" ||
+    //   politicianData.office.name === "Candidata"
+    // ) {
+    //   about_me_text = `Sobre ${articles.defined} líder`;
+    // } else if (
+    //   politicianData.office.name === "pré-candidato" ||
+    //   politicianData.office.name === "pré-candidata" 
+    // ) {
+    //   about_me_text = `${articles.defined.toUpperCase()} ${politicianData.office.name}`;
+    // } else {
+    //   about_me_text = `Sobre ${articles.defined} ${politicianData.office.name}`;
+    // }
+    await context.setState({ aboutMeText: await getAboutMe(politicianData, articles)});
     if (introduction.content && pollData.questions) {
       promptOptions = [
         // {
@@ -101,7 +111,7 @@ bot.onEvent(async context => {
         // },
         {
           type: "postback",
-          title: about_me_text,
+          title: context.state.aboutMeText,
           payload: "aboutMe"
         },
         {
@@ -119,7 +129,7 @@ bot.onEvent(async context => {
         // },
         {
           type: "postback",
-          title: about_me_text,
+          title: context.state.aboutMeText,
           payload: "aboutMe"
         }
       ];
