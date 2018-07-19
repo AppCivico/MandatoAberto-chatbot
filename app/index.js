@@ -85,8 +85,8 @@ function getAboutMe(politicianData, articles) {
 };
 
 bot.onEvent(async context => {
-  function getMenuPrompt(context2) {
-    if (context2.state.introduction.content && pollData.questions) {
+  function getMenuPrompt(context) {
+    if (context.state.introduction.content && pollData.questions) {
       promptOptions = [
         // {
         // 	content_type: 'text',
@@ -104,7 +104,7 @@ bot.onEvent(async context => {
           payload: "poll"
         }
       ];
-    } else if (introduction.content && !pollData.questions) {
+    } else if (context.state.introduction.content && !pollData.questions) {
       promptOptions = [
         // {
         // 	content_type: 'text',
@@ -117,7 +117,7 @@ bot.onEvent(async context => {
           payload: "aboutMe"
         }
       ];
-    } else if (!introduction.content && pollData.questions) {
+    } else if (!context.state.introduction.content && pollData.questions) {
       promptOptions = [
         // {
         // 	content_type: 'text',
@@ -130,11 +130,7 @@ bot.onEvent(async context => {
           payload: "poll"
         }
       ];
-    } else if (
-      !introduction.content &&
-      !pollData.questions &&
-      politicianData.contact
-    ) {
+    } else if (!context.state.introduction.content && !pollData.questions && politicianData.contact) {
       promptOptions = [
         // {
         // 	content_type: 'text',
@@ -169,7 +165,7 @@ bot.onEvent(async context => {
     let item;
     let comment_id;
     let permalink;
-    let introduction;
+    // let introduction;
     const post_id = context.event.rawEvent.value.post_id;
     const page_id = post_id.substr(0, post_id.indexOf("_"));
     let user_id = context.event.rawEvent.value.from.id;
@@ -352,7 +348,7 @@ bot.onEvent(async context => {
         issue_message = issue_message.content;
       }
       await context.setState({ aboutMeText: await getAboutMe(politicianData, articles) });
-      await getMenuPrompt();
+      await getMenuPrompt(context);
       await context.setState({ userMessage: "" }); // cleaning up
       let greeting = politicianData.greeting.replace("${user.office.name}", politicianData.office.name);
       greeting = greeting.replace("${user.name}", politicianData.name);
@@ -382,7 +378,7 @@ bot.onEvent(async context => {
         issue_message = issue_message.content;
       }
       await context.setState({ aboutMeText: await getAboutMe(politicianData, articles) });
-      await getMenuPrompt();
+      await getMenuPrompt(context);
       await context.setState({ userMessage: "" }); // cleaning up
       await context.sendButtonTemplate("Como posso te ajudar?", promptOptions);
       await context.setState({ dialog: "prompt" });
