@@ -19,4 +19,14 @@ module.exports = {
         title: "Participar",
         payload: "votoLegal"
     },
+    goBackMainMenu: {
+        type: "postback",
+        title: "Voltar",
+        payload: "mainMenu"
+    },
+    backToBeginning: {
+        type: "postback",
+        title: "Voltar ao início",
+        payload: "mainMenu"
+    },
 }

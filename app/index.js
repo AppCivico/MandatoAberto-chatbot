@@ -172,16 +172,15 @@ bot.onEvent(async context => {
   // Tratando dinâmica de issues
   if (context.state.dialog === "prompt") {
     if (context.event.isPostback) {
-      const payload = context.event.postback.payload;
-      await context.setState({ dialog: payload });
+      await context.setState({ dialog: context.event.postback.payload });
     } else if (context.event.isQuickReply) {
       await context.setState({ dialog: context.event.message.quick_reply.payload });
     } else if (context.event.isText) {
       // Ao mandar uma mensagem que não é interpretada como fluxo do chatbot
       // Devo já criar uma issue
       // We go to the listening dialog to wait for other messages
+      // check if message came from standard flow or from post/comment
       if (areWeListening === true) {
-        // check if message came from standard flow or from post/comment
         await context.setState({ dialog: "listening" });
       } else {
         await context.setState({ dialog: "intermediate" });
@@ -192,8 +191,7 @@ bot.onEvent(async context => {
 
   // Switch de dialogos
   if (context.event.isPostback && (context.state.dialog === "prompt" || context.event.postback.payload === "greetings")) {
-    const payload = context.event.postback.payload;
-    await context.setState({ dialog: payload });
+    await context.setState({ dialog: context.event.postback.payload });
   } else if (context.event.isPostback && context.state.dialog === "listening" ) {
     await context.typingOff();
     const payload = context.event.postback.payload;
@@ -201,8 +199,7 @@ bot.onEvent(async context => {
         context.event.message.text = "";
     }
     if (context.event.isQuickReply) { // because of the issue response
-      const payload = context.event.quick_reply.payload;
-      await context.setState({ dialog: payload });
+      await context.setState({ dialog: context.event.quick_reply.payload });
     } else {
       await context.setState({ dialog: payload });
     }
@@ -397,11 +394,7 @@ bot.onEvent(async context => {
         title: "Sobre divulgar",
         payload: "aboutDivulgation"
       },
-      {
-        type: "postback",
-        title: "Voltar",
-        payload: "mainMenu"
-      }
+      opt.goBackMainMenu
     ];
       await context.sendButtonTemplate('Existem diversas formas de participar da construção de uma candidatura. ' +
       'Posso ajudá-lo a realizar uma doação ou divulgar a pré-campanha. Quer entender melhor?', knowMoreOptions);
@@ -468,11 +461,7 @@ bot.onEvent(async context => {
         };
         await participateOptions.push(divulgateOption);
       }
-      await participateOptions.push({
-        type: "postback",
-        title: "Voltar",
-        payload: "mainMenu"
-      });
+      await participateOptions.push(opt.goBackMainMenu);
       await context.sendButtonTemplate("Ficamos felizes com seu apoio! Como deseja participar?", participateOptions);
       await context.setState({ dialog: "prompt" });
       break;
@@ -493,11 +482,7 @@ bot.onEvent(async context => {
         };
         await participateOptions.push(divulgateOption);
       }
-      await participateOptions.push({
-        type: "postback",
-        title: "Voltar",
-        payload: "mainMenu"
-      });
+      await participateOptions.push(opt.goBackMainMenu);
       await context.sendText("Seu apoio é fundamental para nossa pré-campanha! Por isso, cuidamos da segurança de todos os doadores. " + 
       "Saiba mais em: www.votolegal.com.br");
       const valueLegal = await VotoLegalAPI.getVotoLegalValues(politicianData.votolegal_integration.votolegal_username);
@@ -518,11 +503,7 @@ bot.onEvent(async context => {
           title: "Quero Doar",
           payload: "WannaDonate"
         },
-        {
-          type: "postback",
-          title: "Voltar",
-          payload: "mainMenu"
-        }
+        opt.goBackMainMenu
       ];
       await context.sendButtonTemplate("Que legal! Seu apoio é muito importante para nós! Você quer mudar foto (avatar) do seu perfil?", participateOptions);
       await context.setState({ dialog: "prompt" });
@@ -784,14 +765,7 @@ bot.onEvent(async context => {
       break;
     case "issue_created":
       const issue_created_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, "issue_created");
-      await context.sendButtonTemplate(issue_created_message.content, [
-          {
-            type: "postback",
-            title: "Voltar ao início",
-            payload: "mainMenu"
-          }
-        ]
-      );
+      await context.sendButtonTemplate(issue_created_message.content, [ opt.backToBeginning ]);
       await context.setState({ dialog: "prompt" });
       break;
   }
