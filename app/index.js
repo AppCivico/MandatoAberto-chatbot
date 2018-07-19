@@ -307,6 +307,7 @@ bot.onEvent(async context => {
       recipientData.picture = context.session.user.profile_pic;
       recipient = await MandatoAbertoAPI.postRecipient(politicianData.user_id, recipientData);
       recipientData = {};
+      console.log(context.event)
       await context.setState({ pollData: await MandatoAbertoAPI.getPollData(pageId)});
       await context.setState({ trajectory: await MandatoAbertoAPI.getAnswer(politicianData.user_id, "trajectory") });
       await context.setState({ articles: getArticles(politicianData.gender) });
@@ -616,10 +617,7 @@ bot.onEvent(async context => {
         promptOptions = [opt.contacts];
       }
       if (politicianData.votolegal_integration) {
-        if (
-          politicianData.votolegal_integration.votolegal_url &&
-          politicianData.votolegal_integration.votolegal_username
-        ) {
+        if (politicianData.votolegal_integration.votolegal_url && politicianData.votolegal_integration.votolegal_username) {
           // check if integration to votoLegal exists to add the donation option
           // politicianData.votolegal_integration.votolegal_url will be used in a future web_url button to link to the donation page
           promptOptions.push(opt.doarOption);
@@ -631,9 +629,7 @@ bot.onEvent(async context => {
         await context.sendButtonTemplate("Se quiser, eu posso te ajudar com outra coisa.", promptOptions);
         await context.setState({ dialog: "prompt" });
       } else {
-        await context.sendText(
-          "Quero conhecer você melhor. Deixe sua resposta e participe deste debate."
-        );
+        await context.sendText("Quero conhecer você melhor. Deixe sua resposta e participe deste debate.");
         await context.sendButtonTemplate(`Pergunta: ${context.state.pollData.questions[0].content}` ,
           [
             {
