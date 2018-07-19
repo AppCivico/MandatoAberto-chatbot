@@ -30,8 +30,6 @@ let promptOptions;
 let participateOptions;
 let recipient;
 
-let recipientData = {};
-
 const limit = 10000 * 2;
 let timer;
 // userMessage -> context.state.userMessage -> stores the texts the user wirtes before sending them to politician [issue] 
@@ -40,9 +38,6 @@ let areWeListening = false;
 // areWeListening -> user.state.areWeListening(doesn't work) -> diferenciates messages that come from
 // the standard flow and messages from comment/post
 // 
-recipientData[
-  ("fb_id", "name", "origin_dialog", "email", "cellphone", "gender")
-];
 
 const mapPageToAccessToken = async pageId => {
   politicianData = await MandatoAbertoAPI.getPoliticianData(pageId);
@@ -236,35 +231,15 @@ bot.onEvent(async context => {
     if (context.state.recipientData) {
       switch (context.state.recipientData) {
         case "email":
-          // await context.setState({ emailDialog: "Legal, agora quer me informar seu telefone, para lhe manter informado sobre outras perguntas?" });
-          // recipientData.fb_id = context.session.user.id;
-          // recipientData.email = context.state.email;
           await MandatoAbertoAPI.postRecipient(politicianData.user_id, {
             fb_id: context.session.user.id,
             email: context.state.email
           });
-          recipientData = {};
           await context.setState({ email: undefined});
-          await context.sendButtonTemplate("Legal, agora quer me informar seu telefone, para lhe manter informado sobre outras perguntas?", [
-              {
-                type: "postback",
-                title: "Sim",
-                payload: "recipientData"
-              },
-              {
-                type: "postback",
-                title: "Não",
-                payload: "recipientData"
-              },
-            ]);
+          await context.sendButtonTemplate("Legal, agora quer me informar seu telefone, para lhe manter informado sobre outras perguntas?", opt.recipientData_YesNo);
           await context.setState({ recipientData: "cellphonePrompt", dialog: "recipientData", dataPrompt: "" });
           break;
         case "cellphone":
-          // recipientData.fb_id = context.session.user.id;
-
-          // recipientData.cellphone = context.state.cellphone;//context.event.message.text;
-          // recipientData.cellphone = recipientData.cellphone.replace(/[- .)(]/g, "");
-          // recipientData.cellphone = `+55${recipientData.cellphone}`;
           await context.setState({ cellphone: `+55${context.state.cellphone.replace(/[- .)(]/g, "")}`})
           if (phoneRegex.test(context.state.cellphone)) {
             await MandatoAbertoAPI.postRecipient(politicianData.user_id, {
@@ -274,23 +249,9 @@ bot.onEvent(async context => {
             await context.setState({ cellphone: undefined });
           } else {
             await context.setState({dataPrompt: "", recipientData: "cellphonePrompt"});
-
             await context.sendText("Desculpe-me, mas seu telefone não parece estar correto. Não esqueça de incluir o DDD. Por exemplo: 1199999-8888");
-            await context.sendButtonTemplate("Vamos tentar de novo?", [
-              {
-                type: "postback",
-                title: "Sim",
-                payload: "recipientData"
-              },
-              {
-                type: "postback",
-                title: "Não",
-                payload: "recipientData"
-              },
-            ]);
+            await context.sendButtonTemplate("Vamos tentar de novo?", opt.recipientData_YesNo);
           }
-
-          recipientData = {};
           break;
         case "cellphonePrompt":
           await context.setState({ dialog: "recipientData", dataPrompt: "cellphone" });
@@ -616,39 +577,12 @@ bot.onEvent(async context => {
       case 'listeningAnswer':
       await MandatoAbertoAPI.postIssue( politicianData.user_id,context.session.user.id, context.state.userMessage);
       await context.setState({ userMessage: '' });
-      await context.sendButtonTemplate('Agradecemos a sua mensagem. Deseja nos enviar ou atualizar seu e-mail e telefone?',
-        [
-          {
-            type: "postback",
-            title: "Vamos lá!",
-            payload: "recipientData"
-          },
-          {
-            type: "postback",
-            title: "Não",
-            payload: "recipientData"
-          }
-        ]
-      );
+      await context.sendButtonTemplate('Agradecemos a sua mensagem. Deseja nos enviar ou atualizar seu e-mail e telefone?', opt.recipientData_LetsGo);
       await context.setState({ dialog: "prompt", dataPrompt: "email" });
       break;   
       case "pollAnswer":
-      await context.sendButtonTemplate("Muito obrigado por sua resposta. Você gostaria de deixar seu e-mail e telefone para nossa equipe?",
-        [
-          {
-            type: "postback",
-            title: "Vamos lá!",
-            payload: "recipientData"
-          },
-          {
-            type: "postback",
-            title: "Agora não",
-            payload: "recipientData"
-          }
-        ]
-      );
+      await context.sendButtonTemplate("Muito obrigado por sua resposta. Você gostaria de deixar seu e-mail e telefone para nossa equipe?", opt.recipientData_LetsGo);
       await context.setState({ dialog: "prompt", dataPrompt: "email" });
-
       break;
     case "recipientData":
     if (context.event.postback && (context.event.postback.title === "Agora não" || context.event.postback.title === "Não")) {

@@ -44,4 +44,29 @@ module.exports = {
         title: "Quero Doar",
         payload: "WannaDonate"
     },
+
+    recipientData_LetsGo: [ // array with two options
+        {
+            type: "postback",
+            title: "Vamos lá!",
+            payload: "recipientData"
+        },
+        {
+            type: "postback",
+            title: "Agora não",
+            payload: "recipientData"
+        }
+    ],
+    recipientData_YesNo: [ // array with two options
+        {
+            type: "postback",
+            title: "Sim",
+            payload: "recipientData"
+        },
+        {
+            type: "postback",
+            title: "Não",
+            payload: "recipientData"
+        },
+    ],
 }
