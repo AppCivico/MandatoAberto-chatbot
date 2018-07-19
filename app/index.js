@@ -31,7 +31,7 @@ let promptOptions;
 let participateOptions;
 let recipient;
 
-let pollData = {};
+// let pollData = {};
 let recipientData = {};
 
 const limit = 10000 * 2;
@@ -48,7 +48,7 @@ recipientData[
 
 const mapPageToAccessToken = async pageId => {
   politicianData = await MandatoAbertoAPI.getPoliticianData(pageId);
-  pollData = await MandatoAbertoAPI.getPollData(pageId);
+  // pollData = await MandatoAbertoAPI.getPollData(pageId);
 
   return politicianData.fb_access_token;
 };
@@ -96,7 +96,7 @@ function getIssueMessage(issueMessage) {
 
 bot.onEvent(async context => {
   function getMenuPrompt(context) {
-    if (context.state.introduction.content && pollData.questions) {
+    if (context.state.introduction.content && context.state.pollData.questions) {
       promptOptions = [
         {
           type: "postback",
@@ -105,7 +105,7 @@ bot.onEvent(async context => {
         },
         opt.poll_suaOpiniao,
       ];
-    } else if (context.state.introduction.content && !pollData.questions) {
+    } else if (context.state.introduction.content && !context.state.pollData.questions) {
       promptOptions = [
         {
           type: "postback",
@@ -113,9 +113,9 @@ bot.onEvent(async context => {
           payload: "aboutMe"
         }
       ];
-    } else if (!context.state.introduction.content && pollData.questions) {
+    } else if (!context.state.introduction.content && context.state.pollData.questions) {
       promptOptions = [opt.poll_suaOpiniao];
-    } else if (!context.state.introduction.content && !pollData.questions && politicianData.contact) {
+    } else if (!context.state.introduction.content && !context.state.pollData.questions && politicianData.contact) {
       promptOptions = [opt.contacts];
     }
     // console.log('votolegal: \n', politicianData.votolegal_integration);
@@ -155,7 +155,7 @@ bot.onEvent(async context => {
   }
   // Tratando caso de o político não ter dados suficientes
   if (!context.state.dialog) {
-    if (!politicianData.greetings && (!politicianData.contact && !pollData.questions)) {
+    if (!politicianData.greetings && (!politicianData.contact && !context.state.pollData.questions)) {
       console.log("Politician does not have enough data");
       return false;
     }
@@ -307,6 +307,7 @@ bot.onEvent(async context => {
       recipientData.picture = context.session.user.profile_pic;
       recipient = await MandatoAbertoAPI.postRecipient(politicianData.user_id, recipientData);
       recipientData = {};
+      await context.setState({ pollData: await MandatoAbertoAPI.getPollData(pageId)});
       await context.setState({ trajectory: await MandatoAbertoAPI.getAnswer(politicianData.user_id, "trajectory") });
       await context.setState({ articles: getArticles(politicianData.gender) });
       await context.setState({ introduction: await MandatoAbertoAPI.getAnswer(politicianData.user_id, "introduction") });
@@ -331,6 +332,7 @@ bot.onEvent(async context => {
       recipientData.picture = context.session.user.profile_pic;
       recipient = await MandatoAbertoAPI.postRecipient(politicianData.user_id, recipientData);
       recipientData = {};
+      await context.setState({ pollData: await MandatoAbertoAPI.getPollData(pageId) });
       await context.setState({ trajectory: await MandatoAbertoAPI.getAnswer(politicianData.user_id, "trajectory") });
       await context.setState({ articles: getArticles(politicianData.gender)});
       await context.setState({ introduction: await MandatoAbertoAPI.getAnswer(politicianData.user_id, "introduction") });
@@ -550,11 +552,11 @@ bot.onEvent(async context => {
     case "aboutMe":
       const introductionText = await MandatoAbertoAPI.getAnswer(politicianData.user_id, "introduction");
       await context.sendText(introductionText.content);
-      if (context.state.trajectory.content && pollData.questions) {
+      if (context.state.trajectory.content && context.state.pollData.questions) {
         promptOptions = [opt.trajectory, opt.contacts];
-      } else if (context.state.trajectory.content && !pollData.questions) {
+      } else if (context.state.trajectory.content && !context.state.pollData.questions) {
         promptOptions = [opt.trajectory];
-      } else if (!context.state.trajectory.content && pollData.questions) {
+      } else if (!context.state.trajectory.content && context.state.pollData.questions) {
         promptOptions = [opt.contacts];
       }
       if (politicianData.votolegal_integration) {
@@ -586,11 +588,11 @@ bot.onEvent(async context => {
       if (politicianData.contact.url) {
         await context.sendText(` - Através do site: ${politicianData.contact.url}`);
       }
-      if (context.state.trajectory.content && pollData.questions) {
+      if (context.state.trajectory.content && context.state.pollData.questions) {
         promptOptions = [opt.trajectory, opt.poll_suaOpiniao];
-      } else if (context.state.trajectory.content && !pollData.questions) {
+      } else if (context.state.trajectory.content && !context.state.pollData.questions) {
         promptOptions = [opt.trajectory];
-      } else if (!context.state.trajectory.content && pollData.questions) {
+      } else if (!context.state.trajectory.content && context.state.pollData.questions) {
         promptOptions = [opt.poll_suaOpiniao];
       }
       if (politicianData.votolegal_integration) {
@@ -605,10 +607,7 @@ bot.onEvent(async context => {
       break;
     case "poll":
       // Verifico se o cidadão já respondeu a enquete atualmente ativa
-      const recipientAnswer = await MandatoAbertoAPI.getPollAnswer(
-        context.session.user.id,
-        pollData.id
-      );
+      const recipientAnswer = await MandatoAbertoAPI.getPollAnswer(context.session.user.id, context.state.pollData.id);
       if (context.state.trajectory.content && politicianData.contact) {
         promptOptions = [opt.trajectory, opt.contacts];
       } else if (context.state.trajectory.content && !politicianData.contact) {
@@ -635,17 +634,17 @@ bot.onEvent(async context => {
         await context.sendText(
           "Quero conhecer você melhor. Deixe sua resposta e participe deste debate."
         );
-        await context.sendButtonTemplate(`Pergunta: ${pollData.questions[0].content}` ,
+        await context.sendButtonTemplate(`Pergunta: ${context.state.pollData.questions[0].content}` ,
           [
             {
               type: "postback",
-              title: pollData.questions[0].options[0].content,
-              payload: `${pollData.questions[0].options[0].id}`
+              title: context.state.pollData.questions[0].options[0].content,
+              payload: `${context.state.pollData.questions[0].options[0].id}`
             },
             {
               type: "postback",
-              title: pollData.questions[0].options[1].content,
-              payload: `${pollData.questions[0].options[1].id}`
+              title: context.state.pollData.questions[0].options[1].content,
+              payload: `${context.state.pollData.questions[0].options[1].id}`
             }
           ]
         );
@@ -739,11 +738,11 @@ bot.onEvent(async context => {
       break;
     case "trajectory":
       await context.sendText(context.state.trajectory.content);
-      if (pollData.questions && politicianData.contact) {
+      if (context.state.pollData.questions && politicianData.contact) {
         promptOptions = [ opt.poll_suaOpiniao, opt.contacts];
-      } else if (pollData.questions && !politicianData.contact) {
+      } else if (context.state.pollData.questions && !politicianData.contact) {
         promptOptions = [opt.poll_suaOpiniao];
-      } else if (!pollData.questions && politicianData.contact) {
+      } else if (!context.state.pollData.questions && politicianData.contact) {
         promptOptions = [opt.contacts];
       }
       if (politicianData.votolegal_integration) {
