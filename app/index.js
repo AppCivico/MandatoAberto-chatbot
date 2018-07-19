@@ -6,9 +6,10 @@ const config = require("./bottender.config.js").messenger;
 const MandatoAbertoAPI = require("./mandatoaberto_api.js");
 const VotoLegalAPI = require("./votolegal_api.js");
 const Articles = require("./utils/articles.js");
-const request = require("requisition");
+const opt = require('./utils/options');
 
-const apiUri = process.env.MANDATOABERTO_API_URL;
+// const request = require("requisition");
+// const apiUri = process.env.MANDATOABERTO_API_URL;
 
 const phoneRegex = new RegExp(/^\+55\d{2}(\d{1})?\d{8}$/);
 
@@ -104,11 +105,12 @@ bot.onEvent(async context => {
           title: context.state.aboutMeText,
           payload: "aboutMe"
         },
-        {
-          type: "postback",
-          title: "Dê sua opinião",
-          payload: "poll"
-        }
+        opt.poll_suaOpiniao,
+        // {
+        //   type: "postback",
+        //   title: "Dê sua opinião",
+        //   payload: "poll"
+        // }
       ];
     } else if (context.state.introduction.content && !pollData.questions) {
       promptOptions = [
@@ -120,11 +122,12 @@ bot.onEvent(async context => {
       ];
     } else if (!context.state.introduction.content && pollData.questions) {
       promptOptions = [
-        {
-          type: "postback",
-          title: "Dê sua opinião",
-          payload: "poll"
-        }
+        opt.poll_suaOpiniao
+        // {
+        //   type: "postback",
+        //   title: "Dê sua opinião",
+        //   payload: "poll"
+        // }
       ];
     } else if (!context.state.introduction.content && !pollData.questions && politicianData.contact) {
       promptOptions = [
@@ -634,10 +637,7 @@ bot.onEvent(async context => {
         ];
       }
       if (politicianData.votolegal_integration) {
-        if (
-          politicianData.votolegal_integration.votolegal_url &&
-          politicianData.votolegal_integration.votolegal_username
-        ) {
+        if (politicianData.votolegal_integration.votolegal_url && politicianData.votolegal_integration.votolegal_username) {
           // check if integration to votoLegal exists to add the donation option
           // politicianData.votolegal_integration.votolegal_url will be used in a future web_url button to link to the donation page
           const doarOption = {
