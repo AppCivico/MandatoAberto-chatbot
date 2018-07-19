@@ -9,4 +9,14 @@ module.exports = {
         title: "Contatos",
         payload: "contacts"
     },
+    trajectory: {
+        type: "postback",
+        title: "Trajetória",
+        payload: "trajectory"
+    },
+    doarOption: {
+        type: "postback",
+        title: "Participar",
+        payload: "votoLegal"
+    },
 }
