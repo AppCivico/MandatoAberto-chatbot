@@ -27,7 +27,6 @@ function formatReal(int) {
 
 let politicianData;
 let pollAnswer;
-let trajectory;
 let promptOptions;
 let participateOptions;
 let recipient;
@@ -50,7 +49,7 @@ recipientData[
 const mapPageToAccessToken = async pageId => {
   politicianData = await MandatoAbertoAPI.getPoliticianData(pageId);
   pollData = await MandatoAbertoAPI.getPollData(pageId);
-  trajectory = await MandatoAbertoAPI.getAnswer(politicianData.user_id, "trajectory");
+  // trajectory = await MandatoAbertoAPI.getAnswer(politicianData.user_id, "trajectory");
 
   return politicianData.fb_access_token;
 };
