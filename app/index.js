@@ -569,11 +569,12 @@ bot.onEvent(async context => {
     case "aboutMe":
       const introductionText = await MandatoAbertoAPI.getAnswer(politicianData.user_id, "introduction");
       await context.sendText(introductionText.content);
-      if (trajectory.content && pollData.questions) {
+      await context.setState({ trajectory: await MandatoAbertoAPI.getAnswer(politicianData.user_id, "trajectory")});
+      if (context.state.trajectory.content && pollData.questions) {
         promptOptions = [opt.trajectory, opt.contacts];
-      } else if (trajectory.content && !pollData.questions) {
+      } else if (context.state.trajectory.content && !pollData.questions) {
         promptOptions = [opt.trajectory];
-      } else if (!trajectory.content && pollData.questions) {
+      } else if (!context.state.trajectory.content && pollData.questions) {
         promptOptions = [opt.contacts];
       }
       if (politicianData.votolegal_integration) {
@@ -605,12 +606,12 @@ bot.onEvent(async context => {
       if (politicianData.contact.url) {
         await context.sendText(` - Através do site: ${politicianData.contact.url}`);
       }
-
-      if (trajectory.content && pollData.questions) {
+      await context.setState({ trajectory: await MandatoAbertoAPI.getAnswer(politicianData.user_id, "trajectory") });
+      if (context.state.trajectory.content && pollData.questions) {
         promptOptions = [opt.trajectory, opt.poll_suaOpiniao];
-      } else if (trajectory.content && !pollData.questions) {
+      } else if (context.state.trajectory.content && !pollData.questions) {
         promptOptions = [opt.trajectory];
-      } else if (!trajectory.content && pollData.questions) {
+      } else if (!context.state.trajectory.content && pollData.questions) {
         promptOptions = [opt.poll_suaOpiniao];
       }
       if (politicianData.votolegal_integration) {
@@ -629,11 +630,12 @@ bot.onEvent(async context => {
         context.session.user.id,
         pollData.id
       );
-      if (trajectory.content && politicianData.contact) {
+      await context.setState({ trajectory: await MandatoAbertoAPI.getAnswer(politicianData.user_id, "trajectory") });
+      if (context.state.trajectory.content && politicianData.contact) {
         promptOptions = [opt.trajectory, opt.contacts];
-      } else if (trajectory.content && !politicianData.contact) {
+      } else if (context.state.trajectory.content && !politicianData.contact) {
         promptOptions = [opt.trajectory];
-      } else if (!trajectory.content && politicianData.contact) {
+      } else if (!context.state.trajectory.content && politicianData.contact) {
         promptOptions = [opt.contacts];
       }
       if (politicianData.votolegal_integration) {
@@ -758,7 +760,7 @@ bot.onEvent(async context => {
       }
       break;
     case "trajectory":
-      await context.sendText(trajectory.content);
+      await context.sendText(context.state.trajectory.content);
       if (pollData.questions && politicianData.contact) {
         promptOptions = [ opt.poll_suaOpiniao, opt.contacts];
       } else if (pollData.questions && !politicianData.contact) {
