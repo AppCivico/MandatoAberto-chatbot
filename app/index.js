@@ -174,6 +174,8 @@ bot.onEvent(async context => {
       // check if message came from standard flow or from post/comment
       if (areWeListening === true) {
         await context.setState({ dataPrompt: undefined });
+        // TODO: test recipientData poll followed by issue
+        // TODO: don't forget to change the vote number
         await context.setState({ dialog: "listening"});
       } else {
         await context.setState({ dialog: "intermediate" });
