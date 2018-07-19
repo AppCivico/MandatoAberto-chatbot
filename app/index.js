@@ -30,7 +30,6 @@ let trajectory;
 let promptOptions;
 let participateOptions;
 let recipient;
-let issue_message;
 
 let pollData = {};
 let recipientData = {};
@@ -337,12 +336,6 @@ bot.onEvent(async context => {
       await context.setState({ introduction: await MandatoAbertoAPI.getAnswer(politicianData.user_id, "introduction") });
       await context.setState({ aboutMeText: await getAboutMe(politicianData) });
       await context.setState({ issueMessage: getIssueMessage(await MandatoAbertoAPI.getAnswer(politicianData.user_id, "issue_acknowledgment")) });
-      // issue_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, "issue_acknowledgment");
-      // if (Object.keys(issue_message).length === 0) {
-      //   issue_message = "A qualquer momento você pode digitar uma mensagem que enviarei para nosso time.";
-      // } else {
-      //   issue_message = issue_message.content;
-      // }
       await getMenuPrompt(context);
       await context.setState({ userMessage: "" }); // cleaning up
       let greeting = politicianData.greeting.replace("${user.office.name}", politicianData.office.name);
