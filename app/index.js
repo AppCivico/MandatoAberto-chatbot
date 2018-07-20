@@ -364,36 +364,34 @@ bot.onEvent(async context => {
     break;
     case "WannaHelp":
       await context.setState({ participateOptions: [opt.wannaDonate]});
-      // participateOptions = [opt.wannaDonate];
       // checking for picframe_url so we can only show this option when it's available but still show the votoLegal option
       if (politicianData.picframe_url) {
-        // await participateOptions.push(opt.wannaDivulgate);
         await context.setState({ participateOptions: context.state.participateOptions.concat([opt.wannaDivulgate]) });
       }
-      // await participateOptions.push(opt.goBackMainMenu);
       await context.setState({ participateOptions: context.state.participateOptions.concat([opt.goBackMainMenu]) });
       await context.sendButtonTemplate("Ficamos felizes com seu apoio! Como deseja participar?", context.state.participateOptions);
       await context.setState({ dialog: "prompt" });
       break;
     case "WannaDonate":
-      participateOptions = [
+      await context.setState({ participateOptions: [
         {
           type: "web_url",
           url: politicianData.votolegal_integration.votolegal_url,
           title: "Vamos lá!"
-        },
-      ];
+        }]});
       // checking for picframe_url so we can only show this option when it's available but still show the votoLegal option
       if (politicianData.picframe_url) {
-        await participateOptions.push(opt.wannaDivulgate);
+        // await participateOptions.push(opt.wannaDivulgate);
+        await context.setState({ participateOptions: context.state.participateOptions.concat([opt.wannaDivulgate]) });
       }
-      await participateOptions.push(opt.goBackMainMenu);
+      await context.setState({ participateOptions: context.state.participateOptions.concat([opt.goBackMainMenu]) });
+      // await participateOptions.push(opt.goBackMainMenu);
       await context.sendText("Seu apoio é fundamental para nossa pré-campanha! Por isso, cuidamos da segurança de todos os doadores. " + 
       "Saiba mais em: www.votolegal.com.br");
       await context.setState({ valueLegal : await VotoLegalAPI.getVotoLegalValues(politicianData.votolegal_integration.votolegal_username) });
       await context.sendText(`Já consegui R$${formatReal(context.state.valueLegal.candidate.total_donated)} da minha meta de ` +
       `R$${formatReal(getMoney(context.state.valueLegal.candidate.raising_goal))}.`);
-      await context.sendButtonTemplate("Você deseja doar agora?", participateOptions);
+      await context.sendButtonTemplate("Você deseja doar agora?", context.state.participateOptions);
       await context.setState({ dialog: "prompt", valueLegal: undefined });
       break;
     case "WannaDivulgate":
