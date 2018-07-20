@@ -342,24 +342,32 @@ bot.onEvent(async context => {
       await context.setState({ dialog: "prompt" });
       break;
     case "aboutDivulgation":
-      const aboutDivulgationOptions = [
-        {
-          type: "postback",
-          title: "Deixar Contato",
-          payload: "recipientData"
-        },
-      ];
+      await context.setState({
+        aboutOptions: [
+          {
+            type: "postback",
+            title: "Deixar Contato",
+            payload: "recipientData"
+          },
+        ]});
       if (context.state.politicianData.picframe_url) {
-        const divulgateOption = {
-        type: "web_url",
-          url: context.state.politicianData.picframe_url,
-        title: "Mudar Avatar"
-        };
-        await aboutDivulgationOptions.push(divulgateOption);
+        // const divulgateOption = {
+        //   type: "web_url",
+        //   url: context.state.politicianData.picframe_url,
+        //   title: "Mudar Avatar"
+        // };
+        // await aboutDivulgationOptions.push(divulgateOption);
+        await context.setState({
+          aboutOptions: context.state.aboutOptions.concat([{
+            type: "web_url",
+            url: context.state.politicianData.picframe_url,
+            title: "Mudar Avatar"
+          }])});
       }
-      await aboutDivulgationOptions.push(opt.backToKnowMore);
+      // await aboutDivulgationOptions.push(opt.backToKnowMore);
+      await context.setState({ aboutOptions: context.state.aboutOptions.concat([opt.backToKnowMore])});
       await context.sendButtonTemplate('Para ajudar na divulgação, você pode deixar seus contatos comigo ou mudar sua imagem de avatar. Você quer participar?',
-      aboutDivulgationOptions);
+      context.state.aboutOptions);
       await context.setState({ dialog: "prompt", dataPrompt: "email" });
     break;
     case "WannaHelp":
@@ -501,7 +509,6 @@ bot.onEvent(async context => {
       break;
     case "poll":
       // Verifico se o cidadão já respondeu a enquete atualmente ativa
-      const recipientAnswer = await MandatoAbertoAPI.getPollAnswer(context.session.user.id, context.state.pollData.id);
       if (context.state.trajectory.content && context.state.politicianData.contact) {
         promptOptions = [opt.trajectory, opt.contacts];
       } else if (context.state.trajectory.content && !context.state.politicianData.contact) {
@@ -517,8 +524,8 @@ bot.onEvent(async context => {
         }
       }
       // Agora a enquete poderá ser respondida via propagação ou via dialogo
-      // if (recipientAnswer.recipient_answered >= 1) {
-      if (await MandatoAbertoAPI.getPollAnswer(context.session.user.id, context.state.pollData.id) >= 1) {
+      const recipientAnswer = await MandatoAbertoAPI.getPollAnswer(context.session.user.id, context.state.pollData.id);
+      if (recipientAnswer.recipient_answered >= 1) {
         await context.sendText("Ah, que pena! Você já respondeu essa pergunta.");
         await context.sendButtonTemplate("Se quiser, eu posso te ajudar com outra coisa.", promptOptions);
         await context.setState({ dialog: "prompt" });
