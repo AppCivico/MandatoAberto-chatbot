@@ -343,7 +343,7 @@ bot.onEvent(async context => {
       break;
     case "aboutDivulgation":
       await context.setState({
-        aboutOptions: [
+        participateOptions: [
           {
             type: "postback",
             title: "Deixar Contato",
@@ -351,23 +351,16 @@ bot.onEvent(async context => {
           },
         ]});
       if (context.state.politicianData.picframe_url) {
-        // const divulgateOption = {
-        //   type: "web_url",
-        //   url: context.state.politicianData.picframe_url,
-        //   title: "Mudar Avatar"
-        // };
-        // await aboutDivulgationOptions.push(divulgateOption);
         await context.setState({
-          aboutOptions: context.state.aboutOptions.concat([{
+          participateOptions: context.state.participateOptions.concat([{
             type: "web_url",
             url: context.state.politicianData.picframe_url,
             title: "Mudar Avatar"
           }])});
       }
-      // await aboutDivulgationOptions.push(opt.backToKnowMore);
-      await context.setState({ aboutOptions: context.state.aboutOptions.concat([opt.backToKnowMore])});
+      await context.setState({ participateOptions: context.state.participateOptions.concat([opt.backToKnowMore])});
       await context.sendButtonTemplate('Para ajudar na divulgação, você pode deixar seus contatos comigo ou mudar sua imagem de avatar. Você quer participar?',
-      context.state.aboutOptions);
+        context.state.participateOptions);
       await context.setState({ dialog: "prompt", dataPrompt: "email" });
     break;
     case "WannaHelp":
