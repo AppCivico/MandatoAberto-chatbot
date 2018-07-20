@@ -386,7 +386,7 @@ bot.onEvent(async context => {
         await participateOptions.push(opt.wannaDivulgate);
         await context.setState({ participateOptions: context.state.participateOptions.push(opt.wannaDivulgate) })
       }
-      console.log(context.state.participateOptions);
+      console.log('\n\naaaaaaaaa\n\n',context.state.participateOptions);
       await participateOptions.push(opt.goBackMainMenu);
       await context.sendText("Seu apoio é fundamental para nossa pré-campanha! Por isso, cuidamos da segurança de todos os doadores. " + 
       "Saiba mais em: www.votolegal.com.br");
