@@ -84,6 +84,10 @@ function getIssueMessage(issueMessage) {
 };
 
 bot.onEvent(async context => {
+  if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead) {
+    await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
+  }
+  
   function getMenuPrompt(context) {
     if (context.state.introduction.content && context.state.pollData.questions) {
       promptOptions = [
