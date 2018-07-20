@@ -389,11 +389,11 @@ bot.onEvent(async context => {
       await participateOptions.push(opt.goBackMainMenu);
       await context.sendText("Seu apoio é fundamental para nossa pré-campanha! Por isso, cuidamos da segurança de todos os doadores. " + 
       "Saiba mais em: www.votolegal.com.br");
-      const valueLegal = await VotoLegalAPI.getVotoLegalValues(politicianData.votolegal_integration.votolegal_username);
-      await context.sendText(`Já consegui R$${formatReal(valueLegal.candidate.total_donated)} da minha meta de ` + 
-      `R$${formatReal(getMoney(valueLegal.candidate.raising_goal))}.`);
+      await context.setState({ valueLegal : await VotoLegalAPI.getVotoLegalValues(politicianData.votolegal_integration.votolegal_username) });
+      await context.sendText(`Já consegui R$${formatReal(context.state.valueLegal.candidate.total_donated)} da minha meta de ` +
+      `R$${formatReal(getMoney(context.state.valueLegal.candidate.raising_goal))}.`);
       await context.sendButtonTemplate("Você deseja doar agora?", participateOptions);
-      await context.setState({ dialog: "prompt" });
+      await context.setState({ dialog: "prompt", valueLegal: undefined });
       break;
     case "WannaDivulgate":
       await context.sendButtonTemplate("Que legal! Seu apoio é muito importante para nós! Você quer mudar foto (avatar) do seu perfil?", [
