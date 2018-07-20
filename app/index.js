@@ -220,7 +220,6 @@ bot.onEvent(async context => {
         await context.setState({ email: context.event.message.quick_reply.payload });
       } else if (context.state.dataPrompt === 'end') {
         await context.setState({ cellphone: context.event.message.quick_reply.payload });
-        console.log(context.state);
       }
     } else if (context.event.isText) {
       if (context.state.dataPrompt === 'email') {
@@ -248,6 +247,7 @@ bot.onEvent(async context => {
               fb_id: context.session.user.id,
               cellphone: context.state.cellphone
             });
+            console.log(context.state);
           } else {
             await context.setState({dataPrompt: "", recipientData: "cellphonePrompt"});
             await context.sendText("Desculpe-me, mas seu telefone não parece estar correto. Não esqueça de incluir o DDD. Por exemplo: 1199999-8888");
@@ -263,7 +263,6 @@ bot.onEvent(async context => {
 
   switch (context.state.dialog) {
     case "greetings":
-      console.log(context.state);
       await context.setState({ sendIntro: true });
       areWeListening = true;
       // Criando um cidadão
