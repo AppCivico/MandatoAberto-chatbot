@@ -287,8 +287,6 @@ bot.onEvent(async context => {
       break;
     case "mainMenu": // after issue is created we come back to this dialog
       await context.setState({ sendIntro: true });
-      await context.setState({ recipientData: undefined, dataPrompt: undefined });
-      console.log(context.state);
       areWeListening = true;
       // Criando um cidadão
       recipient = await MandatoAbertoAPI.postRecipient(politicianData.user_id, {
@@ -626,8 +624,9 @@ bot.onEvent(async context => {
           case "cellphoneFail":
             break;
           case "end":
-            await context.sendText("Pronto, já guardei seus dados.");
-            await context.sendButtonTemplate("Quer saber mais?", promptOptions);
+          await context.sendText("Pronto, já guardei seus dados.");
+          await context.sendButtonTemplate("Quer saber mais?", promptOptions);
+          await context.setState({ recipientData: undefined, dataPrompt: undefined });
             await context.setState({ dialog: "prompt" });
             break;
         }
