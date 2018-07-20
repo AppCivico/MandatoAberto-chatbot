@@ -258,7 +258,6 @@ bot.onEvent(async context => {
       await context.setState({ sendIntro: true });
       areWeListening = true;
       await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
-      console.log(context.state.politicianData);
       // Criando um cidadão
       recipient = await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
         fb_id: context.session.user.id,
@@ -276,9 +275,8 @@ bot.onEvent(async context => {
       await getMenuPrompt(context);
       await context.setState({ userMessage: "" }); // cleaning up
       await context.setState({ greeting: context.state.politicianData.greeting.replace("${user.office.name}", context.state.politicianData.office.name)});
-      // let greeting = politicianData.greeting.replace("${user.office.name}", politicianData.office.name);
-      // greeting = context.state.greeting.replace("${user.name}", politicianData.name);
-      await context.sendText(context.state.greeting.replace("${user.name}", politicianData.name));
+      await context.setState({ greeting: context.state.greeting.replace("${user.name}", context.state.politicianData.name)});
+      await context.sendText(context.state.greeting);
       await context.sendButtonTemplate(context.state.issueMessage, promptOptions);
       await context.setState({ dialog: "prompt" });
       break;
