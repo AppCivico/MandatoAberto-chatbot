@@ -260,7 +260,7 @@ bot.onEvent(async context => {
       await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
       console.log(context.state.politicianData);
       // Criando um cidadão
-      recipient = await MandatoAbertoAPI.postRecipient(politicianData.user_id, {
+      recipient = await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
         fb_id: context.session.user.id,
         name: `${context.session.user.first_name} ${context.session.user.last_name}`,
         gender: context.session.user.gender === "male" ? "M" : "F",
@@ -268,16 +268,17 @@ bot.onEvent(async context => {
         picture: context.session.user.profile_pic
       });
       await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id)});
-      await context.setState({ trajectory: await MandatoAbertoAPI.getAnswer(politicianData.user_id, "trajectory") });
-      await context.setState({ articles: getArticles(politicianData.gender) });
-      await context.setState({ introduction: await MandatoAbertoAPI.getAnswer(politicianData.user_id, "introduction") });
-      await context.setState({ aboutMeText: await getAboutMe(politicianData) });
-      await context.setState({ issueMessage: getIssueMessage(await MandatoAbertoAPI.getAnswer(politicianData.user_id, "issue_acknowledgment")) });
+      await context.setState({ trajectory: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, "trajectory") });
+      await context.setState({ articles: getArticles(context.state.politicianData.gender) });
+      await context.setState({ introduction: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, "introduction") });
+      await context.setState({ aboutMeText: await getAboutMe(context.state.politicianData) });
+      await context.setState({ issueMessage: getIssueMessage(await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, "issue_acknowledgment")) });
       await getMenuPrompt(context);
       await context.setState({ userMessage: "" }); // cleaning up
-      let greeting = politicianData.greeting.replace("${user.office.name}", politicianData.office.name);
-      greeting = greeting.replace("${user.name}", politicianData.name);
-      await context.sendText(greeting);
+      await context.setState({ greeting: context.state.politicianData.greeting.replace("${user.office.name}", context.state.politicianData.office.name)});
+      // let greeting = politicianData.greeting.replace("${user.office.name}", politicianData.office.name);
+      // greeting = context.state.greeting.replace("${user.name}", politicianData.name);
+      await context.sendText(context.state.greeting.replace("${user.name}", politicianData.name));
       await context.sendButtonTemplate(context.state.issueMessage, promptOptions);
       await context.setState({ dialog: "prompt" });
       break;
