@@ -327,51 +327,20 @@ bot.onEvent(async context => {
       await context.setState({ dialog: "prompt" });
       break;
     case "votoLegal":
-      participateOptions = [
-        {
-          type: "postback",
-          title: "Sim",
-          payload: "WannaHelp"
-        },
-        {
-          type: "postback",
-          title: "Não",
-          payload: "mainMenu"
-        },
-        {
-          type: "postback",
-          title: "Saber mais",
-          payload: "knowMore"
-        }
-      ];
       await context.sendText("Estamos em pré-campanha e contamos com você.");
-      await context.sendButtonTemplate("Quer fazer parte?", participateOptions);
+      await context.sendButtonTemplate("Quer fazer parte?", opt.votoLegal_participateOptions);
       await context.setState({ dialog: "prompt" });
       break;
     case 'knowMore': {
-    const knowMoreOptions = [
-      {
-        type: "postback",
-        title: "Sobre doações",
-        payload: "aboutDonation"
-      },
-      {
-        type: "postback",
-        title: "Sobre divulgar",
-        payload: "aboutDivulgation"
-      },
-      opt.goBackMainMenu
-    ];
       await context.sendButtonTemplate('Existem diversas formas de participar da construção de uma candidatura. ' +
-      'Posso ajudá-lo a realizar uma doação ou divulgar a pré-campanha. Quer entender melhor?', knowMoreOptions);
+        'Posso ajudá-lo a realizar uma doação ou divulgar a pré-campanha. Quer entender melhor?', [opt.AboutDonation, opt.AboutDivulgation, opt.goBackMainMenu]);
       await context.setState({ dialog: "prompt" });
       break; }
     case "aboutDonation":
-      const aboutDonationOptions = [opt.wannaDonate, opt.backToKnowMore];
       await context.sendText('Doar é importante para campanhas mais justas.');
       await context.sendText('Aqui no site, você pode doar por meio do cartão de crédito ou boleto bancário.');
       await context.sendButtonTemplate('Com o pagamento aprovado, enviaremos um recibo provisório por e-mail. Cada pessoa pode doar até 10% da renda declarada ' +
-      'referente ao ano anterior. O limite de doação diária é de R$ 1.064,10.', aboutDonationOptions);
+        'referente ao ano anterior. O limite de doação diária é de R$ 1.064,10.', [opt.wannaDonate, opt.backToKnowMore]);
       await context.setState({ dialog: "prompt" });
       break;
     case "aboutDivulgation":
@@ -427,7 +396,7 @@ bot.onEvent(async context => {
       await context.setState({ dialog: "prompt" });
       break;
     case "WannaDivulgate":
-      participateOptions = [
+      await context.sendButtonTemplate("Que legal! Seu apoio é muito importante para nós! Você quer mudar foto (avatar) do seu perfil?", [
         {
           type: "web_url",
           url: politicianData.picframe_url,
@@ -435,8 +404,7 @@ bot.onEvent(async context => {
         },
         opt.wannaDonate,
         opt.goBackMainMenu
-      ];
-      await context.sendButtonTemplate("Que legal! Seu apoio é muito importante para nós! Você quer mudar foto (avatar) do seu perfil?", participateOptions);
+      ]);
       await context.setState({ dialog: "prompt" });
       break;
     case "listening":

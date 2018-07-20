@@ -44,7 +44,16 @@ module.exports = {
         title: "Quero Doar",
         payload: "WannaDonate"
     },
-
+    AboutDonation: {
+        type: "postback",
+        title: "Sobre doações",
+        payload: "aboutDonation"
+    },
+    AboutDivulgation: {
+        type: "postback",
+        title: "Sobre divulgar",
+        payload: "aboutDivulgation"
+    },
     recipientData_LetsGo: [ // array with two options
         {
             type: "postback",
@@ -68,5 +77,22 @@ module.exports = {
             title: "Não",
             payload: "recipientData"
         },
+    ],
+    votoLegal_participateOptions: [
+        {
+            type: "postback",
+            title: "Sim",
+            payload: "WannaHelp"
+        },
+        {
+            type: "postback",
+            title: "Não",
+            payload: "mainMenu"
+        },
+        {
+            type: "postback",
+            title: "Saber mais",
+            payload: "knowMore"
+        }
     ],
 }
