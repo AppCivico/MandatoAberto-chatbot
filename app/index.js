@@ -375,17 +375,18 @@ bot.onEvent(async context => {
       await context.setState({ dialog: "prompt" });
       break;
     case "WannaDonate":
-      participateOptions = [
-        {
+      await context.setState({
+        participateOptions: [{
           type: "web_url",
           url: politicianData.votolegal_integration.votolegal_url,
           title: "Vamos lá!"
-        },
-      ];
+        }]})
       // checking for picframe_url so we can only show this option when it's available but still show the votoLegal option
       if (politicianData.picframe_url) {
         await participateOptions.push(opt.wannaDivulgate);
+        await context.setState({ participateOptions: context.state.participateOptions.push(opt.wannaDivulgate) })
       }
+      console.log(context.state.participateOptions);
       await participateOptions.push(opt.goBackMainMenu);
       await context.sendText("Seu apoio é fundamental para nossa pré-campanha! Por isso, cuidamos da segurança de todos os doadores. " + 
       "Saiba mais em: www.votolegal.com.br");
