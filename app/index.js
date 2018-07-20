@@ -85,9 +85,9 @@ function getIssueMessage(issueMessage) {
 
 bot.onEvent(async context => {
   if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead) {
-    console.log('i am here');
-    await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
   }
+  console.log('i am here');
+  await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
 
   function getMenuPrompt(context) {
     if (context.state.introduction.content && context.state.pollData.questions) {
