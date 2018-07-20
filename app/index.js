@@ -112,8 +112,7 @@ bot.onEvent(async context => {
     }
     // console.log('votolegal: \n', politicianData.votolegal_integration);
     if (politicianData.votolegal_integration) {
-      if (politicianData.votolegal_integration.votolegal_url &&
-        politicianData.votolegal_integration.votolegal_username) {
+      if (politicianData.votolegal_integration.votolegal_url && politicianData.votolegal_integration.votolegal_username) {
         // check if integration to votoLegal exists to add the donation option
         // politicianData.votolegal_integration.votolegal_url will be used in a future web_url button to link to the donation page
         promptOptions.push(opt.doarOption);
@@ -249,7 +248,7 @@ bot.onEvent(async context => {
               fb_id: context.session.user.id,
               cellphone: context.state.cellphone
             });
-            await context.setState({ cellphone: undefined });
+            await context.setState({ dataPrompt: undefined });
           } else {
             await context.setState({dataPrompt: "", recipientData: "cellphonePrompt"});
             await context.sendText("Desculpe-me, mas seu telefone não parece estar correto. Não esqueça de incluir o DDD. Por exemplo: 1199999-8888");
