@@ -217,9 +217,10 @@ bot.onEvent(async context => {
   if (context.state.dialog === "recipientData" && context.state.recipientData) {
     if (context.event.isQuickReply) { 
       if (context.state.dataPrompt === 'email') {
-        await context.setState({ email: context.event.message.quick_reply.payload })
+        await context.setState({ email: context.event.message.quick_reply.payload });
       } else if (context.state.dataPrompt === 'end') {
-        await context.setState({ cellphone: context.event.message.quick_reply.payload })
+        await context.setState({ cellphone: context.event.message.quick_reply.payload });
+        console.log(context.state);
       }
     } else if (context.event.isText) {
       if (context.state.dataPrompt === 'email') {
@@ -262,6 +263,7 @@ bot.onEvent(async context => {
 
   switch (context.state.dialog) {
     case "greetings":
+      console.log(context.state);
       await context.setState({ sendIntro: true });
       areWeListening = true;
       // Criando um cidadão
