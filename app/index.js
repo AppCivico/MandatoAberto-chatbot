@@ -248,7 +248,6 @@ bot.onEvent(async context => {
               fb_id: context.session.user.id,
               cellphone: context.state.cellphone
             });
-            await context.setState({ dataPrompt: undefined });
           } else {
             await context.setState({dataPrompt: "", recipientData: "cellphonePrompt"});
             await context.sendText("Desculpe-me, mas seu telefone não parece estar correto. Não esqueça de incluir o DDD. Por exemplo: 1199999-8888");
@@ -352,6 +351,7 @@ bot.onEvent(async context => {
       await context.setState({ dialog: "prompt" });
       break;
     case 'knowMore': {
+    await context.setState({ dataPrompt: undefined });
     const knowMoreOptions = [
       {
         type: "postback",
