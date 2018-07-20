@@ -25,7 +25,6 @@ function formatReal(int) {
   return tmp;
 }
 
-// let politicianData2;
 let promptOptions;
 let recipient;
 
@@ -39,7 +38,7 @@ let areWeListening = false;
 // 
 
 const mapPageToAccessToken = async pageId => {
-  let politicianData2 = await MandatoAbertoAPI.getPoliticianData(pageId);
+  const politicianData2 = await MandatoAbertoAPI.getPoliticianData(pageId);
   return politicianData2.fb_access_token;
 };
 
@@ -518,7 +517,8 @@ bot.onEvent(async context => {
         }
       }
       // Agora a enquete poderá ser respondida via propagação ou via dialogo
-      if (recipientAnswer.recipient_answered >= 1) {
+      // if (recipientAnswer.recipient_answered >= 1) {
+      if (await MandatoAbertoAPI.getPollAnswer(context.session.user.id, context.state.pollData.id) >= 1) {
         await context.sendText("Ah, que pena! Você já respondeu essa pergunta.");
         await context.sendButtonTemplate("Se quiser, eu posso te ajudar com outra coisa.", promptOptions);
         await context.setState({ dialog: "prompt" });
