@@ -84,10 +84,9 @@ function getIssueMessage(issueMessage) {
 };
 
 bot.onEvent(async context => {
-  if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead) {
-  }
-  console.log('i am here');
-  await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
+  // if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead) {
+  //   await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
+  // }
 
   function getMenuPrompt(context) {
     if (context.state.introduction.content && context.state.pollData.questions) {
@@ -158,6 +157,7 @@ bot.onEvent(async context => {
   // Tratando botão GET STARTED
   if (context.event.postback && context.event.postback.payload === "greetings") {
     await context.resetState();
+    await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
     await context.setState({ dialog: "greetings" });
   }
 
