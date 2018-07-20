@@ -110,7 +110,6 @@ bot.onEvent(async context => {
     } else if (!context.state.introduction.content && !context.state.pollData.questions && politicianData.contact) {
       promptOptions = [opt.contacts];
     }
-    // console.log('votolegal: \n', politicianData.votolegal_integration);
     if (politicianData.votolegal_integration) {
       if (politicianData.votolegal_integration.votolegal_url && politicianData.votolegal_integration.votolegal_username) {
         // check if integration to votoLegal exists to add the donation option
@@ -368,10 +367,10 @@ bot.onEvent(async context => {
       // participateOptions = [opt.wannaDonate];
       // checking for picframe_url so we can only show this option when it's available but still show the votoLegal option
       if (politicianData.picframe_url) {
-        await participateOptions.push(opt.wannaDivulgate);
+        // await participateOptions.push(opt.wannaDivulgate);
         await context.setState({ participateOptions: context.state.participateOptions.concat([opt.wannaDivulgate]) });
       }
-      await participateOptions.push(opt.goBackMainMenu);
+      // await participateOptions.push(opt.goBackMainMenu);
       await context.setState({ participateOptions: context.state.participateOptions.concat([opt.goBackMainMenu]) });
       await context.sendButtonTemplate("Ficamos felizes com seu apoio! Como deseja participar?", context.state.participateOptions);
       await context.setState({ dialog: "prompt" });
