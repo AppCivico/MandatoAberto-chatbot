@@ -236,7 +236,6 @@ bot.onEvent(async context => {
             fb_id: context.session.user.id,
             email: context.state.email
           });
-          await context.setState({ email: undefined});
           await context.sendButtonTemplate("Legal, agora quer me informar seu telefone, para lhe manter informado sobre outras perguntas?", opt.recipientData_YesNo);
           await context.setState({ recipientData: "cellphonePrompt", dialog: "recipientData", dataPrompt: "" });
           break;
@@ -247,7 +246,6 @@ bot.onEvent(async context => {
               fb_id: context.session.user.id,
               cellphone: context.state.cellphone
             });
-            console.log(context.state);
           } else {
             await context.setState({dataPrompt: "", recipientData: "cellphonePrompt"});
             await context.sendText("Desculpe-me, mas seu telefone não parece estar correto. Não esqueça de incluir o DDD. Por exemplo: 1199999-8888");
@@ -289,6 +287,8 @@ bot.onEvent(async context => {
       break;
     case "mainMenu": // after issue is created we come back to this dialog
       await context.setState({ sendIntro: true });
+      await context.setState({ recipientData: undefined, dataPrompt: undefined });
+      console.log(context.state);
       areWeListening = true;
       // Criando um cidadão
       recipient = await MandatoAbertoAPI.postRecipient(politicianData.user_id, {
