@@ -469,7 +469,7 @@ bot.onEvent(async context => {
       // Tratando o formato do telefone
       if (context.state.politicianData.contact.cellphone) {
         await context.setState({ policianCellphone: context.state.politicianData.contact.cellphone.replace(/(?:\+55)+/g, "")})
-        await context.setState({ policianCellphone: context.state.politicianData.policianCellphone.replace(/^(\d{2})/g, "($1)")})
+        await context.setState({ policianCellphone: context.state.policianCellphone.replace(/^(\d{2})/g, "($1)")})
         // politicianData.contact.cellphone = politicianData.contact.cellphone.replace(/(?:\+55)+/g, "");
         // politicianData.contact.cellphone = politicianData.contact.cellphone.replace(/^(\d{2})/g, "($1)");
       }
@@ -479,7 +479,7 @@ bot.onEvent(async context => {
         await context.sendText(` - Através do e-mail: ${context.state.politicianData.contact.email}`);
       }
       if (context.state.politicianData.contact.cellphone) {
-        await context.sendText(` - Através do WhatsApp: ${context.state.politicianData.policianCellphone}`);
+        await context.sendText(` - Através do WhatsApp: ${context.state.policianCellphone}`);
       }
       if (context.state.politicianData.contact.twitter) {
         await context.sendText(` - Através do Twitter: ${context.state.politicianData.contact.twitter}`);
