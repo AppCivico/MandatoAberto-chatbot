@@ -172,8 +172,7 @@ bot.onEvent(async context => {
       // We go to the listening dialog to wait for other messages
       // check if message came from standard flow or from post/comment
       if (areWeListening === true) {
-        await context.setState({ dataPrompt: undefined });
-        // TODO: test recipientData poll followed by issue
+        await context.setState({ dialog: "prompt", dataPrompt: "email" });        // TODO: test recipientData poll followed by issue
         // TODO: don't forget to change the vote number
         await context.setState({ dialog: "listening"});
       } else {
@@ -351,7 +350,6 @@ bot.onEvent(async context => {
       await context.setState({ dialog: "prompt" });
       break;
     case 'knowMore': {
-    await context.setState({ dataPrompt: undefined });
     const knowMoreOptions = [
       {
         type: "postback",
