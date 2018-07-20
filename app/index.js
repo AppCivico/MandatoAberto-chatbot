@@ -626,8 +626,7 @@ bot.onEvent(async context => {
           case "end":
           await context.sendText("Pronto, já guardei seus dados.");
           await context.sendButtonTemplate("Quer saber mais?", promptOptions);
-          await context.setState({ recipientData: undefined, dataPrompt: undefined });
-            await context.setState({ dialog: "prompt" });
+          await context.setState({ dialog: "prompt", recipientData: undefined, dataPrompt: undefined });
             break;
         }
       }
