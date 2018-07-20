@@ -87,7 +87,7 @@ bot.onEvent(async context => {
   if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead) {
     await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
   }
-  
+
   function getMenuPrompt(context) {
     if (context.state.introduction.content && context.state.pollData.questions) {
       promptOptions = [
@@ -261,7 +261,7 @@ bot.onEvent(async context => {
     case "greetings":
       await context.setState({ sendIntro: true });
       areWeListening = true;
-      await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
+      // await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
       // Criando um cidadão
       recipient = await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
         fb_id: context.session.user.id,
