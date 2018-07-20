@@ -85,6 +85,7 @@ function getIssueMessage(issueMessage) {
 
 bot.onEvent(async context => {
   if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead) {
+    // we reload politicianData on every useful event
     await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
   }
 
@@ -351,10 +352,10 @@ bot.onEvent(async context => {
           payload: "recipientData"
         },
       ];
-      if (politicianData.picframe_url) {
+      if (context.state.politicianData.picframe_url) {
         const divulgateOption = {
         type: "web_url",
-        url: politicianData.picframe_url,
+          url: context.state.politicianData.picframe_url,
         title: "Mudar Avatar"
         };
         await aboutDivulgationOptions.push(divulgateOption);
@@ -367,7 +368,7 @@ bot.onEvent(async context => {
     case "WannaHelp":
       await context.setState({ participateOptions: [opt.wannaDonate]});
       // checking for picframe_url so we can only show this option when it's available but still show the votoLegal option
-      if (politicianData.picframe_url) {
+      if (context.state.politicianData.picframe_url) {
         await context.setState({ participateOptions: context.state.participateOptions.concat([opt.wannaDivulgate]) });
       }
       await context.setState({ participateOptions: context.state.participateOptions.concat([opt.goBackMainMenu]) });
@@ -378,11 +379,11 @@ bot.onEvent(async context => {
       await context.setState({ participateOptions: [
         {
           type: "web_url",
-          url: politicianData.votolegal_integration.votolegal_url,
+          url: context.state.politicianData.votolegal_integration.votolegal_url,
           title: "Vamos lá!"
         }]});
       // checking for picframe_url so we can only show this option when it's available but still show the votoLegal option
-      if (politicianData.picframe_url) {
+      if (context.state.politicianData.picframe_url) {
         // await participateOptions.push(opt.wannaDivulgate);
         await context.setState({ participateOptions: context.state.participateOptions.concat([opt.wannaDivulgate]) });
       }
@@ -390,7 +391,7 @@ bot.onEvent(async context => {
       // await participateOptions.push(opt.goBackMainMenu);
       await context.sendText("Seu apoio é fundamental para nossa pré-campanha! Por isso, cuidamos da segurança de todos os doadores. " + 
       "Saiba mais em: www.votolegal.com.br");
-      await context.setState({ valueLegal : await VotoLegalAPI.getVotoLegalValues(politicianData.votolegal_integration.votolegal_username) });
+      await context.setState({ valueLegal: await VotoLegalAPI.getVotoLegalValues(context.state.politicianData.votolegal_integration.votolegal_username) });
       await context.sendText(`Já consegui R$${formatReal(context.state.valueLegal.candidate.total_donated)} da minha meta de ` +
       `R$${formatReal(getMoney(context.state.valueLegal.candidate.raising_goal))}.`);
       await context.sendButtonTemplate("Você deseja doar agora?", context.state.participateOptions);
@@ -400,7 +401,7 @@ bot.onEvent(async context => {
       await context.sendButtonTemplate("Que legal! Seu apoio é muito importante para nós! Você quer mudar foto (avatar) do seu perfil?", [
         {
           type: "web_url",
-          url: politicianData.picframe_url,
+          url: context.state.politicianData.picframe_url,
           title: "Atualizar foto"
         },
         opt.wannaDonate,
@@ -423,7 +424,7 @@ bot.onEvent(async context => {
       }
       timer = setTimeout(async () => {
         await context.setState({ sendIntro: true });    
-          const issue_created_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, "issue_created");
+        const issue_created_message = await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, "issue_created");
         let endMessage;
         if (issue_created_message.content) {
           endMessage = issue_created_message.content + "\nVocê terminou de escrever sua mensagem?";
@@ -445,7 +446,7 @@ bot.onEvent(async context => {
       }, limit);
       break;
     case "aboutMe":
-      const introductionText = await MandatoAbertoAPI.getAnswer(politicianData.user_id, "introduction");
+      const introductionText = await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, "introduction");
       await context.sendText(introductionText.content);
       if (context.state.trajectory.content && context.state.pollData.questions) {
         promptOptions = [opt.trajectory, opt.contacts];
@@ -454,14 +455,14 @@ bot.onEvent(async context => {
       } else if (!context.state.trajectory.content && context.state.pollData.questions) {
         promptOptions = [opt.contacts];
       }
-      if (politicianData.votolegal_integration) {
-        if (politicianData.votolegal_integration.votolegal_url && politicianData.votolegal_integration.votolegal_username) {
+      if (context.state.politicianData.votolegal_integration) {
+        if (context.state.politicianData.votolegal_integration.votolegal_url && context.state.politicianData.votolegal_integration.votolegal_username) {
           // check if integration to votoLegal exists to add the donation option
           // politicianData.votolegal_integration.votolegal_url will be used in a future web_url button to link to the donation page
           promptOptions.push(opt.doarOption);
         }
       }
-      await context.sendButtonTemplate(`O que mais deseja saber sobre ${context.state.articles.defined} ${politicianData.office.name}?`, promptOptions);
+      await context.sendButtonTemplate(`O que mais deseja saber sobre ${context.state.articles.defined} ${context.state.politicianData.office.name}?`, promptOptions);
       await context.setState({ dialog: "prompt" });
       break;
     case "contacts":
