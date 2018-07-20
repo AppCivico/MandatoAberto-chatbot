@@ -27,7 +27,6 @@ function formatReal(int) {
 
 let politicianData;
 let promptOptions;
-let participateOptions;
 let recipient;
 
 const limit = 10000 * 2;
@@ -77,13 +76,11 @@ function getAboutMe(politicianData) {
 };
 
 function getIssueMessage(issueMessage) {
-  // issueMessage = await MandatoAbertoAPI.getAnswer(politicianData.user_id, "issue_acknowledgment");
   if (Object.keys(issueMessage).length === 0) {
     return "A qualquer momento você pode digitar uma mensagem que enviarei para nosso time.";
   } else {
     return issueMessage.content;
   }
-
 };
 
 bot.onEvent(async context => {
@@ -171,8 +168,7 @@ bot.onEvent(async context => {
       // We go to the listening dialog to wait for other messages
       // check if message came from standard flow or from post/comment
       if (areWeListening === true) {
-        await context.setState({ dialog: "prompt", dataPrompt: "email" });        // TODO: test recipientData poll followed by issue
-        // TODO: don't forget to change the vote number
+        await context.setState({ dialog: "prompt", dataPrompt: "email" });
         await context.setState({ dialog: "listening"});
       } else {
         await context.setState({ dialog: "intermediate" });
@@ -261,6 +257,8 @@ bot.onEvent(async context => {
     case "greetings":
       await context.setState({ sendIntro: true });
       areWeListening = true;
+      await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
+      console.log(context.state.politicianData);
       // Criando um cidadão
       recipient = await MandatoAbertoAPI.postRecipient(politicianData.user_id, {
         fb_id: context.session.user.id,
@@ -370,7 +368,7 @@ bot.onEvent(async context => {
       }
       await context.setState({ participateOptions: context.state.participateOptions.concat([opt.goBackMainMenu]) });
       await context.sendButtonTemplate("Ficamos felizes com seu apoio! Como deseja participar?", context.state.participateOptions);
-      await context.setState({ dialog: "prompt" });
+      await context.setState({ dialog: "prompt", participateOptions: undefined });
       break;
     case "WannaDonate":
       await context.setState({ participateOptions: [
@@ -392,7 +390,7 @@ bot.onEvent(async context => {
       await context.sendText(`Já consegui R$${formatReal(context.state.valueLegal.candidate.total_donated)} da minha meta de ` +
       `R$${formatReal(getMoney(context.state.valueLegal.candidate.raising_goal))}.`);
       await context.sendButtonTemplate("Você deseja doar agora?", context.state.participateOptions);
-      await context.setState({ dialog: "prompt", valueLegal: undefined });
+      await context.setState({ dialog: "prompt", valueLegal: undefined, participateOptions: undefined });
       break;
     case "WannaDivulgate":
       await context.sendButtonTemplate("Que legal! Seu apoio é muito importante para nós! Você quer mudar foto (avatar) do seu perfil?", [
@@ -516,7 +514,7 @@ bot.onEvent(async context => {
         }
       }
       // Agora a enquete poderá ser respondida via propagação ou via dialogo
-      if (recipientAnswer.recipient_answered >= 100) {
+      if (recipientAnswer.recipient_answered >= 1) {
         await context.sendText("Ah, que pena! Você já respondeu essa pergunta.");
         await context.sendButtonTemplate("Se quiser, eu posso te ajudar com outra coisa.", promptOptions);
         await context.setState({ dialog: "prompt" });
