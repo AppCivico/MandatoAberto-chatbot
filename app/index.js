@@ -462,27 +462,30 @@ bot.onEvent(async context => {
           promptOptions.push(opt.doarOption);
         }
       }
-      await context.sendButtonTemplate(`O que mais deseja saber sobre ${context.state.articles.defined} ${context.state.politicianData.office.name}?`, promptOptions);
+      await context.sendButtonTemplate(`O que mais deseja saber sobre ${context.state.articles.defined} ${politicianData.office.name}?`, promptOptions);
       await context.setState({ dialog: "prompt" });
       break;
     case "contacts":
       // Tratando o formato do telefone
-      if (politicianData.contact.cellphone) {
-        politicianData.contact.cellphone = politicianData.contact.cellphone.replace(/(?:\+55)+/g, "");
-        politicianData.contact.cellphone = politicianData.contact.cellphone.replace(/^(\d{2})/g, "($1)");
+      if (context.state.politicianData.contact.cellphone) {
+        await context.setState({ policianCellphone: context.state.politicianData.contact.cellphone.replace(/(?:\+55)+/g, "")})
+        await context.setState({ policianCellphone: context.state.politicianData.policianCellphone.replace(/^(\d{2})/g, "($1)")})
+        // politicianData.contact.cellphone = politicianData.contact.cellphone.replace(/(?:\+55)+/g, "");
+        // politicianData.contact.cellphone = politicianData.contact.cellphone.replace(/^(\d{2})/g, "($1)");
       }
-      await context.sendText(`Você pode entrar em contato com ${context.state.articles.defined} ${politicianData.office.name} ${politicianData.name} pelos seguintes canais:`);
-      if (politicianData.contact.email) {
-        await context.sendText(` - Através do e-mail: ${politicianData.contact.email}`);
+      await context.sendText(`Você pode entrar em contato com ${context.state.articles.defined} ${context.state.politicianData.office.name} 
+      ${context.state.politicianData.name} pelos seguintes canais:`);
+      if (context.state.politicianData.contact.email) {
+        await context.sendText(` - Através do e-mail: ${context.state.politicianData.contact.email}`);
       }
-      if (politicianData.contact.cellphone) {
-        await context.sendText(` - Através do WhatsApp: ${politicianData.contact.cellphone}`);
+      if (context.state.politicianData.contact.cellphone) {
+        await context.sendText(` - Através do WhatsApp: ${context.state.politicianData.policianCellphone}`);
       }
-      if (politicianData.contact.twitter) {
-        await context.sendText(` - Através do Twitter: ${politicianData.contact.twitter}`);
+      if (context.state.politicianData.contact.twitter) {
+        await context.sendText(` - Através do Twitter: ${context.state.politicianData.contact.twitter}`);
       }
-      if (politicianData.contact.url) {
-        await context.sendText(` - Através do site: ${politicianData.contact.url}`);
+      if (context.state.politicianData.contact.url) {
+        await context.sendText(` - Através do site: ${context.state.politicianData.contact.url}`);
       }
       if (context.state.trajectory.content && context.state.pollData.questions) {
         promptOptions = [opt.trajectory, opt.poll_suaOpiniao];
@@ -491,8 +494,8 @@ bot.onEvent(async context => {
       } else if (!context.state.trajectory.content && context.state.pollData.questions) {
         promptOptions = [opt.poll_suaOpiniao];
       }
-      if (politicianData.votolegal_integration) {
-        if (politicianData.votolegal_integration.votolegal_url && politicianData.votolegal_integration.votolegal_username) {
+      if (context.state.politicianData.votolegal_integration) {
+        if (context.state.politicianData.votolegal_integration.votolegal_url && context.state.politicianData.votolegal_integration.votolegal_username) {
           // check if integration to votoLegal exists to add the donation option
           // politicianData.votolegal_integration.votolegal_url will be used in a future web_url button to link to the donation page
           promptOptions.push(opt.doarOption);
