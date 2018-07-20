@@ -181,7 +181,6 @@ bot.onEvent(async context => {
     }
   }
   
-
   // Switch de dialogos
   if (context.event.isPostback && (context.state.dialog === "prompt" || context.event.postback.payload === "greetings")) {
     await context.setState({ dialog: context.event.postback.payload });
@@ -365,28 +364,30 @@ bot.onEvent(async context => {
       await context.setState({ dialog: "prompt", dataPrompt: "email" });
     break;
     case "WannaHelp":
-      participateOptions = [opt.wannaDonate];
+      await context.setState({ participateOptions: [opt.wannaDonate]});
+      // participateOptions = [opt.wannaDonate];
       // checking for picframe_url so we can only show this option when it's available but still show the votoLegal option
       if (politicianData.picframe_url) {
         await participateOptions.push(opt.wannaDivulgate);
+        await context.setState({ participateOptions: context.state.participateOptions.concat([opt.wannaDivulgate]) });
       }
       await participateOptions.push(opt.goBackMainMenu);
-      await context.sendButtonTemplate("Ficamos felizes com seu apoio! Como deseja participar?", participateOptions);
+      await context.setState({ participateOptions: context.state.participateOptions.concat([opt.goBackMainMenu]) });
+      await context.sendButtonTemplate("Ficamos felizes com seu apoio! Como deseja participar?", context.state.participateOptions);
       await context.setState({ dialog: "prompt" });
       break;
     case "WannaDonate":
-      await context.setState({
-        participateOptions: [{
+      participateOptions = [
+        {
           type: "web_url",
           url: politicianData.votolegal_integration.votolegal_url,
           title: "Vamos lá!"
-        }]})
+        },
+      ];
       // checking for picframe_url so we can only show this option when it's available but still show the votoLegal option
       if (politicianData.picframe_url) {
         await participateOptions.push(opt.wannaDivulgate);
-        await context.setState({ participateOptions: context.state.participateOptions.push(opt.wannaDivulgate) })
       }
-      console.log('\n\naaaaaaaaa\n\n',context.state.participateOptions);
       await participateOptions.push(opt.goBackMainMenu);
       await context.sendText("Seu apoio é fundamental para nossa pré-campanha! Por isso, cuidamos da segurança de todos os doadores. " + 
       "Saiba mais em: www.votolegal.com.br");
