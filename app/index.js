@@ -473,8 +473,8 @@ bot.onEvent(async context => {
         // politicianData.contact.cellphone = politicianData.contact.cellphone.replace(/(?:\+55)+/g, "");
         // politicianData.contact.cellphone = politicianData.contact.cellphone.replace(/^(\d{2})/g, "($1)");
       }
-      await context.sendText(`Você pode entrar em contato com ${context.state.articles.defined} ${context.state.politicianData.office.name} 
-      ${context.state.politicianData.name} pelos seguintes canais:`);
+      await context.sendText(`Você pode entrar em contato com ${context.state.articles.defined} ${context.state.politicianData.office.name}`+
+      `${context.state.politicianData.name} pelos seguintes canais:`);
       if (context.state.politicianData.contact.email) {
         await context.sendText(` - Através do e-mail: ${context.state.politicianData.contact.email}`);
       }
@@ -502,7 +502,7 @@ bot.onEvent(async context => {
         }
       }
       await context.sendButtonTemplate("Quer saber mais?", promptOptions);
-      await context.setState({ dialog: "prompt" });
+      await context.setState({ dialog: "prompt", policianCellphone: undefined});
       break;
     case "poll":
       // Verifico se o cidadão já respondeu a enquete atualmente ativa
