@@ -25,7 +25,7 @@ function formatReal(int) {
   return tmp;
 }
 
-let politicianData;
+// let politicianData2;
 let promptOptions;
 let recipient;
 
@@ -39,9 +39,8 @@ let areWeListening = false;
 // 
 
 const mapPageToAccessToken = async pageId => {
-  politicianData = await MandatoAbertoAPI.getPoliticianData(pageId);
-
-  return politicianData.fb_access_token;
+  let politicianData2 = await MandatoAbertoAPI.getPoliticianData(pageId);
+  return politicianData2.fb_access_token;
 };
 
 const bot = new MessengerBot({
@@ -109,11 +108,11 @@ bot.onEvent(async context => {
       ];
     } else if (!context.state.introduction.content && context.state.pollData.questions) {
       promptOptions = [opt.poll_suaOpiniao];
-    } else if (!context.state.introduction.content && !context.state.pollData.questions && politicianData.contact) {
+    } else if (!context.state.introduction.content && !context.state.pollData.questions && context.state.politicianData.contact) {
       promptOptions = [opt.contacts];
     }
-    if (politicianData.votolegal_integration) {
-      if (politicianData.votolegal_integration.votolegal_url && politicianData.votolegal_integration.votolegal_username) {
+    if (context.state.politicianData.votolegal_integration) {
+      if (context.state.politicianData.votolegal_integration.votolegal_url && context.state.politicianData.votolegal_integration.votolegal_username) {
         // check if integration to votoLegal exists to add the donation option
         // politicianData.votolegal_integration.votolegal_url will be used in a future web_url button to link to the donation page
         promptOptions.push(opt.doarOption);
@@ -147,7 +146,7 @@ bot.onEvent(async context => {
   }
   // Tratando caso de o político não ter dados suficientes
   if (!context.state.dialog) {
-    if (!politicianData.greetings && (!politicianData.contact && !context.state.pollData.questions)) {
+    if (!context.state.politicianData.greetings && (!context.state.politicianData.contact && !context.state.pollData.questions)) {
       console.log("Politician does not have enough data");
       return false;
     }
@@ -288,7 +287,6 @@ bot.onEvent(async context => {
     case "mainMenu": // after issue is created we come back to this dialog
       await context.setState({ sendIntro: true });
       areWeListening = true;
-      // await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
       // Criando um cidadão
       recipient = await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
         fb_id: context.session.user.id,
@@ -462,7 +460,7 @@ bot.onEvent(async context => {
           promptOptions.push(opt.doarOption);
         }
       }
-      await context.sendButtonTemplate(`O que mais deseja saber sobre ${context.state.articles.defined} ${politicianData.office.name}?`, promptOptions);
+      await context.sendButtonTemplate(`O que mais deseja saber sobre ${context.state.articles.defined} ${context.state.politicianData.office.name}?`, promptOptions);
       await context.setState({ dialog: "prompt" });
       break;
     case "contacts":
@@ -470,8 +468,6 @@ bot.onEvent(async context => {
       if (context.state.politicianData.contact.cellphone) {
         await context.setState({ policianCellphone: context.state.politicianData.contact.cellphone.replace(/(?:\+55)+/g, "")})
         await context.setState({ policianCellphone: context.state.policianCellphone.replace(/^(\d{2})/g, "($1)")})
-        // politicianData.contact.cellphone = politicianData.contact.cellphone.replace(/(?:\+55)+/g, "");
-        // politicianData.contact.cellphone = politicianData.contact.cellphone.replace(/^(\d{2})/g, "($1)");
       }
       await context.sendText(`Você pode entrar em contato com ${context.state.articles.defined} ${context.state.politicianData.office.name}`+
       `${context.state.politicianData.name} pelos seguintes canais:`);
@@ -507,15 +503,15 @@ bot.onEvent(async context => {
     case "poll":
       // Verifico se o cidadão já respondeu a enquete atualmente ativa
       const recipientAnswer = await MandatoAbertoAPI.getPollAnswer(context.session.user.id, context.state.pollData.id);
-      if (context.state.trajectory.content && politicianData.contact) {
+      if (context.state.trajectory.content && context.state.politicianData.contact) {
         promptOptions = [opt.trajectory, opt.contacts];
-      } else if (context.state.trajectory.content && !politicianData.contact) {
+      } else if (context.state.trajectory.content && !context.state.politicianData.contact) {
         promptOptions = [opt.trajectory];
-      } else if (!context.state.trajectory.content && politicianData.contact) {
+      } else if (!context.state.trajectory.content && context.state.politicianData.contact) {
         promptOptions = [opt.contacts];
       }
-      if (politicianData.votolegal_integration) {
-        if (politicianData.votolegal_integration.votolegal_url && politicianData.votolegal_integration.votolegal_username) {
+      if (context.state.politicianData.votolegal_integration) {
+        if (context.state.politicianData.votolegal_integration.votolegal_url && context.state.politicianData.votolegal_integration.votolegal_username) {
           // check if integration to votoLegal exists to add the donation option
           // politicianData.votolegal_integration.votolegal_url will be used in a future web_url button to link to the donation page
           promptOptions.push(opt.doarOption);
@@ -547,7 +543,7 @@ bot.onEvent(async context => {
       }
       break;
       case 'listeningAnswer':
-      await MandatoAbertoAPI.postIssue( politicianData.user_id,context.session.user.id, context.state.userMessage);
+      await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id,context.session.user.id, context.state.userMessage);
       await context.setState({ userMessage: '' });
       await context.sendButtonTemplate('Agradecemos a sua mensagem. Deseja nos enviar ou atualizar seu e-mail e telefone?', opt.recipientData_LetsGo);
       await context.setState({ dialog: "prompt", dataPrompt: "email" });
@@ -606,17 +602,17 @@ bot.onEvent(async context => {
       break;
     case "trajectory":
       await context.sendText(context.state.trajectory.content);
-      if (context.state.pollData.questions && politicianData.contact) {
+      if (context.state.pollData.questions && context.state.politicianData.contact) {
         promptOptions = [ opt.poll_suaOpiniao, opt.contacts];
-      } else if (context.state.pollData.questions && !politicianData.contact) {
+      } else if (context.state.pollData.questions && !context.state.politicianData.contact) {
         promptOptions = [opt.poll_suaOpiniao];
-      } else if (!context.state.pollData.questions && politicianData.contact) {
+      } else if (!context.state.pollData.questions && context.state.politicianData.contact) {
         promptOptions = [opt.contacts];
       }
-      if (politicianData.votolegal_integration) {
+      if (context.state.politicianData.votolegal_integration) {
         if (
-          politicianData.votolegal_integration.votolegal_url &&
-          politicianData.votolegal_integration.votolegal_username
+          context.state.politicianData.votolegal_integration.votolegal_url &&
+          context.state.politicianData.votolegal_integration.votolegal_username
         ) {
           // check if integration to votoLegal exists to add the donation option
           // politicianData.votolegal_integration.votolegal_url will be used in a future web_url button to link to the donation page
@@ -631,7 +627,7 @@ bot.onEvent(async context => {
       await context.setState({ dialog: "prompt", prompt: "issue" });
       break;
     case "issue_created":
-      const issue_created_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, "issue_created");
+      const issue_created_message = await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, "issue_created");
       await context.sendButtonTemplate(issue_created_message.content, [ opt.backToBeginning ]);
       await context.setState({ dialog: "prompt" });
       break;
