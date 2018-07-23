@@ -164,10 +164,8 @@ bot.onEvent(async context => {
   // Tratando dinâmica de issues
   if (context.state.dialog === "prompt") {
     if (context.event.isPostback) {
-      console.log('i am here6')
       await context.setState({ dialog: context.event.postback.payload });
     } else if (context.event.isQuickReply) {
-      console.log('i am here5')
       await context.setState({ dialog: context.event.message.quick_reply.payload });
     } else if (context.event.isText) {
       // Ao mandar uma mensagem que não é interpretada como fluxo do chatbot
@@ -187,15 +185,12 @@ bot.onEvent(async context => {
   if (context.event.isPostback && (context.state.dialog === "prompt" || context.event.postback.payload === "greetings")) {
     await context.setState({ dialog: context.event.postback.payload });
   } else if (context.event.isPostback && context.state.dialog === "listening" ) {
-    console.log('i am here2')
     await context.typingOff();
     const payload = context.event.postback.payload;
     if (context.event.message) {
-      console.log('i am here3')
-        context.event.message.text = "";
+      context.event.message.text = "";
     }
     if (context.event.isQuickReply) { // because of the issue response
-      console.log('i am here4')
       await context.setState({ dialog: context.event.quick_reply.payload });
     } else {
       await context.setState({ dialog: payload });
@@ -203,7 +198,6 @@ bot.onEvent(async context => {
   }
     // Resposta de enquete
   if (context.event.isQuickReply && context.state.dialog === "pollAnswer") {
-    console.log('i am here')
     poll_question_option_id = context.event.message.quick_reply.payload;
     await MandatoAbertoAPI.postPollAnswer(context.session.user.id, poll_question_option_id, "dialog");
   } else if (context.event.isPostback && context.event.postback.payload && context.event.postback.payload.includes("pollAnswerPropagate")) {
