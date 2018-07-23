@@ -189,14 +189,14 @@ bot.onEvent(async context => {
   } else if (context.event.isPostback && context.state.dialog === "listening" ) {
     await context.typingOff();
     const payload = context.event.postback.payload;
+    await context.setState({ dialog: payload });
     if (context.event.message) {
       context.event.message.text = "";
     }
-    if (context.event.isQuickReply) { // because of the issue response
-      await context.setState({ dialog: context.event.quick_reply.payload });
-    } else {
-      await context.setState({ dialog: payload });
-    }
+  }
+  if (context.event.isQuickReply && context.state.dialog !== "pollAnswer") { // because of the issue response
+    console.log('\bbbbbbbbbbb');
+    await context.setState({ dialog: context.event.quick_reply.payload });
   }
     // Resposta de enquete
   if (context.event.isQuickReply && context.state.dialog === "pollAnswer") {
