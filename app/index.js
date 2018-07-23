@@ -256,9 +256,6 @@ bot.onEvent(async context => {
 
   switch (context.state.dialog) {
     case "greetings":
-      console.log(context.event);
-      console.log('-------------');
-      console.log(context.event.rawEvent);
       await context.setState({ sendIntro: true });
       areWeListening = true;
       // Criando um cidadão
