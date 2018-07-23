@@ -196,17 +196,14 @@ bot.onEvent(async context => {
     }
   }
   // Resposta de enquete
-  const propagateIdentifier = "pollAnswerPropagate";
   if (context.event.isPostback && context.state.dialog === "pollAnswer") {
     poll_question_option_id = context.event.postback.payload;
-    const origin = "dialog";
-    await MandatoAbertoAPI.postPollAnswer( context.session.user.id, poll_question_option_id, origin);
-  } else if (context.event.isPostback && context.event.postback.payload && context.event.postback.payload.includes(propagateIdentifier)) {
+    await MandatoAbertoAPI.postPollAnswer(context.session.user.id, poll_question_option_id, "dialog");
+  } else if (context.event.isPostback && context.event.postback.payload && context.event.postback.payload.includes("pollAnswerPropagate")) {
     // Tratando resposta da enquete através de propagação
     const payload = context.event.postback.payload;
     poll_question_option_id = payload.substr(payload.indexOf("_") + 1, payload.length);
-    const origin = "propagate";
-    await MandatoAbertoAPI.postPollAnswer(context.session.user.id, poll_question_option_id, origin);
+    await MandatoAbertoAPI.postPollAnswer(context.session.user.id, poll_question_option_id, "propagate");
     context.setState({ dialog: "pollAnswer" });
   } else if (context.event.isText && context.state.dialog === "pollAnswer") {
     await context.setState({ dialog: "listening" });
@@ -469,7 +466,7 @@ bot.onEvent(async context => {
         await context.setState({ policianCellphone: context.state.politicianData.contact.cellphone.replace(/(?:\+55)+/g, "")})
         await context.setState({ policianCellphone: context.state.policianCellphone.replace(/^(\d{2})/g, "($1)")})
       }
-      await context.sendText(`Você pode entrar em contato com ${context.state.articles.defined} ${context.state.politicianData.office.name}`+
+      await context.sendText(`Você pode entrar em contato com ${context.state.articles.defined} ${context.state.politicianData.office.name} `+
       `${context.state.politicianData.name} pelos seguintes canais:`);
       if (context.state.politicianData.contact.email) {
         await context.sendText(` - Através do e-mail: ${context.state.politicianData.contact.email}`);
@@ -518,26 +515,39 @@ bot.onEvent(async context => {
       }
       // Agora a enquete poderá ser respondida via propagação ou via dialogo
       const recipientAnswer = await MandatoAbertoAPI.getPollAnswer(context.session.user.id, context.state.pollData.id);
-      if (recipientAnswer.recipient_answered >= 1) {
+      if (recipientAnswer.recipient_answered >= 100) {
         await context.sendText("Ah, que pena! Você já respondeu essa pergunta.");
         await context.sendButtonTemplate("Se quiser, eu posso te ajudar com outra coisa.", promptOptions);
         await context.setState({ dialog: "prompt" });
       } else {
         await context.sendText("Quero conhecer você melhor. Deixe sua resposta e participe deste debate.");
-        await context.sendButtonTemplate(`Pergunta: ${context.state.pollData.questions[0].content}` ,
-          [
+        await context.sendText(`Pergunta: ${context.state.pollData.questions[0].content}` , {
+          quick_replies: [
             {
-              type: "postback",
+              content_type: 'text',
               title: context.state.pollData.questions[0].options[0].content,
               payload: `${context.state.pollData.questions[0].options[0].id}`
             },
             {
-              type: "postback",
+              content_type: 'text',
               title: context.state.pollData.questions[0].options[1].content,
               payload: `${context.state.pollData.questions[0].options[1].id}`
-            }
-          ]
-        );
+            },
+          ]});
+        // await context.sendButtonTemplate(`Pergunta: ${context.state.pollData.questions[0].content}` ,
+        //   [
+        //     {
+        //       type: "postback",
+        //       title: context.state.pollData.questions[0].options[0].content,
+        //       payload: `${context.state.pollData.questions[0].options[0].id}`
+        //     },
+        //     {
+        //       type: "postback",
+        //       title: context.state.pollData.questions[0].options[1].content,
+        //       payload: `${context.state.pollData.questions[0].options[1].id}`
+        //     }
+        //   ]
+        // );
         await context.typingOff();
         await context.setState({ dialog: "pollAnswer" });
       }
