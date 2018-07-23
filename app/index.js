@@ -160,6 +160,12 @@ bot.onEvent(async context => {
     await context.setState({ dialog: "greetings" });
   }
 
+  if (context.event.isQuickReply) { // because of the issue response
+    console.log('i am here4')
+    await context.setState({ dialog: context.event.quick_reply.payload });
+  } else {
+    await context.setState({ dialog: payload });
+  }
   // Tratando dinâmica de issues
   if (context.state.dialog === "prompt") {
     if (context.event.isPostback) {
@@ -193,17 +199,11 @@ bot.onEvent(async context => {
       console.log('i am here3')
         context.event.message.text = "";
     }
-    if (context.event.isQuickReply) { // because of the issue response
-      console.log('i am here4')
-      await context.setState({ dialog: context.event.quick_reply.payload });
-    } else {
-      await context.setState({ dialog: payload });
-    }
   }
-  // Resposta de enquete
-  if (context.event.isPostback && context.state.dialog === "pollAnswer") {
+    // Resposta de enquete
+  if (context.event.isQuickReply && context.state.dialog === "pollAnswer") {
     console.log('i am here')
-    poll_question_option_id = context.event.postback.payload;
+    poll_question_option_id = context.event.message.quick_reply.payload;
     await MandatoAbertoAPI.postPollAnswer(context.session.user.id, poll_question_option_id, "dialog");
   } else if (context.event.isPostback && context.event.postback.payload && context.event.postback.payload.includes("pollAnswerPropagate")) {
     // Tratando resposta da enquete através de propagação
