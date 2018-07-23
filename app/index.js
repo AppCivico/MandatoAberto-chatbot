@@ -196,7 +196,7 @@ bot.onEvent(async context => {
   }
   if (context.event.isQuickReply && context.state.dialog !== "pollAnswer") { // because of the issue response
     console.log('\bbbbbbbbbbb');
-    await context.setState({ dialog: context.event.quick_reply.payload });
+    await context.setState({ dialog: context.event.message.quick_reply.payload });
   }
     // Resposta de enquete
   if (context.event.isQuickReply && context.state.dialog === "pollAnswer") {
