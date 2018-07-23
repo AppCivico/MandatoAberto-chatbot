@@ -160,9 +160,6 @@ bot.onEvent(async context => {
     await context.setState({ dialog: "greetings" });
   }
 
-  console.log('\naaaaaaaaaaa');
-  console.log(context.state.dialog);
-
   // Tratando dinâmica de issues
   if (context.state.dialog === "prompt") {
     if (context.event.isPostback) {
@@ -194,9 +191,8 @@ bot.onEvent(async context => {
       context.event.message.text = "";
     }
   }
+  // quick_replies que vem de propagação que não são resposta de enquete
   if (context.event.isQuickReply && (context.state.dialog !== "pollAnswer") && !(context.event.message.quick_reply.payload.includes("pollAnswerPropagate"))) { // because of the issue response
-    console.log('\bbbbbbbbbbb');
-    console.log(context.event.message.quick_reply.payload);
     await context.setState({ dialog: context.event.message.quick_reply.payload });
   }
     // Resposta de enquete
@@ -519,7 +515,7 @@ bot.onEvent(async context => {
       }
       // Agora a enquete poderá ser respondida via propagação ou via dialogo
       const recipientAnswer = await MandatoAbertoAPI.getPollAnswer(context.session.user.id, context.state.pollData.id);
-      if (recipientAnswer.recipient_answered >= 100) {
+      if (recipientAnswer.recipient_answered >= 1) {
         await context.sendText("Ah, que pena! Você já respondeu essa pergunta.");
         await context.sendButtonTemplate("Se quiser, eu posso te ajudar com outra coisa.", promptOptions);
         await context.setState({ dialog: "prompt" });
