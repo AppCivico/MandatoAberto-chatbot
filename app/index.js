@@ -160,12 +160,7 @@ bot.onEvent(async context => {
     await context.setState({ dialog: "greetings" });
   }
 
-  if (context.event.isQuickReply) { // because of the issue response
-    console.log('i am here4')
-    await context.setState({ dialog: context.event.quick_reply.payload });
-  } else {
-    await context.setState({ dialog: payload });
-  }
+
   // Tratando dinâmica de issues
   if (context.state.dialog === "prompt") {
     if (context.event.isPostback) {
@@ -198,6 +193,12 @@ bot.onEvent(async context => {
     if (context.event.message) {
       console.log('i am here3')
         context.event.message.text = "";
+    }
+    if (context.event.isQuickReply) { // because of the issue response
+      console.log('i am here4')
+      await context.setState({ dialog: context.event.quick_reply.payload });
+    } else {
+      await context.setState({ dialog: payload });
     }
   }
     // Resposta de enquete
