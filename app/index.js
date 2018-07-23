@@ -374,7 +374,7 @@ bot.onEvent(async context => {
       await context.setState({ participateOptions: [
         {
           type: "web_url",
-          url: context.state.politicianData.votolegal_integration.votolegal_url,
+          url: `${context.state.politicianData.votolegal_integration.votolegal_url}/#doar`,
           title: "Vamos lá!"
         }]});
       // checking for picframe_url so we can only show this option when it's available but still show the votoLegal option
@@ -620,10 +620,7 @@ bot.onEvent(async context => {
         promptOptions = [opt.contacts];
       }
       if (context.state.politicianData.votolegal_integration) {
-        if (
-          context.state.politicianData.votolegal_integration.votolegal_url &&
-          context.state.politicianData.votolegal_integration.votolegal_username
-        ) {
+        if (context.state.politicianData.votolegal_integration.votolegal_url && context.state.politicianData.votolegal_integration.votolegal_username) {
           // check if integration to votoLegal exists to add the donation option
           // politicianData.votolegal_integration.votolegal_url will be used in a future web_url button to link to the donation page
           promptOptions.push(opt.doarOption);
