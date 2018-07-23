@@ -374,16 +374,18 @@ bot.onEvent(async context => {
       await context.setState({ dialog: "prompt", participateOptions: undefined });
       break;
     case "WannaDonate":
+     // if referral.source(CUSTOMER_CHAT_PLUGIN) doesn't exist we are on facebook and should send votolegal's url
       if (!context.event.rawEvent.postback.referral) {
+
         await context.setState({ participateOptions: [
           {
             type: "web_url",
             url: `${context.state.politicianData.votolegal_integration.votolegal_url}/#doar`,
             title: "Vamos lá!"
-          }]});
+          }], participateMessage: "Você deseja doar agora?"});
       }
       else {
-        await context.setState({ participateOptions: []});
+        await context.setState({ participateOptions: [], participateMessage: "Você já está na nossa página para doar. Se quiser, também poderá divulgar seu apoio!"});
       }
       // checking for picframe_url so we can only show this option when it's available but still show the votoLegal option
       if (context.state.politicianData.picframe_url) {
@@ -397,8 +399,8 @@ bot.onEvent(async context => {
       await context.setState({ valueLegal: await VotoLegalAPI.getVotoLegalValues(context.state.politicianData.votolegal_integration.votolegal_username) });
       await context.sendText(`Já consegui R$${formatReal(context.state.valueLegal.candidate.total_donated)} da minha meta de ` +
       `R$${formatReal(getMoney(context.state.valueLegal.candidate.raising_goal))}.`);
-      await context.sendButtonTemplate("Você deseja doar agora?", context.state.participateOptions);
-      await context.setState({ dialog: "prompt", valueLegal: undefined, participateOptions: undefined });
+      await context.sendButtonTemplate(context.state.participateMessage, context.state.participateOptions);
+      await context.setState({ dialog: "prompt", valueLegal: undefined, participateOptions: undefined, participateMessage: undefined});
       break;
     case "WannaDivulgate":
       await context.sendButtonTemplate("Que legal! Seu apoio é muito importante para nós! Você quer mudar foto (avatar) do seu perfil?", [
