@@ -374,12 +374,17 @@ bot.onEvent(async context => {
       await context.setState({ dialog: "prompt", participateOptions: undefined });
       break;
     case "WannaDonate":
-      await context.setState({ participateOptions: [
-        {
-          type: "web_url",
-          url: `${context.state.politicianData.votolegal_integration.votolegal_url}/#doar`,
-          title: "Vamos lá!"
-        }]});
+      if (!context.event.rawEvent.postback.referral) {
+        await context.setState({ participateOptions: [
+          {
+            type: "web_url",
+            url: `${context.state.politicianData.votolegal_integration.votolegal_url}/#doar`,
+            title: "Vamos lá!"
+          }]});
+      }
+      else {
+        await context.setState({ participateOptions: []});
+      }
       // checking for picframe_url so we can only show this option when it's available but still show the votoLegal option
       if (context.state.politicianData.picframe_url) {
         // await participateOptions.push(opt.wannaDivulgate);
