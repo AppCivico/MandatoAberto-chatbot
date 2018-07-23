@@ -194,7 +194,7 @@ bot.onEvent(async context => {
       context.event.message.text = "";
     }
   }
-  if (context.event.isQuickReply && !(context.event.message.quick_reply.payload.includes("pollAnswerPropagate"))) { // because of the issue response
+  if (context.event.isQuickReply && (context.state.dialog !== "pollAnswer") && !(context.event.message.quick_reply.payload.includes("pollAnswerPropagate"))) { // because of the issue response
     console.log('\bbbbbbbbbbb');
     console.log(context.event.message.quick_reply.payload);
     await context.setState({ dialog: context.event.message.quick_reply.payload });
