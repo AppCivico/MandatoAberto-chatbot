@@ -194,7 +194,7 @@ bot.onEvent(async context => {
       context.event.message.text = "";
     }
   }
-  if (context.event.isQuickReply && context.state.dialog !== "pollAnswer") { // because of the issue response
+  if (context.event.isQuickReply && !(context.event.message.quick_reply.payload.includes("pollAnswerPropagate"))) { // because of the issue response
     console.log('\bbbbbbbbbbb');
     console.log(context.event.message.quick_reply.payload);
     await context.setState({ dialog: context.event.message.quick_reply.payload });
@@ -203,9 +203,9 @@ bot.onEvent(async context => {
   if (context.event.isQuickReply && context.state.dialog === "pollAnswer") {
     poll_question_option_id = context.event.message.quick_reply.payload;
     await MandatoAbertoAPI.postPollAnswer(context.session.user.id, poll_question_option_id, "dialog");
-  } else if (context.event.isPostback && context.event.postback.payload && context.event.postback.payload.includes("pollAnswerPropagate")) {
+  } else if (context.event.isQuickReply && context.event.message.quick_reply.payload && context.event.message.quick_reply.payload.includes("pollAnswerPropagate")) {
     // Tratando resposta da enquete através de propagação
-    const payload = context.event.postback.payload;
+    const payload = context.event.message.quick_reply.payload;
     poll_question_option_id = payload.substr(payload.indexOf("_") + 1, payload.length);
     await MandatoAbertoAPI.postPollAnswer(context.session.user.id, poll_question_option_id, "propagate");
     context.setState({ dialog: "pollAnswer" });
