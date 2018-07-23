@@ -160,12 +160,8 @@ bot.onEvent(async context => {
     await context.setState({ dialog: "greetings" });
   }
 
-  if(!context.state.dialog) {
-    if (context.event.isQuickReply) {
-      console.log('sdsfsdf');
-      console.log(context.event.message.quick_reply.payload);
-    }
-  }
+  console.log('\naaaaaaaaaaa');
+  console.log(context.state.dialog);
 
   // Tratando dinâmica de issues
   if (context.state.dialog === "prompt") {
