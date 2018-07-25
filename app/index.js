@@ -65,10 +65,10 @@ function checkMenu(context, opt2) { // eslint-disable-line no-inner-declarations
   let dialogs = opt2;
   console.log('Running')
   if (!context.state.introduction) { dialogs = dialogs.filter(obj => obj.payload !== 'aboutPolitician'); }
-  if (!context.state.trajectory2) { dialogs = dialogs.filter(obj => obj.payload !== 'trajectory');}
+  if (!context.state.trajectory) { dialogs = dialogs.filter(obj => obj.payload !== 'trajectory');}
   if (!context.state.pollData) { dialogs = dialogs.filter(obj => obj.payload !== 'poll'); }
   if (!context.state.politicianData.contact) { dialogs = dialogs.filter(obj => obj.payload !== 'contacts');}
-  if (!context.state.politicianData.votolegal_integration2) { dialogs = dialogs.filter(obj => obj.payload !== 'votoLegal'); console.log('Here i am')}
+  if (!context.state.politicianData.votolegal_integration) { dialogs = dialogs.filter(obj => obj.payload !== 'votoLegal');}
   console.log(dialogs);
   return dialogs;
 }
@@ -505,26 +505,9 @@ bot.onEvent(async context => {
       await context.setState({ dialog: "prompt", politicianCellPhone: undefined});
       break;
     case "poll":
-    // if (context.state.trajectory.content && context.state.politicianData.contact) {
-      //   promptOptions = [opt.trajectory, opt.contacts];
-      // } else if (context.state.trajectory.content && !context.state.politicianData.contact) {
-        //   promptOptions = [opt.trajectory];
-        // } else if (!context.state.trajectory.content && context.state.politicianData.contact) {
-          //   promptOptions = [opt.contacts];
-          // }
-          // if (context.state.politicianData.votolegal_integration) {
-            //   if (context.state.politicianData.votolegal_integration.votolegal_url && context.state.politicianData.votolegal_integration.votolegal_username) {
-              //     // check if integration to votoLegal exists to add the donation option
-              //     // politicianData.votolegal_integration.votolegal_url will be used in a future web_url button to link to the donation page
-              //     promptOptions.push(opt.doarOption);
-              //   }
-              // }
-      // Verifico se o cidadão já respondeu a enquete atualmente ativa
-      // Agora a enquete poderá ser respondida via propagação ou via dialogo
       const recipientAnswer = await MandatoAbertoAPI.getPollAnswer(context.session.user.id, context.state.pollData.id);
       if (recipientAnswer.recipient_answered >= 1) {
         await context.sendText("Ah, que pena! Você já respondeu essa pergunta.");
-        // await context.sendButtonTemplate("Se quiser, eu posso te ajudar com outra coisa.", promptOptions);
         await context.sendButtonTemplate("Se quiser, eu posso te ajudar com outra coisa.", 
           await checkMenu(context, [opt.trajectory, opt.contacts, opt.doarOption]));
         await context.setState({ dialog: "prompt" });
@@ -543,20 +526,6 @@ bot.onEvent(async context => {
               payload: `${context.state.pollData.questions[0].options[1].id}`
             },
           ]});
-        // await context.sendButtonTemplate(`Pergunta: ${context.state.pollData.questions[0].content}` ,
-        //   [
-        //     {
-        //       type: "postback",
-        //       title: context.state.pollData.questions[0].options[0].content,
-        //       payload: `${context.state.pollData.questions[0].options[0].id}`
-        //     },
-        //     {
-        //       type: "postback",
-        //       title: context.state.pollData.questions[0].options[1].content,
-        //       payload: `${context.state.pollData.questions[0].options[1].id}`
-        //     }
-        //   ]
-        // );
         await context.typingOff();
         await context.setState({ dialog: "pollAnswer" });
       }
@@ -621,21 +590,21 @@ bot.onEvent(async context => {
       break;
     case "trajectory":
       await context.sendText(context.state.trajectory.content);
-      if (context.state.pollData.questions && context.state.politicianData.contact) {
-        promptOptions = [ opt.poll_suaOpiniao, opt.contacts];
-      } else if (context.state.pollData.questions && !context.state.politicianData.contact) {
-        promptOptions = [opt.poll_suaOpiniao];
-      } else if (!context.state.pollData.questions && context.state.politicianData.contact) {
-        promptOptions = [opt.contacts];
-      }
-      if (context.state.politicianData.votolegal_integration) {
-        if (context.state.politicianData.votolegal_integration.votolegal_url && context.state.politicianData.votolegal_integration.votolegal_username) {
-          // check if integration to votoLegal exists to add the donation option
-          // politicianData.votolegal_integration.votolegal_url will be used in a future web_url button to link to the donation page
-          promptOptions.push(opt.doarOption);
-        }
-      }
-      await context.sendButtonTemplate("Quer saber mais?" , promptOptions);
+      // if (context.state.pollData.questions && context.state.politicianData.contact) {
+      //   promptOptions = [opt.poll_suaOpiniao, opt.contacts];
+      // } else if (context.state.pollData.questions && !context.state.politicianData.contact) {
+      //   promptOptions = [opt.poll_suaOpiniao];
+      // } else if (!context.state.pollData.questions && context.state.politicianData.contact) {
+      //   promptOptions = [opt.contacts];
+      // }
+      // if (context.state.politicianData.votolegal_integration) {
+      //   if (context.state.politicianData.votolegal_integration.votolegal_url && context.state.politicianData.votolegal_integration.votolegal_username) {
+      //     // check if integration to votoLegal exists to add the donation option
+      //     // politicianData.votolegal_integration.votolegal_url will be used in a future web_url button to link to the donation page
+      //     promptOptions.push(opt.doarOption);
+      //   }
+      // }
+      await context.sendButtonTemplate("Quer saber mais?", await checkMenu(context, [opt.poll_suaOpiniao, opt.contacts, opt.doarOption]));
       await context.setState({ dialog: "prompt" });
       break;
     case "issue":
