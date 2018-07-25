@@ -54,6 +54,16 @@ module.exports = {
         title: "Sobre divulgar",
         payload: "aboutDivulgation"
     },
+    writeMessage: {
+        type: "postback",
+        title: "Escrever Mensagem",
+        payload: "listening"
+    },
+    seeAssistent: {
+        type: "postback",
+        title: "Conhecer Assistente",
+        payload: "mainMenu"
+    },
     recipientData_LetsGo: [ // array with two options
         {
             type: "postback",

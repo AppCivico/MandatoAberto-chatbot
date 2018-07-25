@@ -319,19 +319,7 @@ bot.onEvent(async context => {
     // await context.setState({ userMessage: `${context.state.userMessage} + " "`});;
       await context.sendText(`Vocês gostaria de enviar uma mensagem para nossa equipe ou conhecer mais sobre ` + 
         `${context.state.articles.defined} ${context.state.politicianData.office.name} ${context.state.politicianData.name}?`);
-      promptOptions = [
-        {
-          type: "postback",
-          title: "Escrever Mensagem",
-          payload: "listening"
-        },
-        {
-          type: "postback",
-          title: "Conhecer Assistente",
-          payload: "mainMenu"
-        }
-      ];
-      await context.sendButtonTemplate("Selecione a opção desejada em um dos botões abaixo:", promptOptions);
+      await context.sendButtonTemplate("Selecione a opção desejada em um dos botões abaixo:", [opt.writeMessage, opt.seeAssistent]);
       await context.setState({ dialog: "prompt" });
       break;
     case "votoLegal":
@@ -487,21 +475,6 @@ bot.onEvent(async context => {
       if (context.state.politicianData.contact.url) {
         await context.sendText(` - Através do site: ${context.state.politicianData.contact.url}`);
       }
-      // if (context.state.trajectory.content && context.state.pollData.questions) {
-      //   promptOptions = [opt.trajectory, opt.poll_suaOpiniao];
-      // } else if (context.state.trajectory.content && !context.state.pollData.questions) {
-      //   promptOptions = [opt.trajectory];
-      // } else if (!context.state.trajectory.content && context.state.pollData.questions) {
-      //   promptOptions = [opt.poll_suaOpiniao];
-      // }
-      // if (context.state.politicianData.votolegal_integration) {
-      //   if (context.state.politicianData.votolegal_integration.votolegal_url && context.state.politicianData.votolegal_integration.votolegal_username) {
-      //     // check if integration to votoLegal exists to add the donation option
-      //     // politicianData.votolegal_integration.votolegal_url will be used in a future web_url button to link to the donation page
-      //     promptOptions.push(opt.doarOption);
-      //   }
-      // }
-      // await context.sendButtonTemplate("Quer saber mais?", promptOptions);
       await context.sendButtonTemplate("Quer saber mais?", await checkMenu(context, [opt.trajectory, opt.poll_suaOpiniao, opt.doarOption]));
       await context.setState({ dialog: "prompt", politicianCellPhone: undefined});
       break;
