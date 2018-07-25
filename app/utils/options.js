@@ -6,7 +6,7 @@ module.exports = {
     },
     aboutPolitician: {
         type: "postback",
-        title: undefined, // will be filled before it's used
+        title: "Sobre", // ony a template, will be filled with the proper title before it's used
         payload: "aboutMe"
     },
     contacts: {
