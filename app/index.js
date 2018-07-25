@@ -66,7 +66,7 @@ function checkMenu(context, opt2) { // eslint-disable-line no-inner-declarations
   console.log('Running')
   if (!context.state.introduction) { dialogs = dialogs.filter(obj => obj.payload !== 'aboutPolitician'); }
   if (!context.state.trajectory) { dialogs = dialogs.filter(obj => obj.payload !== 'trajectory');}
-  if (!context.state.pollData2) { dialogs = dialogs.filter(obj => obj.payload !== 'poll'); }
+  if (!context.state.pollData) { dialogs = dialogs.filter(obj => obj.payload !== 'poll'); }
   if (!context.state.politicianData.contact) { dialogs = dialogs.filter(obj => obj.payload !== 'contacts');}
   if (!context.state.politicianData.votolegal_integration) { dialogs = dialogs.filter(obj => obj.payload !== 'votoLegal');}
   console.log(dialogs);
@@ -487,21 +487,22 @@ bot.onEvent(async context => {
       if (context.state.politicianData.contact.url) {
         await context.sendText(` - Através do site: ${context.state.politicianData.contact.url}`);
       }
-      if (context.state.trajectory.content && context.state.pollData.questions) {
-        promptOptions = [opt.trajectory, opt.poll_suaOpiniao];
-      } else if (context.state.trajectory.content && !context.state.pollData.questions) {
-        promptOptions = [opt.trajectory];
-      } else if (!context.state.trajectory.content && context.state.pollData.questions) {
-        promptOptions = [opt.poll_suaOpiniao];
-      }
-      if (context.state.politicianData.votolegal_integration) {
-        if (context.state.politicianData.votolegal_integration.votolegal_url && context.state.politicianData.votolegal_integration.votolegal_username) {
-          // check if integration to votoLegal exists to add the donation option
-          // politicianData.votolegal_integration.votolegal_url will be used in a future web_url button to link to the donation page
-          promptOptions.push(opt.doarOption);
-        }
-      }
-      await context.sendButtonTemplate("Quer saber mais?", promptOptions);
+      // if (context.state.trajectory.content && context.state.pollData.questions) {
+      //   promptOptions = [opt.trajectory, opt.poll_suaOpiniao];
+      // } else if (context.state.trajectory.content && !context.state.pollData.questions) {
+      //   promptOptions = [opt.trajectory];
+      // } else if (!context.state.trajectory.content && context.state.pollData.questions) {
+      //   promptOptions = [opt.poll_suaOpiniao];
+      // }
+      // if (context.state.politicianData.votolegal_integration) {
+      //   if (context.state.politicianData.votolegal_integration.votolegal_url && context.state.politicianData.votolegal_integration.votolegal_username) {
+      //     // check if integration to votoLegal exists to add the donation option
+      //     // politicianData.votolegal_integration.votolegal_url will be used in a future web_url button to link to the donation page
+      //     promptOptions.push(opt.doarOption);
+      //   }
+      // }
+      // await context.sendButtonTemplate("Quer saber mais?", promptOptions);
+      await context.sendButtonTemplate("Quer saber mais?", await checkMenu(context, [opt.trajectory, opt.poll_suaOpiniao, opt.doarOption]));
       await context.setState({ dialog: "prompt", politicianCellPhone: undefined});
       break;
     case "poll":
@@ -590,20 +591,6 @@ bot.onEvent(async context => {
       break;
     case "trajectory":
       await context.sendText(context.state.trajectory.content);
-      // if (context.state.pollData.questions && context.state.politicianData.contact) {
-      //   promptOptions = [opt.poll_suaOpiniao, opt.contacts];
-      // } else if (context.state.pollData.questions && !context.state.politicianData.contact) {
-      //   promptOptions = [opt.poll_suaOpiniao];
-      // } else if (!context.state.pollData.questions && context.state.politicianData.contact) {
-      //   promptOptions = [opt.contacts];
-      // }
-      // if (context.state.politicianData.votolegal_integration) {
-      //   if (context.state.politicianData.votolegal_integration.votolegal_url && context.state.politicianData.votolegal_integration.votolegal_username) {
-      //     // check if integration to votoLegal exists to add the donation option
-      //     // politicianData.votolegal_integration.votolegal_url will be used in a future web_url button to link to the donation page
-      //     promptOptions.push(opt.doarOption);
-      //   }
-      // }
       await context.sendButtonTemplate("Quer saber mais?", await checkMenu(context, [opt.poll_suaOpiniao, opt.contacts, opt.doarOption]));
       await context.setState({ dialog: "prompt" });
       break;
