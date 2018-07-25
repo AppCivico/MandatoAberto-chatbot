@@ -471,13 +471,13 @@ bot.onEvent(async context => {
       // } else if (!context.state.trajectory.content && context.state.pollData.questions) {
       //   promptOptions = [opt.contacts];
       // }
-      if (context.state.politicianData.votolegal_integration) {
-        if (context.state.politicianData.votolegal_integration.votolegal_url && context.state.politicianData.votolegal_integration.votolegal_username) {
-          // check if integration to votoLegal exists to add the donation option
-          // politicianData.votolegal_integration.votolegal_url will be used in a future web_url button to link to the donation page
-          promptOptions.push(opt.doarOption);
-        }
-      }
+      // if (context.state.politicianData.votolegal_integration) {
+      //   if (context.state.politicianData.votolegal_integration.votolegal_url && context.state.politicianData.votolegal_integration.votolegal_username) {
+      //     // check if integration to votoLegal exists to add the donation option
+      //     // politicianData.votolegal_integration.votolegal_url will be used in a future web_url button to link to the donation page
+      //     promptOptions.push(opt.doarOption);
+      //   }
+      // }
       // await context.sendButtonTemplate(`O que mais deseja saber sobre ${context.state.articles.defined} ${context.state.politicianData.office.name}?`, promptOptions);
       await context.sendButtonTemplate(`O que mais deseja saber sobre ${context.state.articles.defined} ${context.state.politicianData.office.name}?`, 
       await checkMenu(context, [opt.trajectory, opt.contacts, opt.doarOption]));
