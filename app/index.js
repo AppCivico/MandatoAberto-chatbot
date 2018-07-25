@@ -67,10 +67,10 @@ function checkMenu(context, opt2) { // eslint-disable-line no-inner-declarations
   if (!context.state.introduction) { dialogs = dialogs.filter(obj => obj.payload !== 'aboutPolitician'); }
   if (!context.state.trajectory) { dialogs = dialogs.filter(obj => obj.payload !== 'trajectory');}
   if (!context.state.pollData) { dialogs = dialogs.filter(obj => obj.payload !== 'poll'); }
-  if (!context.state.politicianData.contact2) { dialogs = dialogs.filter(obj => obj.payload !== 'contacts'); console.log('Here i am')}
-  if (!context.state.politicianData.votolegal_integration.votolegal_username)
-  { dialogs = dialogs.filter(obj => obj.payload !== 'participate'); }
-  if (!context.state.politicianData.votolegal_integration) { dialogs = dialogs.filter(obj => obj.payload !== 'participate'); }
+  if (!context.state.politicianData.contact) { dialogs = dialogs.filter(obj => obj.payload !== 'contacts'); console.log('Here i am')}
+  if (!context.state.politicianData.votolegal_integration2.votolegal_username)
+  { dialogs = dialogs.filter(obj => obj.payload !== 'votoLegal'); }
+  // if (!context.state.politicianData.votolegal_integration) { dialogs = dialogs.filter(obj => obj.payload !== 'votoLegal'); }
   console.log(dialogs);
   return dialogs;
 }
@@ -471,13 +471,13 @@ bot.onEvent(async context => {
       // } else if (!context.state.trajectory.content && context.state.pollData.questions) {
       //   promptOptions = [opt.contacts];
       // }
-      // if (context.state.politicianData.votolegal_integration) {
-      //   if (context.state.politicianData.votolegal_integration.votolegal_url && context.state.politicianData.votolegal_integration.votolegal_username) {
-      //     // check if integration to votoLegal exists to add the donation option
-      //     // politicianData.votolegal_integration.votolegal_url will be used in a future web_url button to link to the donation page
-      //     promptOptions.push(opt.doarOption);
-      //   }
-      // }
+      if (context.state.politicianData.votolegal_integration) {
+        if (context.state.politicianData.votolegal_integration.votolegal_url && context.state.politicianData.votolegal_integration.votolegal_username) {
+          // check if integration to votoLegal exists to add the donation option
+          // politicianData.votolegal_integration.votolegal_url will be used in a future web_url button to link to the donation page
+          promptOptions.push(opt.doarOption);
+        }
+      }
       // await context.sendButtonTemplate(`O que mais deseja saber sobre ${context.state.articles.defined} ${context.state.politicianData.office.name}?`, promptOptions);
       await context.sendButtonTemplate(`O que mais deseja saber sobre ${context.state.articles.defined} ${context.state.politicianData.office.name}?`, 
       await checkMenu(context, [opt.trajectory, opt.contacts, opt.doarOption]));
