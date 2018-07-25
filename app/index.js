@@ -65,12 +65,13 @@ function checkMenu(context, opt2) { // eslint-disable-line no-inner-declarations
   let dialogs = opt2;
   console.log('Running')
   if (!context.state.introduction) { dialogs = dialogs.filter(obj => obj.payload !== 'aboutPolitician'); }
-  if (!context.state.trajectory2) { dialogs = dialogs.filter(obj => obj.payload !== 'aboutTrajectory'); console.log('Here i am')}
-  if (!context.state.pollData) { dialogs = dialogs.filter(obj => obj.payload !== 'answerPoll'); }
-  if (!context.state.politicianData.contact) { dialogs = dialogs.filter(obj => obj.payload !== 'contact'); }
+  if (!context.state.trajectory2) { dialogs = dialogs.filter(obj => obj.payload !== 'trajectory'); console.log('Here i am')}
+  if (!context.state.pollData) { dialogs = dialogs.filter(obj => obj.payload !== 'poll'); }
+  if (!context.state.politicianData.contact) { dialogs = dialogs.filter(obj => obj.payload !== 'contacts'); }
   if (!context.state.politicianData.votolegal_integration.votolegal_username)
   { dialogs = dialogs.filter(obj => obj.payload !== 'participate'); }
   if (!context.state.politicianData.votolegal_integration) { dialogs = dialogs.filter(obj => obj.payload !== 'participate'); }
+  console.log(dialogs);
   return dialogs;
 }
 
