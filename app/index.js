@@ -64,11 +64,12 @@ function getArticles(gender) {
 function checkMenu(context, opt2) { // eslint-disable-line no-inner-declarations
   let dialogs = opt2;
   console.log('Running')
-  if (!context.state.introduction) { dialogs = dialogs.filter(obj => obj.payload !== 'aboutPolitician'); }
+  if (!context.state.introduction.content) { dialogs = dialogs.filter(obj => obj.payload !== 'aboutMe'); }
   if (!context.state.trajectory) { dialogs = dialogs.filter(obj => obj.payload !== 'trajectory');}
   if (!context.state.pollData) { dialogs = dialogs.filter(obj => obj.payload !== 'poll'); }
   if (!context.state.politicianData.contact) { dialogs = dialogs.filter(obj => obj.payload !== 'contacts');}
   if (!context.state.politicianData.votolegal_integration) { dialogs = dialogs.filter(obj => obj.payload !== 'votoLegal');}
+  if (dialogs.aboutPolitician) { dialogs.aboutPolitician.title = await getAboutMe(context.state.politicianData); }
   console.log(dialogs);
   return dialogs;
 }
@@ -290,7 +291,8 @@ bot.onEvent(async context => {
       await context.setState({ greeting: context.state.politicianData.greeting.replace("${user.office.name}", context.state.politicianData.office.name)});
       await context.setState({ greeting: context.state.greeting.replace("${user.name}", context.state.politicianData.name)});
       await context.sendText(context.state.greeting);
-      await context.sendButtonTemplate(context.state.issueMessage, promptOptions);
+      // await context.sendButtonTemplate(context.state.issueMessage, promptOptions);
+      await context.sendButtonTemplate(context.state.issueMessage, await checkMenu(context, [ opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption ]));
       await context.setState({ dialog: "prompt" });
       break;
     case "mainMenu": // after issue is created we come back to this dialog
