@@ -82,7 +82,7 @@ async function checkMenu(context, opt2) { // eslint-disable-line no-inner-declar
   if (!context.state.politicianData.contact) { dialogs = dialogs.filter(obj => obj.payload !== 'contacts');}
   if (!context.state.politicianData.votolegal_integration) { dialogs = dialogs.filter(obj => obj.payload !== 'votoLegal');}
   // dialogs.find(obj => obj.payload === 'aboutPolitician', (obj) => (obj.title = getAboutMe(context.state.politicianData)));
-  dialogs.find(obj => obj.payload === 'aboutPolitician', () => (console.log('sdfsdf')));
+  if (dialogs[0].payload === 'aboutPolitician') { dialogs[0].title = getAboutMe(context.state.politicianData)}
   console.log(dialogs);
   return dialogs;
 }
