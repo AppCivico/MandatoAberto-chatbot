@@ -108,38 +108,6 @@ bot.onEvent(async context => {
     });
   }
 
-  function getMenuPrompt(context) {
-    if (context.state.introduction.content && context.state.pollData.questions) {
-      promptOptions = [
-        {
-          type: "postback",
-          title: context.state.aboutMeText,
-          payload: "aboutMe"
-        },
-        opt.poll_suaOpiniao,
-      ];
-    } else if (context.state.introduction.content && !context.state.pollData.questions) {
-      promptOptions = [
-        {
-          type: "postback",
-          title: context.state.aboutMeText,
-          payload: "aboutMe"
-        }
-      ];
-    } else if (!context.state.introduction.content && context.state.pollData.questions) {
-      promptOptions = [opt.poll_suaOpiniao];
-    } else if (!context.state.introduction.content && !context.state.pollData.questions && context.state.politicianData.contact) {
-      promptOptions = [opt.contacts];
-    }
-    if (context.state.politicianData.votolegal_integration) {
-      if (context.state.politicianData.votolegal_integration.votolegal_url && context.state.politicianData.votolegal_integration.votolegal_username) {
-        // check if integration to votoLegal exists to add the donation option
-        // politicianData.votolegal_integration.votolegal_url will be used in a future web_url button to link to the donation page
-        promptOptions.push(opt.doarOption);
-      }
-    }
-  }
-
   // Abrindo bot através de comentários e posts
   // ** no context here **
   if (context.event.rawEvent.field === "feed") {
@@ -278,13 +246,12 @@ bot.onEvent(async context => {
 
   switch (context.state.dialog) {
     case "greetings":
-      await context.setState({ sendIntro: true });
       areWeListening = true;
+      await context.setState({ sendIntro: true });
       await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id)});
       await context.setState({ trajectory: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, "trajectory") });
       await context.setState({ articles: getArticles(context.state.politicianData.gender) });
       await context.setState({ introduction: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, "introduction") });
-      await context.setState({ aboutMeText: await getAboutMe(context.state.politicianData) });
       await context.setState({ issueMessage: getIssueMessage(await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, "issue_acknowledgment")) });
       await context.setState({ userMessage: "" }); // cleaning up
       await context.setState({ greeting: context.state.politicianData.greeting.replace("${user.office.name}", context.state.politicianData.office.name)});
@@ -294,17 +261,14 @@ bot.onEvent(async context => {
       await context.setState({ dialog: "prompt" });
       break;
     case "mainMenu": // after issue is created we come back to this dialog
-      await context.setState({ sendIntro: true });
       areWeListening = true;
+      await context.setState({ sendIntro: true });
       await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
       await context.setState({ trajectory: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, "trajectory") });
       await context.setState({ articles: getArticles(context.state.politicianData.gender)});
       await context.setState({ introduction: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, "introduction") });
-      await context.setState({ aboutMeText: await getAboutMe(context.state.politicianData) });
-      // await getMenuPrompt(context);
       await context.setState({ userMessage: "" }); // cleaning up
       await context.sendButtonTemplate(context.state.issueMessage, await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
-      // await context.sendButtonTemplate("Como posso te ajudar?", promptOptions);
       await context.setState({ dialog: "prompt" });
       break;
     case "intermediate":
