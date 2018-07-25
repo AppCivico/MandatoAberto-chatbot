@@ -26,9 +26,11 @@ function formatReal(int) {
 }
 
 let promptOptions;
-let recipient;
 
-const limit = 10000 * 2;
+const saveRecipientTimer = 10000 * 10 ; // 4 hours
+// const saveRecipientTimer = 1000 * 60 * 60 * 4; // 4 hours
+const IssueTimerlimit = 10000 * 2; // 20 seconds
+
 let timer;
 // userMessage -> context.state.userMessage -> stores the texts the user wirtes before sending them to politician [issue] 
 // sendIntro = true -> context.state.sendIntro -> verifies if we should send the intro text for issue creation.
@@ -73,16 +75,13 @@ function getAboutMe(politicianData) {
   }
 };
 
-async function checkMenu(context, opt2) { // eslint-disable-line no-inner-declarations
-  let dialogs = opt2;
-  console.log('Running')
+async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-declarations
   if (!context.state.introduction.content) { dialogs = dialogs.filter(obj => obj.payload !== 'aboutMe'); }
   if (!context.state.trajectory) { dialogs = dialogs.filter(obj => obj.payload !== 'trajectory');}
   if (!context.state.pollData) { dialogs = dialogs.filter(obj => obj.payload !== 'poll'); }
   if (!context.state.politicianData.contact) { dialogs = dialogs.filter(obj => obj.payload !== 'contacts');}
   if (!context.state.politicianData.votolegal_integration) { dialogs = dialogs.filter(obj => obj.payload !== 'votoLegal');}
   if (dialogs[0].payload === 'aboutMe') { dialogs[0].title = getAboutMe(context.state.politicianData) }
-  console.log(dialogs);
   return dialogs;
 }
 
@@ -99,13 +98,16 @@ bot.onEvent(async context => {
     // we reload politicianData on every useful event
     await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
     // we update user data at every interaction
-    await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
-      fb_id: context.session.user.id,
-      name: `${context.session.user.first_name} ${context.session.user.last_name}`,
-      gender: context.session.user.gender === "male" ? "M" : "F",
-      origin_dialog: "greetings",
-      picture: context.session.user.profile_pic
-    });
+    if ((context.event.rawEvent.timestamp - context.session.lastActivity) >= saveRecipientTimer) {
+      console.log('salvei o recipient')
+      await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
+        fb_id: context.session.user.id,
+        name: `${context.session.user.first_name} ${context.session.user.last_name}`,
+        gender: context.session.user.gender === "male" ? "M" : "F",
+        origin_dialog: "greetings",
+        picture: context.session.user.profile_pic
+      });
+    }
   }
 
   // Abrindo bot através de comentários e posts
@@ -402,7 +404,7 @@ bot.onEvent(async context => {
               payload: "listening"
             }
           ]);
-      }, limit);
+      }, IssueTimerlimit);
       break;
     case "aboutMe":
       const introductionText = await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, "introduction");
