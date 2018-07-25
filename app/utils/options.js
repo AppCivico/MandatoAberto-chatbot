@@ -4,6 +4,11 @@ module.exports = {
         title: "Dê sua opinião",
         payload: "poll"
     },
+    aboutPolitician: {
+        type: "postback",
+        title: undefined, // will be filled before it's used
+        payload: "aboutMe"
+    },
     contacts: {
         type: "postback",
         title: "Contatos",
