@@ -61,6 +61,18 @@ function getArticles(gender) {
   }
 };
 
+function getAboutMe(politicianData) {
+  let articles = getArticles(politicianData.gender); 
+
+  if (politicianData.office.name === "Outros" || politicianData.office.name === "Candidato" || politicianData.office.name === "Candidata") {
+    return `Sobre ${articles.defined} líder`;
+  } else if (politicianData.office.name === "pré-candidato" || politicianData.office.name === "pré-candidata") {
+    return `${articles.defined.toUpperCase()} ${politicianData.office.name}`;
+  } else {
+    return `Sobre ${articles.defined} ${politicianData.office.name}`;
+  }
+};
+
 function checkMenu(context, opt2) { // eslint-disable-line no-inner-declarations
   let dialogs = opt2;
   console.log('Running')
@@ -73,18 +85,6 @@ function checkMenu(context, opt2) { // eslint-disable-line no-inner-declarations
   console.log(dialogs);
   return dialogs;
 }
-
-function getAboutMe(politicianData) {
-  let articles = getArticles(politicianData.gender); 
-
-  if (politicianData.office.name === "Outros" || politicianData.office.name === "Candidato" || politicianData.office.name === "Candidata") {
-    return `Sobre ${articles.defined} líder`;
-  } else if (politicianData.office.name === "pré-candidato" || politicianData.office.name === "pré-candidata") {
-    return `${articles.defined.toUpperCase()} ${politicianData.office.name}`;
-  } else {
-    return `Sobre ${articles.defined} ${politicianData.office.name}`;
-  }
-};
 
 function getIssueMessage(issueMessage) {
   if (Object.keys(issueMessage).length === 0) {
