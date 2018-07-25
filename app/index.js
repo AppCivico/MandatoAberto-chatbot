@@ -81,9 +81,7 @@ async function checkMenu(context, opt2) { // eslint-disable-line no-inner-declar
   if (!context.state.pollData) { dialogs = dialogs.filter(obj => obj.payload !== 'poll'); }
   if (!context.state.politicianData.contact) { dialogs = dialogs.filter(obj => obj.payload !== 'contacts');}
   if (!context.state.politicianData.votolegal_integration) { dialogs = dialogs.filter(obj => obj.payload !== 'votoLegal');}
-  // dialogs.find(obj => obj.payload === 'aboutMe', (obj) => (obj.title = getAboutMe(context.state.politicianData)));
-  // if (dialogs[0].payload === 'aboutMe') { dialogs[0].title = getAboutMe(context.state.politicianData)}
-  if (dialogs[0].payload === 'aboutMe') { dialogs[0].title = await getAboutMe(context.state.politicianData) }
+  if (dialogs[0].payload === 'aboutMe') { dialogs[0].title = getAboutMe(context.state.politicianData) }
   console.log(dialogs);
   return dialogs;
 }
