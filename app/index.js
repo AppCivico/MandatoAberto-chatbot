@@ -68,7 +68,7 @@ function checkMenu(context, opt2) { // eslint-disable-line no-inner-declarations
   if (!context.state.trajectory) { dialogs = dialogs.filter(obj => obj.payload !== 'trajectory');}
   if (!context.state.pollData) { dialogs = dialogs.filter(obj => obj.payload !== 'poll'); }
   if (!context.state.politicianData.contact) { dialogs = dialogs.filter(obj => obj.payload !== 'contacts');}
-  if (!context.state.politicianData.votolegal_integration2) { dialogs = dialogs.filter(obj => obj.payload !== 'votoLegal'); console.log('Here i am')}
+  if (!context.state.politicianData.votolegal_integration) { dialogs = dialogs.filter(obj => obj.payload !== 'votoLegal'); console.log('Here i am')}
   console.log(dialogs);
   return dialogs;
 }
@@ -204,7 +204,8 @@ bot.onEvent(async context => {
     }
   }
   // quick_replies que vem de propagação que não são resposta de enquete
-  if (context.event.isQuickReply && (context.state.dialog !== "pollAnswer") && !(context.event.message.quick_reply.payload.includes("pollAnswerPropagate"))) { // because of the issue response
+  // because of the issue response
+  if (context.event.isQuickReply && (context.state.dialog !== "pollAnswer") && !(context.event.message.quick_reply.payload.includes("pollAnswerPropagate"))) { 
     await context.setState({ dialog: context.event.message.quick_reply.payload });
   }
     // Resposta de enquete
@@ -462,23 +463,8 @@ bot.onEvent(async context => {
     case "aboutMe":
       const introductionText = await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, "introduction");
       await context.sendText(introductionText.content);
-      // if (context.state.trajectory.content && context.state.pollData.questions) {
-      //   promptOptions = [opt.trajectory, opt.contacts];
-      // } else if (context.state.trajectory.content && !context.state.pollData.questions) {
-      //   promptOptions = [opt.trajectory];
-      // } else if (!context.state.trajectory.content && context.state.pollData.questions) {
-      //   promptOptions = [opt.contacts];
-      // }
-      // if (context.state.politicianData.votolegal_integration) {
-      //   if (context.state.politicianData.votolegal_integration.votolegal_url && context.state.politicianData.votolegal_integration.votolegal_username) {
-      //     // check if integration to votoLegal exists to add the donation option
-      //     // politicianData.votolegal_integration.votolegal_url will be used in a future web_url button to link to the donation page
-      //     promptOptions.push(opt.doarOption);
-      //   }
-      // }
-      // await context.sendButtonTemplate(`O que mais deseja saber sobre ${context.state.articles.defined} ${context.state.politicianData.office.name}?`, promptOptions);
       await context.sendButtonTemplate(`O que mais deseja saber sobre ${context.state.articles.defined} ${context.state.politicianData.office.name}?`, 
-      await checkMenu(context, [opt.trajectory, opt.contacts, opt.doarOption]));
+        await checkMenu(context, [opt.trajectory, opt.contacts, opt.doarOption]));
       await context.setState({ dialog: "prompt" });
       break;
     case "contacts":
@@ -519,26 +505,28 @@ bot.onEvent(async context => {
       await context.setState({ dialog: "prompt", politicianCellPhone: undefined});
       break;
     case "poll":
+    // if (context.state.trajectory.content && context.state.politicianData.contact) {
+      //   promptOptions = [opt.trajectory, opt.contacts];
+      // } else if (context.state.trajectory.content && !context.state.politicianData.contact) {
+        //   promptOptions = [opt.trajectory];
+        // } else if (!context.state.trajectory.content && context.state.politicianData.contact) {
+          //   promptOptions = [opt.contacts];
+          // }
+          // if (context.state.politicianData.votolegal_integration) {
+            //   if (context.state.politicianData.votolegal_integration.votolegal_url && context.state.politicianData.votolegal_integration.votolegal_username) {
+              //     // check if integration to votoLegal exists to add the donation option
+              //     // politicianData.votolegal_integration.votolegal_url will be used in a future web_url button to link to the donation page
+              //     promptOptions.push(opt.doarOption);
+              //   }
+              // }
       // Verifico se o cidadão já respondeu a enquete atualmente ativa
-      if (context.state.trajectory.content && context.state.politicianData.contact) {
-        promptOptions = [opt.trajectory, opt.contacts];
-      } else if (context.state.trajectory.content && !context.state.politicianData.contact) {
-        promptOptions = [opt.trajectory];
-      } else if (!context.state.trajectory.content && context.state.politicianData.contact) {
-        promptOptions = [opt.contacts];
-      }
-      if (context.state.politicianData.votolegal_integration) {
-        if (context.state.politicianData.votolegal_integration.votolegal_url && context.state.politicianData.votolegal_integration.votolegal_username) {
-          // check if integration to votoLegal exists to add the donation option
-          // politicianData.votolegal_integration.votolegal_url will be used in a future web_url button to link to the donation page
-          promptOptions.push(opt.doarOption);
-        }
-      }
       // Agora a enquete poderá ser respondida via propagação ou via dialogo
       const recipientAnswer = await MandatoAbertoAPI.getPollAnswer(context.session.user.id, context.state.pollData.id);
       if (recipientAnswer.recipient_answered >= 1) {
         await context.sendText("Ah, que pena! Você já respondeu essa pergunta.");
-        await context.sendButtonTemplate("Se quiser, eu posso te ajudar com outra coisa.", promptOptions);
+        // await context.sendButtonTemplate("Se quiser, eu posso te ajudar com outra coisa.", promptOptions);
+        await context.sendButtonTemplate("Se quiser, eu posso te ajudar com outra coisa.", 
+          await checkMenu(context, [opt.trajectory, opt.contacts, opt.doarOption]));
         await context.setState({ dialog: "prompt" });
       } else {
         await context.sendText("Quero conhecer você melhor. Deixe sua resposta e participe deste debate.");
