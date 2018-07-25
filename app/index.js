@@ -27,8 +27,7 @@ function formatReal(int) {
 
 let promptOptions;
 
-const saveRecipientTimer = 10000 * 10 ; // 4 hours
-// const saveRecipientTimer = 1000 * 60 * 60 * 4; // 4 hours
+const saveRecipientTimer = 1000 * 60 * 60 * 4; // 4 hours
 const IssueTimerlimit = 10000 * 2; // 20 seconds
 
 let timer;
@@ -99,7 +98,6 @@ bot.onEvent(async context => {
     await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
     // we update user data at every interaction
     if ((context.event.rawEvent.timestamp - context.session.lastActivity) >= saveRecipientTimer) {
-      console.log('salvei o recipient')
       await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
         fb_id: context.session.user.id,
         name: `${context.session.user.first_name} ${context.session.user.last_name}`,
