@@ -470,8 +470,8 @@ bot.onEvent(async context => {
     case "contacts":
       // Tratando o formato do telefone
       if (context.state.politicianData.contact.cellphone) {
-        await context.setState({ policianCellphone: context.state.politicianData.contact.cellphone.replace(/(?:\+55)+/g, "")})
-        await context.setState({ policianCellphone: context.state.policianCellphone.replace(/^(\d{2})/g, "($1)")})
+        await context.setState({ politicianCellPhone: context.state.politicianData.contact.cellphone.replace(/(?:\+55)+/g, "")})
+        await context.setState({ politicianCellPhone: context.state.politicianCellPhone.replace(/^(\d{2})/g, "($1)")})
       }
       await context.sendText(`Você pode entrar em contato com ${context.state.articles.defined} ${context.state.politicianData.office.name} `+
       `${context.state.politicianData.name} pelos seguintes canais:`);
@@ -479,7 +479,7 @@ bot.onEvent(async context => {
         await context.sendText(` - Através do e-mail: ${context.state.politicianData.contact.email}`);
       }
       if (context.state.politicianData.contact.cellphone) {
-        await context.sendText(` - Através do WhatsApp: ${context.state.policianCellphone}`);
+        await context.sendText(` - Através do WhatsApp: ${context.state.politicianCellPhone}`);
       }
       if (context.state.politicianData.contact.twitter) {
         await context.sendText(` - Através do Twitter: ${context.state.politicianData.contact.twitter}`);
@@ -502,7 +502,7 @@ bot.onEvent(async context => {
         }
       }
       await context.sendButtonTemplate("Quer saber mais?", promptOptions);
-      await context.setState({ dialog: "prompt", policianCellphone: undefined});
+      await context.setState({ dialog: "prompt", politicianCellPhone: undefined});
       break;
     case "poll":
       // Verifico se o cidadão já respondeu a enquete atualmente ativa
