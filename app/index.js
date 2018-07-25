@@ -61,6 +61,18 @@ function getArticles(gender) {
   }
 };
 
+function checkMenu(context, opt2) { // eslint-disable-line no-inner-declarations
+  let dialogs = opt2;
+  if (!context.state.introduction) { dialogs = dialogs.filter(obj => obj.metadata !== 'aboutPolitician'); }
+  if (!context.state.trajectory) { dialogs = dialogs.filter(obj => obj.metadata !== 'aboutTrajectory'); }
+  if (!context.state.pollData) { dialogs = dialogs.filter(obj => obj.metadata !== 'answerPoll'); }
+  if (!context.state.politicianData.contact) { dialogs = dialogs.filter(obj => obj.metadata !== 'contact'); }
+  if (!context.state.politicianData.votolegal_integration.votolegal_username)
+  { dialogs = dialogs.filter(obj => obj.metadata !== 'participate'); }
+  if (!context.state.politicianData.votolegal_integration) { dialogs = dialogs.filter(obj => obj.metadata !== 'participate'); }
+  return dialogs;
+}
+
 function getAboutMe(politicianData) {
   let articles = getArticles(politicianData.gender); 
 
@@ -450,21 +462,23 @@ bot.onEvent(async context => {
     case "aboutMe":
       const introductionText = await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, "introduction");
       await context.sendText(introductionText.content);
-      if (context.state.trajectory.content && context.state.pollData.questions) {
-        promptOptions = [opt.trajectory, opt.contacts];
-      } else if (context.state.trajectory.content && !context.state.pollData.questions) {
-        promptOptions = [opt.trajectory];
-      } else if (!context.state.trajectory.content && context.state.pollData.questions) {
-        promptOptions = [opt.contacts];
-      }
-      if (context.state.politicianData.votolegal_integration) {
-        if (context.state.politicianData.votolegal_integration.votolegal_url && context.state.politicianData.votolegal_integration.votolegal_username) {
-          // check if integration to votoLegal exists to add the donation option
-          // politicianData.votolegal_integration.votolegal_url will be used in a future web_url button to link to the donation page
-          promptOptions.push(opt.doarOption);
-        }
-      }
-      await context.sendButtonTemplate(`O que mais deseja saber sobre ${context.state.articles.defined} ${context.state.politicianData.office.name}?`, promptOptions);
+      // if (context.state.trajectory.content && context.state.pollData.questions) {
+      //   promptOptions = [opt.trajectory, opt.contacts];
+      // } else if (context.state.trajectory.content && !context.state.pollData.questions) {
+      //   promptOptions = [opt.trajectory];
+      // } else if (!context.state.trajectory.content && context.state.pollData.questions) {
+      //   promptOptions = [opt.contacts];
+      // }
+      // if (context.state.politicianData.votolegal_integration) {
+      //   if (context.state.politicianData.votolegal_integration.votolegal_url && context.state.politicianData.votolegal_integration.votolegal_username) {
+      //     // check if integration to votoLegal exists to add the donation option
+      //     // politicianData.votolegal_integration.votolegal_url will be used in a future web_url button to link to the donation page
+      //     promptOptions.push(opt.doarOption);
+      //   }
+      // }
+      // await context.sendButtonTemplate(`O que mais deseja saber sobre ${context.state.articles.defined} ${context.state.politicianData.office.name}?`, promptOptions);
+      await context.sendButtonTemplate(`O que mais deseja saber sobre ${context.state.articles.defined} ${context.state.politicianData.office.name}?`, 
+      await checkMenu(context, [opt.trajectory, opt.contacts, opt.doarOption]));
       await context.setState({ dialog: "prompt" });
       break;
     case "contacts":
