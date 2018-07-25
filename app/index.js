@@ -286,12 +286,10 @@ bot.onEvent(async context => {
       await context.setState({ introduction: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, "introduction") });
       await context.setState({ aboutMeText: await getAboutMe(context.state.politicianData) });
       await context.setState({ issueMessage: getIssueMessage(await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, "issue_acknowledgment")) });
-      await getMenuPrompt(context);
       await context.setState({ userMessage: "" }); // cleaning up
       await context.setState({ greeting: context.state.politicianData.greeting.replace("${user.office.name}", context.state.politicianData.office.name)});
       await context.setState({ greeting: context.state.greeting.replace("${user.name}", context.state.politicianData.name)});
       await context.sendText(context.state.greeting);
-      // await context.sendButtonTemplate(context.state.issueMessage, promptOptions);
       await context.sendButtonTemplate(context.state.issueMessage, await checkMenu(context, [ opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption ]));
       await context.setState({ dialog: "prompt" });
       break;
@@ -303,10 +301,10 @@ bot.onEvent(async context => {
       await context.setState({ articles: getArticles(context.state.politicianData.gender)});
       await context.setState({ introduction: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, "introduction") });
       await context.setState({ aboutMeText: await getAboutMe(context.state.politicianData) });
-      // await context.setState({ issueMessage: getIssueMessage(await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, "issue_acknowledgment")) });
-      await getMenuPrompt(context);
+      // await getMenuPrompt(context);
       await context.setState({ userMessage: "" }); // cleaning up
-      await context.sendButtonTemplate("Como posso te ajudar?", promptOptions);
+      await context.sendButtonTemplate(context.state.issueMessage, await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
+      // await context.sendButtonTemplate("Como posso te ajudar?", promptOptions);
       await context.setState({ dialog: "prompt" });
       break;
     case "intermediate":
