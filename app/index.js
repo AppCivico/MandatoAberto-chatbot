@@ -99,10 +99,10 @@ bot.onEvent(async context => {
     if(!context.event.rawEvent.postback.referral) { // if this doesn't exists we are on facebook
       await context.setState({ facebookPlataform: 'MESSENGER'});
     }
-    else {
+    else { // if it exists we are on an external site
       await context.setState({ facebookPlataform: 'CUSTOMER_CHAT_PLUGIN'});
     }
-    console.log('\n', context.state.facebookPlataform);
+
       await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
         fb_id: context.session.user.id,
         name: `${context.session.user.first_name} ${context.session.user.last_name}`,
