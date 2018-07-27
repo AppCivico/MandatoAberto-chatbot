@@ -189,12 +189,12 @@ bot.onEvent(async (context) => {
 	}
 	// Resposta de enquete
 	if (context.event.isQuickReply && context.state.dialog === 'pollAnswer') {
-		poll_question_option_id = context.event.message.quick_reply.payload;
+		const	poll_question_option_id = context.event.message.quick_reply.payload;
 		await MandatoAbertoAPI.postPollAnswer(context.session.user.id, poll_question_option_id, 'dialog');
 	} else if (context.event.isQuickReply && context.event.message.quick_reply.payload && context.event.message.quick_reply.payload.includes('pollAnswerPropagate')) {
 		// Tratando resposta da enquete através de propagação
 		const payload = context.event.message.quick_reply.payload;
-		poll_question_option_id = payload.substr(payload.indexOf('_') + 1, payload.length);
+		const poll_question_option_id = payload.substr(payload.indexOf('_') + 1, payload.length);
 		await MandatoAbertoAPI.postPollAnswer(context.session.user.id, poll_question_option_id, 'propagate');
 		context.setState({ dialog: 'pollAnswer' });
 	} else if (context.event.isText && context.state.dialog === 'pollAnswer') {
