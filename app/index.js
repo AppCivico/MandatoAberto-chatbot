@@ -96,11 +96,13 @@ bot.onEvent(async context => {
     // we reload politicianData on every useful event
     await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
     // we update user data at every interaction
-    if(context.event.rawEvent.postback.referral) { // if this exists we are on external site
-    await context.setState({ facebookPlataform: 'CUSTOMER_CHAT_PLUGIN'});
-  }
-    else { // if it doesn't exists we are on an facebook/messenger
-    await context.setState({ facebookPlataform: 'MESSENGER'});
+    if (context.event.rawEvent.postback) {
+      if(context.event.rawEvent.postback.referral) { // if this exists we are on external site
+        await context.setState({ facebookPlataform: 'CUSTOMER_CHAT_PLUGIN'});
+      }
+      else { // if it doesn't exists we are on an facebook/messenger
+        await context.setState({ facebookPlataform: 'MESSENGER'});
+      }
     }
 
       await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
