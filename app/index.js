@@ -345,11 +345,11 @@ bot.onEvent(async context => {
           participateMessage: "Você já está na nossa página para doar. Se quiser, também poderá divulgar seu apoio!"});
       }
       // checking for picframe_url so we can only show this option when it's available but still show the votoLegal option
-      if (context.state.politicianData.picframe_url2) {
+      if (context.state.politicianData.picframe_url) {
         await context.setState({ participateOptions: context.state.participateOptions.concat([opt.wannaDivulgate]) });
       } else {
-        await context.setState({ participateOptions: context.state.participateOptions.concat([opt.leaveInfo]) });
-        await context.setState({ dataPrompt: 'email' });
+        // await context.setState({ participateOptions: context.state.participateOptions.concat([opt.leaveInfo]) });
+        // await context.setState({ dataPrompt: 'email' });
       }
       await context.setState({ participateOptions: context.state.participateOptions.concat([opt.goBackMainMenu]) });
       // await participateOptions.push(opt.goBackMainMenu);
@@ -441,7 +441,7 @@ bot.onEvent(async context => {
       break;
     case "poll":
       const recipientAnswer = await MandatoAbertoAPI.getPollAnswer(context.session.user.id, context.state.pollData.id);
-      if (recipientAnswer.recipient_answered >= 1) {
+      if (recipientAnswer.recipient_answered >= 100) {
         await context.sendText("Ah, que pena! Você já respondeu essa pergunta.");
         await context.sendButtonTemplate("Se quiser, eu posso te ajudar com outra coisa.", 
           await checkMenu(context, [opt.trajectory, opt.contacts, opt.doarOption]));
