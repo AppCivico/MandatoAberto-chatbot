@@ -3,10 +3,24 @@
   "env": {
     "browser": true,
     "node": true
-    },
-    "rules": {
-
-      "indent": ["error", "tab"],
-    "no-tabs": 0
+  },
+  "rules": {
+    "no-console": 0,
+    "indent": [
+      "error",
+      "tab"
+    ],
+    "no-tabs": 0,
+    "default-case": 0,
+    "max-len": [
+      "error",
+      175,
+      {
+        "code": 120,
+        "ignoreUrls": true,
+        "ignoreStrings": true,
+        "ignoreTemplateLiterals": true
+      }
+    ]
   }
 }

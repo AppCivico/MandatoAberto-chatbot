@@ -14,10 +14,10 @@ const opt = require('./utils/options');
 const phoneRegex = new RegExp(/^\+55\d{2}(\d{1})?\d{8}$/);
 
 function getMoney(str) {
-	return parseInt(str.replace(/[\D]+/g, ''));
+	return parseInt(str.replace(/[\D]+/g, ''), 0);
 }
 function formatReal(int) {
-	let tmp = `${int }`;
+	let tmp = `${int}`;
 	tmp = tmp.replace(/([0-9]{2})$/g, ',$1');
 	if (tmp.length > 6) {
 		tmp = tmp.replace(/([0-9]{3}),([0-9]{2}$)/g, '.$1,$2');
@@ -65,9 +65,8 @@ function getAboutMe(politicianData) {
 		return `Sobre ${articles.defined} líder`;
 	} if (politicianData.office.name === 'pré-candidato' || politicianData.office.name === 'pré-candidata') {
 		return `${articles.defined.toUpperCase()} ${politicianData.office.name}`;
-	} else {
-		return `Sobre ${articles.defined} ${politicianData.office.name}`;
 	}
+	return `Sobre ${articles.defined} ${politicianData.office.name}`;
 }
 
 async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-declarations
@@ -398,7 +397,7 @@ bot.onEvent(async (context) => {
 			const issue_created_message = await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_created');
 			let endMessage;
 			if (issue_created_message.content) {
-				endMessage = `${issue_created_message.content }\nVocê terminou de escrever sua mensagem?`;
+				endMessage = `${issue_created_message.content}\nVocê terminou de escrever sua mensagem?`;
 			} else {
 				endMessage = 'Você terminou de escrever sua mensagem?';
 			}
