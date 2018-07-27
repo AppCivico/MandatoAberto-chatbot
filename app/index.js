@@ -25,8 +25,6 @@ function formatReal(int) {
   return tmp;
 }
 
-let promptOptions;
-
 const IssueTimerlimit = 10000 * 2; // 20 seconds
 
 let timer;
@@ -478,7 +476,8 @@ bot.onEvent(async context => {
       break;
     case "recipientData":
     if (context.event.postback && (context.event.postback.title === "Agora não" || context.event.postback.title === "Não")) {
-        await context.sendButtonTemplate("Está bem! Posso te ajudar com mais alguma informação?", promptOptions);
+        await context.sendButtonTemplate("Está bem! Posso te ajudar com mais alguma informação?", 
+          await checkMenu([opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
         await context.setState({ dialog: "prompt" });
       } else if (context.state.dataPrompt) {
         switch (context.state.dataPrompt) {
@@ -518,7 +517,7 @@ bot.onEvent(async context => {
             break;
           case "end":
           await context.sendText("Pronto, já guardei seus dados.");
-          await context.sendButtonTemplate("Quer saber mais?", promptOptions);
+          await context.sendButtonTemplate("Quer saber mais?", await checkMenu([opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
           await context.setState({ dialog: "prompt", recipientData: undefined, dataPrompt: undefined });
             break;
         }
