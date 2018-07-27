@@ -229,7 +229,8 @@ bot.onEvent(async context => {
 
     if (context.state.recipientData) {
       switch (context.state.recipientData) {
-        case "email":
+		case "email":
+		console.log(context.state.email);
           await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
             fb_id: context.session.user.id,
             email: context.state.email
@@ -350,7 +351,7 @@ bot.onEvent(async context => {
           participateMessage: "Você já está na nossa página para doar. Se quiser, também poderá divulgar seu apoio!"});
       }
       // checking for picframe_url so we can only show this option when it's available but still show the votoLegal option
-      if (context.state.politicianData.picframe_url2) {
+      if (context.state.politicianData.picframe_url) {
         await context.setState({ participateOptions: context.state.participateOptions.concat([opt.wannaDivulgate]) });
       } else {
         await context.setState({ participateOptions: context.state.participateOptions.concat([opt.leaveInfo]) });
@@ -489,8 +490,9 @@ bot.onEvent(async context => {
         switch (context.state.dataPrompt) {
           case "email":
           try {
-            await context.sendText("Qual o seu e-mail? Pode digita-lo e nos mandar.", {
-              quick_replies: [{ content_type: 'user_email' }] });
+			await context.sendText("Qual o seu e-mail?");
+            // await context.sendText("Qual o seu e-mail? Pode digita-lo e nos mandar.", {
+            //   quick_replies: [{ content_type: 'user_email' }] });
           } catch(err) {
             console.log('E-mail button catch error =>', err)
             await context.sendText("Qual é o seu e-mail?");
@@ -500,13 +502,9 @@ bot.onEvent(async context => {
             break;
           case "cellphone":
           try {
-            await context.sendText("Qual é o seu telefone? Não deixe de incluir o DDD.", {
-              quick_replies: [
-                {
-                  content_type: 'user_phone_number',
-                },
-              ],
-            });
+			  await context.sendText("Qual é o seu telefone? Não deixe de incluir o DDD.");
+            // await context.sendText("Qual é o seu telefone? Não deixe de incluir o DDD.", {
+            // quick_replies: [{ content_type: 'user_phone_number' }]});
           } catch(err) {
             console.log('Cellphone button catch error =>', err)
             await context.sendText("Qual é o seu telefone? Não deixe de incluir o DDD.");
