@@ -86,7 +86,7 @@ function getIssueMessage(issueMessage) {
 	return issueMessage.content;
 }
 
-bot.onEvent(async (context) => {
+bot.onEvent(async (context) => { // eslint-disable-line
 	if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead) {
 		// we reload politicianData on every useful event
 		await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
@@ -262,8 +262,8 @@ bot.onEvent(async (context) => {
 		await context.setState({ introduction: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'introduction') });
 		await context.setState({ issueMessage: getIssueMessage(await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_acknowledgment')) });
 		await context.setState({ userMessage: '' }); // cleaning up
-		await context.setState({ greeting: context.state.politicianData.greeting.replace('${user.office.name}', context.state.politicianData.office.name) });
-		await context.setState({ greeting: context.state.greeting.replace('${user.name}', context.state.politicianData.name) });
+		await context.setState({ greeting: context.state.politicianData.greeting.replace('${user.office.name}', context.state.politicianData.office.name) }); // eslint-disable-line no-template-curly-in-string
+		await context.setState({ greeting: context.state.greeting.replace('${user.name}', context.state.politicianData.name) }); // eslint-disable-line no-template-curly-in-string
 		await context.sendText(context.state.greeting);
 		//   await context.sendButtonTemplate(context.state.issueMessage, await checkMenu(context, [ opt.aboutPolitician, opt.poll_suaOpiniao, opt.leaveInfo ]));
 		await context.sendButtonTemplate(context.state.issueMessage, await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
