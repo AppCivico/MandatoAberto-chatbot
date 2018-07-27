@@ -271,8 +271,8 @@ bot.onEvent(async context => {
       await context.setState({ greeting: context.state.politicianData.greeting.replace("${user.office.name}", context.state.politicianData.office.name)});
       await context.setState({ greeting: context.state.greeting.replace("${user.name}", context.state.politicianData.name)});
       await context.sendText(context.state.greeting);
-      await context.sendButtonTemplate(context.state.issueMessage, await checkMenu(context, [ opt.aboutPolitician, opt.poll_suaOpiniao, opt.leaveInfo ]));
-      // await context.sendButtonTemplate(context.state.issueMessage, await checkMenu(context, [ opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption ]));
+    //   await context.sendButtonTemplate(context.state.issueMessage, await checkMenu(context, [ opt.aboutPolitician, opt.poll_suaOpiniao, opt.leaveInfo ]));
+      await context.sendButtonTemplate(context.state.issueMessage, await checkMenu(context, [ opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption ]));
       await context.setState({ dialog: "prompt", dataPrompt: 'email' });
       break;
     case "mainMenu": // after issue is created we come back to this dialog
