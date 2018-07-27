@@ -267,7 +267,7 @@ bot.onEvent(async context => {
       await context.sendText(context.state.greeting);
       await context.sendButtonTemplate(context.state.issueMessage, await checkMenu(context, [ opt.aboutPolitician, opt.poll_suaOpiniao, opt.leaveInfo ]));
       // await context.sendButtonTemplate(context.state.issueMessage, await checkMenu(context, [ opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption ]));
-      await context.setState({ dialog: "prompt" });
+      await context.setState({ dialog: "prompt", dataPrompt: 'email' });
       break;
     case "mainMenu": // after issue is created we come back to this dialog
       areWeListening = true;
