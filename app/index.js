@@ -415,13 +415,13 @@ bot.onEvent(async (context) => {
 			]);
 		}, IssueTimerlimit);
 		break;
-	case 'aboutMe':
+	case 'aboutMe': {
 		const introductionText = await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'introduction');
 		await context.sendText(introductionText.content);
 		await context.sendButtonTemplate(`O que mais deseja saber sobre ${context.state.articles.defined} ${context.state.politicianData.office.name}?`,
 			await checkMenu(context, [opt.trajectory, opt.contacts, opt.doarOption]));
 		await context.setState({ dialog: 'prompt' });
-		break;
+		break; }
 	case 'contacts':
 		// Tratando o formato do telefone
 		if (context.state.politicianData.contact.cellphone) {
@@ -445,7 +445,7 @@ bot.onEvent(async (context) => {
 		await context.sendButtonTemplate('Quer saber mais?', await checkMenu(context, [opt.trajectory, opt.poll_suaOpiniao, opt.doarOption]));
 		await context.setState({ dialog: 'prompt', politicianCellPhone: undefined });
 		break;
-	case 'poll':
+	case 'poll': {
 		const recipientAnswer = await MandatoAbertoAPI.getPollAnswer(context.session.user.id, context.state.pollData.id);
 		if (recipientAnswer.recipient_answered >= 1) {
 			await context.sendText('Ah, que pena! Você já respondeu essa pergunta.');
@@ -471,7 +471,7 @@ bot.onEvent(async (context) => {
 			await context.typingOff();
 			await context.setState({ dialog: 'pollAnswer' });
 		}
-		break;
+		break; }
 	case 'listeningAnswer':
 		await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id, context.state.userMessage);
 		await context.setState({ userMessage: '' });
@@ -503,7 +503,7 @@ bot.onEvent(async (context) => {
 				break;
 			case 'cellphone':
 				try {
-			  await context.sendText('Qual é o seu telefone? Não deixe de incluir o DDD.');
+					await context.sendText('Qual é o seu telefone? Não deixe de incluir o DDD.');
 					// await context.sendText("Qual é o seu telefone? Não deixe de incluir o DDD.", {
 					// quick_replies: [{ content_type: 'user_phone_number' }]});
 				} catch (err) {
@@ -532,11 +532,11 @@ bot.onEvent(async (context) => {
 		await context.sendText('Escreva sua mensagem para nossa equipe:');
 		await context.setState({ dialog: 'prompt', prompt: 'issue' });
 		break;
-	case 'issue_created':
+	case 'issue_created': {
 		const issue_created_message = await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_created');
 		await context.sendButtonTemplate(issue_created_message.content, [opt.backToBeginning]);
 		await context.setState({ dialog: 'prompt' });
-		break;
+		break; }
 	}
 });
 
