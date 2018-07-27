@@ -96,23 +96,23 @@ bot.onEvent(async context => {
     // we reload politicianData on every useful event
     await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
     // we update user data at every interaction
-    // if (context.event.rawEvent.postback) {
-    //     if(context.event.rawEvent.postback.referral) { // if this exists we are on external site
-    //       await context.setState({ facebookPlataform: 'CUSTOMER_CHAT_PLUGIN'});
-    //     }
-    //     else { // if it doesn't exists we are on an facebook/messenger
-    //       await context.setState({ facebookPlataform: 'MESSENGER'});
-    //     }
-    //   }
-    //   await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
-    //     fb_id: context.session.user.id,
-    //     name: `${context.session.user.first_name} ${context.session.user.last_name}`,
-    //     gender: context.session.user.gender === "male" ? "M" : "F",
-    //     origin_dialog: "greetings",
-    //     picture: context.session.user.profile_pic,
-    //     session: context.state,
-    //     session_updatedAt: context.state.lastActivity
-    //   });
+    if (context.event.rawEvent.postback) {
+        if(context.event.rawEvent.postback.referral) { // if this exists we are on external site
+          await context.setState({ facebookPlataform: 'CUSTOMER_CHAT_PLUGIN'});
+        }
+        else { // if it doesn't exists we are on an facebook/messenger
+          await context.setState({ facebookPlataform: 'MESSENGER'});
+        }
+      }
+      await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
+        fb_id: context.session.user.id,
+        name: `${context.session.user.first_name} ${context.session.user.last_name}`,
+        gender: context.session.user.gender === "male" ? "M" : "F",
+        origin_dialog: "greetings",
+        picture: context.session.user.profile_pic,
+        session: context.state,
+        session_updatedAt: context.state.lastActivity
+      });
     }
   
 
@@ -265,7 +265,8 @@ bot.onEvent(async context => {
       await context.setState({ greeting: context.state.politicianData.greeting.replace("${user.office.name}", context.state.politicianData.office.name)});
       await context.setState({ greeting: context.state.greeting.replace("${user.name}", context.state.politicianData.name)});
       await context.sendText(context.state.greeting);
-      await context.sendButtonTemplate(context.state.issueMessage, await checkMenu(context, [ opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption ]));
+      await context.sendButtonTemplate(context.state.issueMessage, await checkMenu(context, [ opt.aboutPolitician, opt.poll_suaOpiniao, opt.leaveInfo ]));
+      // await context.sendButtonTemplate(context.state.issueMessage, await checkMenu(context, [ opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption ]));
       await context.setState({ dialog: "prompt" });
       break;
     case "mainMenu": // after issue is created we come back to this dialog
@@ -440,7 +441,7 @@ bot.onEvent(async context => {
       break;
     case "poll":
       const recipientAnswer = await MandatoAbertoAPI.getPollAnswer(context.session.user.id, context.state.pollData.id);
-      if (recipientAnswer.recipient_answered >= 100) {
+      if (recipientAnswer.recipient_answered >= 1) {
         await context.sendText("Ah, que pena! Você já respondeu essa pergunta.");
         await context.sendButtonTemplate("Se quiser, eu posso te ajudar com outra coisa.", 
           await checkMenu(context, [opt.trajectory, opt.contacts, opt.doarOption]));
