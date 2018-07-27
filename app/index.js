@@ -343,7 +343,7 @@ bot.onEvent(async context => {
           participateMessage: "Você já está na nossa página para doar. Se quiser, também poderá divulgar seu apoio!"});
       }
       // checking for picframe_url so we can only show this option when it's available but still show the votoLegal option
-      if (context.state.politicianData.picframe_url) {
+      if (context.state.politicianData.picframe_url2) {
         await context.setState({ participateOptions: context.state.participateOptions.concat([opt.wannaDivulgate]) });
       } else {
         await context.setState({ participateOptions: context.state.participateOptions.concat([opt.leaveInfo]) });
