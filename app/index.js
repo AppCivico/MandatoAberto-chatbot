@@ -96,11 +96,11 @@ bot.onEvent(async context => {
     // we reload politicianData on every useful event
     await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
     // we update user data at every interaction
-    if(!context.event.rawEvent.postback.referral) { // if this doesn't exists we are on facebook
-      await context.setState({ facebookPlataform: 'MESSENGER'});
-    }
-    else { // if it exists we are on an external site
-      await context.setState({ facebookPlataform: 'CUSTOMER_CHAT_PLUGIN'});
+    if(context.event.rawEvent.postback.referral) { // if this exists we are on external site
+    await context.setState({ facebookPlataform: 'CUSTOMER_CHAT_PLUGIN'});
+  }
+    else { // if it doesn't exists we are on an facebook/messenger
+    await context.setState({ facebookPlataform: 'MESSENGER'});
     }
 
       await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
@@ -347,6 +347,7 @@ bot.onEvent(async context => {
         await context.setState({ participateOptions: context.state.participateOptions.concat([opt.wannaDivulgate]) });
       } else {
         await context.setState({ participateOptions: context.state.participateOptions.concat([opt.leaveInfo]) });
+        await context.setState({ dataPrompt: 'email' });
       }
       await context.setState({ participateOptions: context.state.participateOptions.concat([opt.goBackMainMenu]) });
       // await participateOptions.push(opt.goBackMainMenu);
