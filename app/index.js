@@ -17,7 +17,7 @@ function getMoney(str) {
 	return parseInt(str.replace(/[\D]+/g, ''));
 }
 function formatReal(int) {
-	let tmp = `${int  }`;
+	let tmp = `${int }`;
 	tmp = tmp.replace(/([0-9]{2})$/g, ',$1');
 	if (tmp.length > 6) {
 		tmp = tmp.replace(/([0-9]{3}),([0-9]{2}$)/g, '.$1,$2');
@@ -52,24 +52,23 @@ bot.use(withTyping({ delay: 1000 }));
 
 // Deve-se indentificar o sexo do representante público e selecionar os artigos (definido e possesivo) adequados
 function getArticles(gender) {
-  if (gender === "F") {
-    return Articles.feminine;
-  } 
-    return Articles.masculine;
-  
-};
+	if (gender === 'F') {
+		return Articles.feminine;
+	}
+	return Articles.masculine;
+}
 
 function getAboutMe(politicianData) {
-  let articles = getArticles(politicianData.gender); 
+	const articles = getArticles(politicianData.gender);
 
-  if (politicianData.office.name === "Outros" || politicianData.office.name === "Candidato" || politicianData.office.name === "Candidata") {
-    return `Sobre ${articles.defined} líder`;
-  } if (politicianData.office.name === "pré-candidato" || politicianData.office.name === "pré-candidata") {
-    return `${articles.defined.toUpperCase()} ${politicianData.office.name}`;
-  } else {
-    return `Sobre ${articles.defined} ${politicianData.office.name}`;
-  }
-};
+	if (politicianData.office.name === 'Outros' || politicianData.office.name === 'Candidato' || politicianData.office.name === 'Candidata') {
+		return `Sobre ${articles.defined} líder`;
+	} if (politicianData.office.name === 'pré-candidato' || politicianData.office.name === 'pré-candidata') {
+		return `${articles.defined.toUpperCase()} ${politicianData.office.name}`;
+	} else {
+		return `Sobre ${articles.defined} ${politicianData.office.name}`;
+	}
+}
 
 async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-declarations
 	if (!context.state.introduction.content) { dialogs = dialogs.filter(obj => obj.payload !== 'aboutMe'); }
@@ -82,12 +81,11 @@ async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-dec
 }
 
 function getIssueMessage(issueMessage) {
-  if (Object.keys(issueMessage).length === 0) {
-    return "A qualquer momento você pode digitar uma mensagem que enviarei para nosso time.";
-  } 
-    return issueMessage.content;
-  
-};
+	if (Object.keys(issueMessage).length === 0) {
+		return 'A qualquer momento você pode digitar uma mensagem que enviarei para nosso time.';
+	}
+	return issueMessage.content;
+}
 
 bot.onEvent(async (context) => {
 	if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead) {
@@ -285,7 +283,7 @@ bot.onEvent(async (context) => {
 		break;
 	case 'intermediate':
 		// await context.setState({ userMessage: `${context.state.userMessage} + " "`});;
-		await context.sendText('Vocês gostaria de enviar uma mensagem para nossa equipe ou conhecer mais sobre ' 
+		await context.sendText('Vocês gostaria de enviar uma mensagem para nossa equipe ou conhecer mais sobre '
         + `${context.state.articles.defined} ${context.state.politicianData.office.name} ${context.state.politicianData.name}?`);
 		await context.sendButtonTemplate('Selecione a opção desejada em um dos botões abaixo:', [opt.writeMessage, opt.seeAssistent]);
 		await context.setState({ dialog: 'prompt' });
@@ -315,8 +313,8 @@ bot.onEvent(async (context) => {
 					type: 'web_url',
 					url: context.state.politicianData.picframe_url,
 					title: 'Mudar Avatar',
-				}]) 
-});
+				}]),
+			});
 		}
 		await context.setState({ participateOptions: context.state.participateOptions.concat([opt.backToKnowMore]) });
 		await context.sendButtonTemplate('Para ajudar na divulgação, você pode deixar seus contatos comigo ou mudar sua imagem de avatar. Você quer participar?',
@@ -337,19 +335,19 @@ bot.onEvent(async (context) => {
 		// if referral.source(CUSTOMER_CHAT_PLUGIN) doesn't exist we are on facebook and should send votolegal's url
 		if (!context.event.rawEvent.postback.referral) {
 			await context.setState({
- participateOptions: [
-				{
-					type: 'web_url',
-					url: `${context.state.politicianData.votolegal_integration.votolegal_url}/#doar`,
-					title: 'Vamos lá!',
-				}],
-participateMessage: 'Você deseja doar agora?' 
-});
+				participateOptions: [
+					{
+						type: 'web_url',
+						url: `${context.state.politicianData.votolegal_integration.votolegal_url}/#doar`,
+						title: 'Vamos lá!',
+					}],
+				participateMessage: 'Você deseja doar agora?',
+			});
 		} else {
 			await context.setState({
- participateOptions: [],
-				participateMessage: 'Você já está na nossa página para doar. Se quiser, também poderá divulgar seu apoio!' 
-});
+				participateOptions: [],
+				participateMessage: 'Você já está na nossa página para doar. Se quiser, também poderá divulgar seu apoio!',
+			});
 		}
 		// checking for picframe_url so we can only show this option when it's available but still show the votoLegal option
 		if (context.state.politicianData.picframe_url) {
@@ -360,15 +358,15 @@ participateMessage: 'Você deseja doar agora?'
 		}
 		await context.setState({ participateOptions: context.state.participateOptions.concat([opt.goBackMainMenu]) });
 		// await participateOptions.push(opt.goBackMainMenu);
-		await context.sendText('Seu apoio é fundamental para nossa pré-campanha! Por isso, cuidamos da segurança de todos os doadores. ' 
+		await context.sendText('Seu apoio é fundamental para nossa pré-campanha! Por isso, cuidamos da segurança de todos os doadores. '
       + 'Saiba mais em: www.votolegal.com.br');
 		await context.setState({ valueLegal: await VotoLegalAPI.getVotoLegalValues(context.state.politicianData.votolegal_integration.votolegal_username) });
 		await context.sendText(`Já consegui R$${formatReal(context.state.valueLegal.candidate.total_donated)} da minha meta de `
       + `R$${formatReal(getMoney(context.state.valueLegal.candidate.raising_goal))}.`);
 		await context.sendButtonTemplate(context.state.participateMessage, context.state.participateOptions);
 		await context.setState({
- dialog: 'prompt', valueLegal: undefined, participateOptions: undefined, participateMessage: undefined
- });
+			dialog: 'prompt', valueLegal: undefined, participateOptions: undefined, participateMessage: undefined,
+		});
 		break;
 	case 'WannaDivulgate':
 		await context.sendButtonTemplate('Que legal! Seu apoio é muito importante para nós! Você quer mudar foto (avatar) do seu perfil?', [
@@ -400,7 +398,7 @@ participateMessage: 'Você deseja doar agora?'
 			const issue_created_message = await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_created');
 			let endMessage;
 			if (issue_created_message.content) {
-				endMessage = `${issue_created_message.content  }\nVocê terminou de escrever sua mensagem?`;
+				endMessage = `${issue_created_message.content }\nVocê terminou de escrever sua mensagem?`;
 			} else {
 				endMessage = 'Você terminou de escrever sua mensagem?';
 			}
@@ -431,8 +429,8 @@ participateMessage: 'Você deseja doar agora?'
 			await context.setState({ politicianCellPhone: context.state.politicianData.contact.cellphone.replace(/(?:\+55)+/g, '') });
 			await context.setState({ politicianCellPhone: context.state.politicianCellPhone.replace(/^(\d{2})/g, '($1)') });
 		}
-		await context.sendText(`Você pode entrar em contato com ${context.state.articles.defined} ${context.state.politicianData.office.name} ` +
-      `${context.state.politicianData.name} pelos seguintes canais:`);
+		await context.sendText(`Você pode entrar em contato com ${context.state.articles.defined} ${context.state.politicianData.office.name} `
+      + `${context.state.politicianData.name} pelos seguintes canais:`);
 		if (context.state.politicianData.contact.email) {
 			await context.sendText(` - Através do e-mail: ${context.state.politicianData.contact.email}`);
 		}
@@ -469,8 +467,8 @@ participateMessage: 'Você deseja doar agora?'
 						title: context.state.pollData.questions[0].options[1].content,
 						payload: `${context.state.pollData.questions[0].options[1].id}`,
 					},
-				] 
-});
+				],
+			});
 			await context.typingOff();
 			await context.setState({ dialog: 'pollAnswer' });
 		}
