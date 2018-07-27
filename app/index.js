@@ -6,9 +6,10 @@ const config = require("./bottender.config.js").messenger;
 const MandatoAbertoAPI = require("./mandatoaberto_api.js");
 const VotoLegalAPI = require("./votolegal_api.js");
 const Articles = require("./utils/articles.js");
-const request = require("requisition");
+const opt = require('./utils/options');
 
-const apiUri = process.env.MANDATOABERTO_API_URL;
+// const request = require("requisition");
+// const apiUri = process.env.MANDATOABERTO_API_URL;
 
 const phoneRegex = new RegExp(/^\+55\d{2}(\d{1})?\d{8}$/);
 
@@ -24,47 +25,19 @@ function formatReal(int) {
   return tmp;
 }
 
-let articles;
-let politicianData;
-let pollAnswer;
-let trajectory;
-let promptOptions;
-let participateOptions;
-let recipient;
-let issue_message;
+const IssueTimerlimit = 10000 * 2; // 20 seconds
 
-let pollData = {};
-let recipientData = {};
-
-const limit = 10000 * 2;
 let timer;
 // userMessage -> context.state.userMessage -> stores the texts the user wirtes before sending them to politician [issue] 
 // sendIntro = true -> context.state.sendIntro -> verifies if we should send the intro text for issue creation.
 let areWeListening = false;
 // areWeListening -> user.state.areWeListening(doesn't work) -> diferenciates messages that come from
 // the standard flow and messages from comment/post
-
-recipientData[
-  ("fb_id", "name", "origin_dialog", "email", "cellphone", "gender")
-];
+// 
 
 const mapPageToAccessToken = async pageId => {
-  politicianData = await MandatoAbertoAPI.getPoliticianData(pageId);
-  pollData = await MandatoAbertoAPI.getPollData(pageId);
-  trajectory = await MandatoAbertoAPI.getAnswer(
-    politicianData.user_id,
-    "trajectory"
-  );
-
-  // Deve-se indentificar o sexo do representante público
-  // e selecionar os artigos (definido e possesivo) adequados
-  if (politicianData.gender === "F") {
-    articles = Articles.feminine;
-  } else {
-    articles = Articles.masculine;
-  }
-
-  return politicianData.fb_access_token;
+  const politicianData2 = await MandatoAbertoAPI.getPoliticianData(pageId);
+  return politicianData2.fb_access_token;
 };
 
 const bot = new MessengerBot({
@@ -75,111 +48,80 @@ const bot = new MessengerBot({
 
 bot.setInitialState({});
 
-bot.use(withTyping({ delay: 100 }));
+bot.use(withTyping({ delay: 1000 }));
+
+// Deve-se indentificar o sexo do representante público e selecionar os artigos (definido e possesivo) adequados
+function getArticles(gender) {
+  if (gender === "F") {
+    return Articles.feminine;
+  } else {
+    return Articles.masculine;
+  }
+};
+
+function getAboutMe(politicianData) {
+  let articles = getArticles(politicianData.gender); 
+
+  if (politicianData.office.name === "Outros" || politicianData.office.name === "Candidato" || politicianData.office.name === "Candidata") {
+    return `Sobre ${articles.defined} líder`;
+  } else if (politicianData.office.name === "pré-candidato" || politicianData.office.name === "pré-candidata") {
+    return `${articles.defined.toUpperCase()} ${politicianData.office.name}`;
+  } else {
+    return `Sobre ${articles.defined} ${politicianData.office.name}`;
+  }
+};
+
+async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-declarations
+  if (!context.state.introduction.content) { dialogs = dialogs.filter(obj => obj.payload !== 'aboutMe'); }
+  if (!context.state.trajectory) { dialogs = dialogs.filter(obj => obj.payload !== 'trajectory');}
+  if (!context.state.pollData) { dialogs = dialogs.filter(obj => obj.payload !== 'poll'); }
+  if (!context.state.politicianData.contact) { dialogs = dialogs.filter(obj => obj.payload !== 'contacts');}
+  if (!context.state.politicianData.votolegal_integration) { dialogs = dialogs.filter(obj => obj.payload !== 'votoLegal');}
+  if (dialogs[0].payload === 'aboutMe') { dialogs[0].title = getAboutMe(context.state.politicianData) }
+  return dialogs;
+}
+
+function getIssueMessage(issueMessage) {
+  if (Object.keys(issueMessage).length === 0) {
+    return "A qualquer momento você pode digitar uma mensagem que enviarei para nosso time.";
+  } else {
+    return issueMessage.content;
+  }
+};
 
 bot.onEvent(async context => {
-  function getMenuPrompt() {
-    // both of these verifications were on greetings dialog, now they're both at greeting and mainMenu
-    if (
-      politicianData.office.name === "Outros" ||
-      politicianData.office.name === "Candidato" ||
-      politicianData.office.name === "Candidata"
-    ) {
-      about_me_text = `Sobre ${articles.defined} líder`;
-    } else if (
-      politicianData.office.name === "pré-candidato" ||
-      politicianData.office.name === "pré-candidata"
-    ) {
-      about_me_text = `${articles.defined.toUpperCase()} ${politicianData.office.name}`;
-    } else {
-      about_me_text = `Sobre ${articles.defined} ${politicianData.office.name}`;
-    }
 
-    if (introduction.content && pollData.questions) {
-      promptOptions = [
-        // {
-        // 	content_type: 'text',
-        // 	title: 'Fale conosco',
-        // 	payload: 'issue'
-        // },
-        {
-          type: "postback",
-          title: about_me_text,
-          payload: "aboutMe"
-        },
-        {
-          type: "postback",
-          title: "Dê sua opinião",
-          payload: "poll"
+  if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead) {
+    // we reload politicianData on every useful event
+    await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
+    // we update user data at every interaction
+    if (context.event.rawEvent.postback) {
+        if(context.event.rawEvent.postback.referral) { // if this exists we are on external site
+          await context.setState({ facebookPlataform: 'CUSTOMER_CHAT_PLUGIN'});
         }
-      ];
-    } else if (introduction.content && !pollData.questions) {
-      promptOptions = [
-        // {
-        // 	content_type: 'text',
-        // 	title: 'Fale conosco',
-        // 	payload: 'issue'
-        // },
-        {
-          type: "postback",
-          title: about_me_text,
-          payload: "aboutMe"
+        else { // if it doesn't exists we are on an facebook/messenger
+          await context.setState({ facebookPlataform: 'MESSENGER'});
         }
-      ];
-    } else if (!introduction.content && pollData.questions) {
-      promptOptions = [
-        // {
-        // 	content_type: 'text',
-        // 	title: 'Fale conosco',
-        // 	payload: 'issue'
-        // },
-        {
-          type: "postback",
-          title: "Dê sua opinião",
-          payload: "poll"
-        }
-      ];
-    } else if (
-      !introduction.content &&
-      !pollData.questions &&
-      politicianData.contact
-    ) {
-      promptOptions = [
-        // {
-        // 	content_type: 'text',
-        // 	title: 'Fale conosco',
-        // 	payload: 'issue'
-        // },
-        {
-          type: "postback",
-          title: "Contatos",
-          payload: "contacts"
-        }
-      ];
-    }
-    // console.log('votolegal: \n', politicianData.votolegal_integration);
-    if (politicianData.votolegal_integration) {
-      if (politicianData.votolegal_integration.votolegal_url &&
-        politicianData.votolegal_integration.votolegal_username) {
-        // check if integration to votoLegal exists to add the donation option
-        // politicianData.votolegal_integration.votolegal_url will be used in a future web_url button to link to the donation page
-        const doarOption = {
-          type: "postback",
-          title: "Participar",
-          payload: "votoLegal"
-        };
-        promptOptions.push(doarOption);
       }
+      await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
+        fb_id: context.session.user.id,
+        name: `${context.session.user.first_name} ${context.session.user.last_name}`,
+        gender: context.session.user.gender === "male" ? "M" : "F",
+        origin_dialog: "greetings",
+        picture: context.session.user.profile_pic,
+        session: context.state,
+        session_updatedAt: context.state.lastActivity
+      });
     }
-  }
+  
 
   // Abrindo bot através de comentários e posts
+  // ** no context here **
   if (context.event.rawEvent.field === "feed") {
     let item;
     let comment_id;
     let permalink;
-    let introduction;
-    let about_me_text;
+    // let introduction;
     const post_id = context.event.rawEvent.value.post_id;
     const page_id = post_id.substr(0, post_id.indexOf("_"));
     let user_id = context.event.rawEvent.value.from.id;
@@ -189,35 +131,17 @@ bot.onEvent(async context => {
         item = "comment";
         comment_id = context.event.rawEvent.value.comment_id;
         permalink = context.event.rawEvent.value.post.permalink_url;
-        await MandatoAbertoAPI.postPrivateReply(
-          item,
-          page_id,
-          post_id,
-          comment_id,
-          permalink,
-          user_id
-        );
+        await MandatoAbertoAPI.postPrivateReply(item,page_id,post_id,comment_id,permalink,user_id);
         break;
       case "post":
         item = "post";
-        await MandatoAbertoAPI.postPrivateReply(
-          item,
-          page_id,
-          post_id,
-          comment_id,
-          permalink,
-          user_id
-        );
+        await MandatoAbertoAPI.postPrivateReply(item,page_id,post_id,comment_id,permalink,user_id);
         break;
     }
   }
-
   // Tratando caso de o político não ter dados suficientes
   if (!context.state.dialog) {
-    if (
-      !politicianData.greetings &&
-      (!politicianData.contact && !pollData.questions)
-    ) {
+    if (!context.state.politicianData.greetings && (!context.state.politicianData.contact && !context.state.pollData.questions)) {
       console.log("Politician does not have enough data");
       return false;
     }
@@ -228,163 +152,106 @@ bot.onEvent(async context => {
   // Tratando botão GET STARTED
   if (context.event.postback && context.event.postback.payload === "greetings") {
     await context.resetState();
+    await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
     await context.setState({ dialog: "greetings" });
   }
 
   // Tratando dinâmica de issues
   if (context.state.dialog === "prompt") {
     if (context.event.isPostback) {
-      const payload = context.event.postback.payload;
-      await context.setState({ dialog: payload });
+      await context.setState({ dialog: context.event.postback.payload });
     } else if (context.event.isQuickReply) {
       await context.setState({ dialog: context.event.message.quick_reply.payload });
     } else if (context.event.isText) {
       // Ao mandar uma mensagem que não é interpretada como fluxo do chatbot
       // Devo já criar uma issue
       // We go to the listening dialog to wait for other messages
+      // check if message came from standard flow or from post/comment
       if (areWeListening === true) {
-        // check if message came from standard flow or from post/comment
-        await context.setState({ dialog: "listening" });
+        await context.setState({ dialog: "prompt", dataPrompt: "email" });
+        await context.setState({ dialog: "listening"});
       } else {
         await context.setState({ dialog: "intermediate" });
       }
     }
   }
-
+  
   // Switch de dialogos
   if (context.event.isPostback && (context.state.dialog === "prompt" || context.event.postback.payload === "greetings")) {
-    const payload = context.event.postback.payload;
-    await context.setState({ dialog: payload });
+    await context.setState({ dialog: context.event.postback.payload });
   } else if (context.event.isPostback && context.state.dialog === "listening" ) {
     await context.typingOff();
     const payload = context.event.postback.payload;
-    // if (payload === "listeningAnswer") {
-    //   await MandatoAbertoAPI.postIssue(
-    //     politicianData.user_id,
-    //     context.session.user.id,
-    //     context.state.userMessage
-    //   );
-
-    //   await context.setState({ userMessage: ''});
-    //   await context.setState({ dataMessage: 'Agradecemos a sua mensagem. Deseja nos enviar ou atualizar seu e-mail e telefone?'});
-    //   console.log('ss', context.state.dataMessage);
-    //   await context.setState({ dialog: 'pollAnswer'});
-    // } else 
+    await context.setState({ dialog: payload });
     if (context.event.message) {
-        context.event.message.text = "";
-    }
-    if (context.event.isQuickReply) { // because of the issue response
-      const payload = context.event.quick_reply.payload;
-      await context.setState({ dialog: payload });
-    } else {
-      await context.setState({ dialog: payload });
+      context.event.message.text = "";
     }
   }
-  // Resposta de enquete
-  const propagateIdentifier = "pollAnswerPropagate";
-  if (context.event.isPostback && context.state.dialog === "pollAnswer") {
-    poll_question_option_id = context.event.postback.payload;
-    const origin = "dialog";
-    await MandatoAbertoAPI.postPollAnswer(
-      context.session.user.id,
-      poll_question_option_id,
-      origin
-    );
-  } else if (
-    context.event.isPostback &&
-    context.event.postback.payload &&
-    context.event.postback.payload.includes(propagateIdentifier)
-  ) {
+  // quick_replies que vem de propagação que não são resposta de enquete
+  // because of the issue response
+  if (context.event.isQuickReply && (context.state.dialog !== "pollAnswer") && !(context.event.message.quick_reply.payload.includes("pollAnswerPropagate"))) { 
+    await context.setState({ dialog: context.event.message.quick_reply.payload });
+  }
+    // Resposta de enquete
+  if (context.event.isQuickReply && context.state.dialog === "pollAnswer") {
+    poll_question_option_id = context.event.message.quick_reply.payload;
+    await MandatoAbertoAPI.postPollAnswer(context.session.user.id, poll_question_option_id, "dialog");
+  } else if (context.event.isQuickReply && context.event.message.quick_reply.payload && context.event.message.quick_reply.payload.includes("pollAnswerPropagate")) {
     // Tratando resposta da enquete através de propagação
-    const payload = context.event.postback.payload;
-    poll_question_option_id = payload.substr(
-      payload.indexOf("_") + 1,
-      payload.length
-    );
-    const origin = "propagate";
-    await MandatoAbertoAPI.postPollAnswer(
-      context.session.user.id,
-      poll_question_option_id,
-      origin
-    );
+    const payload = context.event.message.quick_reply.payload;
+    poll_question_option_id = payload.substr(payload.indexOf("_") + 1, payload.length);
+    await MandatoAbertoAPI.postPollAnswer(context.session.user.id, poll_question_option_id, "propagate");
     context.setState({ dialog: "pollAnswer" });
   } else if (context.event.isText && context.state.dialog === "pollAnswer") {
     await context.setState({ dialog: "listening" });
   }
   // Tratando dados adicionais do recipient
   if (context.state.dialog === "recipientData" && context.state.recipientData) {
+    if (context.event.isQuickReply) { 
+      if (context.state.dataPrompt === 'email') {
+        await context.setState({ email: context.event.message.quick_reply.payload });
+      } else if (context.state.dataPrompt === 'end') {
+        await context.setState({ cellphone: context.event.message.quick_reply.payload });
+      }
+    } else if (context.event.isText) {
+      if (context.state.dataPrompt === 'email') {
+        await context.setState({ email: context.event.message.text })
+      } else if (context.state.dataPrompt === 'end') {
+        await context.setState({ cellphone: context.event.message.text })
+      } else if (context.event.isPostback) {
+        if (context.state.dataPrompt === 'email') {
+          await context.setState({ email: context.event.postback.payload })
+        } else if (context.state.dataPrompt === 'end') {
+          await context.setState({ cellphone: context.event.postback.payload})
+      }
+      }
+    }
+
     if (context.state.recipientData) {
       switch (context.state.recipientData) {
-        case "email":
-          recipientData.fb_id = context.session.user.id;
-          recipientData.email = context.event.message.text;
-          await MandatoAbertoAPI.postRecipient(politicianData.user_id, recipientData);
-          recipientData = {};
-          await context.sendButtonTemplate(context.state.emailDialog,
-            [
-              {
-                type: "postback",
-                title: "Sim",
-                payload: "recipientData"
-              },
-              {
-                type: "postback",
-                title: "Não",
-                payload: "recipientData"
-              }
-            ]
-          );
-          await context.setState({
-            recipientData: "cellphonePrompt",
-            dialog: "recipientData",
-            dataPrompt: ""
+		case "email":
+          await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
+            fb_id: context.session.user.id,
+            email: context.state.email
           });
+          await context.sendButtonTemplate("Legal, agora quer me informar seu telefone, para lhe manter informado sobre outras perguntas?", opt.recipientData_YesNo);
+          await context.setState({ recipientData: "cellphonePrompt", dialog: "recipientData", dataPrompt: "" });
           break;
         case "cellphone":
-          recipientData.fb_id = context.session.user.id;
-          recipientData.cellphone = context.event.message.text;
-          recipientData.cellphone = recipientData.cellphone.replace(
-            /[- .)(]/g,
-            ""
-          );
-          recipientData.cellphone = `+55${recipientData.cellphone}`;
-
-          if (phoneRegex.test(recipientData.cellphone)) {
-            await MandatoAbertoAPI.postRecipient(
-              politicianData.user_id,
-              recipientData
-            );
-          } else {
-            await context.setState({
-              dataPrompt: "",
-              recipientData: "cellphonePrompt"
+          await context.setState({ cellphone: `+55${context.state.cellphone.replace(/[- .)(]/g, "")}`})
+          if (phoneRegex.test(context.state.cellphone)) {
+            await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
+              fb_id: context.session.user.id,
+              cellphone: context.state.cellphone
             });
-
-            await context.sendText(
-              "Desculpe-me, mas seu telefone não parece estar correto. Não esqueça de incluir o DDD. " +
-                "Por exemplo: 1199999-8888"
-            );
-                  await context.sendButtonTemplate("Vamos tentar de novo?", [
-              {
-                type: "postback",
-                title: "Sim",
-                payload: "recipientData"
-              },
-              {
-                type: "postback",
-                title: "Não",
-                payload: "recipientData"
-              }
-            ]);
+          } else {
+            await context.setState({dataPrompt: "", recipientData: "cellphonePrompt"});
+            await context.sendText("Desculpe-me, mas seu telefone não parece estar correto. Não esqueça de incluir o DDD. Por exemplo: 1199999-8888");
+            await context.sendButtonTemplate("Vamos tentar de novo?", opt.recipientData_YesNo);
           }
-
-          recipientData = {};
           break;
         case "cellphonePrompt":
-          await context.setState({
-            dialog: "recipientData",
-            dataPrompt: "cellphone"
-          });
+          await context.setState({ dialog: "recipientData", dataPrompt: "cellphone" });
           break;
       }
     }
@@ -392,270 +259,123 @@ bot.onEvent(async context => {
 
   switch (context.state.dialog) {
     case "greetings":
-      await context.setState({ sendIntro: true });
       areWeListening = true;
-      // Criando um cidadão
-      recipientData.fb_id = context.session.user.id;
-      recipientData.name = `${context.session.user.first_name} ${ context.session.user.last_name}`;
-      recipientData.gender = context.session.user.gender === "male" ? "M" : "F";
-      recipientData.origin_dialog = "greetings";
-      recipientData.picture = context.session.user.profile_pic;
-      recipient = await MandatoAbertoAPI.postRecipient(
-        politicianData.user_id,
-        recipientData
-      );
-      recipientData = {};
-      introduction = await MandatoAbertoAPI.getAnswer(politicianData.user_id, "introduction");
-      issue_message = await MandatoAbertoAPI.getAnswer(politicianData.user_id, "issue_acknowledgment");
-      if (Object.keys(issue_message).length === 0) {
-        issue_message =
-          "A qualquer momento você pode digitar uma mensagem que enviarei para nosso time.";
-      } else {
-        issue_message = issue_message.content;
-      }
-      await getMenuPrompt();
-      await context.setState({userMessage: ""}); // cleaning up
-      let greeting = politicianData.greeting.replace(
-        "${user.office.name}",
-        politicianData.office.name
-      );
-      greeting = greeting.replace("${user.name}", politicianData.name);
-      await context.sendText(greeting);
-      await context.sendButtonTemplate(issue_message, promptOptions);
-      await context.setState({ dialog: "prompt" });
+      await context.setState({ sendIntro: true });
+      await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id)});
+      await context.setState({ trajectory: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, "trajectory") });
+      await context.setState({ articles: getArticles(context.state.politicianData.gender) });
+      await context.setState({ introduction: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, "introduction") });
+      await context.setState({ issueMessage: getIssueMessage(await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, "issue_acknowledgment")) });
+      await context.setState({ userMessage: "" }); // cleaning up
+      await context.setState({ greeting: context.state.politicianData.greeting.replace("${user.office.name}", context.state.politicianData.office.name)});
+      await context.setState({ greeting: context.state.greeting.replace("${user.name}", context.state.politicianData.name)});
+      await context.sendText(context.state.greeting);
+    //   await context.sendButtonTemplate(context.state.issueMessage, await checkMenu(context, [ opt.aboutPolitician, opt.poll_suaOpiniao, opt.leaveInfo ]));
+      await context.sendButtonTemplate(context.state.issueMessage, await checkMenu(context, [ opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption ]));
+      await context.setState({ dialog: "prompt", dataPrompt: 'email' });
       break;
     case "mainMenu": // after issue is created we come back to this dialog
-      // introduction and about_me_text aren't declared inside of greetings anymore. What's defined there is accessible here.
-      await context.setState({ sendIntro: true });
       areWeListening = true;
-      // await context.setState({ areWeListening: true });
-      // Criando um cidadão
-       recipientData.fb_id = context.session.user.id;
-      recipientData.name = `${context.session.user.first_name} ${context.session.user.last_name}`;
-      recipientData.gender = context.session.user.gender === "male" ? "M" : "F";
-      recipientData.origin_dialog = "greetings";
-      recipientData.picture = context.session.user.profile_pic;
-      recipient = await MandatoAbertoAPI.postRecipient(
-        politicianData.user_id,
-        recipientData
-      );
-      recipientData = {};
-
-      introduction = await MandatoAbertoAPI.getAnswer(
-        politicianData.user_id,
-        "introduction"
-      );
-      issue_message = await MandatoAbertoAPI.getAnswer(
-        politicianData.user_id,
-        "issue_acknowledgment"
-      );
-
-      if (Object.keys(issue_message).length === 0) {
-        issue_message = "A qualquer momento você pode digitar uma mensagem e eu enviarei para o gabinete.";
-      } else {
-        issue_message = issue_message.content;
-      }
-      await getMenuPrompt();
+      await context.setState({ sendIntro: true });
+      await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
+      await context.setState({ trajectory: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, "trajectory") });
+      await context.setState({ articles: getArticles(context.state.politicianData.gender)});
+      await context.setState({ introduction: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, "introduction") });
       await context.setState({ userMessage: "" }); // cleaning up
-      await context.sendButtonTemplate("Como posso te ajudar?", promptOptions);
+      await context.sendButtonTemplate(context.state.issueMessage, await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
       await context.setState({ dialog: "prompt" });
       break;
     case "intermediate":
     // await context.setState({ userMessage: `${context.state.userMessage} + " "`});;
       await context.sendText(`Vocês gostaria de enviar uma mensagem para nossa equipe ou conhecer mais sobre ` + 
-        `${articles.defined} ${politicianData.office.name} ${politicianData.name}?`);
-      promptOptions = [
-        {
-          type: "postback",
-          title: "Escrever Mensagem",
-          payload: "listening"
-        },
-        {
-          type: "postback",
-          title: "Conhecer Assistente",
-          payload: "mainMenu"
-        }
-      ];
-      await context.sendButtonTemplate("Selecione a opção desejada em um dos botões abaixo:", promptOptions);
+        `${context.state.articles.defined} ${context.state.politicianData.office.name} ${context.state.politicianData.name}?`);
+      await context.sendButtonTemplate("Selecione a opção desejada em um dos botões abaixo:", [opt.writeMessage, opt.seeAssistent]);
       await context.setState({ dialog: "prompt" });
       break;
     case "votoLegal":
-      participateOptions = [
-        {
-          type: "postback",
-          title: "Sim",
-          payload: "WannaHelp"
-        },
-        {
-          type: "postback",
-          title: "Não",
-          payload: "mainMenu"
-        },
-        {
-          type: "postback",
-          title: "Saber mais",
-          payload: "knowMore"
-        }
-      ];
-      await context.sendText(
-        "Estamos em pré-campanha e contamos com você."
-      );
-      await context.sendButtonTemplate("Quer fazer parte?", participateOptions);
+      await context.sendText("Estamos em pré-campanha e contamos com você.");
+      await context.sendButtonTemplate("Quer fazer parte?", opt.votoLegal_participateOptions);
       await context.setState({ dialog: "prompt" });
       break;
     case 'knowMore': {
-    const knowMoreOptions = [
-      {
-        type: "postback",
-        title: "Sobre doações",
-        payload: "aboutDonation"
-      },
-      {
-        type: "postback",
-        title: "Sobre divulgar",
-        payload: "aboutDivulgation"
-      },
-      {
-        type: "postback",
-        title: "Voltar",
-        payload: "mainMenu"
-      }
-    ];
       await context.sendButtonTemplate('Existem diversas formas de participar da construção de uma candidatura. ' +
-      'Posso ajudá-lo a realizar uma doação ou divulgar a pré-campanha. Quer entender melhor?', knowMoreOptions);
+        'Posso ajudá-lo a realizar uma doação ou divulgar a pré-campanha. Quer entender melhor?', [opt.AboutDonation, opt.AboutDivulgation, opt.goBackMainMenu]);
       await context.setState({ dialog: "prompt" });
       break; }
     case "aboutDonation":
-      const aboutDonationOptions = [
-        {
-          type: "postback",
-          title: "Quero Doar",
-          payload: "WannaDonate"
-        },
-        {
-          type: "postback",
-          title: "Voltar",
-          payload: "knowMore"
-        }
-      ];
       await context.sendText('Doar é importante para campanhas mais justas.');
       await context.sendText('Aqui no site, você pode doar por meio do cartão de crédito ou boleto bancário.');
-      await context.sendButtonTemplate('Com o pagamento aprovado, enviaremos um recibo provisório por e-mail. Cada pessoa pode doar até 10% da renda declarada referente ao ano anterior. ' + 
-        'O limite de doação diária é de R$ 1.064,10.', aboutDonationOptions);
+      await context.sendButtonTemplate('Com o pagamento aprovado, enviaremos um recibo provisório por e-mail. Cada pessoa pode doar até 10% da renda declarada ' +
+        'referente ao ano anterior. O limite de doação diária é de R$ 1.064,10.', [opt.wannaDonate, opt.backToKnowMore]);
       await context.setState({ dialog: "prompt" });
       break;
     case "aboutDivulgation":
-      const aboutDivulgationOptions = [
-        {
-          type: "postback",
-          title: "Deixar Contato",
-          payload: "recipientData"
-        },
-      ];
-      if (politicianData.picframe_url) {
-        const divulgateOption = {
-        type: "web_url",
-        url: politicianData.picframe_url,
-        title: "Mudar Avatar"
-        };
-        await aboutDivulgationOptions.push(divulgateOption);
+      await context.setState({participateOptions: [opt.leaveInfo]});
+      if (context.state.politicianData.picframe_url) {
+        await context.setState({
+          participateOptions: context.state.participateOptions.concat([{
+            type: "web_url",
+            url: context.state.politicianData.picframe_url,
+            title: "Mudar Avatar"
+          }])});
       }
-      await aboutDivulgationOptions.push({
-        type: "postback",
-        title: "Voltar",
-        payload: "knowMore"
-      });
+      await context.setState({ participateOptions: context.state.participateOptions.concat([opt.backToKnowMore])});
       await context.sendButtonTemplate('Para ajudar na divulgação, você pode deixar seus contatos comigo ou mudar sua imagem de avatar. Você quer participar?',
-      aboutDivulgationOptions);
-      // await context.setState({ dialog: "prompt" });
+        context.state.participateOptions);
       await context.setState({ dialog: "prompt", dataPrompt: "email" });
     break;
     case "WannaHelp":
-      participateOptions = [
-        {
-          type: "postback",
-          title: "Quero Doar",
-          payload: "WannaDonate"
-        }        
-      ];
+      await context.setState({ participateOptions: [opt.wannaDonate]});
       // checking for picframe_url so we can only show this option when it's available but still show the votoLegal option
-      if (politicianData.picframe_url) {
-        const divulgateOption = {
-          type: "postback",
-          title: "Quero Divulgar",
-          payload: "WannaDivulgate"
-        };
-        await participateOptions.push(divulgateOption);
+      if (context.state.politicianData.picframe_url) {
+        await context.setState({ participateOptions: context.state.participateOptions.concat([opt.wannaDivulgate]) });
       }
-      await participateOptions.push({
-        type: "postback",
-        title: "Voltar",
-        payload: "mainMenu"
-      });
-      await context.sendButtonTemplate("Ficamos felizes com seu apoio! Como deseja participar?", participateOptions);
-      await context.setState({ dialog: "prompt" });
+      await context.setState({ participateOptions: context.state.participateOptions.concat([opt.goBackMainMenu]) });
+      await context.sendButtonTemplate("Ficamos felizes com seu apoio! Como deseja participar?", context.state.participateOptions);
+      await context.setState({ dialog: "prompt", participateOptions: undefined });
       break;
     case "WannaDonate":
-      participateOptions = [
-        {
-          type: "web_url",
-          url: politicianData.votolegal_integration.votolegal_url,
-          title: "Vamos lá!"
-        },
-      ];
-      // checking for picframe_url so we can only show this option when it's available but still show the votoLegal option
-      if (politicianData.picframe_url) {
-        const divulgateOption = {
-          type: "postback",
-          title: "Quero Divulgar",
-          payload: "WannaDivulgate"
-        };
-        await participateOptions.push(divulgateOption);
+     // if referral.source(CUSTOMER_CHAT_PLUGIN) doesn't exist we are on facebook and should send votolegal's url
+      if (!context.event.rawEvent.postback.referral) {
+
+        await context.setState({ participateOptions: [
+          {
+            type: "web_url",
+            url: `${context.state.politicianData.votolegal_integration.votolegal_url}/#doar`,
+            title: "Vamos lá!"
+          }], participateMessage: "Você deseja doar agora?"});
       }
-      await participateOptions.push({
-        type: "postback",
-        title: "Voltar",
-        payload: "mainMenu"
-      });
-      await context.sendText(
-        "Seu apoio é fundamental para nossa pré-campanha! Por isso, cuidamos da segurança de todos os doadores. Saiba mais em: www.votolegal.com.br"
-      );
-      const valueLegal = await VotoLegalAPI.getVotoLegalValues(politicianData.votolegal_integration.votolegal_username);
-      await context.sendText(
-        `Já consegui R$${formatReal(valueLegal.candidate.total_donated)} da ` +
-          `minha meta de R$${formatReal(
-            getMoney(valueLegal.candidate.raising_goal)
-          )}.`
-      );
-      await context.sendButtonTemplate(
-        "Você deseja doar agora?",
-        participateOptions
-      );
-      await context.setState({ dialog: "prompt" });
+      else {
+        await context.setState({ participateOptions: [], 
+          participateMessage: "Você já está na nossa página para doar. Se quiser, também poderá divulgar seu apoio!"});
+      }
+      // checking for picframe_url so we can only show this option when it's available but still show the votoLegal option
+      if (context.state.politicianData.picframe_url) {
+        await context.setState({ participateOptions: context.state.participateOptions.concat([opt.wannaDivulgate]) });
+      } else {
+        await context.setState({ participateOptions: context.state.participateOptions.concat([opt.leaveInfo]) });
+        await context.setState({ dataPrompt: 'email' });
+      }
+      await context.setState({ participateOptions: context.state.participateOptions.concat([opt.goBackMainMenu]) });
+      // await participateOptions.push(opt.goBackMainMenu);
+      await context.sendText("Seu apoio é fundamental para nossa pré-campanha! Por isso, cuidamos da segurança de todos os doadores. " + 
+      "Saiba mais em: www.votolegal.com.br");
+      await context.setState({ valueLegal: await VotoLegalAPI.getVotoLegalValues(context.state.politicianData.votolegal_integration.votolegal_username) });
+      await context.sendText(`Já consegui R$${formatReal(context.state.valueLegal.candidate.total_donated)} da minha meta de ` +
+      `R$${formatReal(getMoney(context.state.valueLegal.candidate.raising_goal))}.`);
+      await context.sendButtonTemplate(context.state.participateMessage, context.state.participateOptions);
+      await context.setState({ dialog: "prompt", valueLegal: undefined, participateOptions: undefined, participateMessage: undefined});
       break;
     case "WannaDivulgate":
-      participateOptions = [
+      await context.sendButtonTemplate("Que legal! Seu apoio é muito importante para nós! Você quer mudar foto (avatar) do seu perfil?", [
         {
           type: "web_url",
-          url: politicianData.picframe_url,
+          url: context.state.politicianData.picframe_url,
           title: "Atualizar foto"
         },
-        {
-          type: "postback",
-          title: "Quero Doar",
-          payload: "WannaDonate"
-        },
-        {
-          type: "postback",
-          title: "Voltar",
-          payload: "mainMenu"
-        }
-      ];
-      await context.sendButtonTemplate(
-        "Que legal! Seu apoio é muito importante para nós! " +
-          "\nVocê quer mudar foto (avatar) do seu perfil?",
-        participateOptions
-      );
+        opt.wannaDonate,
+        opt.goBackMainMenu
+      ]);
       await context.setState({ dialog: "prompt" });
       break;
     case "listening":
@@ -673,15 +393,10 @@ bot.onEvent(async context => {
       }
       timer = setTimeout(async () => {
         await context.setState({ sendIntro: true });    
-          const issue_created_message = await MandatoAbertoAPI.getAnswer(
-          politicianData.user_id,
-          "issue_created"
-        );
+        const issue_created_message = await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, "issue_created");
         let endMessage;
         if (issue_created_message.content) {
-          endMessage =
-            issue_created_message.content +
-            "\nVocê terminou de escrever sua mensagem?";
+          endMessage = issue_created_message.content + "\nVocê terminou de escrever sua mensagem?";
         } else {
           endMessage = "Você terminou de escrever sua mensagem?";
         }
@@ -697,382 +412,127 @@ bot.onEvent(async context => {
               payload: "listening"
             }
           ]);
-      }, limit);
+      }, IssueTimerlimit);
       break;
     case "aboutMe":
-      const introductionText = await MandatoAbertoAPI.getAnswer(
-        politicianData.user_id,
-        "introduction"
-      );
+      const introductionText = await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, "introduction");
       await context.sendText(introductionText.content);
-
-      if (trajectory.content && pollData.questions) {
-        promptOptions = [
-          {
-            type: "postback",
-            title: "Trajetória",
-            payload: "trajectory"
-          },
-          {
-            type: "postback",
-            title: "Contatos",
-            payload: "contacts"
-          }
-        ];
-      } else if (trajectory.content && !pollData.questions) {
-        promptOptions = [
-          {
-            type: "postback",
-            title: "Trajetória",
-            payload: "trajectory"
-          }
-        ];
-      } else if (!trajectory.content && pollData.questions) {
-        promptOptions = [
-          {
-            type: "postback",
-            title: "Contatos",
-            payload: "contacts"
-          }
-        ];
-      }
-      if (politicianData.votolegal_integration) {
-        if (
-          politicianData.votolegal_integration.votolegal_url &&
-          politicianData.votolegal_integration.votolegal_username
-        ) {
-          // check if integration to votoLegal exists to add the donation option
-          // politicianData.votolegal_integration.votolegal_url will be used in a future web_url button to link to the donation page
-          const doarOption = {
-            type: "postback",
-            title: "Participar",
-            payload: "votoLegal"
-          };
-          promptOptions.push(doarOption);
-        }
-      }
-      await context.sendButtonTemplate(`O que mais deseja saber sobre ${articles.defined} ${politicianData.office.name}?`, promptOptions);
+      await context.sendButtonTemplate(`O que mais deseja saber sobre ${context.state.articles.defined} ${context.state.politicianData.office.name}?`, 
+        await checkMenu(context, [opt.trajectory, opt.contacts, opt.doarOption]));
       await context.setState({ dialog: "prompt" });
       break;
     case "contacts":
       // Tratando o formato do telefone
-      if (politicianData.contact.cellphone) {
-        politicianData.contact.cellphone = politicianData.contact.cellphone.replace(
-          /(?:\+55)+/g,
-          ""
-        );
-        politicianData.contact.cellphone = politicianData.contact.cellphone.replace(
-          /^(\d{2})/g,
-          "($1)"
-        );
+      if (context.state.politicianData.contact.cellphone) {
+        await context.setState({ politicianCellPhone: context.state.politicianData.contact.cellphone.replace(/(?:\+55)+/g, "")})
+        await context.setState({ politicianCellPhone: context.state.politicianCellPhone.replace(/^(\d{2})/g, "($1)")})
       }
-
-      await context.sendText(
-        `Você pode entrar em contato com ${articles.defined} ${
-          politicianData.office.name
-        } ${politicianData.name} pelos seguintes canais:`
-      );
-
-      if (politicianData.contact.email) {
-        await context.sendText(
-          ` - Através do e-mail: ${politicianData.contact.email}`
-        );
+      await context.sendText(`Você pode entrar em contato com ${context.state.articles.defined} ${context.state.politicianData.office.name} `+
+      `${context.state.politicianData.name} pelos seguintes canais:`);
+      if (context.state.politicianData.contact.email) {
+        await context.sendText(` - Através do e-mail: ${context.state.politicianData.contact.email}`);
       }
-      if (politicianData.contact.cellphone) {
-        await context.sendText(
-          ` - Através do WhatsApp: ${politicianData.contact.cellphone}`
-        );
+      if (context.state.politicianData.contact.cellphone) {
+        await context.sendText(` - Através do WhatsApp: ${context.state.politicianCellPhone}`);
       }
-      if (politicianData.contact.twitter) {
-        await context.sendText(
-          ` - Através do Twitter: ${politicianData.contact.twitter}`
-        );
+      if (context.state.politicianData.contact.twitter) {
+        await context.sendText(` - Através do Twitter: ${context.state.politicianData.contact.twitter}`);
       }
-      if (politicianData.contact.url) {
-        await context.sendText(
-          ` - Através do site: ${politicianData.contact.url}`
-        );
+      if (context.state.politicianData.contact.url) {
+        await context.sendText(` - Através do site: ${context.state.politicianData.contact.url}`);
       }
-
-      if (trajectory.content && pollData.questions) {
-        promptOptions = [
-          {
-            type: "postback",
-            title: "Trajetória",
-            payload: "trajectory"
-          },
-          {
-            type: "postback",
-            title: "Dê sua opinião",
-            payload: "poll"
-          }
-        ];
-      } else if (trajectory.content && !pollData.questions) {
-        promptOptions = [
-          {
-            type: "postback",
-            title: "Trajetória",
-            payload: "trajectory"
-          }
-        ];
-      } else if (!trajectory.content && pollData.questions) {
-        promptOptions = [
-          {
-            type: "postback",
-            title: "Dê sua opinião",
-            payload: "poll"
-          }
-        ];
-      }
-      if (politicianData.votolegal_integration) {
-        if (
-          politicianData.votolegal_integration.votolegal_url &&
-          politicianData.votolegal_integration.votolegal_username
-        ) {
-          // check if integration to votoLegal exists to add the donation option
-          // politicianData.votolegal_integration.votolegal_url will be used in a future web_url button to link to the donation page
-          const doarOption = {
-            type: "postback",
-            title: "Participar",
-            payload: "votoLegal"
-          };
-          promptOptions.push(doarOption);
-        }
-      }
-      await context.sendButtonTemplate("Quer saber mais?", promptOptions);
-      await context.setState({ dialog: "prompt" });
+      await context.sendButtonTemplate("Quer saber mais?", await checkMenu(context, [opt.trajectory, opt.poll_suaOpiniao, opt.doarOption]));
+      await context.setState({ dialog: "prompt", politicianCellPhone: undefined});
       break;
     case "poll":
-      // Verifico se o cidadão já respondeu a enquete atualmente ativa
-      const recipientAnswer = await MandatoAbertoAPI.getPollAnswer(
-        context.session.user.id,
-        pollData.id
-      );
-      if (trajectory.content && politicianData.contact) {
-        promptOptions = [
-          {
-            type: "postback",
-            title: "Trajetória",
-            payload: "trajectory"
-          },
-          {
-            type: "postback",
-            title: "Contatos",
-            payload: "contacts"
-          }
-        ];
-      } else if (trajectory.content && !politicianData.contact) {
-        promptOptions = [
-          {
-            type: "postback",
-            title: "Trajetória",
-            payload: "trajectory"
-          }
-        ];
-      } else if (!trajectory.content && politicianData.contact) {
-        promptOptions = [
-          {
-            type: "postback",
-            title: "Contatos",
-            payload: "contacts"
-          }
-        ];
-      }
-      if (politicianData.votolegal_integration) {
-        if (
-          politicianData.votolegal_integration.votolegal_url &&
-          politicianData.votolegal_integration.votolegal_username
-        ) {
-          // check if integration to votoLegal exists to add the donation option
-          // politicianData.votolegal_integration.votolegal_url will be used in a future web_url button to link to the donation page
-          const doarOption = {
-            type: "postback",
-            title: "Participar",
-            payload: "votoLegal"
-          };
-          promptOptions.push(doarOption);
-        }
-      }
-      // Agora a enquete poderá ser respondida via propagação ou via dialogo
+      const recipientAnswer = await MandatoAbertoAPI.getPollAnswer(context.session.user.id, context.state.pollData.id);
       if (recipientAnswer.recipient_answered >= 1) {
         await context.sendText("Ah, que pena! Você já respondeu essa pergunta.");
-        await context.sendButtonTemplate("Se quiser, eu posso te ajudar com outra coisa.", promptOptions);
+        await context.sendButtonTemplate("Se quiser, eu posso te ajudar com outra coisa.", 
+          await checkMenu(context, [opt.trajectory, opt.contacts, opt.doarOption]));
         await context.setState({ dialog: "prompt" });
       } else {
-        await context.sendText(
-          "Quero conhecer você melhor. Deixe sua resposta e participe deste debate."
-        );
-        await context.sendButtonTemplate(`Pergunta: ${pollData.questions[0].content}` ,
-          [
+        await context.sendText("Quero conhecer você melhor. Deixe sua resposta e participe deste debate.");
+        await context.sendText(`Pergunta: ${context.state.pollData.questions[0].content}` , {
+          quick_replies: [
             {
-              type: "postback",
-              title: pollData.questions[0].options[0].content,
-              payload: `${pollData.questions[0].options[0].id}`
+              content_type: 'text',
+              title: context.state.pollData.questions[0].options[0].content,
+              payload: `${context.state.pollData.questions[0].options[0].id}`
             },
             {
-              type: "postback",
-              title: pollData.questions[0].options[1].content,
-              payload: `${pollData.questions[0].options[1].id}`
-            }
-          ]
-        );
+              content_type: 'text',
+              title: context.state.pollData.questions[0].options[1].content,
+              payload: `${context.state.pollData.questions[0].options[1].id}`
+            },
+          ]});
+        await context.typingOff();
         await context.setState({ dialog: "pollAnswer" });
       }
       break;
       case 'listeningAnswer':
-      await MandatoAbertoAPI.postIssue(
-        politicianData.user_id,
-        context.session.user.id,
-        context.state.userMessage
-      );
-      await 
-      await context.setState({ emailDialog: "Legal, agora quer me informar seu telefone, para lhe manter informado das nossas novidades?" });
+      await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id,context.session.user.id, context.state.userMessage);
       await context.setState({ userMessage: '' });
-      await context.sendButtonTemplate('Agradecemos a sua mensagem. Deseja nos enviar ou atualizar seu e-mail e telefone?',
-        [
-          {
-            type: "postback",
-            title: "Vamos lá!",
-            payload: "recipientData"
-          },
-          {
-            type: "postback",
-            title: "Não",
-            payload: "recipientData"
-          }
-        ]
-      );
-
-      await context.setState({
-        dialog: "prompt",
-        dataPrompt: "email"
-      });
+      await context.sendButtonTemplate('Agradecemos a sua mensagem. Deseja nos enviar ou atualizar seu e-mail e telefone?', opt.recipientData_LetsGo);
+      await context.setState({ dialog: "prompt", dataPrompt: "email" });
       break;   
       case "pollAnswer":
-      await context.sendButtonTemplate("Muito obrigado por sua resposta. Você gostaria de deixar seu e-mail e telefone para nossa equipe?",
-        [
-          {
-            type: "postback",
-            title: "Vamos lá!",
-            payload: "recipientData"
-          },
-          {
-            type: "postback",
-            title: "Agora não",
-            payload: "recipientData"
-          }
-        ]
-      );
-      await context.setState({ emailDialog: "Legal, agora quer me informar seu telefone, para lhe manter informado sobre outras perguntas?"});
-      await context.setState({
-        dialog: "prompt",
-        dataPrompt: "email"
-      });
-
+      await context.sendButtonTemplate("Muito obrigado por sua resposta. Você gostaria de deixar seu e-mail e telefone para nossa equipe?", opt.recipientData_LetsGo);
+      await context.setState({ dialog: "prompt", dataPrompt: "email" });
       break;
     case "recipientData":
     if (context.event.postback && (context.event.postback.title === "Agora não" || context.event.postback.title === "Não")) {
-        await context.sendButtonTemplate("Está bem! Posso te ajudar com mais alguma informação?", promptOptions);
+        await context.sendButtonTemplate("Está bem! Posso te ajudar com mais alguma informação?", 
+          await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
         await context.setState({ dialog: "prompt" });
       } else if (context.state.dataPrompt) {
         switch (context.state.dataPrompt) {
           case "email":
+          try {
+			await context.sendText("Qual o seu e-mail?");
+            // await context.sendText("Qual o seu e-mail? Pode digita-lo e nos mandar.", {
+            //   quick_replies: [{ content_type: 'user_email' }] });
+          } catch(err) {
+            console.log('E-mail button catch error =>', err)
             await context.sendText("Qual é o seu e-mail?");
-            await context.setState({
-              dialog: "recipientData",
-              recipientData: "email"
-            });
+          } finally {
+              await context.setState({ dialog: "recipientData", recipientData: "email"});
+          }
             break;
           case "cellphone":
-            await context.sendText(
-              "Qual é o seu telefone? Não deixe de incluir o DDD."
-            );
-            await context.setState({
-              dialog: "recipientData",
-              recipientData: "cellphone",
-              dataPrompt: "end"
-            });
+          try {
+			  await context.sendText("Qual é o seu telefone? Não deixe de incluir o DDD.");
+            // await context.sendText("Qual é o seu telefone? Não deixe de incluir o DDD.", {
+            // quick_replies: [{ content_type: 'user_phone_number' }]});
+          } catch(err) {
+            console.log('Cellphone button catch error =>', err)
+            await context.sendText("Qual é o seu telefone? Não deixe de incluir o DDD.");
+          } finally {
+            await context.setState({ dialog: "recipientData", recipientData: "cellphone", dataPrompt: "end"});
+          }
             break;
           case "cellphoneFail":
             break;
           case "end":
-            await context.sendText("Pronto, já guardei seus dados.");
-            await context.sendButtonTemplate("Quer saber mais?", promptOptions);
-            await context.setState({ dialog: "prompt" });
+          await context.sendText("Pronto, já guardei seus dados.");
+            await context.sendButtonTemplate("Quer saber mais?", await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
+          await context.setState({ dialog: "prompt", recipientData: undefined, dataPrompt: undefined });
             break;
         }
       }
       break;
     case "trajectory":
-      await context.sendText(trajectory.content);
-      if (pollData.questions && politicianData.contact) {
-        promptOptions = [
-          {
-            type: "postback",
-            title: "Dê sua opinião",
-            payload: "poll"
-          },
-          {
-            type: "postback",
-            title: "Contatos",
-            payload: "contacts"
-          }
-        ];
-      } else if (pollData.questions && !politicianData.contact) {
-        promptOptions = [
-          {
-            type: "postback",
-            title: "Dê sua opinião",
-            payload: "poll"
-          }
-        ];
-      } else if (!pollData.questions && politicianData.contact) {
-        promptOptions = [
-          {
-            type: "postback",
-            title: "Contatos",
-            payload: "contacts"
-          }
-        ];
-      }
-      if (politicianData.votolegal_integration) {
-        if (
-          politicianData.votolegal_integration.votolegal_url &&
-          politicianData.votolegal_integration.votolegal_username
-        ) {
-          // check if integration to votoLegal exists to add the donation option
-          // politicianData.votolegal_integration.votolegal_url will be used in a future web_url button to link to the donation page
-          const doarOption = {
-            type: "postback",
-            title: "Participar",
-            payload: "votoLegal"
-          };
-          promptOptions.push(doarOption);
-        }
-      }
-      await context.sendButtonTemplate("Quer saber mais?" , promptOptions);
+      await context.sendText(context.state.trajectory.content);
+      await context.sendButtonTemplate("Quer saber mais?", await checkMenu(context, [opt.poll_suaOpiniao, opt.contacts, opt.doarOption]));
       await context.setState({ dialog: "prompt" });
       break;
     case "issue":
       await context.sendText("Escreva sua mensagem para nossa equipe:");
-      await context.setState({
-        dialog: "prompt",
-        prompt: "issue"
-      });
+      await context.setState({ dialog: "prompt", prompt: "issue" });
       break;
     case "issue_created":
-      const issue_created_message = await MandatoAbertoAPI.getAnswer(
-        politicianData.user_id,
-        "issue_created"
-      );
-      await context.sendButtonTemplate(issue_created_message.content, [
-          {
-            type: "postback",
-            title: "Voltar ao início",
-            payload: "mainMenu"
-          }
-        ]
-      );
+      const issue_created_message = await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, "issue_created");
+      await context.sendButtonTemplate(issue_created_message.content, [ opt.backToBeginning ]);
       await context.setState({ dialog: "prompt" });
       break;
   }
