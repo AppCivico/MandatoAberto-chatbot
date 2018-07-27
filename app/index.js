@@ -50,7 +50,7 @@ const bot = new MessengerBot({
 
 bot.setInitialState({});
 
-bot.use(withTyping({ delay: 1000 }));
+// bot.use(withTyping({ delay: 1000 }));
 
 // Deve-se indentificar o sexo do representante público e selecionar os artigos (definido e possesivo) adequados
 function getArticles(gender) {
