@@ -218,8 +218,14 @@ bot.onEvent(async context => {
         await context.setState({ email: context.event.message.text })
       } else if (context.state.dataPrompt === 'end') {
         await context.setState({ cellphone: context.event.message.text })
+      } else if (context.event.isPostback) {
+        if (context.state.dataPrompt === 'email') {
+          await context.setState({ email: context.event.postback.payload })
+        } else if (context.state.dataPrompt === 'end') {
+          await context.setState({ cellphone: context.event.postback.payload})
       }
-  }
+      }
+    }
 
     if (context.state.recipientData) {
       switch (context.state.recipientData) {
@@ -484,12 +490,7 @@ bot.onEvent(async context => {
           case "email":
           try {
             await context.sendText("Qual o seu e-mail? Pode digita-lo e nos mandar.", {
-              quick_replies: [
-                {
-                  content_type: 'user_email',
-                },
-              ],
-            });
+              quick_replies: [{ content_type: 'user_email' }] });
           } catch(err) {
             console.log('E-mail button catch error =>', err)
             await context.sendText("Qual é o seu e-mail?");
