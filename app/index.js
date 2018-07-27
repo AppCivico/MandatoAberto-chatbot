@@ -303,14 +303,7 @@ bot.onEvent(async context => {
       await context.setState({ dialog: "prompt" });
       break;
     case "aboutDivulgation":
-      await context.setState({
-        participateOptions: [
-          {
-            type: "postback",
-            title: "Deixar Contato",
-            payload: "recipientData"
-          },
-        ]});
+      await context.setState({participateOptions: [opt.leaveInfo]});
       if (context.state.politicianData.picframe_url) {
         await context.setState({
           participateOptions: context.state.participateOptions.concat([{
@@ -346,12 +339,14 @@ bot.onEvent(async context => {
           }], participateMessage: "Você deseja doar agora?"});
       }
       else {
-        await context.setState({ participateOptions: [], participateMessage: "Você já está na nossa página para doar. Se quiser, também poderá divulgar seu apoio!"});
+        await context.setState({ participateOptions: [], 
+          participateMessage: "Você já está na nossa página para doar. Se quiser, também poderá divulgar seu apoio!"});
       }
       // checking for picframe_url so we can only show this option when it's available but still show the votoLegal option
       if (context.state.politicianData.picframe_url) {
-        // await participateOptions.push(opt.wannaDivulgate);
         await context.setState({ participateOptions: context.state.participateOptions.concat([opt.wannaDivulgate]) });
+      } else {
+        await context.setState({ participateOptions: context.state.participateOptions.concat([opt.leaveInfo]) });
       }
       await context.setState({ participateOptions: context.state.participateOptions.concat([opt.goBackMainMenu]) });
       // await participateOptions.push(opt.goBackMainMenu);

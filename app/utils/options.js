@@ -69,6 +69,11 @@ module.exports = {
         title: "Conhecer Assistente",
         payload: "mainMenu"
     },
+    leaveInfo: {
+        type: "postback",
+        title: "Deixar Contato",
+        payload: "recipientData"
+    },
     recipientData_LetsGo: [ // array with two options
         {
             type: "postback",
