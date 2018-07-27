@@ -92,6 +92,7 @@ function getIssueMessage(issueMessage) {
 };
 
 bot.onEvent(async context => {
+
   if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead) {
     // we reload politicianData on every useful event
     await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
@@ -225,7 +226,7 @@ bot.onEvent(async context => {
     if (context.state.recipientData) {
       switch (context.state.recipientData) {
         case "email":
-          await MandatoAbertoAPI.postRecipient(politicianData.user_id, {
+          await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
             fb_id: context.session.user.id,
             email: context.state.email
           });
@@ -235,7 +236,7 @@ bot.onEvent(async context => {
         case "cellphone":
           await context.setState({ cellphone: `+55${context.state.cellphone.replace(/[- .)(]/g, "")}`})
           if (phoneRegex.test(context.state.cellphone)) {
-            await MandatoAbertoAPI.postRecipient(politicianData.user_id, {
+            await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
               fb_id: context.session.user.id,
               cellphone: context.state.cellphone
             });
