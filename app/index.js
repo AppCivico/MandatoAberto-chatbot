@@ -88,6 +88,8 @@ function getIssueMessage(issueMessage) {
 
 bot.onEvent(async (context) => { // eslint-disable-line
 	if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead) {
+		console.log(context.event.rawEvent);
+
 		// we reload politicianData on every useful event
 		await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
 		// we update user data at every interaction
