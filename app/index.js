@@ -214,6 +214,8 @@ bot.onEvent(async (context) => { // eslint-disable-line
 				await context.setState({ cellphone: context.event.message.text });
 			}
 		} if (context.event.isPostback) {
+			console.log(context.event.rawEvent);
+
 			if (context.state.dataPrompt === 'email') {
 				await context.setState({ email: context.event.postback.payload });
 			} else if (context.state.dataPrompt === 'end') {
