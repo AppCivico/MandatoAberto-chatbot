@@ -202,8 +202,11 @@ bot.onEvent(async (context) => { // eslint-disable-line
 	}
 	// Tratando dados adicionais do recipient
 	if (context.state.dialog === 'recipientData' && context.state.recipientData) {
+		console.log('dentro do recipientData');
 		if (context.event.isQuickReply) {
+			console.log('aqui estou');
 			if (context.state.dataPrompt === 'email') {
+				console.log('deveria cair aqui');
 				await context.setState({ email: context.event.message.quick_reply.payload });
 			} else if (context.state.dataPrompt === 'end') {
 				await context.setState({ cellphone: context.event.message.quick_reply.payload });
