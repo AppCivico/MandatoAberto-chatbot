@@ -496,7 +496,7 @@ bot.onEvent(async (context) => { // eslint-disable-line
 			case 'email':
 				try {
 					// await context.sendText('Qual o seu e-mail?');
-					await context.sendText('Qual o seu e-mail? Pode digita-lo e nos mandar.', { quick_replies: [{ content_type: 'user_email' }] });
+					await context.sendText('Qual o seu e-mail? Pode digita-lo e nos mandar.', { quick_replies: [{ content_type: 'user_email' }, opt.recipientData_LetsGo] });
 					await context.setState({ dialog: 'recipientData', recipientData: 'email' });
 				} catch (err) {
 					console.log('E-mail button catch error =>', err);
