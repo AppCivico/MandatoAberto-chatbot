@@ -111,6 +111,11 @@ bot.onEvent(async (context) => { // eslint-disable-line
 		});
 	}
 
+	if (context.event.isQuickReply && context.state.dataPrompt === 'email') {
+		console.log('test');
+		await context.setState({ email: context.event.message.quick_reply.payload });
+		await context.setState({ dialog: 'recipientData', recipientData: 'email' });
+	}
 
 	// Abrindo bot através de comentários e posts
 	// ** no context here **
