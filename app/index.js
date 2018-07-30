@@ -390,8 +390,10 @@ bot.onEvent(async (context) => { // eslint-disable-line
 		}
 		await context.typingOn();
 		clearTimeout(timer);
-		if (context.event.message) {
-			await context.setState({ userMessage: `${context.state.userMessage}${context.event.message.text} ` });
+		if (context.event.isText) {
+			if (context.event.message) {
+				await context.setState({ userMessage: `${context.state.userMessage}${context.event.message.text} ` });
+			}
 		}
 		timer = setTimeout(async () => {
 			await context.setState({ sendIntro: true });
