@@ -470,12 +470,10 @@ bot.onEvent(async (context) => { // eslint-disable-line
 		await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id, context.state.userMessage);
 		await context.setState({ userMessage: '' });
 		await context.setState({ issueCreatedMessage: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_created') });
-		console.log(context.state.issueCreatedMessage);
-		console.log(context.state.issueCreatedMessage.content);
 		if (context.state.issueCreatedMessage.content) {
 			await context.sendText(context.state.issueCreatedMessage.content);
 		}
-		await context.sendButtonTemplate('Agradecemos a sua mensagem. Deseja nos enviar ou atualizar seu e-mail e telefone?', opt.recipientData_LetsGo);
+		await context.sendButtonTemplate('Deseja nos enviar ou atualizar seu e-mail e telefone?', opt.recipientData_LetsGo);
 		await context.setState({ dialog: 'prompt', dataPrompt: 'email' });
 		break;
 	case 'pollAnswer':
