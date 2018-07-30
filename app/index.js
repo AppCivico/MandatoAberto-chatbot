@@ -88,8 +88,6 @@ function getIssueMessage(issueMessage) {
 
 bot.onEvent(async (context) => { // eslint-disable-line
 	if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead) {
-		console.log(context.event.rawEvent);
-
 		// we reload politicianData on every useful event
 		await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
 		// we update user data at every interaction
@@ -109,12 +107,6 @@ bot.onEvent(async (context) => { // eslint-disable-line
 			session: context.state,
 			session_updatedAt: context.state.lastActivity,
 		});
-	}
-
-	if (context.event.isQuickReply && context.state.dataPrompt === 'email') {
-		console.log('test');
-		await context.setState({ email: context.event.message.quick_reply.payload });
-		await context.setState({ dialog: 'recipientData', recipientData: 'email' });
 	}
 
 	// Abrindo bot através de comentários e posts
@@ -209,11 +201,8 @@ bot.onEvent(async (context) => { // eslint-disable-line
 	}
 	// Tratando dados adicionais do recipient
 	if (context.state.dialog === 'recipientData' && context.state.recipientData) {
-		console.log('dentro do recipientData');
 		if (context.event.isQuickReply) {
-			console.log('aqui estou');
 			if (context.state.dataPrompt === 'email') {
-				console.log('deveria cair aqui');
 				await context.setState({ email: context.event.message.quick_reply.payload });
 			} else if (context.state.dataPrompt === 'end') {
 				await context.setState({ cellphone: context.event.message.quick_reply.payload });
@@ -225,7 +214,6 @@ bot.onEvent(async (context) => { // eslint-disable-line
 				await context.setState({ cellphone: context.event.message.text });
 			}
 		} if (context.event.isPostback) {
-			console.log('here i am');
 			if (context.state.dataPrompt === 'email') {
 				await context.setState({ email: context.event.postback.payload });
 			} else if (context.state.dataPrompt === 'end') {
@@ -236,12 +224,10 @@ bot.onEvent(async (context) => { // eslint-disable-line
 		if (context.state.recipientData) {
 			switch (context.state.recipientData) {
 			case 'email':
-				console.log('cheguei aqui');
 				await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
 					fb_id: context.session.user.id,
 					email: context.state.email,
 				});
-				console.log('Passei pelo recipient');
 				await context.sendButtonTemplate('Legal, agora quer me informar seu telefone, para lhe manter informado sobre outras perguntas?', opt.recipientData_YesNo);
 				await context.setState({ recipientData: 'cellphonePrompt', dialog: 'recipientData', dataPrompt: '' });
 				break;
@@ -354,11 +340,14 @@ bot.onEvent(async (context) => { // eslint-disable-line
 						title: 'Vamos lá!',
 					}],
 				participateMessage: 'Você deseja doar agora?',
+				anotherText: 'Seu apoio é fundamental para nossa pré-campanha! Por isso, cuidamos da segurança de todos os doadores. '
+				+ 'Saiba mais em: www.votolegal.com.br',
 			});
 		} else {
 			await context.setState({
 				participateOptions: [],
 				participateMessage: 'Você já está na nossa página para doar. Se quiser, também poderá divulgar seu apoio!',
+				anotherText: 'Seu apoio é fundamental para nossa pré-campanha! Por isso, cuidamos da segurança de todos os doadores. ',
 			});
 		}
 		// checking for picframe_url so we can only show this option when it's available but still show the votoLegal option
@@ -370,14 +359,13 @@ bot.onEvent(async (context) => { // eslint-disable-line
 		}
 		await context.setState({ participateOptions: context.state.participateOptions.concat([opt.goBackMainMenu]) });
 		// await participateOptions.push(opt.goBackMainMenu);
-		await context.sendText('Seu apoio é fundamental para nossa pré-campanha! Por isso, cuidamos da segurança de todos os doadores. '
-      + 'Saiba mais em: www.votolegal.com.br');
+		await context.sendText(context.state.anotherText);
 		await context.setState({ valueLegal: await VotoLegalAPI.getVotoLegalValues(context.state.politicianData.votolegal_integration.votolegal_username) });
 		await context.sendText(`Já consegui R$${formatReal(context.state.valueLegal.candidate.total_donated)} da minha meta de `
       + `R$${formatReal(getMoney(context.state.valueLegal.candidate.raising_goal))}.`);
 		await context.sendButtonTemplate(context.state.participateMessage, context.state.participateOptions);
 		await context.setState({
-			dialog: 'prompt', valueLegal: undefined, participateOptions: undefined, participateMessage: undefined,
+			dialog: 'prompt', valueLegal: undefined, participateOptions: undefined, participateMessage: undefined, anotherText: undefined,
 		});
 		break;
 	case 'WannaDivulgate':
@@ -502,12 +490,12 @@ bot.onEvent(async (context) => { // eslint-disable-line
 			switch (context.state.dataPrompt) {
 			case 'email':
 				try {
-					// await context.sendText('Qual o seu e-mail?');
-					await context.sendText('Qual o seu e-mail? Pode digita-lo e nos mandar.', { quick_replies: [{ content_type: 'user_email' }] });
-					await context.setState({ dialog: 'recipientData', recipientData: 'email' });
+					await context.sendText('Qual o seu e-mail?');
+					// await context.sendText('Qual o seu e-mail? Pode digita-lo e nos mandar.', { quick_replies: [{ content_type: 'user_email' }] });
 				} catch (err) {
 					console.log('E-mail button catch error =>', err);
-					await context.sendText('Qual é o seu e-mail?');
+					await context.sendText('Qual o seu e-mail?');
+				} finally {
 					await context.setState({ dialog: 'recipientData', recipientData: 'email' });
 				}
 				break;
