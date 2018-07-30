@@ -394,7 +394,7 @@ bot.onEvent(async (context) => { // eslint-disable-line
 		}
 		timer = setTimeout(async () => {
 			await context.setState({ sendIntro: true });
-			await context.sendButtonTemplate("Já terminou sua mensagem? Clique em 'Terminei a mensagem' para me enviar! "
+			await context.sendButtonTemplate("Já terminou sua mensagem? Clique em 'Terminei a mensagem' para nos enviar! "
 			+ 'Ou continue escrevendo...', [
 				{
 					type: 'postback',
