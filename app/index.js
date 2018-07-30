@@ -163,7 +163,7 @@ bot.onEvent(async (context) => { // eslint-disable-line
 			// We go to the listening dialog to wait for other messages
 			// check if message came from standard flow or from post/comment
 			if (areWeListening === true) {
-				await context.setState({ dialog: 'prompt', dataPrompt: 'email' });
+				// await context.setState({ dialog: 'prompt', dataPrompt: 'email' });
 				await context.setState({ dialog: 'listening' });
 			} else {
 				await context.setState({ dialog: 'intermediate' });
@@ -265,8 +265,8 @@ bot.onEvent(async (context) => { // eslint-disable-line
 		await context.setState({ greeting: context.state.politicianData.greeting.replace('${user.office.name}', context.state.politicianData.office.name) }); // eslint-disable-line no-template-curly-in-string
 		await context.setState({ greeting: context.state.greeting.replace('${user.name}', context.state.politicianData.name) }); // eslint-disable-line no-template-curly-in-string
 		await context.sendText(context.state.greeting);
-		//   await context.sendButtonTemplate(context.state.issueMessage, await checkMenu(context, [ opt.aboutPolitician, opt.poll_suaOpiniao, opt.leaveInfo ]));
-		await context.sendButtonTemplate(context.state.issueMessage, await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
+		await context.sendButtonTemplate(context.state.issueMessage, await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.leaveInfo]));
+		// await context.sendButtonTemplate(context.state.issueMessage, await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
 		await context.setState({ dialog: 'prompt', dataPrompt: 'email' });
 		break;
 	case 'mainMenu': // after issue is created we come back to this dialog
@@ -489,9 +489,8 @@ bot.onEvent(async (context) => { // eslint-disable-line
 			switch (context.state.dataPrompt) {
 			case 'email':
 				try {
-					await context.sendText('Qual o seu e-mail?');
-					// await context.sendText("Qual o seu e-mail? Pode digita-lo e nos mandar.", {
-					//   quick_replies: [{ content_type: 'user_email' }] });
+					// await context.sendText('Qual o seu e-mail?');
+					await context.sendText('Qual o seu e-mail? Pode digita-lo e nos mandar.', { quick_replies: [{ content_type: 'user_email' }] });
 				} catch (err) {
 					console.log('E-mail button catch error =>', err);
 					await context.sendText('Qual é o seu e-mail?');
