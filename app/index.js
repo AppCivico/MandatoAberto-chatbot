@@ -204,26 +204,22 @@ bot.onEvent(async (context) => { // eslint-disable-line
 	if (context.state.dialog === 'recipientData' && context.state.recipientData) {
 		if (context.event.isQuickReply) {
 			if (context.state.dataPrompt === 'email') {
-				console.log('cheguei aqui4');
 				await context.setState({ email: context.event.message.quick_reply.payload });
 			} else if (context.state.dataPrompt === 'end') {
 				await context.setState({ cellphone: context.event.message.quick_reply.payload });
 			}
 		} else if (context.event.isText) {
 			if (context.state.dataPrompt === 'email') {
-				console.log('cheguei aqui1');
 				await context.setState({ email: context.event.message.text });
 			} else if (context.state.dataPrompt === 'end') {
-				console.log('cheguei aqui2');
 				await context.setState({ cellphone: context.event.message.text });
-			} else if (context.event.isPostback) {
-				console.log('cheguei aqui3');
-
-				if (context.state.dataPrompt === 'email') {
-					await context.setState({ email: context.event.postback.payload });
-				} else if (context.state.dataPrompt === 'end') {
-					await context.setState({ cellphone: context.event.postback.payload });
-				}
+			}
+		} if (context.event.isPostback) {
+			console.log('here i am');
+			if (context.state.dataPrompt === 'email') {
+				await context.setState({ email: context.event.postback.payload });
+			} else if (context.state.dataPrompt === 'end') {
+				await context.setState({ cellphone: context.event.postback.payload });
 			}
 		}
 

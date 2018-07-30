@@ -20,9 +20,8 @@ module.exports = {
 	async postRecipient(user_id, recipient) {
 		const recipientData_qs = queryString.stringify(recipient);
 		const res = await request.post(`${apiUri}/api/chatbot/recipient?${recipientData_qs}&security_token=${security_token}&`).query({ politician_id: user_id });
-		console.log('Dentro do recipient');
-		// const recipientData = await res.json();
-		// return recipientData;
+		const recipientData = await res.json();
+		return recipientData;
 	},
 
 	async postPollAnswer(fb_id, poll_question_option_id, origin) {
