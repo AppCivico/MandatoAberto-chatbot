@@ -156,7 +156,6 @@ bot.onEvent(async (context) => { // eslint-disable-line
 		if (context.event.isPostback) {
 			await context.setState({ dialog: context.event.postback.payload });
 		} else if (context.event.isQuickReply) {
-			console.log('i am here s');
 			await context.setState({ dialog: context.event.message.quick_reply.payload });
 		} else if (context.event.isText) {
 			// Ao mandar uma mensagem que não é interpretada como fluxo do chatbot
@@ -164,7 +163,7 @@ bot.onEvent(async (context) => { // eslint-disable-line
 			// We go to the listening dialog to wait for other messages
 			// check if message came from standard flow or from post/comment
 			if (areWeListening === true) {
-				// await context.setState({ dialog: 'prompt', dataPrompt: 'email' });
+				await context.setState({ dialog: 'prompt', dataPrompt: 'email' });
 				await context.setState({ dialog: 'listening' });
 			} else {
 				await context.setState({ dialog: 'intermediate' });
