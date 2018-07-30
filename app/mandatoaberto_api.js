@@ -20,6 +20,7 @@ module.exports = {
 	async postRecipient(user_id, recipient) {
 		const recipientData_qs = queryString.stringify(recipient);
 		const res = await request.post(`${apiUri}/api/chatbot/recipient?${recipientData_qs}&security_token=${security_token}&`).query({ politician_id: user_id });
+		console.log('Dentro do recipient');
 		// const recipientData = await res.json();
 		// return recipientData;
 	},
@@ -59,5 +60,5 @@ module.exports = {
 		const res = await request.post(`${apiUri}/api/chatbot/private-reply?page_id=${page_id}&item=${item}&post_id=${post_id}&comment_id=${comment_id}&permalink=${permalink}&user_id=${user_id}&security_token=${security_token}`);
 		const privateReply = await res.json();
 		return privateReply;
-	}
+	},
 };

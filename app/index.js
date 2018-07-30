@@ -204,16 +204,21 @@ bot.onEvent(async (context) => { // eslint-disable-line
 	if (context.state.dialog === 'recipientData' && context.state.recipientData) {
 		if (context.event.isQuickReply) {
 			if (context.state.dataPrompt === 'email') {
+				console.log('cheguei aqui4');
 				await context.setState({ email: context.event.message.quick_reply.payload });
 			} else if (context.state.dataPrompt === 'end') {
 				await context.setState({ cellphone: context.event.message.quick_reply.payload });
 			}
 		} else if (context.event.isText) {
 			if (context.state.dataPrompt === 'email') {
+				console.log('cheguei aqui1');
 				await context.setState({ email: context.event.message.text });
 			} else if (context.state.dataPrompt === 'end') {
+				console.log('cheguei aqui2');
 				await context.setState({ cellphone: context.event.message.text });
 			} else if (context.event.isPostback) {
+				console.log('cheguei aqui3');
+
 				if (context.state.dataPrompt === 'email') {
 					await context.setState({ email: context.event.postback.payload });
 				} else if (context.state.dataPrompt === 'end') {
@@ -225,10 +230,12 @@ bot.onEvent(async (context) => { // eslint-disable-line
 		if (context.state.recipientData) {
 			switch (context.state.recipientData) {
 			case 'email':
+				console.log('cheguei aqui');
 				await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
 					fb_id: context.session.user.id,
 					email: context.state.email,
 				});
+				console.log('Passei pelo recipient');
 				await context.sendButtonTemplate('Legal, agora quer me informar seu telefone, para lhe manter informado sobre outras perguntas?', opt.recipientData_YesNo);
 				await context.setState({ recipientData: 'cellphonePrompt', dialog: 'recipientData', dataPrompt: '' });
 				break;
