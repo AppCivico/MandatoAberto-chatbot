@@ -501,6 +501,7 @@ bot.onEvent(async (context) => { // eslint-disable-line
 					console.log('E-mail button catch error =>', err);
 					await context.sendText('Qual é o seu e-mail?');
 				} finally {
+					console.log('entrei nesse finally');
 					await context.setState({ dialog: 'recipientData', recipientData: 'email' });
 				}
 				break;
