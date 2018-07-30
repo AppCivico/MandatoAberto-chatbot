@@ -88,8 +88,6 @@ function getIssueMessage(issueMessage) {
 
 bot.onEvent(async (context) => { // eslint-disable-line
 	if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead) {
-		console.log(context.event.rawEvent);
-
 		// we reload politicianData on every useful event
 		await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
 		// we update user data at every interaction
@@ -449,7 +447,7 @@ bot.onEvent(async (context) => { // eslint-disable-line
 		break;
 	case 'poll': {
 		const recipientAnswer = await MandatoAbertoAPI.getPollAnswer(context.session.user.id, context.state.pollData.id);
-		if (recipientAnswer.recipient_answered >= 1) {
+		if (recipientAnswer.recipient_answered >= 100) {
 			await context.sendText('Ah, que pena! Você já respondeu essa pergunta.');
 			await context.sendButtonTemplate('Se quiser, eu posso te ajudar com outra coisa.',
 				await checkMenu(context, [opt.trajectory, opt.contacts, opt.doarOption]));
