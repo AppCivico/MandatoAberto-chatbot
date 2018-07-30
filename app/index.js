@@ -87,7 +87,8 @@ function getIssueMessage(issueMessage) {
 }
 
 bot.onEvent(async (context) => { // eslint-disable-line
-	if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead) {
+	// if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead) {
+	if (!context.event.isBrandedCamera) {
 		// we reload politicianData on every useful event
 		await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
 		// we update user data at every interaction
@@ -496,7 +497,7 @@ bot.onEvent(async (context) => { // eslint-disable-line
 			case 'email':
 				try {
 					// await context.sendText('Qual o seu e-mail?');
-					await context.sendText('Qual o seu e-mail? Pode digita-lo e nos mandar.', { quick_replies: [{ content_type: 'user_email' }, opt.recipientData_LetsGo] });
+					await context.sendText('Qual o seu e-mail? Pode digita-lo e nos mandar.', { quick_replies: [{ content_type: 'user_email' }] });
 					await context.setState({ dialog: 'recipientData', recipientData: 'email' });
 				} catch (err) {
 					console.log('E-mail button catch error =>', err);
