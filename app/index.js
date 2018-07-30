@@ -394,14 +394,8 @@ bot.onEvent(async (context) => { // eslint-disable-line
 		}
 		timer = setTimeout(async () => {
 			await context.setState({ sendIntro: true });
-			const issue_created_message = await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_created');
-			let endMessage;
-			if (issue_created_message.content) {
-				endMessage = `${issue_created_message.content}\nVocê terminou de escrever sua mensagem?`;
-			} else {
-				endMessage = 'Você terminou de escrever sua mensagem?';
-			}
-			await context.sendButtonTemplate(endMessage, [
+			await context.sendButtonTemplate("Já terminou sua mensagem? Clique em 'Terminei a mensagem' para me enviar! "
+			+ 'Ou continue escrevendo...', [
 				{
 					type: 'postback',
 					title: 'Terminei a mensagem',
@@ -475,6 +469,10 @@ bot.onEvent(async (context) => { // eslint-disable-line
 	case 'listeningAnswer':
 		await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id, context.state.userMessage);
 		await context.setState({ userMessage: '' });
+		await context.sendText({ issueCreatedMessage: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_created') });
+		if (context.state.issueCreatedMessage) {
+			await context.sendText(context.state.issueCreatedMessage.content);
+		}
 		await context.sendButtonTemplate('Agradecemos a sua mensagem. Deseja nos enviar ou atualizar seu e-mail e telefone?', opt.recipientData_LetsGo);
 		await context.setState({ dialog: 'prompt', dataPrompt: 'email' });
 		break;
