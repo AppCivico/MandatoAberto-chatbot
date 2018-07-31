@@ -99,6 +99,8 @@ bot.onEvent(async (context) => { // eslint-disable-line
 				await context.setState({ facebookPlataform: 'MESSENGER' });
 			}
 		}
+
+		console.log(context.session.user.profile_pic);
 		await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
 			fb_id: context.session.user.id,
 			name: `${context.session.user.first_name} ${context.session.user.last_name}`,
