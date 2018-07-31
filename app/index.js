@@ -81,7 +81,7 @@ async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-dec
 
 function getIssueMessage(issueMessage) {
 	if (Object.keys(issueMessage).length === 0) {
-		console.log('teste');
+		console.log('teste2');
 		return 'A qualquer momento você pode digitar uma mensagem que enviarei para nosso time.';
 	}
 	return issueMessage.content;
