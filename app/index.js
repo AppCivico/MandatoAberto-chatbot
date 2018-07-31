@@ -446,7 +446,7 @@ bot.onEvent(async (context) => { // eslint-disable-line
 		break;
 	case 'poll': {
 		const recipientAnswer = await MandatoAbertoAPI.getPollAnswer(context.session.user.id, context.state.pollData.id);
-		if (recipientAnswer.recipient_answered >= 1) {
+		if (recipientAnswer.recipient_answered >= 100) {
 			await context.sendText('Ah, que pena! Você já respondeu essa pergunta.');
 			await context.sendButtonTemplate('Se quiser, eu posso te ajudar com outra coisa.',
 				await checkMenu(context, [opt.trajectory, opt.contacts, opt.doarOption]));
