@@ -90,6 +90,7 @@ bot.onEvent(async (context) => { // eslint-disable-line
 	if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead) {
 		// we reload politicianData on every useful event
 		await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
+		await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 		// we update user data at every interaction
 		if (context.event.rawEvent.postback) {
 			if (context.event.rawEvent.postback.referral) { // if this exists we are on external site
