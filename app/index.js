@@ -113,6 +113,8 @@ bot.onEvent(async (context) => { // eslint-disable-line
 
 	console.log('\nEvento:');
 	console.log(context.event.rawEvent);
+	console.log('\nEstado:');
+	console.log(context.state);
 
 
 	// Abrindo bot através de comentários e posts
