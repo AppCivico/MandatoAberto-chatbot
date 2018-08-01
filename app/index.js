@@ -118,10 +118,6 @@ const handler = new MessengerHandler()
 				});
 			} else { // in this case, it came from the feed/comment
 				console.log('Aqui');
-				// const post_id = context.event.rawEvent.value.post_id;
-				// const page_id = post_id.substr(0, post_id.indexOf('_'));
-				// await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(page_id) });
-				// await context.setState({ pollData: await MandatoAbertoAPI.getPollData(page_id) });
 			}
 		}
 
@@ -135,6 +131,7 @@ const handler = new MessengerHandler()
 			const post_id = context.event.rawEvent.value.post_id;
 			const page_id = post_id.substr(0, post_id.indexOf('_'));
 			const user_id = context.event.rawEvent.value.from.id;
+			console.log('entramos');
 			areWeListening = false;
 			switch (context.event.rawEvent.value.item) {
 			case 'comment':
