@@ -527,7 +527,11 @@ bot.onEvent(async (context) => { // eslint-disable-line
 				break;
 			case 'end':
 				await context.sendText('Pronto, já guardei seus dados.');
-				await context.sendButtonTemplate('Quer saber mais?', await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
+				try {
+					await context.sendButtonTemplate('Quer saber mais?', await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
+				} catch (err) {
+					await context.sendButtonTemplate('Como posso te ajudar?', await checkMenu(context, [opt.aboutPolitician, opt.trajectory, opt.doarOption]));
+				}
 				await context.setState({ dialog: 'prompt', recipientData: undefined, dataPrompt: undefined });
 				break;
 			}
