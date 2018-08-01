@@ -93,10 +93,13 @@ const handler = new MessengerHandler()
 		if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead) {
 			// we reload politicianData on every useful event
 			console.log(context.event.rawEvent.recipient.id);
+			console.log('Teste');
 			if (context.event.rawEvent.recipient.id) {
+				console.log('Entrei');
 				await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
 				await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 			} else { // in this case, it came from the feed/comment
+				console.log('Aqui');
 				const post_id = context.event.rawEvent.value.post_id;
 				const page_id = post_id.substr(0, post_id.indexOf('_'));
 				await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(page_id) });
