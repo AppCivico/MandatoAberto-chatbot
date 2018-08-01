@@ -93,31 +93,33 @@ const handler = new MessengerHandler()
 		if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead) {
 			// we reload politicianData on every useful event
 			console.log('Teste');
-			if (context.event.rawEvent.value.item !== 'comment' && context.event.rawEvent.value.item !== 'post') {
+			if (context.event.rawEvent.field === 'feed') {
+				if (context.event.rawEvent.value.item !== 'comment' && context.event.rawEvent.value.item !== 'post') {
 				// we update user data at every interaction that's not a comment or a post
-				console.log('Entrei');
-				await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
-				await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
+					console.log('Entrei');
+					await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
+					await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 
-				if (context.event.rawEvent.postback) {
-					if (context.event.rawEvent.postback.referral) { // if this exists we are on external site
-						await context.setState({ facebookPlataform: 'CUSTOMER_CHAT_PLUGIN' });
-					} else { // if it doesn't exists we are on an facebook/messenger
-						await context.setState({ facebookPlataform: 'MESSENGER' });
+					if (context.event.rawEvent.postback) {
+						if (context.event.rawEvent.postback.referral) { // if this exists we are on external site
+							await context.setState({ facebookPlataform: 'CUSTOMER_CHAT_PLUGIN' });
+						} else { // if it doesn't exists we are on an facebook/messenger
+							await context.setState({ facebookPlataform: 'MESSENGER' });
+						}
 					}
-				}
 
-				await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
-					fb_id: context.session.user.id,
-					name: `${context.session.user.first_name} ${context.session.user.last_name}`,
-					gender: context.session.user.gender === 'male' ? 'M' : 'F',
-					origin_dialog: 'greetings',
-					picture: context.session.user.profile_pic,
-					session: context.state,
-					session_updatedAt: context.state.lastActivity,
-				});
-			} else { // in this case, it came from the feed/comment
-				console.log('Aqui');
+					await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
+						fb_id: context.session.user.id,
+						name: `${context.session.user.first_name} ${context.session.user.last_name}`,
+						gender: context.session.user.gender === 'male' ? 'M' : 'F',
+						origin_dialog: 'greetings',
+						picture: context.session.user.profile_pic,
+						session: context.state,
+						session_updatedAt: context.state.lastActivity,
+					});
+				} else { // in this case, it came from the feed/comment
+					console.log('Aqui');
+				}
 			}
 		}
 
