@@ -100,9 +100,6 @@ bot.onEvent(async (context) => { // eslint-disable-line
 			}
 		}
 
-		console.log('\nEvento:');
-		console.log(context.event.rawEvent);
-
 		await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
 			fb_id: context.session.user.id,
 			name: `${context.session.user.first_name} ${context.session.user.last_name}`,
@@ -113,6 +110,10 @@ bot.onEvent(async (context) => { // eslint-disable-line
 			session_updatedAt: context.state.lastActivity,
 		});
 	}
+
+	console.log('\nEvento:');
+	console.log(context.event.rawEvent);
+
 
 	// Abrindo bot através de comentários e posts
 	// ** no context here **
