@@ -136,14 +136,18 @@ const handler = new MessengerHandler()
 			areWeListening = false;
 			switch (context.event.rawEvent.value.item) {
 			case 'comment':
-				console.log('comment');
 				item = 'comment';
 				comment_id = context.event.rawEvent.value.comment_id;
 				permalink = context.event.rawEvent.value.post.permalink_url;
+				console.log(item);
+				console.log(page_id);
+				console.log(post_id);
+				console.log(comment_id);
+				console.log(permalink);
+				console.log(user_id);
 				await MandatoAbertoAPI.postPrivateReply(item, page_id, post_id, comment_id, permalink, user_id);
 				break;
 			case 'post':
-				console.log('post');
 				item = 'post';
 				await MandatoAbertoAPI.postPrivateReply(item, page_id, post_id, comment_id, permalink, user_id);
 				break;
