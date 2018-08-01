@@ -92,11 +92,9 @@ const handler = new MessengerHandler()
 	.onEvent(async (context) => { // eslint-disable-line
 		if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead) {
 			// we reload politicianData on every useful event
-			console.log('Teste');
 			if (context.event.rawEvent.field === 'feed') {
 				if (context.event.rawEvent.value.item !== 'comment' && context.event.rawEvent.value.item !== 'post') {
 				// we update user data at every interaction that's not a comment or a post
-					console.log('Entrei');
 					await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
 					await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 
@@ -118,7 +116,7 @@ const handler = new MessengerHandler()
 						session_updatedAt: context.state.lastActivity,
 					});
 				} else { // in this case, it came from the feed/comment
-					console.log('Aqui');
+					// we do nothing
 				}
 			}
 		}
@@ -139,12 +137,6 @@ const handler = new MessengerHandler()
 				item = 'comment';
 				comment_id = context.event.rawEvent.value.comment_id;
 				permalink = context.event.rawEvent.value.post.permalink_url;
-				console.log(item);
-				console.log(page_id);
-				console.log(post_id);
-				console.log(comment_id);
-				console.log(permalink);
-				console.log(user_id);
 				await MandatoAbertoAPI.postPrivateReply(item, page_id, post_id, comment_id, permalink, user_id);
 				break;
 			case 'post':
