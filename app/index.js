@@ -432,6 +432,7 @@ const handler = new MessengerHandler()
 			await context.setState({ dialog: 'prompt' });
 			break;
 		}
+
 		case 'contacts':
 			// Tratando o formato do telefone
 			if (context.state.politicianData.contact.cellphone) {
