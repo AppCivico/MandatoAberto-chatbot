@@ -93,8 +93,7 @@ const handler = new MessengerHandler()
 		if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead) {
 			// we reload politicianData on every useful event
 			console.log('Teste');
-			console.log(context.event.rawEvent.recipient.id);
-			if (context.event.rawEvent.recipient.id) {
+			if (context.event.rawEvent.value.item !== 'comment' && context.event.rawEvent.value.item !== 'post') {
 				console.log('Entrei');
 				await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
 				await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
