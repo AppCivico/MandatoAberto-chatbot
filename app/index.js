@@ -140,6 +140,10 @@ const handler = new MessengerHandler()
 		}
 		// Tratando caso de o político não ter dados suficientes
 		if (!context.state.dialog) {
+			console.log('\n\ntest:');
+			console.log(context.state.politicianData.greetings);
+			console.log(context.state.politicianData.contact);
+			console.log(context.state.pollData.questions);
 			if (!context.state.politicianData.greetings && (!context.state.politicianData.contact && !context.state.pollData.questions)) {
 				console.log('Politician does not have enough data');
 				return false;
