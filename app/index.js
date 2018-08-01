@@ -92,8 +92,15 @@ const handler = new MessengerHandler()
 	.onEvent(async (context) => { // eslint-disable-line
 		if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead) {
 			// we reload politicianData on every useful event
-			await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
-			await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
+			if (context.event.rawEvent.recipient.id) {
+				await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
+				await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
+			} else { // in this case, it came from the feed/comment
+				const post_id = context.event.rawEvent.value.post_id;
+				const page_id = post_id.substr(0, post_id.indexOf('_'));
+				await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(page_id) });
+				await context.setState({ pollData: await MandatoAbertoAPI.getPollData(page_id) });
+			}
 			// we update user data at every interaction
 			if (context.event.rawEvent.postback) {
 				if (context.event.rawEvent.postback.referral) { // if this exists we are on external site
@@ -140,10 +147,8 @@ const handler = new MessengerHandler()
 		}
 		// Tratando caso de o político não ter dados suficientes
 		if (!context.state.dialog) {
-			console.log('\n\ntest:');
-			console.log(context.state.politicianData.greetings);
-			console.log(context.state.politicianData.contact);
-			console.log(context.state.pollData.questions);
+			await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
+			await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 			if (!context.state.politicianData.greetings && (!context.state.politicianData.contact && !context.state.pollData.questions)) {
 				console.log('Politician does not have enough data');
 				return false;
