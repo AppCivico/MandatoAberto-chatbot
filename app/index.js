@@ -418,7 +418,6 @@ const handler = new MessengerHandler()
 					}
 				}
 				timer = setTimeout(async () => {
-					await context.typingOff();
 					await context.setState({ sendIntro: true });
 					await context.sendButtonTemplate("Já terminou sua mensagem? Clique em 'Terminei a mensagem' para nos enviar! "
 						+ 'Ou continue escrevendo...', [
