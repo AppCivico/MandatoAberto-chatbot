@@ -133,16 +133,17 @@ const handler = new MessengerHandler()
 			const post_id = context.event.rawEvent.value.post_id;
 			const page_id = post_id.substr(0, post_id.indexOf('_'));
 			const user_id = context.event.rawEvent.value.from.id;
-			console.log('entramos');
 			areWeListening = false;
 			switch (context.event.rawEvent.value.item) {
 			case 'comment':
+				console.log('comment');
 				item = 'comment';
 				comment_id = context.event.rawEvent.value.comment_id;
 				permalink = context.event.rawEvent.value.post.permalink_url;
 				await MandatoAbertoAPI.postPrivateReply(item, page_id, post_id, comment_id, permalink, user_id);
 				break;
 			case 'post':
+				console.log('post');
 				item = 'post';
 				await MandatoAbertoAPI.postPrivateReply(item, page_id, post_id, comment_id, permalink, user_id);
 				break;
