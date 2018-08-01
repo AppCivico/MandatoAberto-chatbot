@@ -97,6 +97,24 @@ const handler = new MessengerHandler()
 				console.log('Entrei');
 				await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
 				await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
+
+				if (context.event.rawEvent.postback) {
+					if (context.event.rawEvent.postback.referral) { // if this exists we are on external site
+						await context.setState({ facebookPlataform: 'CUSTOMER_CHAT_PLUGIN' });
+					} else { // if it doesn't exists we are on an facebook/messenger
+						await context.setState({ facebookPlataform: 'MESSENGER' });
+					}
+				}
+
+				await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
+					fb_id: context.session.user.id,
+					name: `${context.session.user.first_name} ${context.session.user.last_name}`,
+					gender: context.session.user.gender === 'male' ? 'M' : 'F',
+					origin_dialog: 'greetings',
+					picture: context.session.user.profile_pic,
+					session: context.state,
+					session_updatedAt: context.state.lastActivity,
+				});
 			} else { // in this case, it came from the feed/comment
 				console.log('Aqui');
 				// const post_id = context.event.rawEvent.value.post_id;
@@ -105,23 +123,6 @@ const handler = new MessengerHandler()
 				// await context.setState({ pollData: await MandatoAbertoAPI.getPollData(page_id) });
 			}
 			// we update user data at every interaction
-			if (context.event.rawEvent.postback) {
-				if (context.event.rawEvent.postback.referral) { // if this exists we are on external site
-					await context.setState({ facebookPlataform: 'CUSTOMER_CHAT_PLUGIN' });
-				} else { // if it doesn't exists we are on an facebook/messenger
-					await context.setState({ facebookPlataform: 'MESSENGER' });
-				}
-			}
-
-			await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
-				fb_id: context.session.user.id,
-				name: `${context.session.user.first_name} ${context.session.user.last_name}`,
-				gender: context.session.user.gender === 'male' ? 'M' : 'F',
-				origin_dialog: 'greetings',
-				picture: context.session.user.profile_pic,
-				session: context.state,
-				session_updatedAt: context.state.lastActivity,
-			});
 		}
 
 		// Abrindo bot através de comentários e posts
