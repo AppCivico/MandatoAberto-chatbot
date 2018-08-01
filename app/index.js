@@ -94,6 +94,7 @@ const handler = new MessengerHandler()
 			// we reload politicianData on every useful event
 			console.log('Teste');
 			if (context.event.rawEvent.value.item !== 'comment' && context.event.rawEvent.value.item !== 'post') {
+				// we update user data at every interaction that's not a comment or a post
 				console.log('Entrei');
 				await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
 				await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
@@ -122,7 +123,6 @@ const handler = new MessengerHandler()
 				// await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(page_id) });
 				// await context.setState({ pollData: await MandatoAbertoAPI.getPollData(page_id) });
 			}
-			// we update user data at every interaction
 		}
 
 		// Abrindo bot através de comentários e posts
@@ -150,7 +150,7 @@ const handler = new MessengerHandler()
 			}
 		}
 		// Tratando caso de o político não ter dados suficientes
-		if (!context.state.dialog) {
+		if (!context.state.dialog && (context.event.rawEvent.value.item !== 'comment' && context.event.rawEvent.value.item !== 'post')) {
 			await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
 			await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 			if (!context.state.politicianData.greetings && (!context.state.politicianData.contact && !context.state.pollData.questions)) {
