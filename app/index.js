@@ -73,9 +73,9 @@ function getAboutMe(politicianData) {
 }
 
 async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-declarations
-	if (!context.state.introduction) {
-		// await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
-		// await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
+	if (!context.state.introduction) { // just in case something goes way off
+		await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
+		await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 	}
 	if (!context.state.introduction.content) { dialogs = dialogs.filter(obj => obj.payload !== 'aboutMe'); }
 	if (!context.state.trajectory) { dialogs = dialogs.filter(obj => obj.payload !== 'trajectory'); }
@@ -98,7 +98,7 @@ const handler = new MessengerHandler()
 		if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead && context.event.rawEvent.field !== 'feed') {
 			// we reload politicianData on every useful event
 			// we update context data at every interaction that's not a comment or a post
-			await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
+			await context.setState({ politicianData: await MandatoAberto.getPoliticianData(context.event.rawEvent.recipient.id) });
 			await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 
 			if (context.event.rawEvent.postback) {
