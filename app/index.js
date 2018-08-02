@@ -97,33 +97,27 @@ const handler = new MessengerHandler()
 	.onEvent(async (context) => { // eslint-disable-line
 		if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead && context.event.rawEvent.field !== 'feed') {
 			// we reload politicianData on every useful event
-			if (context.event.rawEvent.field === 'feed') {
-				if (context.event.rawEvent.value.item === 'comment' || context.event.rawEvent.value.item === 'post') {
-					console.log('estou aqui');
-				}
-			} else {
-				// we update context data at every interaction that's not a comment or a post
-				await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
-				await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
+			// we update context data at every interaction that's not a comment or a post
+			await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
+			await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 
-				if (context.event.rawEvent.postback) {
-					if (context.event.rawEvent.postback.referral) { // if this exists we are on external site
-						await context.setState({ facebookPlataform: 'CUSTOMER_CHAT_PLUGIN' });
-					} else { // if it doesn't exists we are on an facebook/messenger
-						await context.setState({ facebookPlataform: 'MESSENGER' });
-					}
+			if (context.event.rawEvent.postback) {
+				if (context.event.rawEvent.postback.referral) { // if this exists we are on external site
+					await context.setState({ facebookPlataform: 'CUSTOMER_CHAT_PLUGIN' });
+				} else { // if it doesn't exists we are on an facebook/messenger
+					await context.setState({ facebookPlataform: 'MESSENGER' });
 				}
-
-				await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
-					fb_id: context.session.user.id,
-					name: `${context.session.user.first_name} ${context.session.user.last_name}`,
-					gender: context.session.user.gender === 'male' ? 'M' : 'F',
-					origin_dialog: 'greetings',
-					picture: context.session.user.profile_pic,
-					session: context.state,
-					session_updatedAt: context.state.lastActivity,
-				});
 			}
+
+			await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
+				fb_id: context.session.user.id,
+				name: `${context.session.user.first_name} ${context.session.user.last_name}`,
+				gender: context.session.user.gender === 'male' ? 'M' : 'F',
+				origin_dialog: 'greetings',
+				picture: context.session.user.profile_pic,
+				session: context.state,
+				session_updatedAt: context.state.lastActivity,
+			});
 		}
 
 		// Abrindo bot através de comentários e posts
