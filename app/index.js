@@ -584,20 +584,21 @@ const handler = new MessengerHandler()
 		console.log(`Parece que aconteceu um erro ás ${date.toString()} => ${err} `);
 		console.log('\n\n');
 
-		if (context.event.rawEvent.field === 'feed') {
-			if (context.event.rawEvent.value.item === 'comment' || context.event.rawEvent.value.item === 'post') {
-				// we update user data at every interaction that's not a comment or a post
-				await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
-				await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
-			}
-		} else {
-			await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
-			await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
-		}
-		await context.sendText('Vocês gostaria de enviar uma mensagem para nossa equipe ou conhecer mais sobre '
-			+ `${context.state.articles.defined} ${context.state.politicianData.office.name} ${context.state.politicianData.name}?`);
-		await context.sendButtonTemplate('Selecione a opção desejada em um dos botões abaixo:', [opt.writeMessage, opt.seeAssistent]);
-		await context.setState({ dialog: 'prompt' });
+		// if (context.event.rawEvent.field === 'feed') {
+		// 	if (context.event.rawEvent.value.item === 'comment' || context.event.rawEvent.value.item === 'post') {
+		// 		// we update user data at every interaction that's not a comment or a post
+		// 		await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
+		// 		await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
+		// 	}
+		// } else {
+		// 	await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
+		// 	await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
+		// }
+
+		// await context.sendText('Vocês gostaria de enviar uma mensagem para nossa equipe ou conhecer mais sobre '
+		// 	+ `${context.state.articles.defined} ${context.state.politicianData.office.name} ${context.state.politicianData.name}?`);
+		// await context.sendButtonTemplate('Selecione a opção desejada em um dos botões abaixo:', [opt.writeMessage, opt.seeAssistent]);
+		// await context.setState({ dialog: 'prompt' });
 	});
 
 
