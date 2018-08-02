@@ -311,7 +311,7 @@ const handler = new MessengerHandler()
 				break;
 			case 'intermediate':
 			// await context.setState({ userMessage: `${context.state.userMessage} + " "`});;
-				await context.sendText('Vocês gostaria de enviar uma mensagem para nossa equipe ou conhecer mais sobre '
+				await context.sendText('Você gostaria de enviar uma mensagem para nossa equipe ou conhecer mais sobre '
 					+ `${context.state.articles.defined} ${context.state.politicianData.office.name} ${context.state.politicianData.name}?`);
 				await context.sendButtonTemplate('Selecione a opção desejada em um dos botões abaixo:', [opt.writeMessage, opt.seeAssistent]);
 				await context.setState({ dialog: 'prompt' });
@@ -596,7 +596,7 @@ const handler = new MessengerHandler()
 			await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 		}
 
-		await context.sendText('Vocês gostaria de enviar uma mensagem para nossa equipe ou conhecer mais sobre '
+		await context.sendText('Olá. Você gostaria de enviar uma mensagem para nossa equipe ou conhecer mais sobre '
 			+ `${context.state.articles.defined} ${context.state.politicianData.office.name} ${context.state.politicianData.name}?`);
 		await context.sendButtonTemplate('Selecione a opção desejada em um dos botões abaixo:', [opt.writeMessage, opt.seeAssistent]);
 		await context.setState({ dialog: 'prompt' });
