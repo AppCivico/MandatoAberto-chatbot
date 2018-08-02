@@ -129,8 +129,6 @@ const handler = new MessengerHandler()
 			// let introduction;
 			const post_id = context.event.rawEvent.value.post_id;
 			const page_id = post_id.substr(0, post_id.indexOf('_'));
-			console.log(page_id);
-
 			const user_id = context.event.rawEvent.value.from.id;
 			areWeListening = false;
 			switch (context.event.rawEvent.value.item) {
