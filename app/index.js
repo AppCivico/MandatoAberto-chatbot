@@ -126,22 +126,21 @@ const handler = new MessengerHandler()
 			let item;
 			let comment_id;
 			let permalink;
-			console.log('Entrei aqui');
 			// let introduction;
 			const post_id = context.event.rawEvent.value.post_id;
 			const page_id = post_id.substr(0, post_id.indexOf('_'));
+			console.log(page_id);
+
 			const user_id = context.event.rawEvent.value.from.id;
 			areWeListening = false;
 			switch (context.event.rawEvent.value.item) {
 			case 'comment':
-				console.log('Entrei aqui2');
 				item = 'comment';
 				comment_id = context.event.rawEvent.value.comment_id;
 				permalink = context.event.rawEvent.value.post.permalink_url;
 				await MandatoAbertoAPI.postPrivateReply(item, page_id, post_id, comment_id, permalink, user_id);
 				break;
 			case 'post':
-				console.log('Entrei aqui3');
 				item = 'post';
 				await MandatoAbertoAPI.postPrivateReply(item, page_id, post_id, comment_id, permalink, user_id);
 				break;
@@ -571,15 +570,10 @@ const handler = new MessengerHandler()
 		console.log('\n\n');
 
 		if (context.event.rawEvent.field === 'feed') {
-			if (context.event.rawEvent.value.item !== 'comment' && context.event.rawEvent.value.item !== 'post') {
+			if (context.event.rawEvent.value.item === 'comment' || context.event.rawEvent.value.item === 'post') {
 				// we update user data at every interaction that's not a comment or a post
 				await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
 				await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
-
-				// await context.sendText('Vocês gostaria de enviar uma mensagem para nossa equipe ou conhecer mais sobre '
-				// 	+ `${context.state.articles.defined} ${context.state.politicianData.office.name} ${context.state.politicianData.name}?`);
-				// await context.sendButtonTemplate('Selecione a opção desejada em um dos botões abaixo:', [opt.writeMessage, opt.seeAssistent]);
-				// await context.setState({ dialog: 'prompt' });
 			}
 		} else {
 			await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
