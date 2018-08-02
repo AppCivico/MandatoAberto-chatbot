@@ -581,8 +581,8 @@ const handler = new MessengerHandler()
 	.onError(async (context, err) => {
 		const date = new Date();
 		console.log('\n\n');
-		console.log(`Parece que aconteceu um erro ás ${date.toString()} => ${err} `);
-		console.log('\n\n');
+		console.log(`Parece que aconteceu um erro ás ${date.toString()} =>`);
+		console.log(err);
 
 		// if (context.event.rawEvent.field === 'feed') {
 		// 	if (context.event.rawEvent.value.item === 'comment' || context.event.rawEvent.value.item === 'post') {
