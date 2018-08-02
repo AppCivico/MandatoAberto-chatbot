@@ -97,13 +97,12 @@ const handler = new MessengerHandler()
 	.onEvent(async (context) => { // eslint-disable-line
 		if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead) {
 			// we reload politicianData on every useful event
-			console.log(context.event.rawEvent.field);
 			if (context.event.rawEvent.field === 'feed') {
 				if (context.event.rawEvent.value.item === 'comment' && context.event.rawEvent.value.item === 'post') {
-					// we update user data at every interaction that's not a comment or a post
+					console.log('estou aqui');
 				}
 			} else {
-				console.log('\n\n\nestou aqui');
+				// we update context data at every interaction that's not a comment or a post
 				await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
 				await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 
@@ -133,6 +132,7 @@ const handler = new MessengerHandler()
 			let item;
 			let comment_id;
 			let permalink;
+			console.log('Entrei aqui');
 			// let introduction;
 			const post_id = context.event.rawEvent.value.post_id;
 			const page_id = post_id.substr(0, post_id.indexOf('_'));
@@ -140,12 +140,14 @@ const handler = new MessengerHandler()
 			areWeListening = false;
 			switch (context.event.rawEvent.value.item) {
 			case 'comment':
+				console.log('Entrei aqui2');
 				item = 'comment';
 				comment_id = context.event.rawEvent.value.comment_id;
 				permalink = context.event.rawEvent.value.post.permalink_url;
 				await MandatoAbertoAPI.postPrivateReply(item, page_id, post_id, comment_id, permalink, user_id);
 				break;
 			case 'post':
+				console.log('Entrei aqui3');
 				item = 'post';
 				await MandatoAbertoAPI.postPrivateReply(item, page_id, post_id, comment_id, permalink, user_id);
 				break;
