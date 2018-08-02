@@ -564,7 +564,7 @@ const handler = new MessengerHandler()
 		}
 	})
 	.onError(async (context, err) => {
-		const date = Date.now();
+		const date = Date.now() * 1000;
 		console.log('\n\n');
 		console.log(`Parece que aconteceu um erro ás ${date.toString()} => ${err} `);
 		console.log('\n\n');
