@@ -95,7 +95,7 @@ function getIssueMessage(issueMessage) {
 
 const handler = new MessengerHandler()
 	.onEvent(async (context) => { // eslint-disable-line
-		if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead) {
+		if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead && context.event.rawEvent.field !== 'feed') {
 			// we reload politicianData on every useful event
 			if (context.event.rawEvent.field === 'feed') {
 				if (context.event.rawEvent.value.item === 'comment' || context.event.rawEvent.value.item === 'post') {
