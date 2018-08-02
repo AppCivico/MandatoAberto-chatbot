@@ -97,7 +97,7 @@ const handler = new MessengerHandler()
 	.onEvent(async (context) => { // eslint-disable-line
 		if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead) {
 			// we reload politicianData on every useful event
-			if (context.event.rawEvent.field === 'feed') {
+			if (context.event.rawEvent.field !== 'feed') {
 				if (context.event.rawEvent.value.item !== 'comment' && context.event.rawEvent.value.item !== 'post') {
 				// we update user data at every interaction that's not a comment or a post
 					await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
@@ -570,9 +570,22 @@ const handler = new MessengerHandler()
 		}
 	})
 	.onError(async (context, err) => {
-		await context.sendText('Parece que aconteceu um erro');
-		await context.sendText(err.message);
-		console.log(err);
+		if (context.event.rawEvent.field === 'feed') {
+			if (context.event.rawEvent.value.item !== 'comment' && context.event.rawEvent.value.item !== 'post') {
+				// we update user data at every interaction that's not a comment or a post
+				await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
+				await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
+			}
+		} else {
+			await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
+			await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
+		}
+		await context.sendText('Vocês gostaria de enviar uma mensagem para nossa equipe ou conhecer mais sobre '
+			+ `${context.state.articles.defined} ${context.state.politicianData.office.name} ${context.state.politicianData.name}?`);
+		await context.sendButtonTemplate('Selecione a opção desejada em um dos botões abaixo:', [opt.writeMessage, opt.seeAssistent]);
+		await context.setState({ dialog: 'prompt' });
+		console.log('\n\nParece que aconteceu um erro:', err);
+		console.log('\n\n');
 	});
 
 
