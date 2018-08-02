@@ -51,6 +51,21 @@ const bot = new MessengerBot({
 
 bot.setInitialState({});
 
+
+// function timeConverter(UNIX_timestamp) {
+// 	// const a = new Date(UNIX_timestamp * 1000);
+// 	const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+// 	const year = a.getFullYear();
+// 	const month = months[a.getMonth()];
+// 	const date = a.getDate();
+// 	const hour = a.getHours();
+// 	const min = a.getMinutes();
+// 	const sec = a.getSeconds();
+// 	const time = `${date} ${month} ${year} ${hour}:${min}:${sec}`;
+// 	return time;
+// }
+
+
 bot.use(withTyping({ delay: 1000 }));
 
 // Deve-se indentificar o sexo do representante público e selecionar os artigos (definido e possesivo) adequados
@@ -98,7 +113,7 @@ const handler = new MessengerHandler()
 		if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead && context.event.rawEvent.field !== 'feed') {
 			// we reload politicianData on every useful event
 			// we update context data at every interaction that's not a comment or a post
-			await context.setState({ politicianData: await MandatoAberto.getPoliticianData(context.event.rawEvent.recipient.id) });
+			await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
 			await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 
 			if (context.event.rawEvent.postback) {
@@ -564,7 +579,7 @@ const handler = new MessengerHandler()
 		}
 	})
 	.onError(async (context, err) => {
-		const date = Date.now() * 1000;
+		const date = new Date();
 		console.log('\n\n');
 		console.log(`Parece que aconteceu um erro ás ${date.toString()} => ${err} `);
 		console.log('\n\n');
