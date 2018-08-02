@@ -97,7 +97,7 @@ const handler = new MessengerHandler()
 	.onEvent(async (context) => { // eslint-disable-line
 		if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead) {
 			// we reload politicianData on every useful event
-			if (context.event.rawEvent.field !== 'feed') {
+			if (context.event.rawEvent.field === 'feed') {
 				if (context.event.rawEvent.value.item !== 'comment' && context.event.rawEvent.value.item !== 'post') {
 				// we update user data at every interaction that's not a comment or a post
 					await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
