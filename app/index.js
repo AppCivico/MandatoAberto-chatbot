@@ -89,7 +89,7 @@ function getAboutMe(politicianData) {
 
 async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-declarations
 	if (!context.state.introduction) { // just in case something goes way off
-		await context.setState({ politicianData: await MandatoAberto.getPoliticianData(context.event.rawEvent.recipient.id) });
+		await context.setState({ politicianData: await MandatoAberto.etPoliticianData(context.event.rawEvent.recipient.id) });
 		await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 	}
 	if (!context.state.introduction.content) { dialogs = dialogs.filter(obj => obj.payload !== 'aboutMe'); }
