@@ -100,10 +100,10 @@ const handler = new MessengerHandler()
 			console.log(context.event.rawEvent.field);
 			if (context.event.rawEvent.field !== 'feed') {
 				if (context.event.rawEvent.value.item === 'comment' && context.event.rawEvent.value.item === 'post') {
-					console.log('estou aqui');
 					// we update user data at every interaction that's not a comment or a post
 				}
 			} else {
+				console.log('\n\n\nestou aqui');
 				await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
 				await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 
