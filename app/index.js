@@ -98,7 +98,7 @@ const handler = new MessengerHandler()
 		if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead) {
 			// we reload politicianData on every useful event
 			if (context.event.rawEvent.field === 'feed') {
-				if (context.event.rawEvent.value.item === 'comment' && context.event.rawEvent.value.item === 'post') {
+				if (context.event.rawEvent.value.item === 'comment' || context.event.rawEvent.value.item === 'post') {
 					console.log('estou aqui');
 				}
 			} else {
