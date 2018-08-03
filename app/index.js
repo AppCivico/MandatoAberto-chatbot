@@ -565,9 +565,10 @@ const handler = new MessengerHandler()
 	})
 	.onError(async (context, err) => {
 		const date = new Date();
-		console.log('\n\n');
-		console.log(`Parece que aconteceu um erro ás ${date.toString()} =>`);
+		console.log('\n');
+		console.log(`Parece que aconteceu um erro as ${date.toLocaleTimeString('pt-BR')} de ${date.getDate()}/${date.getMonth() + 1} =>`);
 		console.log(err);
+		console.log('\n');
 
 		if (context.event.rawEvent.field === 'feed') {
 			if (context.event.rawEvent.value.item === 'comment' || context.event.rawEvent.value.item === 'post') {
