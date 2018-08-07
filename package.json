@@ -7,6 +7,7 @@
     "start": "node app/index.js"
   },
   "dependencies": {
+    "apiai-promise": "^1.0.0",
     "bottender": "^0.14.22",
     "dotenv": "^4.0.0",
     "nodemon": "1.12.7",

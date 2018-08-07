@@ -5,6 +5,7 @@ const {
 	MessengerBot, FileSessionStore, withTyping, MessengerHandler,
 } = require('bottender');
 const { createServer } = require('bottender/restify');
+const apiai = require('apiai-promise');
 const config = require('./bottender.config.js').messenger;
 const MandatoAbertoAPI = require('./mandatoaberto_api.js');
 const VotoLegalAPI = require('./votolegal_api.js');
@@ -14,6 +15,8 @@ const opt = require('./utils/options');
 // const request = require("requisition");
 // const apiUri = process.env.MANDATOABERTO_API_URL;
 
+const app = apiai(process.env.DIALOGFLOW_TOKEN);
+console.log(process.env.DIALOGFLOW_TOKEN);
 const phoneRegex = new RegExp(/^\+55\d{2}(\d{1})?\d{8}$/);
 
 function getMoney(str) {
