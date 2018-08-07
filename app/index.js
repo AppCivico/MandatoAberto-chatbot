@@ -5,7 +5,7 @@ const {
 	MessengerBot, FileSessionStore, withTyping, MessengerHandler,
 } = require('bottender');
 const { createServer } = require('bottender/restify');
-const dialogFlow = require('apiai-promise');
+// const dialogFlow = require('apiai-promise');
 const config = require('./bottender.config.js').messenger;
 const MandatoAbertoAPI = require('./mandatoaberto_api.js');
 const VotoLegalAPI = require('./votolegal_api.js');
@@ -15,7 +15,7 @@ const opt = require('./utils/options');
 // const request = require("requisition");
 // const apiUri = process.env.MANDATOABERTO_API_URL;
 
-const apiai = dialogFlow(process.env.DIALOGFLOW_TOKEN);
+// const apiai = dialogFlow(process.env.DIALOGFLOW_TOKEN);
 
 const phoneRegex = new RegExp(/^\+55\d{2}(\d{1})?\d{8}$/);
 
@@ -174,26 +174,27 @@ const handler = new MessengerHandler()
 					await context.setState({ dialog: context.event.message.quick_reply.payload });
 				} else if (context.event.isText) {
 				// checking text on dialogflow
-					await context.setState({
-						apiaiResp: await apiai.textRequest(context.event.message.text, { sessionId: context.session.user.id }),
-					});
+					// --- await context.setState({ apiaiResp: await apiai.textRequest(context.event.message.text, { sessionId: context.session.user.id }) });
 					// console.log(context.state.apiaiResp);
+
 					// Ao mandar uma mensagem que não é interpretada como fluxo do chatbot
 					// Devo já criar uma issue
 					// We go to the listening dialog to wait for other messages
 					// check if message came from standard flow or from post/comment
-					if (context.state.apiaiResp.result.metadata.intentName === 'Fallback') {
-						// Fallback --> counldn't find any matching intents
-						if (areWeListening === true) {
-							await context.setState({ dialog: 'listening' });
-						} else {
-							await context.setState({ dialog: 'intermediate' });
-						}
-					} else { // Found intent
-						console.log(`IntentName: ${context.state.apiaiResp.result.metadata.intentName}`);
-						console.log('Entities:');
-						console.dir(context.state.apiaiResp.result.parameters);
+
+					// --- if (context.state.apiaiResp.result.metadata.intentName === 'Fallback') {
+					// Fallback --> counldn't find any matching intents
+					if (areWeListening === true) {
+						await context.setState({ dialog: 'listening' });
+					} else {
+						await context.setState({ dialog: 'intermediate' });
 					}
+					// --- } else { // Found intent
+					// --- 	console.log(`IntentName: ${context.state.apiaiResp.result.metadata.intentName}`);
+					// --- 	console.log('Entities:');
+					// --- 	console.dir(context.state.apiaiResp.result.parameters);
+					// --- 	await context.setState({ dialog: 'listening' });
+					// --- }
 				}
 			}
 
