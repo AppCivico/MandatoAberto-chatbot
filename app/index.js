@@ -15,8 +15,8 @@ const opt = require('./utils/options');
 // const request = require("requisition");
 // const apiUri = process.env.MANDATOABERTO_API_URL;
 
-const app = apiai(process.env.DIALOGFLOW_TOKEN);
-console.log(process.env.DIALOGFLOW_TOKEN);
+// const app = apiai(process.env.DIALOGFLOW_TOKEN);
+// console.log(process.env.DIALOGFLOW_TOKEN);
 const phoneRegex = new RegExp(/^\+55\d{2}(\d{1})?\d{8}$/);
 
 function getMoney(str) {
