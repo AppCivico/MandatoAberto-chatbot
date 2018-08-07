@@ -177,17 +177,21 @@ const handler = new MessengerHandler()
 					await context.setState({
 						apiaiResp: await apiai.textRequest(context.event.message.text, { sessionId: context.session.user.id }),
 					});
-					console.log(context.state.apiaiResp);
+					// console.log(context.state.apiaiResp);
 					// Ao mandar uma mensagem que não é interpretada como fluxo do chatbot
 					// Devo já criar uma issue
 					// We go to the listening dialog to wait for other messages
 					// check if message came from standard flow or from post/comment
-					if (context.state.apiaiResp.result.metadata.intentName) {
+					if (context.state.apiaiResp.result.metadata.intentName === 'Fallback') {
+						// Fallback --> counldn't find any matching intents
+						if (areWeListening === true) {
+							await context.setState({ dialog: 'listening' });
+						} else {
+							await context.setState({ dialog: 'intermediate' });
+						}
+					} else { // Found intent
 						console.log(`IntentName: ${context.state.apiaiResp.result.metadata.intentName}`);
-					} else if (areWeListening === true) {
-						await context.setState({ dialog: 'listening' });
-					} else {
-						await context.setState({ dialog: 'intermediate' });
+						console.log(`Entities: ${context.state.apiaiResp.parameters}`);
 					}
 				}
 			}
