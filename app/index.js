@@ -172,12 +172,9 @@ const handler = new MessengerHandler()
 			if (context.state.dialog === 'prompt') {
 				if (context.event.isPostback) {
 					const { payload } = context.event.postback;
-					console.log(payload);
-					console.log(payload.slice(0, 6));
 					if (payload.slice(0, 6) === 'answer') {
-						console.log(payload);
-						await context.setState({ answer: context.state.knowledge.knowledge_base.find(x => x.id === parseInt(payload.replace('answer', ''), 10)) });
-						console.log(context.state.answer);
+						await context.setState({ question: context.state.knowledge.knowledge_base.find(x => x.id === parseInt(payload.replace('answer', ''), 10)) });
+						console.log(context.state.question.answer);
 						await context.setState({ dialog: 'showAnswer' });
 					} else {
 						await context.setState({ dialog: payload });
@@ -340,7 +337,7 @@ const handler = new MessengerHandler()
 				await context.setState({ dialog: 'prompt' });
 				break;
 			case 'showAnswer':
-				await context.sendText(context.state.answer);
+				await context.sendText(context.state.question.answer);
 				await context.sendButtonTemplate('E aí, o que achou? Se tiver mais alguma pergunta é só mandar!',
 					await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
 				break;
