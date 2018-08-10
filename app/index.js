@@ -57,7 +57,7 @@ const bot = new MessengerBot({
 	sessionStore: new FileSessionStore(),
 });
 
-bot.setInitialState({});
+bot.setInitialState({ sendIntro: true });
 
 bot.use(withTyping({ delay: 1000 }));
 
