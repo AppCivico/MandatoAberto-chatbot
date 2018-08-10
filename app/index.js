@@ -44,6 +44,11 @@ let areWeListening = false;
 // the standard flow and messages from comment/post
 //
 
+function removeEmptyKeys(obj) {
+	Object.keys(obj).forEach((key) => { if (obj[key].length === 0) { delete obj[key]; } });
+}
+
+
 const mapPageToAccessToken = async (pageId) => {
 	const politicianData2 = await MandatoAbertoAPI.getPoliticianData(pageId);
 	return politicianData2.fb_access_token;
@@ -187,6 +192,7 @@ const handler = new MessengerHandler()
 					// check intent for first message
 					await context.setState({ whatWasTyped: context.event.message.text }); // will be used in case the bot doesn't find the question
 					// checking text on dialogflow
+					removeEmptyKeys(context.state.apiaiResp.result.parameters);
 					await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
 					console.log(context.state.apiaiResp.result.parameters);
 					if (context.state.apiaiResp.result.metadata.intentName === 'Fallback') {
@@ -197,13 +203,13 @@ const handler = new MessengerHandler()
 						} else {
 							await context.setState({ dialog: 'intermediate' });
 						}
-					} else if (context.state.apiaiResp.result.parameters.length === 1) { // found intent and 1 entity
+					} else if (Object.keys(context.state.apiaiResp.result.parameters).length === 1) { // found intent and 1 entity
 						await context.setState({
 							knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.apiaiResp.result.parameters),
 						});
 						await context.setState({ dialog: 'chooseQuestion' });
 					} else { // found intent but 2+ entities
-						console.log(context.state.apiaiResp.result.parameters.length);
+						console.log(Object.keys(context.state.apiaiResp.result.parameters).length);
 					}
 				}
 			}
