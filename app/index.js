@@ -171,7 +171,15 @@ const handler = new MessengerHandler()
 			// Tratando dinâmica de issues
 			if (context.state.dialog === 'prompt') {
 				if (context.event.isPostback) {
-					await context.setState({ dialog: context.event.postback.payload });
+					const { payload } = context.event.postback;
+					console.log(payload);
+					if (payload.slice(0, 4) === 'answer') {
+						await context.setState({ answer: context.state.knowledge.knowledge_base.find(x => x.id === parseInt(payload.replace('answer', ''), 10)) });
+						console.log(context.state.answer);
+						await context.setState({ dialog: 'showAnswer' });
+					} else {
+						await context.setState({ dialog: payload });
+					}
 				} else if (context.event.isQuickReply) {
 					await context.setState({ dialog: context.event.message.quick_reply.payload });
 				} else if (context.event.isText) {
@@ -327,6 +335,11 @@ const handler = new MessengerHandler()
 					],
 				});
 				await context.typingOff();
+				break;
+			case 'showAnswer':
+				await context.sendText(context.state.answer);
+				await context.sendButtonTemplate('E aí, o que achou? Se tiver mais alguma pergunta é só mandar!',
+					await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
 				break;
 			case 'NotOneOfThese':
 				await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id, context.state.whatWasTyped,

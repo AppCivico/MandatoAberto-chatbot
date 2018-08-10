@@ -10,7 +10,7 @@ async function sendQuestions(context, content) {
 			buttons: [{
 				type: 'postback',
 				title: 'É essa',
-				payload: `answer${index}`,
+				payload: `answer${element.id}`,
 			}],
 		});
 	});
