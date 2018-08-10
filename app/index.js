@@ -181,7 +181,7 @@ const handler = new MessengerHandler()
 					// We go to the listening dialog to wait for other messages
 					// check intent for first message
 					await context.setState({ whatWasTyped: context.event.message.text }); // will be used in case the bot doesn't find the question
-					await context.setState({ apiaiResp: await apiai.textRequest(context.event.whatWasTyped, { sessionId: context.session.user.id }) });
+					await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
 					if (context.state.apiaiResp.result.metadata.intentName === 'Fallback') {
 						// Fallback --> counldn't find any matching intents
 						// check if message came from standard flow or from post/comment
