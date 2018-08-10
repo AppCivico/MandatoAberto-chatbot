@@ -65,7 +65,7 @@ function getArticles(gender) {
 }
 
 async function removeEmptyKeys(obj) {
-	await Object.keys(obj).forEach((key) => {
+	Object.keys(obj).forEach((key) => {
 		if (key && key === Array && key === 0) {
 			delete obj[key];
 		}
@@ -510,7 +510,8 @@ const handler = new MessengerHandler()
 			}
 			case 'listeningAnswer':
 				await context.setState({ apiaiResp: await apiai.textRequest(context.state.userMessage, { sessionId: context.session.user.id }) });
-				console.log(await removeEmptyKeys(context.state.apiaiResp.result.parameters));
+				const aaa = await removeEmptyKeys(context.state.apiaiResp.result.parameters);
+				console.log(aaa);
 				await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id, context.state.userMessage,
 					context.state.apiaiResp.result.parameters);
 				await context.setState({ userMessage: '' });
