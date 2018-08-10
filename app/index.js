@@ -174,7 +174,6 @@ const handler = new MessengerHandler()
 					await context.setState({ dialog: context.event.message.quick_reply.payload });
 				} else if (context.event.isText) {
 				// checking text on dialogflow
-
 					// Ao mandar uma mensagem que não é interpretada como fluxo do chatbot
 					// Devo já criar uma issue
 					// We go to the listening dialog to wait for other messages
@@ -502,7 +501,7 @@ const handler = new MessengerHandler()
 				break;
 			}
 			case 'listeningAnswer':
-				await context.setState({ apiaiResp: await apiai.textRequest(context.event.message.text, { sessionId: context.session.user.id }) });
+				await context.setState({ apiaiResp: await apiai.textRequest(context.state.userMessage, { sessionId: context.session.user.id }) });
 				await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id, context.state.userMessage,
 					context.state.apiaiResp.result.parameters);
 				await context.setState({ userMessage: '' });
