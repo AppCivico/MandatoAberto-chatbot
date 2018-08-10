@@ -335,6 +335,7 @@ const handler = new MessengerHandler()
 					],
 				});
 				await context.typingOff();
+				await context.setState({ dialog: 'prompt' });
 				break;
 			case 'showAnswer':
 				await context.sendText(context.state.answer);
