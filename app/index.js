@@ -176,6 +176,7 @@ const handler = new MessengerHandler()
 					const { payload } = context.event.postback;
 					if (payload.slice(0, 6) === 'answer') {
 						await context.setState({ question: context.state.knowledge.knowledge_base.find(x => x.id === parseInt(payload.replace('answer', ''), 10)) });
+						console.log(context.state.knowledge.knowledge_base);
 						await context.setState({ dialog: 'showAnswer' });
 					} else {
 						await context.setState({ dialog: payload });
