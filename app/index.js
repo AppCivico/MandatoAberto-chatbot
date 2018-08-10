@@ -5,17 +5,17 @@ const {
 	MessengerBot, FileSessionStore, withTyping, MessengerHandler,
 } = require('bottender');
 const { createServer } = require('bottender/restify');
-// const dialogFlow = require('apiai-promise');
+const dialogFlow = require('apiai-promise');
 const config = require('./bottender.config.js').messenger;
 const MandatoAbertoAPI = require('./mandatoaberto_api.js');
 const VotoLegalAPI = require('./votolegal_api.js');
 const Articles = require('./utils/articles.js');
 const opt = require('./utils/options');
 
-// const request = require("requisition");
+// const request = require('requisition');
 // const apiUri = process.env.MANDATOABERTO_API_URL;
 
-// const apiai = dialogFlow(process.env.DIALOGFLOW_TOKEN);
+const apiai = dialogFlow(process.env.DIALOGFLOW_TOKEN);
 
 const phoneRegex = new RegExp(/^\+55\d{2}(\d{1})?\d{8}$/);
 
@@ -174,8 +174,6 @@ const handler = new MessengerHandler()
 					await context.setState({ dialog: context.event.message.quick_reply.payload });
 				} else if (context.event.isText) {
 				// checking text on dialogflow
-					// --- await context.setState({ apiaiResp: await apiai.textRequest(context.event.message.text, { sessionId: context.session.user.id }) });
-					// console.log(context.state.apiaiResp);
 
 					// Ao mandar uma mensagem que não é interpretada como fluxo do chatbot
 					// Devo já criar uma issue
@@ -504,7 +502,9 @@ const handler = new MessengerHandler()
 				break;
 			}
 			case 'listeningAnswer':
-				await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id, context.state.userMessage);
+				await context.setState({ apiaiResp: await apiai.textRequest(context.event.message.text, { sessionId: context.session.user.id }) });
+				await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id, context.state.userMessage,
+					context.state.apiaiResp.result.parameters);
 				await context.setState({ userMessage: '' });
 				await context.setState({ issueCreatedMessage: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_created') });
 				if (context.state.issueCreatedMessage.content) {
