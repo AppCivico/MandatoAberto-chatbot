@@ -113,8 +113,8 @@ const handler = new MessengerHandler()
 			}
 
 			console.log(typeof JSON.stringify(context.state));
-			console.log(typeof context.state.lastActivity);
-			console.log(typeof JSON.stringify(context.state.lastActivity));
+			console.log(typeof context.session.lastActivity);
+			console.log(typeof JSON.stringify(context.session.lastActivity));
 			await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
 				fb_id: context.session.user.id,
 				name: `${context.session.user.first_name} ${context.session.user.last_name}`,
@@ -122,7 +122,7 @@ const handler = new MessengerHandler()
 				origin_dialog: 'greetings',
 				picture: context.session.user.profile_pic,
 				session: JSON.stringify(context.state),
-				session_updatedAt: JSON.stringify(context.state.lastActivity),
+				session_updatedAt: JSON.stringify(context.session.lastActivity),
 			});
 		}
 
