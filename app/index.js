@@ -112,9 +112,6 @@ const handler = new MessengerHandler()
 				}
 			}
 
-			console.log(typeof JSON.stringify(context.state));
-			console.log(typeof context.session.lastActivity);
-			console.log(typeof JSON.stringify(context.session.lastActivity));
 			await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
 				fb_id: context.session.user.id,
 				name: `${context.session.user.first_name} ${context.session.user.last_name}`,
@@ -122,7 +119,6 @@ const handler = new MessengerHandler()
 				origin_dialog: 'greetings',
 				picture: context.session.user.profile_pic,
 				session: JSON.stringify(context.state),
-				session_updatedAt: JSON.stringify(context.session.lastActivity),
 			});
 		}
 
@@ -505,7 +501,7 @@ const handler = new MessengerHandler()
 			}
 			case 'listeningAnswer':
 				await context.setState({ apiaiResp: await apiai.textRequest(context.state.userMessage, { sessionId: context.session.user.id }) });
-				await MandatoAbertoAPI.postIssueEntities(context.state.politicianData.user_id, context.session.user.id, context.state.userMessage,
+				await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id, context.state.userMessage,
 					context.state.apiaiResp.result.parameters);
 				await context.setState({ userMessage: '' });
 				await context.setState({ issueCreatedMessage: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_created') });
