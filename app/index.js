@@ -193,6 +193,7 @@ const handler = new MessengerHandler()
 						// console.log(`IntentName: ${context.state.apiaiResp.result.metadata.intentName}`);
 						// console.log('Entities:');
 						// console.dir(context.state.apiaiResp.result.parameters);
+						await context.setState({ whatWasTyped: context.event.message.text }); // will be used in case the bot doesn't find the question
 						await context.setState({
 							knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.apiaiResp.result.parameters),
 						});
@@ -316,9 +317,25 @@ const handler = new MessengerHandler()
 				break;
 			case 'chooseQuestion':
 				await context.typingOn();
-				await context.sendText('Ok! Por favor, escolha sua pergunta abaixo:');
 				await attach.sendQuestions(context, context.state.knowledge.knowledge_base);
+				await context.sendText('Ok! Por favor, escolha sua pergunta acima ⤴️.\nSe não achou é só clicar abaixo ⤵️', {
+					quick_replies: [
+						{
+							content_type: 'text',
+							title: 'Não achei',
+							payload: 'NotOneOfThese',
+						},
+					],
+				});
 				await context.typingOff();
+				break;
+			case 'NotOneOfThese':
+				await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id, context.state.whatWasTyped,
+					context.state.apiaiResp.result.parameters);
+				await context.setState({ whatWasTyped: '' });
+				await context.sendText('Que pena! Recebi sua dúvida e estarei te respondendo logo mais!');
+				await context.sendButtonTemplate('E agora, como posso te ajudar?',
+					await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
 				break;
 			case 'intermediate':
 			// await context.setState({ userMessage: `${context.state.userMessage} + " "`});;
