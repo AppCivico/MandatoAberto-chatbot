@@ -64,20 +64,6 @@ function getArticles(gender) {
 	return Articles.masculine;
 }
 
-async function removeEmptyKeys(obj) {
-	console.log('i am here');
-	Object.keys(obj).forEach((key) => {
-		console.log(typeof key);
-		if (obj[key].length === 0) {
-			console.log('deletei');
-			delete obj[key];
-		}
-	});
-	console.log('devolvendo o objeto');
-
-	return obj;
-}
-
 function getAboutMe(politicianData) {
 	const articles = getArticles(politicianData.gender);
 
@@ -515,8 +501,6 @@ const handler = new MessengerHandler()
 			}
 			case 'listeningAnswer':
 				await context.setState({ apiaiResp: await apiai.textRequest(context.state.userMessage, { sessionId: context.session.user.id }) });
-				const aaa = await removeEmptyKeys(context.state.apiaiResp.result.parameters);
-				console.log(aaa);
 				await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id, context.state.userMessage,
 					context.state.apiaiResp.result.parameters);
 				await context.setState({ userMessage: '' });
