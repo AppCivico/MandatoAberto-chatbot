@@ -175,12 +175,12 @@ const handler = new MessengerHandler()
 				} else if (context.event.isQuickReply) {
 					await context.setState({ dialog: context.event.message.quick_reply.payload });
 				} else if (context.event.isText) {
-				// checking text on dialogflow
 					// Ao mandar uma mensagem que não é interpretada como fluxo do chatbot
 					// Devo já criar uma issue
 					// We go to the listening dialog to wait for other messages
 					// check intent for first message
 					await context.setState({ whatWasTyped: context.event.message.text }); // will be used in case the bot doesn't find the question
+					// checking text on dialogflow
 					await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
 					if (context.state.apiaiResp.result.metadata.intentName === 'Fallback') {
 						// Fallback --> counldn't find any matching intents
@@ -197,7 +197,6 @@ const handler = new MessengerHandler()
 						await context.setState({
 							knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.apiaiResp.result.parameters),
 						});
-						console.log(context.state.knowledge);
 						await context.setState({ dialog: 'chooseQuestion' });
 					}
 				}
