@@ -31,7 +31,8 @@ function formatReal(int) {
 	return tmp;
 }
 
-const IssueTimerlimit = 10000 * 2; // 20 seconds
+// const IssueTimerlimit = 10000 * 2; // 20 seconds
+const IssueTimerlimit = 10000 * 0.2; // 20 seconds
 
 let timer;
 // userMessage -> context.state.userMessage -> stores the texts the user wirtes before sending them to politician [issue]
@@ -177,7 +178,7 @@ const handler = new MessengerHandler()
 					// Devo já criar uma issue
 					// We go to the listening dialog to wait for other messages
 					// check intent for first message
-					await context.setState({ apiaiResp: await apiai.textRequest(context.state.userMessage, { sessionId: context.session.user.id }) });
+					await context.setState({ apiaiResp: await apiai.textRequest(context.event.message.text, { sessionId: context.session.user.id }) });
 					if (context.state.apiaiResp.result.metadata.intentName === 'Fallback') {
 						// Fallback --> counldn't find any matching intents
 						// check if message came from standard flow or from post/comment
