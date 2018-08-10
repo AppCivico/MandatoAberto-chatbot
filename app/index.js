@@ -173,6 +173,7 @@ const handler = new MessengerHandler()
 				if (context.event.isPostback) {
 					const { payload } = context.event.postback;
 					console.log(payload);
+					console.log(payload.slice(0, 4));
 					if (payload.slice(0, 4) === 'answer') {
 						console.log(payload);
 						await context.setState({ answer: context.state.knowledge.knowledge_base.find(x => x.id === parseInt(payload.replace('answer', ''), 10)) });
@@ -326,7 +327,7 @@ const handler = new MessengerHandler()
 			case 'chooseQuestion':
 				await context.typingOn();
 				await attach.sendQuestions(context, context.state.knowledge.knowledge_base);
-				await context.sendText('Ok! Por favor, escolha sua pergunta acima ⤴️.\nSe não achou é só clicar abaixo ⤵️', {
+				await context.sendText('Ok! Por favor, escolha sua pergunta acima ⤴️\nSe não achou é só clicar abaixo ⤵️', {
 					quick_replies: [
 						{
 							content_type: 'text',
