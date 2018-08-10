@@ -191,7 +191,7 @@ const handler = new MessengerHandler()
 					await context.setState({ whatWasTyped: context.event.message.text }); // will be used in case the bot doesn't find the question
 					// checking text on dialogflow
 					await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
-					removeEmptyKeys(context.state.apiaiResp.result.parameters);
+					// removeEmptyKeys(context.state.apiaiResp.result.parameters);
 
 					console.log(context.state.apiaiResp.result.parameters);
 					if (context.state.apiaiResp.result.metadata.intentName === 'Fallback') {
