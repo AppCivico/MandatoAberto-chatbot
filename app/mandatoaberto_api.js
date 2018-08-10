@@ -4,9 +4,9 @@ const queryString = require('query-string');
 const security_token = process.env.SECURITY_TOKEN;
 const apiUri = process.env.MANDATOABERTO_API_URL;
 
-function removeEmptyKeys(obj) {
-	Object.keys(obj).forEach((key) => { if (obj[key].length === 0) { delete obj[key]; } });
-}
+// function removeEmptyKeys(obj) {
+// 	Object.keys(obj).forEach((key) => { if (obj[key].length === 0) { delete obj[key]; } });
+// }
 
 module.exports = {
 	async getPoliticianData(pageId) {
@@ -54,7 +54,7 @@ module.exports = {
 
 	async postIssue(politician_id, fb_id, message, entities) {
 		message = encodeURI(message);
-		await removeEmptyKeys(entities);
+		// await removeEmptyKeys(entities);
 		entities = JSON.stringify(entities);
 		const res = await request.post(`${apiUri}/api/chatbot/issue?politician_id=${politician_id}&fb_id=${fb_id}&message=${message}&entities=${entities}&security_token=${security_token}`);
 		const issue = await res.json();
@@ -62,7 +62,7 @@ module.exports = {
 	},
 
 	async getknowledgeBase(politician_id, entities) {
-		await removeEmptyKeys(entities);
+		// await removeEmptyKeys(entities);
 		entities = JSON.stringify(entities);
 		const res = await request(`${apiUri}/api/chatbot/knowledge-base?politician_id=${politician_id}&entities=${entities}&security_token=${security_token}`);
 		const knowledgeBase = await res.json();

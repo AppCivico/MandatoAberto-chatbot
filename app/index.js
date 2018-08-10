@@ -39,15 +39,12 @@ const IssueTimerlimit = 10000 * 2; // 20 seconds
 let timer;
 // userMessage -> context.state.userMessage -> stores the texts the user wirtes before sending them to politician [issue]
 // sendIntro = true -> context.state.sendIntro -> verifies if we should send the intro text for issue creation.
-let areWeListening = false;
+let areWeListening = true;
 // areWeListening -> user.state.areWeListening(doesn't work) -> diferenciates messages that come from
 // the standard flow and messages from comment/post
 //
 
-function removeEmptyKeys(obj) {
-	Object.keys(obj).forEach((key) => { if (obj[key].length === 0) { delete obj[key]; } });
-}
-
+function removeEmptyKeys(obj) { Object.keys(obj).forEach((key) => { if (obj[key].length === 0) { delete obj[key]; } }); }
 
 const mapPageToAccessToken = async (pageId) => {
 	const politicianData2 = await MandatoAbertoAPI.getPoliticianData(pageId);
@@ -194,9 +191,7 @@ const handler = new MessengerHandler()
 					await context.setState({ whatWasTyped: context.event.message.text }); // will be used in case the bot doesn't find the question
 					// checking text on dialogflow
 					await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
-
 					removeEmptyKeys(context.state.apiaiResp.result.parameters);
-					console.log(context.state.apiaiResp.result.parameters);
 
 					if (context.state.apiaiResp.result.metadata.intentName === 'Fallback') {
 						// Fallback --> counldn't find any matching intents
@@ -555,6 +550,8 @@ const handler = new MessengerHandler()
 			case 'listeningAnswer':
 				// check Intent from user issue (whole text)
 				await context.setState({ apiaiResp: await apiai.textRequest(context.state.userMessage, { sessionId: context.session.user.id }) });
+				removeEmptyKeys(context.state.apiaiResp.result.parameters);
+
 				await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id, context.state.userMessage,
 					context.state.apiaiResp.result.parameters);
 				await context.setState({ userMessage: '' });
