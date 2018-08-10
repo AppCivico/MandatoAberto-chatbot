@@ -63,9 +63,11 @@ module.exports = {
 
 	async getknowledgeBase(politician_id, entities) {
 		await removeEmptyKeys(entities);
+		console.log(entities);
 		entities = JSON.stringify(entities);
 		const res = await request(`${apiUri}/api/chatbot/knowledge-base=${politician_id}&entities=${entities}&security_token=${security_token}`);
 		const knowledgeBase = await res.json();
+		console.log(knowledgeBase);
 		return knowledgeBase;
 	},
 
