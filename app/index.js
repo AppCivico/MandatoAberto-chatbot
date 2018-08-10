@@ -11,6 +11,7 @@ const MandatoAbertoAPI = require('./mandatoaberto_api.js');
 const VotoLegalAPI = require('./votolegal_api.js');
 const Articles = require('./utils/articles.js');
 const opt = require('./utils/options');
+const attach = require('./attach');
 
 // const request = require('requisition');
 // const apiUri = process.env.MANDATOABERTO_API_URL;
@@ -18,6 +19,7 @@ const opt = require('./utils/options');
 const apiai = dialogFlow(process.env.DIALOGFLOW_TOKEN);
 
 const phoneRegex = new RegExp(/^\+55\d{2}(\d{1})?\d{8}$/);
+
 
 function getMoney(str) {
 	return parseInt(str.replace(/[\D]+/g, ''), 0);
@@ -195,7 +197,7 @@ const handler = new MessengerHandler()
 							knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.apiaiResp.result.parameters),
 						});
 						console.log(context.state.knowledge);
-						await context.setState({ dialog: 'greeting' });
+						await context.setState({ dialog: 'chooseQuestion' });
 					}
 				}
 			}
@@ -311,6 +313,12 @@ const handler = new MessengerHandler()
 				await context.setState({ userMessage: '' }); // cleaning up
 				await context.sendButtonTemplate(context.state.issueMessage, await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
 				await context.setState({ dialog: 'prompt' });
+				break;
+			case 'chooseQuestion':
+				await context.typingOn();
+				await context.sendText('Ok! Por favor, escolha sua pergunta abaixo:');
+				await attach.sendQuestions(context, context.state.knowledge.knowledge_base);
+				await context.typingOff();
 				break;
 			case 'intermediate':
 			// await context.setState({ userMessage: `${context.state.userMessage} + " "`});;
