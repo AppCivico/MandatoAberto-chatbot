@@ -176,21 +176,24 @@ const handler = new MessengerHandler()
 					// Ao mandar uma mensagem que não é interpretada como fluxo do chatbot
 					// Devo já criar uma issue
 					// We go to the listening dialog to wait for other messages
-					// check if message came from standard flow or from post/comment
-
-					// --- if (context.state.apiaiResp.result.metadata.intentName === 'Fallback') {
-					// Fallback --> counldn't find any matching intents
-					if (areWeListening === true) {
-						await context.setState({ dialog: 'listening' });
-					} else {
-						await context.setState({ dialog: 'intermediate' });
+					// check intent for first message
+					await context.setState({ apiaiResp: await apiai.textRequest(context.state.userMessage, { sessionId: context.session.user.id }) });
+					if (context.state.apiaiResp.result.metadata.intentName === 'Fallback') {
+						// Fallback --> counldn't find any matching intents
+						// check if message came from standard flow or from post/comment
+						if (areWeListening === true) {
+							await context.setState({ dialog: 'listening' });
+						} else {
+							await context.setState({ dialog: 'intermediate' });
+						}
+					} else { // Found intent
+						await context.sendText(`Parece que você quer saber sobre ${context.state.apiaiResp.result.metadata.intentName}`);
+						console.log(`IntentName: ${context.state.apiaiResp.result.metadata.intentName}`);
+						console.log('Entities:');
+						console.dir(context.state.apiaiResp.result.parameters);
+						await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.apiaiResp.result.parameters);
+						// await context.setState({ dialog: 'listening' });
 					}
-					// --- } else { // Found intent
-					// --- 	console.log(`IntentName: ${context.state.apiaiResp.result.metadata.intentName}`);
-					// --- 	console.log('Entities:');
-					// --- 	console.dir(context.state.apiaiResp.result.parameters);
-					// --- 	await context.setState({ dialog: 'listening' });
-					// --- }
 				}
 			}
 
@@ -500,6 +503,7 @@ const handler = new MessengerHandler()
 				break;
 			}
 			case 'listeningAnswer':
+				// check Intent from user issue (whole text)
 				await context.setState({ apiaiResp: await apiai.textRequest(context.state.userMessage, { sessionId: context.session.user.id }) });
 				await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id, context.state.userMessage,
 					context.state.apiaiResp.result.parameters);

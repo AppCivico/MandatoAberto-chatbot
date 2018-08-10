@@ -61,6 +61,14 @@ module.exports = {
 		return issue;
 	},
 
+	async getknowledgeBase(politician_id, entities) {
+		await removeEmptyKeys(entities);
+		entities = JSON.stringify(entities);
+		const res = await request(`${apiUri}/api/chatbot/issue?politician_id=${politician_id}&entities=${entities}&security_token=${security_token}`);
+		const knowledgeBase = await res.json();
+		return knowledgeBase;
+	},
+
 	async postPrivateReply(item, page_id, post_id, comment_id, permalink, user_id) {
 		const res = await request.post(`${apiUri}/api/chatbot/private-reply?page_id=${page_id}&item=${item}&post_id=${post_id}&comment_id=${comment_id}&permalink=${permalink}&user_id=${user_id}&security_token=${security_token}`);
 		const privateReply = await res.json();
