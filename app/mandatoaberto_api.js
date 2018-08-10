@@ -48,18 +48,16 @@ module.exports = {
 		return question;
 	},
 
-	async postIssue(politician_id, fb_id, message) {
-		message = encodeURI(message);
-		const res = await request.post(`${apiUri}/api/chatbot/issue?politician_id=${politician_id}&fb_id=${fb_id}&message=${message}&security_token=${security_token}`);
-		const issue = await res.json();
-		return issue;
-	},
+	// async postIssue(politician_id, fb_id, message) {
+	// 	message = encodeURI(message);
+	// 	const res = await request.post(`${apiUri}/api/chatbot/issue?politician_id=${politician_id}&fb_id=${fb_id}&message=${message}&security_token=${security_token}`);
+	// 	const issue = await res.json();
+	// 	return issue;
+	// },
 
 	async postIssueEntities(politician_id, fb_id, message, entities) {
 		message = encodeURI(message);
-		console.log(typeof entities);
 		entities = JSON.stringify(entities);
-		console.log(typeof entities);
 		const res = await request.post(`${apiUri}/api/chatbot/issue?politician_id=${politician_id}&fb_id=${fb_id}&message=${message}&entities=${entities}&security_token=${security_token}`);
 		const issue = await res.json();
 		console.log(issue);
