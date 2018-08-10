@@ -33,8 +33,8 @@ function formatReal(int) {
 	return tmp;
 }
 
-const IssueTimerlimit = 10000 * 2; // 20 seconds
-// const IssueTimerlimit = 10000 * 0.2; // 2 seconds
+// const IssueTimerlimit = 10000 * 2; // 20 seconds
+const IssueTimerlimit = 10000 * 0.2; // 2 seconds
 
 let timer;
 // userMessage -> context.state.userMessage -> stores the texts the user wirtes before sending them to politician [issue]
