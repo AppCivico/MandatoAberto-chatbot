@@ -65,7 +65,7 @@ function getArticles(gender) {
 }
 
 async function removeEmptyKeys(obj) {
-	console('i am here');
+	console.log('i am here');
 	Object.keys(obj).forEach((key) => {
 		console.log(key);
 		if (key && key === Array && key === 0) {
