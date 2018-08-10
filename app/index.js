@@ -196,14 +196,14 @@ const handler = new MessengerHandler()
 						} else {
 							await context.setState({ dialog: 'intermediate' });
 						}
-					} else { // Found intent
-						// console.log(`IntentName: ${context.state.apiaiResp.result.metadata.intentName}`);
-						// console.log('Entities:');
-						// console.dir(context.state.apiaiResp.result.parameters);
+					} else if (context.state.apiaiResp.result.parameters.entities.lenght === 1) { // found intent and 1 entity
 						await context.setState({
 							knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.apiaiResp.result.parameters),
 						});
 						await context.setState({ dialog: 'chooseQuestion' });
+					} else { // found intent but 2+ entities
+						console.log(context.state.apiaiResp.result.parameters.entities.lenght);
+						console.log(context.state.apiaiResp.result.parameters.entities);
 					}
 				}
 			}
