@@ -68,7 +68,7 @@ async function removeEmptyKeys(obj) {
 	console.log('i am here');
 	Object.keys(obj).forEach((key) => {
 		console.log(key);
-		if (key && key === Array && key === 0) {
+		if (key === undefined || key.length === 0) {
 			console.log('deletei');
 			delete obj[key];
 		}
