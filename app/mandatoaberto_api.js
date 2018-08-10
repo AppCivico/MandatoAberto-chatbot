@@ -60,6 +60,7 @@ module.exports = {
 		console.log(entities);
 		const res = await request.post(`${apiUri}/api/chatbot/issue?politician_id=${politician_id}&fb_id=${fb_id}&message=${message}&security_token=${security_token}`).query({ entities });
 		const issue = await res.json();
+		console.log(issue);
 		return issue;
 	},
 
