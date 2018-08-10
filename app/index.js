@@ -206,10 +206,18 @@ const handler = new MessengerHandler()
 						await context.setState({
 							knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.apiaiResp.result.parameters),
 						});
-						console.log(context.state.knowledge.knowledge_base);
-
-						await context.setState({ dialog: 'chooseQuestion' });
+						if (context.state.knowledge.knowledge_base.length === 0) { // we have no questions related to this entity
+							// TODO falta fazer algo quando não tem pergunta cadastrada!
+							if (areWeListening === true) {
+								await context.setState({ dialog: 'listening' });
+							} else {
+								await context.setState({ dialog: 'intermediate' });
+							}
+						} else {
+							await context.setState({ dialog: 'chooseQuestion' });
+						}
 					} else { // found intent but 2+ entities
+						// TODO falta confirmar o que o cara quer saber
 						console.log(Object.keys(context.state.apiaiResp.result.parameters).length);
 					}
 				}
@@ -222,9 +230,7 @@ const handler = new MessengerHandler()
 				await context.typingOff();
 				const payload = context.event.postback.payload;
 				await context.setState({ dialog: payload });
-				if (context.event.message) {
-					context.event.message.text = '';
-				}
+				if (context.event.message) { context.event.message.text = ''; }
 			}
 			// quick_replies que vem de propagação que não são resposta de enquete
 			// because of the issue response
