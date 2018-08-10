@@ -189,9 +189,12 @@ const handler = new MessengerHandler()
 						}
 					} else { // Found intent
 						// console.log(`IntentName: ${context.state.apiaiResp.result.metadata.intentName}`);
-						console.log('Entities:');
-						console.dir(context.state.apiaiResp.result.parameters);
-						await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.apiaiResp.result.parameters);
+						// console.log('Entities:');
+						// console.dir(context.state.apiaiResp.result.parameters);
+						await context.setState({
+							knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.apiaiResp.result.parameters),
+						});
+						console.log(context.state.knowledge);
 						await context.setState({ dialog: 'greeting' });
 					}
 				}
