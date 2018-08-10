@@ -176,7 +176,6 @@ const handler = new MessengerHandler()
 					const { payload } = context.event.postback;
 					if (payload.slice(0, 6) === 'answer') {
 						await context.setState({ question: context.state.knowledge.knowledge_base.find(x => x.id === parseInt(payload.replace('answer', ''), 10)) });
-						console.log(context.state.knowledge.knowledge_base);
 						await context.setState({ dialog: 'showAnswer' });
 					} else {
 						await context.setState({ dialog: payload });
@@ -207,6 +206,8 @@ const handler = new MessengerHandler()
 						await context.setState({
 							knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.apiaiResp.result.parameters),
 						});
+						console.log(context.state.knowledge.knowledge_base);
+
 						await context.setState({ dialog: 'chooseQuestion' });
 					} else { // found intent but 2+ entities
 						console.log(Object.keys(context.state.apiaiResp.result.parameters).length);
