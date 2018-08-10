@@ -189,12 +189,15 @@ const handler = new MessengerHandler()
 					// Ao mandar uma mensagem que não é interpretada como fluxo do chatbot
 					// Devo já criar uma issue
 					// We go to the listening dialog to wait for other messages
+
 					// check intent for first message
 					await context.setState({ whatWasTyped: context.event.message.text }); // will be used in case the bot doesn't find the question
 					// checking text on dialogflow
-					removeEmptyKeys(context.state.apiaiResp.result.parameters);
 					await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
+
+					removeEmptyKeys(context.state.apiaiResp.result.parameters);
 					console.log(context.state.apiaiResp.result.parameters);
+
 					if (context.state.apiaiResp.result.metadata.intentName === 'Fallback') {
 						// Fallback --> counldn't find any matching intents
 						// check if message came from standard flow or from post/comment
