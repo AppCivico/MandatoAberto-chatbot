@@ -502,7 +502,7 @@ const handler = new MessengerHandler()
 			}
 			case 'listeningAnswer':
 				await context.setState({ apiaiResp: await apiai.textRequest(context.state.userMessage, { sessionId: context.session.user.id }) });
-				await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id, context.state.userMessage,
+				await MandatoAbertoAPI.postIssueEntities(context.state.politicianData.user_id, context.session.user.id, context.state.userMessage,
 					context.state.apiaiResp.result.parameters);
 				await context.setState({ userMessage: '' });
 				await context.setState({ issueCreatedMessage: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_created') });
