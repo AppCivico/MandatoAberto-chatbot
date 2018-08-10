@@ -180,7 +180,8 @@ const handler = new MessengerHandler()
 					// Devo já criar uma issue
 					// We go to the listening dialog to wait for other messages
 					// check intent for first message
-					await context.setState({ apiaiResp: await apiai.textRequest(context.event.message.text, { sessionId: context.session.user.id }) });
+					await context.setState({ whatWasTyped: context.event.message.text }); // will be used in case the bot doesn't find the question
+					await context.setState({ apiaiResp: await apiai.textRequest(context.event.whatWasTyped, { sessionId: context.session.user.id }) });
 					if (context.state.apiaiResp.result.metadata.intentName === 'Fallback') {
 						// Fallback --> counldn't find any matching intents
 						// check if message came from standard flow or from post/comment
@@ -193,7 +194,6 @@ const handler = new MessengerHandler()
 						// console.log(`IntentName: ${context.state.apiaiResp.result.metadata.intentName}`);
 						// console.log('Entities:');
 						// console.dir(context.state.apiaiResp.result.parameters);
-						await context.setState({ whatWasTyped: context.event.message.text }); // will be used in case the bot doesn't find the question
 						await context.setState({
 							knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.apiaiResp.result.parameters),
 						});
@@ -332,10 +332,10 @@ const handler = new MessengerHandler()
 			case 'NotOneOfThese':
 				await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id, context.state.whatWasTyped,
 					context.state.apiaiResp.result.parameters);
-				await context.setState({ whatWasTyped: '' });
-				await context.sendText('Que pena! Recebi sua dúvida e estarei te respondendo logo mais!');
+				await context.sendText('Que pena! Mas recebi sua dúvida e estarei te respondendo logo mais!');
 				await context.sendButtonTemplate('E agora, como posso te ajudar?',
 					await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
+				await context.setState({ whatWasTyped: '' });
 				break;
 			case 'intermediate':
 			// await context.setState({ userMessage: `${context.state.userMessage} + " "`});;
@@ -536,6 +536,7 @@ const handler = new MessengerHandler()
 				await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id, context.state.userMessage,
 					context.state.apiaiResp.result.parameters);
 				await context.setState({ userMessage: '' });
+				await context.setState({ whatWasTyped: '' });
 				await context.setState({ issueCreatedMessage: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_created') });
 				if (context.state.issueCreatedMessage.content) {
 					await context.sendText(context.state.issueCreatedMessage.content);
