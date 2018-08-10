@@ -174,7 +174,6 @@ const handler = new MessengerHandler()
 					const { payload } = context.event.postback;
 					if (payload.slice(0, 6) === 'answer') {
 						await context.setState({ question: context.state.knowledge.knowledge_base.find(x => x.id === parseInt(payload.replace('answer', ''), 10)) });
-						console.log(context.state.question.answer);
 						await context.setState({ dialog: 'showAnswer' });
 					} else {
 						await context.setState({ dialog: payload });
@@ -340,6 +339,7 @@ const handler = new MessengerHandler()
 				await context.sendText(context.state.question.answer);
 				await context.sendButtonTemplate('E aí, o que achou? Se tiver mais alguma pergunta é só mandar!',
 					await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
+				await context.setState({ dialog: 'prompt' });
 				break;
 			case 'NotOneOfThese':
 				await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id, context.state.whatWasTyped,
@@ -348,6 +348,7 @@ const handler = new MessengerHandler()
 				await context.sendButtonTemplate('E agora, como posso te ajudar?',
 					await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
 				await context.setState({ whatWasTyped: '' });
+				await context.setState({ dialog: 'prompt' });
 				break;
 			case 'intermediate':
 			// await context.setState({ userMessage: `${context.state.userMessage} + " "`});;
