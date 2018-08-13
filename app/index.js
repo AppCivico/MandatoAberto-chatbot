@@ -184,9 +184,9 @@ const handler = new MessengerHandler()
 					const { payload } = context.event.message.quick_reply;
 					if (payload.slice(0, 6) === 'option') {
 						console.log('title ', payload.replace('option', ''));
-						console.log('all ', context.event.message.quick_reply);
+						console.log(context.state.apiaiResp.result.parameters);
 						await context.setState({
-							knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, [payload.replace('option', '')]),
+							knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.apiaiResp.result.parameters[payload.replace('option', '')]),
 						});
 						console.log('know', context.state.knowledge);
 						await context.setState({ dialog: 'chooseQuestion' });
