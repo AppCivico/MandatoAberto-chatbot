@@ -193,6 +193,7 @@ const handler = new MessengerHandler()
 					if (payload.slice(0, 6) === 'option') {
 						await context.setState({ payload: payload.replace('option', '') });
 						await context.setState({ dialog: 'reload' });
+
 						console.log(context.state.dialog);
 
 						// await context.typingOn();
@@ -226,11 +227,13 @@ const handler = new MessengerHandler()
 					if (context.state.apiaiResp.result.metadata.intentName === 'Fallback') {
 						// Fallback --> counldn't find any matching intents
 						// check if message came from standard flow or from post/comment
-						if (areWeListening === true) {
-							await context.setState({ dialog: 'listening' });
-						} else {
-							await context.setState({ dialog: 'intermediate' });
-						}
+						await context.setState({ dialog: 'reload' });
+
+						// if (areWeListening === true) {
+						// 	await context.setState({ dialog: 'listening' });
+						// } else {
+						// 	await context.setState({ dialog: 'intermediate' });
+						// }
 					} else if (Object.keys(context.state.apiaiResp.result.parameters).length === 1) { // found intent and 1 entity
 						await context.setState({
 							knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.apiaiResp.result.parameters),
