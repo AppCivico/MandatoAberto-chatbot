@@ -205,7 +205,7 @@ const handler = new MessengerHandler()
 							],
 						});
 						await context.typingOff();
-						await context.setState({ dialog: 'prompt' });
+						// await context.setState({ dialog: 'prompt' });
 					} else {
 						await context.setState({ dialog: payload });
 					}
