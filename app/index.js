@@ -182,33 +182,20 @@ const handler = new MessengerHandler()
 					const { payload } = context.event.postback;
 					if (payload.slice(0, 6) === 'answer') {
 						console.log('entrei aqui2');
-
 						await context.setState({ question: context.state.knowledge.knowledge_base.find(x => x.id === parseInt(payload.replace('answer', ''), 10)) });
 						await context.setState({ dialog: 'showAnswer' });
+					} else if (payload.slice(0, 6) === 'option') {
+						console.log('entrei aqui3');
+						await context.setState({ payload: payload.replace('option', '') });
+						await context.setState({ dialog: 'reload' });
 					} else {
 						await context.setState({ dialog: payload });
 					}
 				} else if (context.event.isQuickReply) {
 					const { payload } = context.event.message.quick_reply;
-					if (await payload.slice(0, 6) === 'option') {
+					if (payload.slice(0, 6) === 'option') {
 						// await context.setState({ payload: payload.replace('option', '') });
 						await context.setState({ dialog: 'reload' });
-
-						// console.log(context.state.dialog);
-
-						// await context.typingOn();
-						// await attach.sendQuestions(context, context.state.knowledge.knowledge_base);
-						// await context.sendText('Ok! Por favor, escolha sua pergunta acima ⤴️\nSe não achou é só clicar abaixo ⤵️', {
-						// 	quick_replies: [
-						// 		{
-						// 			content_type: 'text',
-						// 			title: 'Não achei',
-						// 			payload: 'NotOneOfThese',
-						// 		},
-						// 	],
-						// });
-						// await context.typingOff();
-						// await context.setState({ dialog: 'prompt' });
 					} else {
 						await context.setState({ dialog: payload });
 					}
