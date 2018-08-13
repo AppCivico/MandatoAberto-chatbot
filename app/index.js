@@ -186,7 +186,7 @@ const handler = new MessengerHandler()
 					}
 				} else if (context.event.isQuickReply) {
 					const { payload } = context.event.message.quick_reply;
-					if (payload.slice(0, 6) !== 'option') {
+					if (payload.slice(0, 6) === 'option') {
 						await context.setState({ payload: payload.replace('option', '') });
 						await context.setState({ dialog: 'reload' }); // TODO: fix this not working
 					} else {
