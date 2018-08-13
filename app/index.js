@@ -191,7 +191,7 @@ const handler = new MessengerHandler()
 				} else if (context.event.isQuickReply) {
 					const { payload } = context.event.message.quick_reply;
 					if (payload.slice(0, 6) === 'option') {
-						await context.setState({ payload });
+						// await context.setState({ payload });
 						await context.setState({ dialog: 'reload' });
 
 
@@ -361,7 +361,10 @@ const handler = new MessengerHandler()
 				await context.setState({ dialog: 'prompt' });
 				break;
 			case 'reload':
-				await context.setState({ payload: context.state.payload.replace('option', '') });
+				console.log('asdjasdhashd');
+
+				// await context.setState({ payload: context.state.payload.replace('option', '') });
+				// await context.setState({ payload });
 				await context.setState({
 					knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id,
 						{ [context.state.payload]: context.state.apiaiResp.result.parameters[context.state.payload] }),
