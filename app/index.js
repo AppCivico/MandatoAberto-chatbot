@@ -187,10 +187,13 @@ const handler = new MessengerHandler()
 						console.log('option', payload);
 						console.log('key', context.state.apiaiResp.result.parameters[payload.replace('option', '')]);
 						// payload = payload.replace('option', '');
-						await context.setState({
-							knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id,
-								{ payload: context.state.apiaiResp.result.parameters[payload] }),
-						});
+						const optKnow = {};
+						optKnow[payload] = context.state.apiaiResp.result.parameters[payload];
+						// await context.setState({
+						// 	knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id,
+						// 		{ payload: context.state.apiaiResp.result.parameters[payload] }),
+						// });
+						await context.setState({ knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, optKnow) });
 						console.log('know', context.state.knowledge);
 						// await context.setState({ dialog: 'chooseQuestion' });
 						await context.typingOn();
