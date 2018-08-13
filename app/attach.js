@@ -29,7 +29,6 @@ module.exports.sendQuestions = sendQuestions;
 async function getQR(opt, payload) {
 	const elements = [];
 
-	console.log('opt:', opt);
 	opt.forEach((element) => {
 		elements.push({
 			content_type: 'text',
