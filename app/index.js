@@ -192,10 +192,9 @@ const handler = new MessengerHandler()
 					const { payload } = context.event.message.quick_reply;
 					if (payload.slice(0, 6) === 'option') {
 						await context.setState({ payload });
-						console.log(context);
+						console.log(context.state);
 
 						await context.setState({ dialog: 'reload' });
-
 
 						// await context.typingOn();
 						// await attach.sendQuestions(context, context.state.knowledge.knowledge_base);
