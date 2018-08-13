@@ -26,15 +26,15 @@ async function sendQuestions(context, content) {
 module.exports.sendQuestions = sendQuestions;
 
 // get quick_replies opject with elements array
-async function getQR(opt) {
+async function getQR(opt, payload) {
 	const elements = [];
-	const firstArray = opt.menuOptions;
 
-	firstArray.forEach((element, index) => {
+	console.log('opt:', opt);
+	opt.forEach((element) => {
 		elements.push({
 			content_type: 'text',
 			title: element,
-			payload: opt.menuPostback[index],
+			payload,
 		});
 	});
 
