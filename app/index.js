@@ -185,12 +185,12 @@ const handler = new MessengerHandler()
 						await context.setState({ dialog: payload });
 					}
 				} else if (context.event.isQuickReply) {
-					const { payload } = context.event.message.quick_reply;
+					let { payload } = context.event.message.quick_reply;
 					if (payload.slice(0, 6) === 'option') {
-						// payload = payload.replace('option', '');
+						payload = payload.replace('option', '');
 						await context.setState({
 							knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id,
-								{ [payload.replace('option', '')]: context.state.apiaiResp.result.parameters[payload] }),
+								{ [payload]: context.state.apiaiResp.result.parameters[payload] }),
 						});
 
 						await context.typingOn();
