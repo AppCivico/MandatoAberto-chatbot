@@ -109,6 +109,10 @@ const handler = new MessengerHandler()
 			await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
 			await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 
+			if (context.event.isPostback) {
+				console.log(context.event.postback);
+			}
+
 			if (context.event.rawEvent.postback) {
 				if (context.event.rawEvent.postback.referral) { // if this exists we are on external site
 					await context.setState({ facebookPlataform: 'CUSTOMER_CHAT_PLUGIN' });
@@ -173,8 +177,6 @@ const handler = new MessengerHandler()
 			// Tratando dinâmica de issues
 			if (context.state.dialog === 'prompt') {
 				if (context.event.isPostback) {
-					console.log(context.event.postback.payload);
-
 					const { payload } = context.event.postback;
 					if (payload.slice(0, 6) === 'answer') {
 						await context.setState({ question: context.state.knowledge.knowledge_base.find(x => x.id === parseInt(payload.replace('answer', ''), 10)) });
@@ -183,15 +185,14 @@ const handler = new MessengerHandler()
 						await context.setState({ dialog: payload });
 					}
 				} else if (context.event.isQuickReply) {
-					let { payload } = context.event.message.quick_reply;
+					const { payload } = context.event.message.quick_reply;
 					if (payload.slice(0, 6) === 'option') {
-						payload = payload.replace('option', '');
+						// payload = payload.replace('option', '');
 						await context.setState({
 							knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id,
-								{ [payload]: context.state.apiaiResp.result.parameters[payload] }),
+								{ [payload.replace('option', '')]: context.state.apiaiResp.result.parameters[payload] }),
 						});
-						console.log('know', context.state.knowledge);
-						// await context.setState({ dialog: 'chooseQuestion' });
+
 						await context.typingOn();
 						await attach.sendQuestions(context, context.state.knowledge.knowledge_base);
 						await context.sendText('Ok! Por favor, escolha sua pergunta acima ⤴️\nSe não achou é só clicar abaixo ⤵️', {
