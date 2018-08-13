@@ -348,6 +348,8 @@ const handler = new MessengerHandler()
 				await context.setState({ dialog: 'prompt' });
 				break;
 			case 'chooseQuestion':
+				console.log('chegou');
+
 				await context.typingOn();
 				await attach.sendQuestions(context, context.state.knowledge.knowledge_base);
 				await context.sendText('Ok! Por favor, escolha sua pergunta acima ⤴️\nSe não achou é só clicar abaixo ⤵️', {
