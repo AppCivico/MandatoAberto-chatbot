@@ -191,7 +191,9 @@ const handler = new MessengerHandler()
 				} else if (context.event.isQuickReply) {
 					const { payload } = context.event.message.quick_reply;
 					if (payload.slice(0, 6) === 'option') {
-						// await context.setState({ payload });
+						await context.setState({ payload });
+						console.log('ddddddddddddasdjasdhashd');
+
 						await context.setState({ dialog: 'reload' });
 
 
