@@ -13,9 +13,9 @@ async function sendQuestions(context, content) {
 				payload: `answer${element.id}`,
 			}],
 		});
+		console.log(elements.buttons);
 	});
 
-	console.log(elements);
 
 	await context.sendAttachment({
 		type: 'template',
