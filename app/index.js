@@ -234,28 +234,6 @@ const handler = new MessengerHandler()
 				}
 			}
 
-			if (context.state.dialog === 'reload') {
-				console.log('asdjasdhashd');
-				await context.setState({
-					knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id,
-						{ [context.state.payload]: context.state.apiaiResp.result.parameters[context.state.payload] }),
-				});
-				await context.setState({ dialog: 'chooseQuestion' });
-				await context.typingOn();
-				await attach.sendQuestions(context, context.state.knowledge.knowledge_base);
-				await context.sendText('Ok! Por favor, escolha sua pergunta acima ⤴️\nSe não achou é só clicar abaixo ⤵️', {
-					quick_replies: [
-						{
-							content_type: 'text',
-							title: 'Não achei',
-							payload: 'NotOneOfThese',
-						},
-					],
-				});
-				await context.typingOff();
-				await context.setState({ dialog: 'prompt' });
-			}
-
 			// Switch de dialogos
 			if (context.event.isPostback && (context.state.dialog === 'prompt' || context.event.postback.payload === 'greetings')) {
 				await context.setState({ dialog: context.event.postback.payload });
