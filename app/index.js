@@ -183,9 +183,12 @@ const handler = new MessengerHandler()
 				} else if (context.event.isQuickReply) {
 					const { payload } = context.event.message.quick_reply;
 					if (payload === 'chooseQuestion') {
+						console.log('title ', context.event.message.quick_reply.title);
+						console.log('all ', context.event.message.quick_reply);
 						await context.setState({
 							knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.event.message.quick_reply.title),
 						});
+						console.log('know', context.state.knowledge);
 					} else {
 						await context.setState({ dialog: payload });
 					}
