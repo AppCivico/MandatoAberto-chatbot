@@ -187,11 +187,10 @@ const handler = new MessengerHandler()
 				} else if (context.event.isQuickReply) {
 					const { payload } = context.event.message.quick_reply;
 					if (payload.slice(0, 6) !== 'option') {
-						await context.setState({ dialog: payload });
-					} else {
 						await context.setState({ payload: payload.replace('option', '') });
 						await context.setState({ dialog: 'reload' }); // TODO: fix this not working
-						console.log(context.state.dialog);
+					} else {
+						await context.setState({ dialog: payload });
 					}
 				} else if (context.event.isText) {
 					// Ao mandar uma mensagem que não é interpretada como fluxo do chatbot
@@ -233,6 +232,15 @@ const handler = new MessengerHandler()
 						await context.setState({ dialog: 'chooseTheme' });
 					}
 				}
+			}
+
+			if (context.state.dialog === 'reload') {
+				console.log('asdjasdhashd');
+				await context.setState({
+					knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id,
+						{ [context.state.payload]: context.state.apiaiResp.result.parameters[context.state.payload] }),
+				});
+				await context.setState({ dialog: 'chooseQuestion' });
 			}
 
 			// Switch de dialogos
