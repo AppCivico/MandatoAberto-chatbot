@@ -33,7 +33,7 @@ async function getQR(opt, payload) {
 		elements.push({
 			content_type: 'text',
 			title: element,
-			payload,
+			payload: `${payload}${element}`,
 		});
 	});
 
