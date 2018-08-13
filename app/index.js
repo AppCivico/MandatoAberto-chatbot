@@ -57,7 +57,7 @@ const bot = new MessengerBot({
 	sessionStore: new FileSessionStore(),
 });
 
-bot.setInitialState({ sendIntro: true });
+bot.setInitialState({ dialog: 'prompt' });
 
 bot.use(withTyping({ delay: 1000 }));
 
@@ -184,8 +184,8 @@ const handler = new MessengerHandler()
 					let { payload } = context.event.message.quick_reply;
 					if (payload.slice(0, 6) === 'option') {
 						payload = payload.replace('option', '');
-						console.log(context.state.payload);
-						console.log(context.state.apiaiResp.result.parameters[payload.replace('option', '')]);
+						console.log('option', context.state.payload);
+						console.log('key', context.state.apiaiResp.result.parameters[payload.replace('option', '')]);
 						// payload = payload.replace('option', '');
 						await context.setState({
 							knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id,
