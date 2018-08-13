@@ -184,7 +184,7 @@ const handler = new MessengerHandler()
 					let { payload } = context.event.message.quick_reply;
 					if (payload.slice(0, 6) === 'option') {
 						payload = payload.replace('option', '');
-						console.log('option', context.state.payload);
+						console.log('option', payload);
 						console.log('key', context.state.apiaiResp.result.parameters[payload.replace('option', '')]);
 						// payload = payload.replace('option', '');
 						await context.setState({
