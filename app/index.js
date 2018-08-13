@@ -181,7 +181,14 @@ const handler = new MessengerHandler()
 						await context.setState({ dialog: payload });
 					}
 				} else if (context.event.isQuickReply) {
-					await context.setState({ dialog: context.event.message.quick_reply.payload });
+					const { payload } = context.event.message.quick_reply;
+					if (payload === 'chooseQuestion') {
+						await context.setState({
+							knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.event.message.quick_reply.title),
+						});
+					} else {
+						await context.setState({ dialog: payload });
+					}
 				} else if (context.event.isText) {
 					// Ao mandar uma mensagem que não é interpretada como fluxo do chatbot
 					// Devo já criar uma issue
@@ -217,8 +224,8 @@ const handler = new MessengerHandler()
 							await context.setState({ dialog: 'chooseQuestion' });
 						}
 					} else { // found intent but 2+ entities
-						// TODO falta confirmar o que o cara quer saber
 						console.log(Object.keys(context.state.apiaiResp.result.parameters).length);
+						await context.setState({ dialog: 'chooseTheme' });
 					}
 				}
 			}
@@ -347,6 +354,11 @@ const handler = new MessengerHandler()
 				});
 				await context.typingOff();
 				await context.setState({ dialog: 'prompt' });
+				break;
+			case 'chooseTheme':
+				await context.sendText('Essa é uma pergunta bastante complexa! Me ajude a entender sobre o que você quer saber, escolha uma opção abaixo ⤵️',
+					await attach.getQR(Object.keys(context.state.apiaiResp.result.parameters), 'chooseQuestion'));
+
 				break;
 			case 'showAnswer':
 				await context.sendText(context.state.question.answer);

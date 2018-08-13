@@ -24,3 +24,21 @@ async function sendQuestions(context, content) {
 }
 
 module.exports.sendQuestions = sendQuestions;
+
+// get quick_replies opject with elements array
+async function getQR(opt) {
+	const elements = [];
+	const firstArray = opt.menuOptions;
+
+	firstArray.forEach((element, index) => {
+		elements.push({
+			content_type: 'text',
+			title: element,
+			payload: opt.menuPostback[index],
+		});
+	});
+
+	return { quick_replies: elements };
+}
+
+module.exports.getQR = getQR;
