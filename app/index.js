@@ -181,12 +181,13 @@ const handler = new MessengerHandler()
 						await context.setState({ dialog: payload });
 					}
 				} else if (context.event.isQuickReply) {
-					const { payload } = context.event.message.quick_reply;
+					let { payload } = context.event.message.quick_reply;
 					if (payload.slice(0, 6) === 'option') {
 						console.log('title ', payload.replace('option', ''));
 						console.log(context.state.apiaiResp.result.parameters);
+						payload = payload.replace('option', '');
 						await context.setState({
-							knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.apiaiResp.result.parameters[payload.replace('option', '')]),
+							knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, { payload: context.state.apiaiResp.result.parameters }),
 						});
 						console.log('know', context.state.knowledge);
 						await context.setState({ dialog: 'chooseQuestion' });
@@ -228,7 +229,7 @@ const handler = new MessengerHandler()
 							await context.setState({ dialog: 'chooseQuestion' });
 						}
 					} else { // found intent but 2+ entities
-						console.log(Object.keys(context.state.apiaiResp.result.parameters).length);
+						// console.log(Object.keys(context.state.apiaiResp.result.parameters).length);
 						await context.setState({ dialog: 'chooseTheme' });
 					}
 				}
