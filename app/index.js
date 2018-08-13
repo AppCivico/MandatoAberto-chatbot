@@ -674,8 +674,7 @@ const handler = new MessengerHandler()
 		console.log('\n');
 		console.log(`Parece que aconteceu um erro as ${date.toLocaleTimeString('pt-BR')} de ${date.getDate()}/${date.getMonth() + 1} =>`);
 		console.log(err);
-		console.log('\n');
-
+		console.log(`Usuário => ${context.session.user.first_name} ${context.session.user.last_name}`);
 		if (context.event.rawEvent.field === 'feed') {
 			if (context.event.rawEvent.value.item === 'comment' || context.event.rawEvent.value.item === 'post') {
 				// we update user data at every interaction that's not a comment or a post
@@ -686,6 +685,7 @@ const handler = new MessengerHandler()
 			await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
 			await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 		}
+
 		await context.setState({ articles: getArticles(context.state.politicianData.gender) });
 		await context.sendText('Olá. Você gostaria de enviar uma mensagem para nossa equipe ou conhecer mais sobre '
 			+ `${context.state.articles.defined} ${context.state.politicianData.office.name} ${context.state.politicianData.name}?`);
