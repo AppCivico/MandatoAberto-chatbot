@@ -173,6 +173,8 @@ const handler = new MessengerHandler()
 			// Tratando dinâmica de issues
 			if (context.state.dialog === 'prompt') {
 				if (context.event.isPostback) {
+					console.log(context.event.postback.payload);
+
 					const { payload } = context.event.postback;
 					if (payload.slice(0, 6) === 'answer') {
 						await context.setState({ question: context.state.knowledge.knowledge_base.find(x => x.id === parseInt(payload.replace('answer', ''), 10)) });
@@ -184,13 +186,10 @@ const handler = new MessengerHandler()
 					let { payload } = context.event.message.quick_reply;
 					if (payload.slice(0, 6) === 'option') {
 						payload = payload.replace('option', '');
-						const optKnow = {};
-						// optKnow[payload] = context.state.apiaiResp.result.parameters[payload];
 						await context.setState({
 							knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id,
 								{ [payload]: context.state.apiaiResp.result.parameters[payload] }),
 						});
-						await context.setState({ knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, optKnow) });
 						console.log('know', context.state.knowledge);
 						// await context.setState({ dialog: 'chooseQuestion' });
 						await context.typingOn();
@@ -205,7 +204,7 @@ const handler = new MessengerHandler()
 							],
 						});
 						await context.typingOff();
-						// await context.setState({ dialog: 'prompt' });
+						await context.setState({ dialog: 'prompt' });
 					} else {
 						await context.setState({ dialog: payload });
 					}
