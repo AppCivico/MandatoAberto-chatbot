@@ -356,6 +356,8 @@ const handler = new MessengerHandler()
 				await context.setState({ dialog: 'prompt' });
 				break;
 			case 'chooseTheme':
+				console.log('keys:', Object.keys(context.state.apiaiResp.result.parameters));
+
 				await context.sendText('Essa é uma pergunta bastante complexa! Me ajude a entender sobre o que você quer saber, escolha uma opção abaixo ⤵️',
 					await attach.getQR(Object.keys(context.state.apiaiResp.result.parameters), 'chooseQuestion'));
 
