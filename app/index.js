@@ -256,14 +256,14 @@ const handler = new MessengerHandler()
 			}
 
 			// Switch de dialogos
-			if (context.event.isPostback && (context.state.dialog === 'prompt' || context.event.postback.payload === 'greetings')) {
-				await context.setState({ dialog: context.event.postback.payload });
-			} else if (context.event.isPostback && context.state.dialog === 'listening') {
-				await context.typingOff();
-				const payload = context.event.postback.payload;
-				await context.setState({ dialog: payload });
-				if (context.event.message) { context.event.message.text = ''; }
-			}
+			// if (context.event.isPostback && (context.state.dialog === 'prompt' || context.event.postback.payload === 'greetings')) {
+			// 	await context.setState({ dialog: context.event.postback.payload });
+			// } else if (context.event.isPostback && context.state.dialog === 'listening') {
+			// 	await context.typingOff();
+			// 	const payload = context.event.postback.payload;
+			// 	await context.setState({ dialog: payload });
+			// 	if (context.event.message) { context.event.message.text = ''; }
+			// }
 			// quick_replies que vem de propagação que não são resposta de enquete
 			// because of the issue response
 			if (context.event.isQuickReply && (context.state.dialog !== 'pollAnswer') && !(context.event.message.quick_reply.payload.includes('pollAnswerPropagate'))) {
