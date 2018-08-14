@@ -196,8 +196,6 @@ const handler = new MessengerHandler()
 
 			// Tratando dinâmica de issues
 			if (context.state.dialog === 'prompt') {
-				console.log('aaaa');
-
 				if (context.event.isPostback) {
 					const { payload } = context.event.postback;
 					await context.setState({ dialog: payload });
