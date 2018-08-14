@@ -1,6 +1,5 @@
 require('dotenv').config();
 
-
 const {
 	MessengerBot, FileSessionStore, withTyping, MessengerHandler,
 } = require('bottender');
@@ -20,7 +19,6 @@ const apiai = dialogFlow(process.env.DIALOGFLOW_TOKEN);
 
 const phoneRegex = new RegExp(/^\+55\d{2}(\d{1})?\d{8}$/);
 
-
 function getMoney(str) {
 	return parseInt(str.replace(/[\D]+/g, ''), 0);
 }
@@ -33,8 +31,7 @@ function formatReal(int) {
 	return tmp;
 }
 
-// const IssueTimerlimit = 10000 * 2; // 20 seconds
-const IssueTimerlimit = 10000 * 0.2; // 2 seconds
+const IssueTimerlimit = 10000 * 2; // 20 seconds
 
 let timer;
 // userMessage -> context.state.userMessage -> stores the texts the user wirtes before sending them to politician [issue]
@@ -203,6 +200,7 @@ const handler = new MessengerHandler()
 					const { payload } = context.event.message.quick_reply;
 					if (payload.slice(0, 6) === 'option') {
 						await context.setState({ payload: payload.replace('option', '') });
+						// await context.setState({ dialog: 'reload' }); // didn't work as intended
 						await context.setState({
 							knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id,
 								{ [context.state.payload]: context.state.apiaiResp.result.parameters[context.state.payload] }),
@@ -362,27 +360,14 @@ const handler = new MessengerHandler()
 				await context.sendButtonTemplate(context.state.issueMessage, await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
 				await context.setState({ dialog: 'prompt' });
 				break;
-			case 'reload':
-				await context.setState({
-					knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id,
-						{ [context.state.payload]: context.state.apiaiResp.result.parameters[context.state.payload] }),
-				});
+			// case 'reload': // didn't work as intended
+			// 	await context.setState({
+			// 		knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id,
+			// 			{ [context.state.payload]: context.state.apiaiResp.result.parameters[context.state.payload] }),
+			// 	});
 			// falls through
 			case 'chooseQuestion':
 				await showQuestions(context);
-				// await context.typingOn();
-				// await attach.sendQuestions(context, context.state.knowledge.knowledge_base);
-				// await context.sendText('Ok! Por favor, escolha sua pergunta acima ⤴️\nSe não achou é só clicar abaixo ⤵️', {
-				// 	quick_replies: [
-				// 		{
-				// 			content_type: 'text',
-				// 			title: 'Não achei',
-				// 			payload: 'NotOneOfThese',
-				// 		},
-				// 	],
-				// });
-				// await context.typingOff();
-				// await context.setState({ dialog: 'prompt' });
 				break;
 			case 'chooseTheme':
 				await context.sendText('Essa é uma pergunta bastante complexa! Me ajude a entender sobre o que você quer saber, escolha uma opção abaixo ⤵️',
