@@ -109,15 +109,13 @@ const handler = new MessengerHandler()
 			await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
 			await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 
-			// if (context.event.isPostback) {
-			// 	const { payload } = context.event.postback;
-			// 	if (payload.slice(0, 6) === 'answer') {
-			// 		await context.setState({ question: context.state.knowledge.knowledge_base.find(x => x.id === parseInt(payload.replace('answer', ''), 10)) });
-			// 		await context.setState({ dialog: 'showAnswer' });
-			// 	} else {
-			// 		await context.setState({ dialog: payload });
-			// 	}
-			// }
+			if (context.event.isPostback) {
+				// const { payload } = context.event.postback.payload;
+				if (context.event.postback.payload.slice(0, 6) === 'answer') {
+					await context.setState({ question: context.state.knowledge.knowledge_base.find(x => x.id === parseInt(context.event.postback.payload.replace('answer', ''), 10)) });
+					await context.setState({ dialog: 'showAnswer' });
+				}
+			}
 
 			if (context.event.rawEvent.postback) {
 				if (context.event.rawEvent.postback.referral) { // if this exists we are on external site
@@ -185,21 +183,12 @@ const handler = new MessengerHandler()
 			if (context.state.dialog === 'prompt') {
 				console.log('aaaa');
 
-				// if (context.event.isPostback) {
-				// 	const { payload } = context.event.postback;
-				// 	if (payload.slice(0, 6) !== 'answer') {
-				// 		await context.setState({ dialog: payload });
-				// 		// await context.setState({ question: context.state.knowledge.knowledge_base.find(x => x.id === parseInt(payload.replace('answer', ''), 10)) });
-				// 		// await context.setState({ dialog: 'showAnswer' });
-				// 	} else {
-				// 		await context.setState({ dialog: payload });
-				// 	}
-				// } else
-				if (context.event.isQuickReply) {
+				if (context.event.isPostback) {
+					const { payload } = context.event.postback;
+					await context.setState({ dialog: payload });
+				} else if (context.event.isQuickReply) {
 					const { payload } = context.event.message.quick_reply;
 					if (payload.slice(0, 6) === 'option') {
-						console.log('here');
-
 						await context.setState({ payload: payload.replace('option', '') });
 						// await context.setState({ dialog2: 'reload', dialog: '' }); // TODO: fix this not working
 						await context.setState({
@@ -207,7 +196,6 @@ const handler = new MessengerHandler()
 								{ [context.state.payload]: context.state.apiaiResp.result.parameters[context.state.payload] }),
 						});
 						await context.typingOn();
-						console.log('here2');
 						await attach.sendQuestions(context, context.state.knowledge.knowledge_base);
 						await context.sendText('Ok! Por favor, escolha sua pergunta acima ⤴️\nSe não achou é só clicar abaixo ⤵️', {
 							quick_replies: [
@@ -220,7 +208,6 @@ const handler = new MessengerHandler()
 						});
 						await context.typingOff();
 						await context.setState({ dialog: 'prompt' });
-						console.log(context.state.dialog);
 					} else {
 						await context.setState({ dialog: payload });
 					}
@@ -269,17 +256,7 @@ const handler = new MessengerHandler()
 			// Switch de dialogos
 			if (context.event.isPostback && (context.state.dialog === 'prompt' || context.event.postback.payload === 'greetings')) {
 				const { payload } = context.event.postback;
-				console.log(payload);
-
-				if (await payload.slice(0, 6) === 'answer') {
-					console.log('aaaaa');
-
-					await context.setState({ question: context.state.knowledge.knowledge_base.find(x => x.id === parseInt(payload.replace('answer', ''), 10)) });
-					await context.setState({ dialog: 'showAnswer' });
-				} else {
-					console.log('bbbb');
-					await context.setState({ dialog: payload });
-				}
+				await context.setState({ dialog: payload });
 			} else if (context.event.isPostback && context.state.dialog === 'listening') {
 				await context.typingOff();
 				const payload = context.event.postback.payload;
