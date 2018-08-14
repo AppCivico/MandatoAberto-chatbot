@@ -187,6 +187,8 @@ const handler = new MessengerHandler()
 				} else if (context.event.isQuickReply) {
 					const { payload } = context.event.message.quick_reply;
 					if (payload.slice(0, 6) === 'option') {
+						console.log('here');
+
 						await context.setState({ payload: payload.replace('option', '') });
 						// await context.setState({ dialog2: 'reload', dialog: '' }); // TODO: fix this not working
 						await context.setState({
@@ -194,6 +196,7 @@ const handler = new MessengerHandler()
 								{ [context.state.payload]: context.state.apiaiResp.result.parameters[context.state.payload] }),
 						});
 						await context.typingOn();
+						console.log('here2');
 						await attach.sendQuestions(context, context.state.knowledge.knowledge_base);
 						await context.sendText('Ok! Por favor, escolha sua pergunta acima ⤴️\nSe não achou é só clicar abaixo ⤵️', {
 							quick_replies: [
@@ -206,6 +209,7 @@ const handler = new MessengerHandler()
 						});
 						await context.typingOff();
 						await context.setState({ dialog: 'prompt' });
+						console.log(context.state.dialog);
 					} else {
 						await context.setState({ dialog: payload });
 					}
