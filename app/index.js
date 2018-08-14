@@ -109,15 +109,15 @@ const handler = new MessengerHandler()
 			await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
 			await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 
-			if (context.event.isPostback) {
-				const { payload } = context.event.postback;
-				if (payload.slice(0, 6) === 'answer') {
-					await context.setState({ question: context.state.knowledge.knowledge_base.find(x => x.id === parseInt(payload.replace('answer', ''), 10)) });
-					await context.setState({ dialog: 'showAnswer' });
-				} else {
-					await context.setState({ dialog: payload });
-				}
-			}
+			// if (context.event.isPostback) {
+			// 	const { payload } = context.event.postback;
+			// 	if (payload.slice(0, 6) === 'answer') {
+			// 		await context.setState({ question: context.state.knowledge.knowledge_base.find(x => x.id === parseInt(payload.replace('answer', ''), 10)) });
+			// 		await context.setState({ dialog: 'showAnswer' });
+			// 	} else {
+			// 		await context.setState({ dialog: payload });
+			// 	}
+			// }
 
 			if (context.event.rawEvent.postback) {
 				if (context.event.rawEvent.postback.referral) { // if this exists we are on external site
@@ -184,16 +184,17 @@ const handler = new MessengerHandler()
 			if (context.state.dialog === 'prompt') {
 				console.log('aaaa');
 
-				if (context.event.isPostback) {
-					const { payload } = context.event.postback;
-					if (payload.slice(0, 6) !== 'answer') {
-						await context.setState({ dialog: payload });
-						// await context.setState({ question: context.state.knowledge.knowledge_base.find(x => x.id === parseInt(payload.replace('answer', ''), 10)) });
-						// await context.setState({ dialog: 'showAnswer' });
-					} else {
-						await context.setState({ dialog: payload });
-					}
-				} else if (context.event.isQuickReply) {
+				// if (context.event.isPostback) {
+				// 	const { payload } = context.event.postback;
+				// 	if (payload.slice(0, 6) !== 'answer') {
+				// 		await context.setState({ dialog: payload });
+				// 		// await context.setState({ question: context.state.knowledge.knowledge_base.find(x => x.id === parseInt(payload.replace('answer', ''), 10)) });
+				// 		// await context.setState({ dialog: 'showAnswer' });
+				// 	} else {
+				// 		await context.setState({ dialog: payload });
+				// 	}
+				// } else
+				if (context.event.isQuickReply) {
 					const { payload } = context.event.message.quick_reply;
 					if (payload.slice(0, 6) === 'option') {
 						console.log('here');
@@ -266,7 +267,13 @@ const handler = new MessengerHandler()
 
 			// Switch de dialogos
 			if (context.event.isPostback && (context.state.dialog === 'prompt' || context.event.postback.payload === 'greetings')) {
-				await context.setState({ dialog: context.event.postback.payload });
+				const { payload } = context.event.postback;
+				if (payload.slice(0, 6) === 'answer') {
+					await context.setState({ question: context.state.knowledge.knowledge_base.find(x => x.id === parseInt(payload.replace('answer', ''), 10)) });
+					await context.setState({ dialog: 'showAnswer' });
+				} else {
+					await context.setState({ dialog: payload });
+				}
 			} else if (context.event.isPostback && context.state.dialog === 'listening') {
 				await context.typingOff();
 				const payload = context.event.postback.payload;
