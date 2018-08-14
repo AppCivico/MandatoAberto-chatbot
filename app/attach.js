@@ -6,7 +6,7 @@ async function sendQuestions(context, content) {
 		elements.push({
 			title: `Pergunta #${index + 1}`,
 			subtitle: element.question,
-			image_url: 'http://pngimg.com/uploads/question_mark/question_mark_PNG121.png',
+			// image_url: 'http://pngimg.com/uploads/question_mark/question_mark_PNG121.png',
 			buttons: [{
 				type: 'postback',
 				title: 'É essa',
