@@ -94,6 +94,22 @@ async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-dec
 	return dialogs;
 }
 
+async function showQuestions(context) {
+	await context.typingOn();
+	await attach.sendQuestions(context, context.state.knowledge.knowledge_base);
+	await context.sendText('Ok! Por favor, escolha sua pergunta acima ⤴️\nSe não achou é só clicar abaixo ⤵️', {
+		quick_replies: [
+			{
+				content_type: 'text',
+				title: 'Não achei',
+				payload: 'NotOneOfThese',
+			},
+		],
+	});
+	await context.typingOff();
+	await context.setState({ dialog: 'prompt' });
+}
+
 function getIssueMessage(issueMessage) {
 	if (Object.keys(issueMessage).length === 0) {
 		return 'A qualquer momento você pode digitar uma mensagem que enviarei para nosso time.';
@@ -109,8 +125,7 @@ const handler = new MessengerHandler()
 			await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
 			await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 
-			if (context.event.isPostback) {
-				// const { payload } = context.event.postback.payload;
+			if (context.event.isPostback) { // this could be in a better place
 				if (context.event.postback.payload.slice(0, 6) === 'answer') {
 					await context.setState({ question: context.state.knowledge.knowledge_base.find(x => x.id === parseInt(context.event.postback.payload.replace('answer', ''), 10)) });
 					await context.setState({ dialog: 'showAnswer' });
@@ -190,24 +205,11 @@ const handler = new MessengerHandler()
 					const { payload } = context.event.message.quick_reply;
 					if (payload.slice(0, 6) === 'option') {
 						await context.setState({ payload: payload.replace('option', '') });
-						// await context.setState({ dialog2: 'reload', dialog: '' }); // TODO: fix this not working
 						await context.setState({
 							knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id,
 								{ [context.state.payload]: context.state.apiaiResp.result.parameters[context.state.payload] }),
 						});
-						await context.typingOn();
-						await attach.sendQuestions(context, context.state.knowledge.knowledge_base);
-						await context.sendText('Ok! Por favor, escolha sua pergunta acima ⤴️\nSe não achou é só clicar abaixo ⤵️', {
-							quick_replies: [
-								{
-									content_type: 'text',
-									title: 'Não achei',
-									payload: 'NotOneOfThese',
-								},
-							],
-						});
-						await context.typingOff();
-						await context.setState({ dialog: 'prompt' });
+						await showQuestions(context);
 					} else {
 						await context.setState({ dialog: payload });
 					}
@@ -369,19 +371,20 @@ const handler = new MessengerHandler()
 				});
 			// falls through
 			case 'chooseQuestion':
-				await context.typingOn();
-				await attach.sendQuestions(context, context.state.knowledge.knowledge_base);
-				await context.sendText('Ok! Por favor, escolha sua pergunta acima ⤴️\nSe não achou é só clicar abaixo ⤵️', {
-					quick_replies: [
-						{
-							content_type: 'text',
-							title: 'Não achei',
-							payload: 'NotOneOfThese',
-						},
-					],
-				});
-				await context.typingOff();
-				await context.setState({ dialog: 'prompt' });
+				await showQuestions(context);
+				// await context.typingOn();
+				// await attach.sendQuestions(context, context.state.knowledge.knowledge_base);
+				// await context.sendText('Ok! Por favor, escolha sua pergunta acima ⤴️\nSe não achou é só clicar abaixo ⤵️', {
+				// 	quick_replies: [
+				// 		{
+				// 			content_type: 'text',
+				// 			title: 'Não achei',
+				// 			payload: 'NotOneOfThese',
+				// 		},
+				// 	],
+				// });
+				// await context.typingOff();
+				// await context.setState({ dialog: 'prompt' });
 				break;
 			case 'chooseTheme':
 				await context.sendText('Essa é uma pergunta bastante complexa! Me ajude a entender sobre o que você quer saber, escolha uma opção abaixo ⤵️',
