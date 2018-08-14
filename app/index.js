@@ -109,9 +109,9 @@ const handler = new MessengerHandler()
 			await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
 			await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 
-			// if (context.event.isPostback) {
-			// 	console.log(context.event.postback);
-			// }
+			if (context.event.isPostback) {
+				console.log(context.event.postback);
+			}
 
 			if (context.event.rawEvent.postback) {
 				if (context.event.rawEvent.postback.referral) { // if this exists we are on external site
@@ -176,6 +176,8 @@ const handler = new MessengerHandler()
 
 			// Tratando dinâmica de issues
 			if (context.state.dialog === 'prompt') {
+				console.log('aaaa');
+
 				if (context.event.isPostback) {
 					const { payload } = context.event.postback;
 					if (payload.slice(0, 6) === 'answer') {
