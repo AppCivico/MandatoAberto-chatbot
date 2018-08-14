@@ -180,6 +180,7 @@ const handler = new MessengerHandler()
 				await context.setState({ dialog: 'greetings' });
 			}
 
+
 			// Tratando dinâmica de issues
 			if (context.state.dialog === 'prompt') {
 				console.log('aaaa');
@@ -268,7 +269,7 @@ const handler = new MessengerHandler()
 			// Switch de dialogos
 			if (context.event.isPostback && (context.state.dialog === 'prompt' || context.event.postback.payload === 'greetings')) {
 				const { payload } = context.event.postback;
-				if (payload.slice(0, 6) === 'answer') {
+				if (await payload.slice(0, 6) === 'answer') {
 					await context.setState({ question: context.state.knowledge.knowledge_base.find(x => x.id === parseInt(payload.replace('answer', ''), 10)) });
 					await context.setState({ dialog: 'showAnswer' });
 				} else {
