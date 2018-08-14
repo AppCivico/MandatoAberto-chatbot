@@ -232,6 +232,33 @@ const handler = new MessengerHandler()
 						await context.setState({ dialog: 'chooseTheme' });
 					}
 				}
+			} else if (context.state.dialog === 'question') {
+				if (context.event.isQuickReply) {
+					const { payload } = context.event.message.quick_reply;
+					if (payload.slice(0, 6) === 'option') {
+						await context.setState({ payload: payload.replace('option', '') });
+						// await context.setState({ dialog: 'reload' }); // TODO: fix this not working
+						await context.setState({
+							knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id,
+								{ [context.state.payload]: context.state.apiaiResp.result.parameters[context.state.payload] }),
+						});
+						await context.typingOn();
+						await attach.sendQuestions(context, context.state.knowledge.knowledge_base);
+						await context.sendText('Ok! Por favor, escolha sua pergunta acima ⤴️\nSe não achou é só clicar abaixo ⤵️', {
+							quick_replies: [
+								{
+									content_type: 'text',
+									title: 'Não achei',
+									payload: 'NotOneOfThese',
+								},
+							],
+						});
+						await context.typingOff();
+						await context.setState({ dialog: 'prompt' });
+					} else {
+						await context.setState({ dialog: payload });
+					}
+				}
 			}
 
 			// Switch de dialogos
@@ -366,7 +393,7 @@ const handler = new MessengerHandler()
 			case 'chooseTheme':
 				await context.sendText('Essa é uma pergunta bastante complexa! Me ajude a entender sobre o que você quer saber, escolha uma opção abaixo ⤵️',
 					await attach.getQR(Object.keys(context.state.apiaiResp.result.parameters), 'option'));
-				await context.setState({ dialog: 'prompt' });
+				await context.setState({ dialog: 'question' });
 				break;
 			case 'showAnswer':
 				await context.sendText(context.state.question.answer);
