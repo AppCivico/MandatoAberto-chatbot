@@ -110,7 +110,13 @@ const handler = new MessengerHandler()
 			await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 
 			if (context.event.isPostback) {
-				console.log(context.event.postback);
+				const { payload } = context.event.postback;
+				if (payload.slice(0, 6) === 'answer') {
+					await context.setState({ question: context.state.knowledge.knowledge_base.find(x => x.id === parseInt(payload.replace('answer', ''), 10)) });
+					await context.setState({ dialog: 'showAnswer' });
+				} else {
+					await context.setState({ dialog: payload });
+				}
 			}
 
 			if (context.event.rawEvent.postback) {
@@ -180,9 +186,10 @@ const handler = new MessengerHandler()
 
 				if (context.event.isPostback) {
 					const { payload } = context.event.postback;
-					if (payload.slice(0, 6) === 'answer') {
-						await context.setState({ question: context.state.knowledge.knowledge_base.find(x => x.id === parseInt(payload.replace('answer', ''), 10)) });
-						await context.setState({ dialog: 'showAnswer' });
+					if (payload.slice(0, 6) !== 'answer') {
+						await context.setState({ dialog: payload });
+						// await context.setState({ question: context.state.knowledge.knowledge_base.find(x => x.id === parseInt(payload.replace('answer', ''), 10)) });
+						// await context.setState({ dialog: 'showAnswer' });
 					} else {
 						await context.setState({ dialog: payload });
 					}
