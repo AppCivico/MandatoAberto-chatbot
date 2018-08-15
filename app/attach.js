@@ -2,14 +2,14 @@
 async function sendQuestions(context, content) {
 	const elements = [];
 
-	content.forEach((element, index) => {
+	content.forEach((element) => {
 		elements.push({
-			title: `Pergunta #${index + 1}`,
-			// subtitle: element.question,
+			title: element.question,
+			// subtitle: `Pergunta #${index + 1}`,
 			// image_url: 'http://pngimg.com/uploads/question_mark/question_mark_PNG121.png',
 			buttons: [{
 				type: 'postback',
-				title: 'É essa',
+				title: 'Saber mais',
 				payload: `answer${element.id}`,
 			}],
 		});
