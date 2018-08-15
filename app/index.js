@@ -78,8 +78,6 @@ function getAboutMe(politicianData) {
 }
 
 async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-declarations
-	console.log(dialogs);
-
 	if (!context.state.introduction) { // just in case something goes way off
 		await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
 		await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
@@ -91,13 +89,8 @@ async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-dec
 	if (!context.state.politicianData.votolegal_integration) { dialogs = dialogs.filter(obj => obj.payload !== 'votoLegal'); }
 	if (dialogs[0].payload === 'aboutMe') { dialogs[0].title = getAboutMe(context.state.politicianData); }
 	if (dialogs.find(x => x.payload === 'poll')) {
-		console.log('Cheguei aqui');
-
 		const recipientAnswer = await MandatoAbertoAPI.getPollAnswer(context.session.user.id, context.state.pollData.id); // check if user already answered poll
-		console.log(recipientAnswer);
 		if (recipientAnswer.recipient_answered >= 1) { // already answered so we remove option
-			console.log('Removi');
-
 			dialogs = dialogs.filter(obj => obj.payload !== 'poll');
 		}
 	}
