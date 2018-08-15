@@ -78,6 +78,8 @@ function getAboutMe(politicianData) {
 }
 
 async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-declarations
+	console.log(dialogs);
+
 	if (!context.state.introduction) { // just in case something goes way off
 		await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
 		await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
