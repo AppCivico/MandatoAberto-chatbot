@@ -142,12 +142,10 @@ const handler = new MessengerHandler()
 					const { payload } = context.event.message.quick_reply;
 					if (payload.slice(0, 6) === 'option') {
 						await context.setState({ payload: payload.replace('option', '') });
-						await context.setState({ questionGroup: context.state.apiaiResp.result.parameters[context.state.payload] });
 						await context.setState({
 							knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id,
-								{ [context.state.payload]: context.state.questionGroup }),
+								{ [context.state.payload]: context.state.apiaiResp.result.parameters[context.state.payload] }),
 						});
-
 						await showQuestions(context);
 					} else {
 						await context.setState({ dialog: payload });
@@ -178,10 +176,8 @@ const handler = new MessengerHandler()
 								await context.setState({ dialog: 'intermediate' });
 							}
 						} else {
-							console.log(context.state.apiaiResp.result.parameters);
-
-							await context.setState({ questionGroup: context.state.apiaiResp.result.parameters[0] });
-							await context.setState({ dialog: 'chooseQuestion' });
+							await showQuestions(context);
+							// await context.setState({ dialog: 'chooseQuestion' });
 						}
 					} else { // found intent but 2+ entities
 					// console.log(Object.keys(context.state.apiaiResp.result.parameters).length);
@@ -364,19 +360,16 @@ const handler = new MessengerHandler()
 				await context.sendText(context.state.question.answer);
 				await context.sendButtonTemplate('E aí, o que achou? Se tiver mais alguma pergunta é só mandar!',
 					await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
-				await context.setState({ whatWasTyped: '', questionGroup: '' });
+				await context.setState({ whatWasTyped: '' });
 				await context.setState({ dialog: 'prompt' });
 				break;
 			case 'NotOneOfThese':
-				console.log(context.state.questionGroup);
-
 				await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
-					`[${context.state.questionGroup}] ${context.state.whatWasTyped}`,
-					context.state.apiaiResp.result.parameters);
+					context.state.whatWasTyped, context.state.apiaiResp.result.parameters);
 				await context.sendText('Que pena! Mas recebi sua dúvida e estarei te respondendo logo mais!');
 				await context.sendButtonTemplate('E agora, como posso te ajudar?',
 					await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
-				await context.setState({ whatWasTyped: '', questionGroup: '' });
+				await context.setState({ whatWasTyped: '' });
 				await context.setState({ dialog: 'prompt' });
 				break;
 			case 'intermediate':
