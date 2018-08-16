@@ -512,7 +512,7 @@ const handler = new MessengerHandler()
 						context.state.apiaiResp.result.parameters);
 					delete timers[context.session.user.id]; // deleting this timer from timers object
 					await context.setState({ userMessage: '' });
-					console.log('Sending message'.context.state.userMessage);
+					console.log('Sending message', context.state.userMessage);
 				}, IssueTimerlimit);
 				break;
 			case 'listening':
