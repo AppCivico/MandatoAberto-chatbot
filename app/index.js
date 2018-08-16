@@ -510,7 +510,7 @@ const handler = new MessengerHandler()
 				}
 				console.log(context.state.userMessage);
 				if (timers[context.session.user.id]) {
-					delete timers[context.session.user.id]; // deleting this timer from timers object
+					clearTimeout(timers[context.session.user.id]);
 				}
 				timers[context.session.user.id] = setTimeout(async () => {
 					await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id, context.state.userMessage,
