@@ -352,6 +352,7 @@ const handler = new MessengerHandler()
 				await context.sendButtonTemplate(context.state.issueMessage, await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
 				await context.setState({ dialog: 'prompt' });
 				console.log(timers);
+				console.log(context.state.userMessage);
 
 				// await context.sendButtonTemplate(context.state.issueMessage, await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.leaveInfo]));
 				// await context.setState({ dialog: 'prompt', dataPrompt: 'email' });
@@ -505,6 +506,7 @@ const handler = new MessengerHandler()
 				} else {
 					await context.setState({ userMessage: context.state.whatWasTyped });
 				}
+				console.log(context.state.userMessage);
 				await context.sendText('Não compreendi sua mensagem, mas irei enviar para nossa equipe te responder em breve sobre. '
 					+ 'Caso tenha algo adicional para digitar, por favor só escrever.');
 				timers[context.session.user.id] = setTimeout(async () => {
