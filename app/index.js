@@ -146,8 +146,8 @@ const handler = new MessengerHandler()
 							knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id,
 								{ [context.state.payload]: context.state.apiaiResp.result.parameters[context.state.payload] }),
 						});
-						await context.setState({ dialog: 'chooseQuestion' });
-						// await showQuestions(context);
+						// await context.setState({ dialog: 'chooseQuestion' });
+						await showQuestions(context);
 					} else {
 						await context.setState({ dialog: payload });
 					}
@@ -177,8 +177,8 @@ const handler = new MessengerHandler()
 								await context.setState({ dialog: 'intermediate' });
 							}
 						} else {
-							// await showQuestions(context);
-							await context.setState({ dialog: 'chooseQuestion' });
+							await showQuestions(context);
+							// await context.setState({ dialog: 'chooseQuestion' });
 						}
 					} else { // found intent but 2+ entities
 					// console.log(Object.keys(context.state.apiaiResp.result.parameters).length);
