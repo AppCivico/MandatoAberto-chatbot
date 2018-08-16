@@ -31,17 +31,15 @@ function formatReal(int) {
 	return tmp;
 }
 
-// const IssueTimerlimit = 10000 * 2; // 20 seconds
 const IssueTimerlimit = 10000 * 2; // 20 seconds
 
 const timers = {};
-// object that stores every issue timers from user. Each user_id stores it's respective timer.
+// timers -> object that stores every 'issue' timers from user. Each user_id stores it's respective timer.
 // userMessage -> context.state.userMessage -> stores the texts the user wirtes before sending them to politician [issue]
 // sendIntro = true -> context.state.sendIntro -> verifies if we should send the intro text for issue creation.
 let areWeListening = true;
 // areWeListening -> user.state.areWeListening(doesn't work) -> diferenciates messages that come from
 // the standard flow and messages from comment/post
-//
 
 function removeEmptyKeys(obj) { Object.keys(obj).forEach((key) => { if (obj[key].length === 0) { delete obj[key]; } }); }
 
@@ -56,7 +54,7 @@ const bot = new MessengerBot({
 	sessionStore: new FileSessionStore(),
 });
 
-bot.setInitialState({ dialog: 'prompt' });
+bot.setInitialState({ });
 
 bot.use(withTyping({ delay: 1000 }));
 
@@ -77,26 +75,6 @@ function getAboutMe(politicianData) {
 		return `${articles.defined.toUpperCase()} ${politicianData.office.name}`;
 	}
 	return `Sobre ${articles.defined} ${politicianData.office.name}`;
-}
-
-async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-declarations
-	if (!context.state.introduction) { // just in case something goes way off
-		await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
-		await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
-	}
-	if (!context.state.introduction.content) { dialogs = dialogs.filter(obj => obj.payload !== 'aboutMe'); }
-	if (!context.state.trajectory) { dialogs = dialogs.filter(obj => obj.payload !== 'trajectory'); }
-	if (!context.state.pollData) { dialogs = dialogs.filter(obj => obj.payload !== 'poll'); }
-	if (!context.state.politicianData.contact) { dialogs = dialogs.filter(obj => obj.payload !== 'contacts'); }
-	if (!context.state.politicianData.votolegal_integration) { dialogs = dialogs.filter(obj => obj.payload !== 'votoLegal'); }
-	if (dialogs[0].payload === 'aboutMe') { dialogs[0].title = getAboutMe(context.state.politicianData); }
-	if (dialogs.find(x => x.payload === 'poll')) {
-		const recipientAnswer = await MandatoAbertoAPI.getPollAnswer(context.session.user.id, context.state.pollData.id); // check if user already answered poll
-		if (recipientAnswer.recipient_answered >= 1) { // already answered so we remove option
-			dialogs = dialogs.filter(obj => obj.payload !== 'poll');
-		}
-	}
-	return dialogs;
 }
 
 async function showQuestions(context) {
@@ -120,6 +98,31 @@ function getIssueMessage(issueMessage) {
 		return 'A qualquer momento você pode digitar uma mensagem que enviarei para nosso time.';
 	}
 	return issueMessage.content;
+}
+
+async function checkPollAnswered(context) {
+	const recipientAnswer = await MandatoAbertoAPI.getPollAnswer(context.session.user.id, context.state.pollData.id);
+	if (recipientAnswer.recipient_answered >= 1) { return true;	}
+	return false;
+}
+
+async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-declarations
+	if (!context.state.introduction) { // just in case something goes way off
+		await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
+		await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
+	}
+	if (!context.state.introduction.content) { dialogs = dialogs.filter(obj => obj.payload !== 'aboutMe'); }
+	if (!context.state.trajectory) { dialogs = dialogs.filter(obj => obj.payload !== 'trajectory'); }
+	if (!context.state.pollData) { dialogs = dialogs.filter(obj => obj.payload !== 'poll'); }
+	if (!context.state.politicianData.contact) { dialogs = dialogs.filter(obj => obj.payload !== 'contacts'); }
+	if (!context.state.politicianData.votolegal_integration) { dialogs = dialogs.filter(obj => obj.payload !== 'votoLegal'); }
+	if (dialogs[0].payload === 'aboutMe') { dialogs[0].title = getAboutMe(context.state.politicianData); }
+	if (dialogs.find(x => x.payload === 'poll')) {
+		if (checkPollAnswered(context) === true) { // already answered so we remove option
+			dialogs = dialogs.filter(obj => obj.payload !== 'poll');
+		}
+	}
+	return dialogs;
 }
 
 const handler = new MessengerHandler()
@@ -146,7 +149,6 @@ const handler = new MessengerHandler()
 							knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id,
 								{ [context.state.payload]: context.state.apiaiResp.result.parameters[context.state.payload] }),
 						});
-						// await context.setState({ dialog: 'chooseQuestion' });
 						await showQuestions(context);
 					} else {
 						await context.setState({ dialog: payload });
@@ -178,7 +180,6 @@ const handler = new MessengerHandler()
 							}
 						} else {
 							await showQuestions(context);
-							// await context.setState({ dialog: 'chooseQuestion' });
 						}
 					} else { // found intent but 2+ entities
 					// console.log(Object.keys(context.state.apiaiResp.result.parameters).length);
@@ -348,9 +349,6 @@ const handler = new MessengerHandler()
 				await context.setState({ userMessage: '' }); // cleaning up
 				await context.sendButtonTemplate(context.state.issueMessage, await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
 				await context.setState({ dialog: 'prompt' });
-				break;
-			case 'chooseQuestion':
-				await showQuestions(context);
 				break;
 			case 'chooseTheme':
 				await context.sendText('Essa é uma pergunta bastante complexa! Me ajude a entender sobre o que você quer saber, escolha uma opção abaixo ⤵️',
@@ -526,8 +524,7 @@ const handler = new MessengerHandler()
 				await context.setState({ dialog: 'prompt', politicianCellPhone: undefined });
 				break;
 			case 'poll': {
-				const recipientAnswer = await MandatoAbertoAPI.getPollAnswer(context.session.user.id, context.state.pollData.id);
-				if (recipientAnswer.recipient_answered >= 1) {
+				if (checkPollAnswered === 'true') {
 					await context.sendText('Ah, que pena! Você já respondeu essa pergunta.');
 					await context.sendButtonTemplate('Se quiser, eu posso te ajudar com outra coisa.',
 						await checkMenu(context, [opt.trajectory, opt.contacts, opt.doarOption]));
