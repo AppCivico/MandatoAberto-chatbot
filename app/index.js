@@ -31,7 +31,8 @@ function formatReal(int) {
 	return tmp;
 }
 
-const IssueTimerlimit = 10000 * 2; // 20 seconds
+// const IssueTimerlimit = 10000 * 2; // 20 seconds
+const IssueTimerlimit = 10000 * 0.2; // 20 seconds
 
 let timer;
 // userMessage -> context.state.userMessage -> stores the texts the user wirtes before sending them to politician [issue]
@@ -232,7 +233,8 @@ const handler = new MessengerHandler()
 						// check if message came from standard flow or from post/comment
 
 						if (areWeListening === true) {
-							await context.setState({ dialog: 'listening' });
+							// await context.setState({ dialog: 'listening' });
+							await context.setState({ dialog: 'createIssue' });
 						} else {
 							await context.setState({ dialog: 'intermediate' });
 						}
@@ -496,6 +498,15 @@ const handler = new MessengerHandler()
 					opt.goBackMainMenu,
 				]);
 				await context.setState({ dialog: 'prompt' });
+				break;
+			case 'createIssue':
+				await context.sendText('Não compreendi sua mensagem, mas irei enviar para nossa equipe te responder em breve sobre. '
+					+ 'Caso tenha algo adicional para digitar, por favor só escrever.');
+				await context.setState({
+					timer: setTimeout(async () => {
+						console.log('aaaa');
+					}, IssueTimerlimit),
+				});
 				break;
 			case 'listening':
 			// When user enters with text, prompt sends us here
