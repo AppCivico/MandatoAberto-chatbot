@@ -120,6 +120,8 @@ async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-dec
 	if (!context.state.politicianData.votolegal_integration) { dialogs = dialogs.filter(obj => obj.payload !== 'votoLegal'); }
 	if (dialogs[0].payload === 'aboutMe') { dialogs[0].title = getAboutMe(context.state.politicianData); }
 	if (dialogs.find(x => x.payload === 'poll')) {
+		console.log(checkPollAnswered(context));
+
 		if (checkPollAnswered(context) === true) { // already answered so we remove option
 			dialogs = dialogs.filter(obj => obj.payload !== 'poll');
 		}
