@@ -138,9 +138,7 @@ const handler = new MessengerHandler()
 					} else {
 						await context.setState({ dialog: context.event.postback.payload });
 					}
-				}
-
-				if (context.event.isQuickReply) {
+				} else if (context.event.isQuickReply) {
 					const { payload } = context.event.message.quick_reply;
 					if (payload.slice(0, 6) === 'option') {
 						await context.setState({ payload: payload.replace('option', '') });
@@ -154,9 +152,7 @@ const handler = new MessengerHandler()
 					} else {
 						await context.setState({ dialog: payload });
 					}
-				}
-
-				if (context.event.isText) {
+				} else if (context.event.isText) {
 					await context.setState({ whatWasTyped: context.event.message.text }); // will be used in case the bot doesn't find the question
 					await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
 					removeEmptyKeys(context.state.apiaiResp.result.parameters);
