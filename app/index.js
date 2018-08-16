@@ -502,9 +502,9 @@ const handler = new MessengerHandler()
 			case 'createIssue':
 
 				if (!context.state.userMessage || context.state.userMessage === '') {
-					await context.setState({ userMessage: context.state.userMessage });
-				} else {
 					await context.setState({ userMessage: context.state.whatWasTyped });
+				} else {
+					await context.setState({ userMessage: `${context.state.userMessage} ${context.state.whatWasTyped}` });
 				}
 				console.log(context.state.userMessage);
 				await context.sendText('Não compreendi sua mensagem, mas irei enviar para nossa equipe te responder em breve sobre. '
