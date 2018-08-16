@@ -122,43 +122,9 @@ function getIssueMessage(issueMessage) {
 	return issueMessage.content;
 }
 
-async function checkFreeText(context) {
-	// check intent for first message
-	await context.setState({ whatWasTyped: context.event.message.text }); // will be used in case the bot doesn't find the question
-	// checking text on dialogflow
-	await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
-	removeEmptyKeys(context.state.apiaiResp.result.parameters);
+// async function checkFreeText(context) {
 
-	// console.log(context.state.apiaiResp.result.parameters);
-	if (context.state.apiaiResp.result.metadata.intentName === 'Fallback') {
-		// Fallback --> counldn't find any matching intents
-
-		// check if message came from standard flow or from post/comment
-		if (areWeListening === true) {
-			// await context.setState({ dialog: 'listening' });
-			await context.setState({ dialog: 'createIssue' });
-		} else {
-			await context.setState({ dialog: 'intermediate' });
-		}
-	} else if (Object.keys(context.state.apiaiResp.result.parameters).length === 1) { // found intent and 1 entity
-		await context.setState({
-			knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.apiaiResp.result.parameters),
-		});
-		if (context.state.knowledge.knowledge_base.length === 0) { // we have no questions related to this entity
-			// TODO falta fazer algo quando não tem pergunta cadastrada!
-			if (areWeListening === true) {
-				await context.setState({ dialog: 'createIssue' });
-			} else {
-				await context.setState({ dialog: 'intermediate' });
-			}
-		} else {
-			await context.setState({ dialog: 'chooseQuestion' });
-		}
-	} else { // found intent but 2+ entities
-		// console.log(Object.keys(context.state.apiaiResp.result.parameters).length);
-		await context.setState({ dialog: 'chooseTheme' });
-	}
-}
+// }
 
 const handler = new MessengerHandler()
 	.onEvent(async (context) => { // eslint-disable-line
@@ -175,7 +141,43 @@ const handler = new MessengerHandler()
 				}
 			}
 
-			if (context.event.rawEvent.postback) {
+			if (context.event.isText) {
+				// check intent for first message
+				await context.setState({ whatWasTyped: context.event.message.text }); // will be used in case the bot doesn't find the question
+				// checking text on dialogflow
+				await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
+				removeEmptyKeys(context.state.apiaiResp.result.parameters);
+
+				// console.log(context.state.apiaiResp.result.parameters);
+				if (context.state.apiaiResp.result.metadata.intentName === 'Fallback') {
+					// Fallback --> counldn't find any matching intents
+
+					// check if message came from standard flow or from post/comment
+					if (areWeListening === true) {
+						// await context.setState({ dialog: 'listening' });
+						await context.setState({ dialog: 'createIssue' });
+					} else {
+						await context.setState({ dialog: 'intermediate' });
+					}
+				} else if (Object.keys(context.state.apiaiResp.result.parameters).length === 1) { // found intent and 1 entity
+					await context.setState({
+						knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.apiaiResp.result.parameters),
+					});
+					if (context.state.knowledge.knowledge_base.length === 0) { // we have no questions related to this entity
+						// TODO falta fazer algo quando não tem pergunta cadastrada!
+						if (areWeListening === true) {
+							await context.setState({ dialog: 'createIssue' });
+						} else {
+							await context.setState({ dialog: 'intermediate' });
+						}
+					} else {
+						await context.setState({ dialog: 'chooseQuestion' });
+					}
+				} else { // found intent but 2+ entities
+					// console.log(Object.keys(context.state.apiaiResp.result.parameters).length);
+					await context.setState({ dialog: 'chooseTheme' });
+				}
+			} else if (context.event.rawEvent.postback) {
 				if (context.event.rawEvent.postback.referral) { // if this exists we are on external site
 					await context.setState({ facebookPlataform: 'CUSTOMER_CHAT_PLUGIN' });
 				} else { // if it doesn't exists we are on an facebook/messenger
@@ -255,8 +257,8 @@ const handler = new MessengerHandler()
 					} else {
 						await context.setState({ dialog: payload });
 					}
-				} else if (context.event.isText) {
-					checkFreeText(context);
+				// } else if (context.event.isText) {
+				// 	checkFreeText(context);
 				}
 			}
 
@@ -280,9 +282,9 @@ const handler = new MessengerHandler()
 				const poll_question_option_id = payload.substr(payload.indexOf('_') + 1, payload.length);
 				await MandatoAbertoAPI.postPollAnswer(context.session.user.id, poll_question_option_id, 'propagate');
 				context.setState({ dialog: 'pollAnswer' });
-			} else if (context.event.isText && context.state.dialog === 'pollAnswer') {
+			// } else if (context.event.isText && context.state.dialog === 'pollAnswer') {
 				// await context.setState({ dialog: 'listening' });
-				checkFreeText(context);
+				// checkFreeText(context);
 			}
 			// Tratando dados adicionais do recipient
 			if (context.state.dialog === 'recipientData' && context.state.recipientData) {
