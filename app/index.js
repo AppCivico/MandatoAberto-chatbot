@@ -35,6 +35,7 @@ function formatReal(int) {
 const IssueTimerlimit = 10000 * 2; // 20 seconds
 
 const timers = {};
+// object that stores every issue timers from user. Each user_id stores it's respective timer.
 // userMessage -> context.state.userMessage -> stores the texts the user wirtes before sending them to politician [issue]
 // sendIntro = true -> context.state.sendIntro -> verifies if we should send the intro text for issue creation.
 let areWeListening = true;
@@ -119,6 +120,44 @@ function getIssueMessage(issueMessage) {
 		return 'A qualquer momento você pode digitar uma mensagem que enviarei para nosso time.';
 	}
 	return issueMessage.content;
+}
+
+async function checkFreeText(context) {
+	// check intent for first message
+	await context.setState({ whatWasTyped: context.event.message.text }); // will be used in case the bot doesn't find the question
+	// checking text on dialogflow
+	await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
+	removeEmptyKeys(context.state.apiaiResp.result.parameters);
+
+	// console.log(context.state.apiaiResp.result.parameters);
+	if (context.state.apiaiResp.result.metadata.intentName === 'Fallback') {
+		// Fallback --> counldn't find any matching intents
+
+		// check if message came from standard flow or from post/comment
+		if (areWeListening === true) {
+			// await context.setState({ dialog: 'listening' });
+			await context.setState({ dialog: 'createIssue' });
+		} else {
+			await context.setState({ dialog: 'intermediate' });
+		}
+	} else if (Object.keys(context.state.apiaiResp.result.parameters).length === 1) { // found intent and 1 entity
+		await context.setState({
+			knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.apiaiResp.result.parameters),
+		});
+		if (context.state.knowledge.knowledge_base.length === 0) { // we have no questions related to this entity
+			// TODO falta fazer algo quando não tem pergunta cadastrada!
+			if (areWeListening === true) {
+				await context.setState({ dialog: 'createIssue' });
+			} else {
+				await context.setState({ dialog: 'intermediate' });
+			}
+		} else {
+			await context.setState({ dialog: 'chooseQuestion' });
+		}
+	} else { // found intent but 2+ entities
+		// console.log(Object.keys(context.state.apiaiResp.result.parameters).length);
+		await context.setState({ dialog: 'chooseTheme' });
+	}
 }
 
 const handler = new MessengerHandler()
@@ -217,45 +256,7 @@ const handler = new MessengerHandler()
 						await context.setState({ dialog: payload });
 					}
 				} else if (context.event.isText) {
-					// Ao mandar uma mensagem que não é interpretada como fluxo do chatbot
-					// Devo já criar uma issue
-					// We go to the listening dialog to wait for other messages
-
-					// check intent for first message
-					await context.setState({ whatWasTyped: context.event.message.text }); // will be used in case the bot doesn't find the question
-					// checking text on dialogflow
-					await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
-					removeEmptyKeys(context.state.apiaiResp.result.parameters);
-
-					// console.log(context.state.apiaiResp.result.parameters);
-					if (context.state.apiaiResp.result.metadata.intentName === 'Fallback') {
-						// Fallback --> counldn't find any matching intents
-						// check if message came from standard flow or from post/comment
-
-						if (areWeListening === true) {
-							// await context.setState({ dialog: 'listening' });
-							await context.setState({ dialog: 'createIssue' });
-						} else {
-							await context.setState({ dialog: 'intermediate' });
-						}
-					} else if (Object.keys(context.state.apiaiResp.result.parameters).length === 1) { // found intent and 1 entity
-						await context.setState({
-							knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.apiaiResp.result.parameters),
-						});
-						if (context.state.knowledge.knowledge_base.length === 0) { // we have no questions related to this entity
-							// TODO falta fazer algo quando não tem pergunta cadastrada!
-							if (areWeListening === true) {
-								await context.setState({ dialog: 'listening' });
-							} else {
-								await context.setState({ dialog: 'intermediate' });
-							}
-						} else {
-							await context.setState({ dialog: 'chooseQuestion' });
-						}
-					} else { // found intent but 2+ entities
-						// console.log(Object.keys(context.state.apiaiResp.result.parameters).length);
-						await context.setState({ dialog: 'chooseTheme' });
-					}
+					checkFreeText(context);
 				}
 			}
 
@@ -263,11 +264,6 @@ const handler = new MessengerHandler()
 			if (context.event.isPostback && (context.state.dialog === 'prompt' || context.event.postback.payload === 'greetings')) {
 				const { payload } = context.event.postback;
 				await context.setState({ dialog: payload });
-			} else if (context.event.isPostback && context.state.dialog === 'listening') {
-				await context.typingOff();
-				const payload = context.event.postback.payload;
-				await context.setState({ dialog: payload });
-				if (context.event.message) { context.event.message.text = ''; }
 			}
 			// quick_replies que vem de propagação que não são resposta de enquete
 			// because of the issue response
@@ -285,7 +281,8 @@ const handler = new MessengerHandler()
 				await MandatoAbertoAPI.postPollAnswer(context.session.user.id, poll_question_option_id, 'propagate');
 				context.setState({ dialog: 'pollAnswer' });
 			} else if (context.event.isText && context.state.dialog === 'pollAnswer') {
-				await context.setState({ dialog: 'listening' });
+				// await context.setState({ dialog: 'listening' });
+				checkFreeText(context);
 			}
 			// Tratando dados adicionais do recipient
 			if (context.state.dialog === 'recipientData' && context.state.recipientData) {
@@ -507,11 +504,9 @@ const handler = new MessengerHandler()
 				timers[context.session.user.id] = setTimeout(async () => {
 					await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id, context.state.whatWasTyped,
 						context.state.apiaiResp.result.parameters);
-					delete timers[context.session.user.id];
+					delete timers[context.session.user.id]; // deleting this timer from timers object
 					console.log('Sending message');
 				}, IssueTimerlimit);
-
-
 				break;
 			case 'listening':
 			// When user enters with text, prompt sends us here
@@ -605,22 +600,22 @@ const handler = new MessengerHandler()
 				}
 				break;
 			}
-			case 'listeningAnswer':
-				// check Intent from user issue (whole text)
-				await context.setState({ apiaiResp: await apiai.textRequest(context.state.userMessage, { sessionId: context.session.user.id }) });
-				removeEmptyKeys(context.state.apiaiResp.result.parameters);
+			// case 'listeningAnswer':
+			// 	// check Intent from user issue (whole text)
+			// 	await context.setState({ apiaiResp: await apiai.textRequest(context.state.userMessage, { sessionId: context.session.user.id }) });
+			// 	removeEmptyKeys(context.state.apiaiResp.result.parameters);
 
-				await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id, context.state.userMessage,
-					context.state.apiaiResp.result.parameters);
-				await context.setState({ userMessage: '' });
-				await context.setState({ whatWasTyped: '' });
-				await context.setState({ issueCreatedMessage: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_created') });
-				if (context.state.issueCreatedMessage.content) {
-					await context.sendText(context.state.issueCreatedMessage.content);
-				}
-				await context.sendButtonTemplate('Deseja nos enviar ou atualizar seu e-mail e telefone?', opt.recipientData_LetsGo);
-				await context.setState({ dialog: 'prompt', dataPrompt: 'email' });
-				break;
+			// 	await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id, context.state.userMessage,
+			// 		context.state.apiaiResp.result.parameters);
+			// 	await context.setState({ userMessage: '' });
+			// 	await context.setState({ whatWasTyped: '' });
+			// 	await context.setState({ issueCreatedMessage: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_created') });
+			// 	if (context.state.issueCreatedMessage.content) {
+			// 		await context.sendText(context.state.issueCreatedMessage.content);
+			// 	}
+			// 	await context.sendButtonTemplate('Deseja nos enviar ou atualizar seu e-mail e telefone?', opt.recipientData_LetsGo);
+			// 	await context.setState({ dialog: 'prompt', dataPrompt: 'email' });
+			// 	break;
 			case 'pollAnswer':
 				await context.sendButtonTemplate('Muito obrigado por sua resposta. Você gostaria de deixar seu e-mail e telefone para nossa equipe?', opt.recipientData_LetsGo);
 				await context.setState({ dialog: 'prompt', dataPrompt: 'email' });
