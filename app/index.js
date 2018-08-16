@@ -141,7 +141,7 @@ const handler = new MessengerHandler()
 				}
 			}
 
-			if (context.event.isText) {
+			if (context.event.isText && context.state.dialog !== 'recipientData') {
 				// check intent for first message
 				await context.setState({ whatWasTyped: context.event.message.text }); // will be used in case the bot doesn't find the question
 				// checking text on dialogflow
@@ -257,8 +257,6 @@ const handler = new MessengerHandler()
 					} else {
 						await context.setState({ dialog: payload });
 					}
-				// } else if (context.event.isText) {
-				// 	checkFreeText(context);
 				}
 			}
 
