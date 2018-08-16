@@ -141,8 +141,8 @@ const handler = new MessengerHandler()
 				}
 			}
 
-			if (context.event.isText && context.state.dialog !== 'recipientData') {
-				// check intent for first message
+			if (context.event.isText && context.state.dialog !== 'recipientData') { // handling text that's not from "asking data"
+				// Storing what the user typed
 				await context.setState({ whatWasTyped: context.event.message.text }); // will be used in case the bot doesn't find the question
 				// checking text on dialogflow
 				await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
@@ -499,13 +499,20 @@ const handler = new MessengerHandler()
 				await context.setState({ dialog: 'prompt' });
 				break;
 			case 'createIssue':
+
+				if (!context.state.userMessage || context.state.userMessage === '') {
+					await context.setState({ userMessage: context.state.userMessage });
+				} else {
+					await context.setState({ userMessage: context.state.whatWasTyped });
+				}
 				await context.sendText('Não compreendi sua mensagem, mas irei enviar para nossa equipe te responder em breve sobre. '
 					+ 'Caso tenha algo adicional para digitar, por favor só escrever.');
 				timers[context.session.user.id] = setTimeout(async () => {
-					await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id, context.state.whatWasTyped,
+					await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id, context.state.userMessage,
 						context.state.apiaiResp.result.parameters);
 					delete timers[context.session.user.id]; // deleting this timer from timers object
-					console.log('Sending message');
+					await context.setState({ userMessage: '' });
+					console.log('Sending message'.context.state.userMessage);
 				}, IssueTimerlimit);
 				break;
 			case 'listening':
