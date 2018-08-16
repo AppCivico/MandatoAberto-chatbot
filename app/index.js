@@ -251,26 +251,6 @@ const handler = new MessengerHandler()
 				await context.setState({ dialog: 'greetings' });
 			}
 
-			// // Tratando dinâmica de issues
-			// if (context.state.dialog === 'prompt') {
-			// 	if (context.event.isPostback) {
-			// 		const { payload } = context.event.postback;
-			// 		await context.setState({ dialog: payload });
-			// 	} else if (context.event.isQuickReply) {
-			// 		const { payload } = context.event.message.quick_reply;
-			// 		if (payload.slice(0, 6) === 'option') {
-			// 			await context.setState({ payload: payload.replace('option', '') });
-			// 			await context.setState({
-			// 				knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id,
-			// 					{ [context.state.payload]: context.state.apiaiResp.result.parameters[context.state.payload] }),
-			// 			});
-			// 			await showQuestions(context);
-			// 		} else {
-			// 			await context.setState({ dialog: payload });
-			// 		}
-			// 	}
-			// }
-
 			// Switch de dialogos
 			if (context.event.isPostback && (context.state.dialog === 'prompt' || context.event.postback.payload === 'greetings')) {
 				const { payload } = context.event.postback;
@@ -387,6 +367,8 @@ const handler = new MessengerHandler()
 				await context.setState({ dialog: 'prompt' });
 				break;
 			case 'NotOneOfThese':
+				console.log(context.state.knowledge);
+
 				await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id, context.state.whatWasTyped,
 					context.state.apiaiResp.result.parameters);
 				await context.sendText('Que pena! Mas recebi sua dúvida e estarei te respondendo logo mais!');
@@ -646,7 +628,6 @@ const handler = new MessengerHandler()
 		console.log('\n');
 		console.log(`Parece que aconteceu um erro as ${date.toLocaleTimeString('pt-BR')} de ${date.getDate()}/${date.getMonth() + 1} =>`);
 		console.log(err);
-		console.log(`Usuário => ${context.session.user.first_name} ${context.session.user.last_name}`);
 		if (context.event.rawEvent.field === 'feed') {
 			if (context.event.rawEvent.value.item === 'comment' || context.event.rawEvent.value.item === 'post') {
 				// we update user data at every interaction that's not a comment or a post
@@ -657,6 +638,8 @@ const handler = new MessengerHandler()
 			await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
 			await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 		}
+		console.log(`Usuário => ${context.session.user.first_name} ${context.session.user.last_name}`);
+		console.log(`Administrador => ${context.state.politicianData.office.name} ${context.state.politicianData.name}`);
 
 		await context.setState({ articles: getArticles(context.state.politicianData.gender) });
 		await context.sendText('Olá. Você gostaria de enviar uma mensagem para nossa equipe ou conhecer mais sobre '
