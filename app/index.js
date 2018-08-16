@@ -32,7 +32,7 @@ function formatReal(int) {
 }
 
 // const IssueTimerlimit = 10000 * 2; // 20 seconds
-const IssueTimerlimit = 10000 * 20; // 20 seconds
+const IssueTimerlimit = 10000 * 2; // 20 seconds
 
 let timer;
 // userMessage -> context.state.userMessage -> stores the texts the user wirtes before sending them to politician [issue]
@@ -504,9 +504,10 @@ const handler = new MessengerHandler()
 					+ 'Caso tenha algo adicional para digitar, por favor só escrever.');
 				await context.setState({
 					timer: setTimeout(async () => {
-						console.log('aaaa');
+						console.log(context.state.user.first_name);
 					}, IssueTimerlimit),
 				});
+				console.log(timer);
 				break;
 			case 'listening':
 			// When user enters with text, prompt sends us here
