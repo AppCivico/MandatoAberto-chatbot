@@ -149,6 +149,8 @@ const handler = new MessengerHandler()
 							knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id,
 								{ [context.state.payload]: context.state.apiaiResp.result.parameters[context.state.payload] }),
 						});
+						console.log(context.state.apiaiResp.result.parameters[context.state.payload]);
+
 						await showQuestions(context);
 					} else {
 						await context.setState({ dialog: payload });
@@ -326,6 +328,7 @@ const handler = new MessengerHandler()
 
 			switch (context.state.dialog) {
 			case 'greetings':
+				await context.typingOff();
 				areWeListening = true;
 				await context.setState({ sendIntro: true });
 				await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
