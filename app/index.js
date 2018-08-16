@@ -34,7 +34,7 @@ function formatReal(int) {
 // const IssueTimerlimit = 10000 * 2; // 20 seconds
 const IssueTimerlimit = 10000 * 2; // 20 seconds
 
-let timer;
+const timers = [];
 // userMessage -> context.state.userMessage -> stores the texts the user wirtes before sending them to politician [issue]
 // sendIntro = true -> context.state.sendIntro -> verifies if we should send the intro text for issue creation.
 let areWeListening = true;
@@ -502,44 +502,46 @@ const handler = new MessengerHandler()
 			case 'createIssue':
 				await context.sendText('Não compreendi sua mensagem, mas irei enviar para nossa equipe te responder em breve sobre. '
 					+ 'Caso tenha algo adicional para digitar, por favor só escrever.');
-				await context.setState({
-					timer: setTimeout(async () => {
+				await timers.push({
+					[context.session.user.id]: setTimeout(async () => {
 						console.log(context.state.user.first_name);
 					}, IssueTimerlimit),
 				});
-				console.log(timer);
+
+				console.log(timers);
 				break;
 			case 'listening':
 			// When user enters with text, prompt sends us here
 			// if it's the first message we warn the user that we are listening and wait for 60s for a new message
 			// we keep adding new messages on top of each other until user stops for 60s, then we can save the issue and go back to the menu
-				if (context.state.sendIntro === true) {
-					await context.sendText('Vejo que você está escrevendo. Seu contato é muito importante. Quando terminar, entrego sua mensagem para nossa equipe.');
-					await context.setState({ sendIntro: false });
-				}
-				await context.typingOn();
-				clearTimeout(timer);
-				if (context.event.isText) {
-					if (context.event.message) {
-						await context.setState({ userMessage: `${context.state.userMessage}${context.event.message.text} ` });
-					}
-				}
-				timer = setTimeout(async () => {
-					await context.setState({ sendIntro: true });
-					await context.sendButtonTemplate("Já terminou sua mensagem? Clique em 'Terminei a mensagem' para nos enviar! "
-						+ 'Ou continue escrevendo...', [
-						{
-							type: 'postback',
-							title: 'Terminei a mensagem',
-							payload: 'listeningAnswer',
-						},
-						{
-							type: 'postback',
-							title: 'Continuar escrevendo',
-							payload: 'listening',
-						},
-					]);
-				}, IssueTimerlimit);
+				await context.sendText('caimos no listening! Isso não devia acontecer.');
+				// if (context.state.sendIntro === true) {
+				// 	await context.sendText('Vejo que você está escrevendo. Seu contato é muito importante. Quando terminar, entrego sua mensagem para nossa equipe.');
+				// 	await context.setState({ sendIntro: false });
+				// }
+				// await context.typingOn();
+				// clearTimeout(timer);
+				// if (context.event.isText) {
+				// 	if (context.event.message) {
+				// 		await context.setState({ userMessage: `${context.state.userMessage}${context.event.message.text} ` });
+				// 	}
+				// }
+				// timer = setTimeout(async () => {
+				// 	await context.setState({ sendIntro: true });
+				// 	await context.sendButtonTemplate("Já terminou sua mensagem? Clique em 'Terminei a mensagem' para nos enviar! "
+				// 		+ 'Ou continue escrevendo...', [
+				// 		{
+				// 			type: 'postback',
+				// 			title: 'Terminei a mensagem',
+				// 			payload: 'listeningAnswer',
+				// 		},
+				// 		{
+				// 			type: 'postback',
+				// 			title: 'Continuar escrevendo',
+				// 			payload: 'listening',
+				// 		},
+				// 	]);
+				// }, IssueTimerlimit);
 				break;
 			case 'aboutMe': {
 				const introductionText = await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'introduction');
