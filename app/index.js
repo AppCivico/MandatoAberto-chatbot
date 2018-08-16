@@ -130,27 +130,31 @@ const handler = new MessengerHandler()
 			await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
 			await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 
-			if (context.event.isPostback) { // this could be in a better place
-				if (context.event.postback.payload.slice(0, 6) === 'answer') {
-					await context.setState({ question: context.state.knowledge.knowledge_base.find(x => x.id === parseInt(context.event.postback.payload.replace('answer', ''), 10)) });
-					await context.setState({ dialog: 'showAnswer' });
+			if (context.state.dialog !== 'recipientData') { // handling input that's not from "asking data"
+				if (context.event.isPostback) { // this could be in a better place
+					if (context.event.postback.payload.slice(0, 6) === 'answer') {
+						await context.setState({ question: context.state.knowledge.knowledge_base.find(x => x.id === parseInt(context.event.postback.payload.replace('answer', ''), 10)) });
+						await context.setState({ dialog: 'showAnswer' });
+					} else {
+						await context.setState({ dialog: context.event.postback.payload });
+					}
 				}
-			}
 
-			if (context.event.isQuickReply) {
-				const { payload } = context.event.message.quick_reply;
-				if (payload.slice(0, 6) === 'option') {
-					await context.setState({ payload: payload.replace('option', '') });
-					// await context.setState({ dialog: 'reload' }); // didn't work as intended
-					await context.setState({
-						knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id,
-							{ [context.state.payload]: context.state.apiaiResp.result.parameters[context.state.payload] }),
-					});
-					await showQuestions(context);
+				if (context.event.isQuickReply) {
+					const { payload } = context.event.message.quick_reply;
+					if (payload.slice(0, 6) === 'option') {
+						await context.setState({ payload: payload.replace('option', '') });
+						// await context.setState({ dialog: 'reload' }); // didn't work as intended
+						await context.setState({
+							knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id,
+								{ [context.state.payload]: context.state.apiaiResp.result.parameters[context.state.payload] }),
+						});
+						await showQuestions(context);
+					} else {
+						await context.setState({ dialog: payload });
+					}
 				}
-			}
 
-			if (context.event.isText && context.state.dialog !== 'recipientData') { // handling text that's not from "asking data"
 				await context.setState({ whatWasTyped: context.event.message.text }); // will be used in case the bot doesn't find the question
 				await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
 				removeEmptyKeys(context.state.apiaiResp.result.parameters);
@@ -182,12 +186,14 @@ const handler = new MessengerHandler()
 					// console.log(Object.keys(context.state.apiaiResp.result.parameters).length);
 					await context.setState({ dialog: 'chooseTheme' });
 				}
-			} else if (context.event.rawEvent.postback) {
-				if (context.event.rawEvent.postback.referral) { // if this exists we are on external site
-					await context.setState({ facebookPlataform: 'CUSTOMER_CHAT_PLUGIN' });
-				} else { // if it doesn't exists we are on an facebook/messenger
-					await context.setState({ facebookPlataform: 'MESSENGER' });
-				}
+			}
+		}
+
+		if (context.event.rawEvent.postback) {
+			if (context.event.rawEvent.postback.referral) { // if this exists we are on external site
+				await context.setState({ facebookPlataform: 'CUSTOMER_CHAT_PLUGIN' });
+			} else { // if it doesn't exists we are on an facebook/messenger
+				await context.setState({ facebookPlataform: 'MESSENGER' });
 			}
 
 			await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
@@ -243,26 +249,25 @@ const handler = new MessengerHandler()
 				await context.setState({ dialog: 'greetings' });
 			}
 
-			// Tratando dinâmica de issues
-			if (context.state.dialog === 'prompt') {
-				if (context.event.isPostback) {
-					const { payload } = context.event.postback;
-					await context.setState({ dialog: payload });
-				} else if (context.event.isQuickReply) {
-					const { payload } = context.event.message.quick_reply;
-					if (payload.slice(0, 6) === 'option') {
-						await context.setState({ payload: payload.replace('option', '') });
-						// await context.setState({ dialog: 'reload' }); // didn't work as intended
-						await context.setState({
-							knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id,
-								{ [context.state.payload]: context.state.apiaiResp.result.parameters[context.state.payload] }),
-						});
-						await showQuestions(context);
-					} else {
-						await context.setState({ dialog: payload });
-					}
-				}
-			}
+			// // Tratando dinâmica de issues
+			// if (context.state.dialog === 'prompt') {
+			// 	if (context.event.isPostback) {
+			// 		const { payload } = context.event.postback;
+			// 		await context.setState({ dialog: payload });
+			// 	} else if (context.event.isQuickReply) {
+			// 		const { payload } = context.event.message.quick_reply;
+			// 		if (payload.slice(0, 6) === 'option') {
+			// 			await context.setState({ payload: payload.replace('option', '') });
+			// 			await context.setState({
+			// 				knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id,
+			// 					{ [context.state.payload]: context.state.apiaiResp.result.parameters[context.state.payload] }),
+			// 			});
+			// 			await showQuestions(context);
+			// 		} else {
+			// 			await context.setState({ dialog: payload });
+			// 		}
+			// 	}
+			// }
 
 			// Switch de dialogos
 			if (context.event.isPostback && (context.state.dialog === 'prompt' || context.event.postback.payload === 'greetings')) {
@@ -364,12 +369,6 @@ const handler = new MessengerHandler()
 				await context.sendButtonTemplate(context.state.issueMessage, await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
 				await context.setState({ dialog: 'prompt' });
 				break;
-			// case 'reload': // didn't work as intended
-			// 	await context.setState({
-			// 		knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id,
-			// 			{ [context.state.payload]: context.state.apiaiResp.result.parameters[context.state.payload] }),
-			// 	});
-			// falls through
 			case 'chooseQuestion':
 				await showQuestions(context);
 				break;
@@ -382,6 +381,7 @@ const handler = new MessengerHandler()
 				await context.sendText(context.state.question.answer);
 				await context.sendButtonTemplate('E aí, o que achou? Se tiver mais alguma pergunta é só mandar!',
 					await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
+				await context.setState({});
 				await context.setState({ dialog: 'prompt' });
 				break;
 			case 'NotOneOfThese':
