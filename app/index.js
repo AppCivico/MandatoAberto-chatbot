@@ -138,13 +138,10 @@ const handler = new MessengerHandler()
 			}
 
 			if (context.event.isText && context.state.dialog !== 'recipientData') { // handling text that's not from "asking data"
-				// Storing what the user typed
 				await context.setState({ whatWasTyped: context.event.message.text }); // will be used in case the bot doesn't find the question
-				// checking text on dialogflow
 				await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
 				removeEmptyKeys(context.state.apiaiResp.result.parameters);
 
-				// console.log(context.state.apiaiResp.result.parameters);
 				if (context.state.apiaiResp.result.metadata.intentName === 'Fallback') {
 					// Fallback --> counldn't find any matching intents
 
@@ -172,7 +169,9 @@ const handler = new MessengerHandler()
 					// console.log(Object.keys(context.state.apiaiResp.result.parameters).length);
 					await context.setState({ dialog: 'chooseTheme' });
 				}
-			} else if (context.event.rawEvent.postback) {
+			}
+
+			if (context.event.rawEvent.postback) {
 				if (context.event.rawEvent.postback.referral) { // if this exists we are on external site
 					await context.setState({ facebookPlataform: 'CUSTOMER_CHAT_PLUGIN' });
 				} else { // if it doesn't exists we are on an facebook/messenger
