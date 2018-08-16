@@ -34,7 +34,7 @@ function formatReal(int) {
 // const IssueTimerlimit = 10000 * 2; // 20 seconds
 const IssueTimerlimit = 10000 * 2; // 20 seconds
 
-const timers = [];
+const timers = {};
 // userMessage -> context.state.userMessage -> stores the texts the user wirtes before sending them to politician [issue]
 // sendIntro = true -> context.state.sendIntro -> verifies if we should send the intro text for issue creation.
 let areWeListening = true;
@@ -504,13 +504,12 @@ const handler = new MessengerHandler()
 			case 'createIssue':
 				await context.sendText('Não compreendi sua mensagem, mas irei enviar para nossa equipe te responder em breve sobre. '
 					+ 'Caso tenha algo adicional para digitar, por favor só escrever.');
-				await timers.push({
-					[context.session.user.id]: setTimeout(async () => {
-						await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id, context.state.whatWasTyped,
-							context.state.apiaiResp.result.parameters);
-						console.log('Sending message');
-					}, IssueTimerlimit),
-				});
+				timers[context.session.user.id] = setTimeout(async () => {
+					await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id, context.state.whatWasTyped,
+						context.state.apiaiResp.result.parameters);
+					console.log('Sending message');
+				}, IssueTimerlimit);
+
 
 				break;
 			case 'listening':
