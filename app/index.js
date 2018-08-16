@@ -155,36 +155,38 @@ const handler = new MessengerHandler()
 					}
 				}
 
-				await context.setState({ whatWasTyped: context.event.message.text }); // will be used in case the bot doesn't find the question
-				await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
-				removeEmptyKeys(context.state.apiaiResp.result.parameters);
+				if (context.event.isText) {
+					await context.setState({ whatWasTyped: context.event.message.text }); // will be used in case the bot doesn't find the question
+					await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
+					removeEmptyKeys(context.state.apiaiResp.result.parameters);
 
-				if (context.state.apiaiResp.result.metadata.intentName === 'Fallback') {
+					if (context.state.apiaiResp.result.metadata.intentName === 'Fallback') {
 					// Fallback --> counldn't find any matching intents
 
 					// check if message came from standard flow or from post/comment
-					if (areWeListening === true) {
-						await context.setState({ dialog: 'createIssue' });
-					} else {
-						await context.setState({ dialog: 'intermediate' });
-					}
-				} else if (Object.keys(context.state.apiaiResp.result.parameters).length === 1) { // found intent and 1 entity
-					await context.setState({
-						knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.apiaiResp.result.parameters),
-					});
-					if (context.state.knowledge.knowledge_base.length === 0) { // we have no questions related to this entity
-						// TODO falta fazer algo quando não tem pergunta cadastrada!
 						if (areWeListening === true) {
 							await context.setState({ dialog: 'createIssue' });
 						} else {
 							await context.setState({ dialog: 'intermediate' });
 						}
-					} else {
-						await context.setState({ dialog: 'chooseQuestion' });
-					}
-				} else { // found intent but 2+ entities
+					} else if (Object.keys(context.state.apiaiResp.result.parameters).length === 1) { // found intent and 1 entity
+						await context.setState({
+							knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.apiaiResp.result.parameters),
+						});
+						if (context.state.knowledge.knowledge_base.length === 0) { // we have no questions related to this entity
+						// TODO falta fazer algo quando não tem pergunta cadastrada!
+							if (areWeListening === true) {
+								await context.setState({ dialog: 'createIssue' });
+							} else {
+								await context.setState({ dialog: 'intermediate' });
+							}
+						} else {
+							await context.setState({ dialog: 'chooseQuestion' });
+						}
+					} else { // found intent but 2+ entities
 					// console.log(Object.keys(context.state.apiaiResp.result.parameters).length);
-					await context.setState({ dialog: 'chooseTheme' });
+						await context.setState({ dialog: 'chooseTheme' });
+					}
 				}
 			}
 		}
