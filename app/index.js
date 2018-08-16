@@ -500,21 +500,24 @@ const handler = new MessengerHandler()
 				await context.setState({ dialog: 'prompt' });
 				break;
 			case 'createIssue':
+				await context.sendText('Não compreendi sua mensagem, mas irei enviar para nossa equipe te responder em breve sobre. '
+				+ 'Caso tenha algo adicional para digitar, por favor só escrever.');
 
-				if (!context.state.userMessage || context.state.userMessage === '') {
+				if (!context.state.userMessage || context.state.userMessage === '') { // aggregating user texts
 					await context.setState({ userMessage: context.state.whatWasTyped });
 				} else {
 					await context.setState({ userMessage: `${context.state.userMessage} ${context.state.whatWasTyped}` });
 				}
 				console.log(context.state.userMessage);
-				await context.sendText('Não compreendi sua mensagem, mas irei enviar para nossa equipe te responder em breve sobre. '
-					+ 'Caso tenha algo adicional para digitar, por favor só escrever.');
+				if (timers[context.session.user.id]) {
+					delete timers[context.session.user.id]; // deleting this timer from timers object
+				}
 				timers[context.session.user.id] = setTimeout(async () => {
 					await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id, context.state.userMessage,
 						context.state.apiaiResp.result.parameters);
 					delete timers[context.session.user.id]; // deleting this timer from timers object
 					await context.setState({ userMessage: '' });
-					console.log('Sending message', context.state.userMessage);
+					console.log('Sending message');
 				}, IssueTimerlimit);
 				break;
 			case 'listening':
