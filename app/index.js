@@ -137,6 +137,19 @@ const handler = new MessengerHandler()
 				}
 			}
 
+			if (context.event.isQuickReply) {
+				const { payload } = context.event.message.quick_reply;
+				if (payload.slice(0, 6) === 'option') {
+					await context.setState({ payload: payload.replace('option', '') });
+					// await context.setState({ dialog: 'reload' }); // didn't work as intended
+					await context.setState({
+						knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id,
+							{ [context.state.payload]: context.state.apiaiResp.result.parameters[context.state.payload] }),
+					});
+					await showQuestions(context);
+				}
+			}
+
 			if (context.event.isText && context.state.dialog !== 'recipientData') { // handling text that's not from "asking data"
 				await context.setState({ whatWasTyped: context.event.message.text }); // will be used in case the bot doesn't find the question
 				await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
@@ -169,9 +182,7 @@ const handler = new MessengerHandler()
 					// console.log(Object.keys(context.state.apiaiResp.result.parameters).length);
 					await context.setState({ dialog: 'chooseTheme' });
 				}
-			}
-
-			if (context.event.rawEvent.postback) {
+			} else if (context.event.rawEvent.postback) {
 				if (context.event.rawEvent.postback.referral) { // if this exists we are on external site
 					await context.setState({ facebookPlataform: 'CUSTOMER_CHAT_PLUGIN' });
 				} else { // if it doesn't exists we are on an facebook/messenger
