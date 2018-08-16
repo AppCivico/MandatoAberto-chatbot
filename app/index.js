@@ -178,6 +178,7 @@ const handler = new MessengerHandler()
 								await context.setState({ dialog: 'intermediate' });
 							}
 						} else {
+							await context.setState({ questionGroup: context.state.apiaiResp.result.parameters[0] });
 							await context.setState({ dialog: 'chooseQuestion' });
 						}
 					} else { // found intent but 2+ entities
