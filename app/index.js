@@ -33,7 +33,9 @@ function formatReal(int) {
 
 const IssueTimerlimit = 10000 * 2; // 20 seconds
 
-const timers = {};
+
+const issueTimers = {};
+// const pollTimers = {};
 // timers -> object that stores every 'issue' timers from user. Each user_id stores it's respective timer.
 // userMessage -> context.state.userMessage -> stores the texts the user wirtes before sending them to politician [issue]
 // sendIntro = true -> context.state.sendIntro -> verifies if we should send the intro text for issue creation.
@@ -120,8 +122,6 @@ async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-dec
 	if (!context.state.politicianData.votolegal_integration) { dialogs = dialogs.filter(obj => obj.payload !== 'votoLegal'); }
 	if (dialogs[0].payload === 'aboutMe') { dialogs[0].title = getAboutMe(context.state.politicianData); }
 	if (dialogs.find(x => x.payload === 'poll')) {
-		console.log(await checkPollAnswered(context));
-
 		if (await checkPollAnswered(context) === true) { // already answered so we remove option
 			dialogs = dialogs.filter(obj => obj.payload !== 'poll');
 		}
@@ -344,6 +344,7 @@ const handler = new MessengerHandler()
 				await context.setState({ dialog: 'prompt' });
 				break;
 			case 'mainMenu':
+				await context.typingOff();
 				areWeListening = true;
 				await context.setState({ sendIntro: true });
 				await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
@@ -486,13 +487,13 @@ const handler = new MessengerHandler()
 				} else {
 					await context.setState({ userMessage: `${context.state.userMessage} ${context.state.whatWasTyped}` });
 				}
-				if (timers[context.session.user.id]) { // clear timer if it already exists
-					clearTimeout(timers[context.session.user.id]);
+				if (issueTimers[context.session.user.id]) { // clear timer if it already exists
+					clearTimeout(issueTimers[context.session.user.id]);
 				}
-				timers[context.session.user.id] = setTimeout(async () => {
+				issueTimers[context.session.user.id] = setTimeout(async () => {
 					await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id, context.state.userMessage,
 						context.state.apiaiResp.result.parameters);
-					delete timers[context.session.user.id]; // deleting this timer from timers object
+					delete issueTimers[context.session.user.id]; // deleting this timer from timers object
 					await context.setState({ userMessage: '' }); // gives a warning but works just fine
 				}, IssueTimerlimit);
 				break;
