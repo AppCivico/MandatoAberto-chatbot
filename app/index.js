@@ -178,6 +178,8 @@ const handler = new MessengerHandler()
 								await context.setState({ dialog: 'intermediate' });
 							}
 						} else {
+							console.log(context.state.apiaiResp.result.parameters);
+
 							await context.setState({ questionGroup: context.state.apiaiResp.result.parameters[0] });
 							await context.setState({ dialog: 'chooseQuestion' });
 						}
