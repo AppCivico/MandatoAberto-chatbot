@@ -504,11 +504,12 @@ const handler = new MessengerHandler()
 					+ 'Caso tenha algo adicional para digitar, por favor só escrever.');
 				await timers.push({
 					[context.session.user.id]: setTimeout(async () => {
-						console.log(context.state.user.first_name);
+						await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id, context.state.whatWasTyped,
+							context.state.apiaiResp.result.parameters);
+						console.log('Sending message');
 					}, IssueTimerlimit),
 				});
 
-				console.log(timers);
 				break;
 			case 'listening':
 			// When user enters with text, prompt sends us here
