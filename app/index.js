@@ -354,6 +354,8 @@ const handler = new MessengerHandler()
 				await context.sendText(context.state.greeting);
 				await context.sendButtonTemplate(context.state.issueMessage, await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
 				await context.setState({ dialog: 'prompt' });
+				console.log(timers);
+
 				// await context.sendButtonTemplate(context.state.issueMessage, await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.leaveInfo]));
 				// await context.setState({ dialog: 'prompt', dataPrompt: 'email' });
 				break;
