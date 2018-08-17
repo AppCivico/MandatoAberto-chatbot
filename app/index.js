@@ -166,12 +166,9 @@ const handler = new MessengerHandler()
 					await context.setState({ whatWasTyped: context.event.message.text }); // will be used in case the bot doesn't find the question
 					await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
 					removeEmptyKeys(context.state.apiaiResp.result.parameters);
-					console.log(context.state.apiaiResp.result.metadata.intentName);
 
 					if (context.state.apiaiResp.result.metadata.intentName === 'Fallback') {
 						// Fallback --> counldn't find any matching intents
-						console.log('here');
-
 						// check if message came from standard flow or from post/comment
 						if (areWeListening === true) {
 							await context.setState({ dialog: 'createIssue' });
@@ -208,6 +205,7 @@ const handler = new MessengerHandler()
 		}
 		if (issueTimers[context.session.user.id]) { // if the user interacts while this timer is running we don't send the confimation message
 			await context.setState({ sendPostIssueConfimation: false });
+			console.log('on change', context.state.sendPostIssueConfimation);
 		}
 
 		if (context.event.rawEvent.postback) {
@@ -441,10 +439,6 @@ const handler = new MessengerHandler()
 					context.state.participateOptions);
 				await context.setState({ dialog: 'prompt', dataPrompt: 'email' });
 				break;
-			// case 'talkToUs':
-			// 	await context.sendMessage('Que legal! Para conversar conosco, basta escrever e nos enviar!');
-			// 	await context.setState({ listening: true });
-			// 	break;
 			case 'WannaHelp':
 				await context.setState({ participateOptions: [opt.wannaDonate] });
 				// checking for picframe_url so we can only show this option when it's available but still show the votoLegal option
@@ -507,16 +501,6 @@ const handler = new MessengerHandler()
 				await context.setState({ dialog: 'prompt' });
 				break;
 			case 'createIssue':
-			// if (context.state.sendIntro === true) {
-				// 	if (context.state.listening === false) {
-				// 		await context.setState({ sendIntro: false });
-				// 	} else {
-				// 		await context.sendText('Que legal! Para conversar conosco, basta escrever e nos enviar!');
-				// 		await context.setState({ sendIntro: false });
-				// 	}
-				// }
-				console.log('createissue');
-
 				if (!context.state.userMessage || context.state.userMessage === '') { // aggregating user texts
 					await context.setState({ userMessage: context.state.whatWasTyped });
 				} else {
@@ -530,12 +514,16 @@ const handler = new MessengerHandler()
 					await context.sendText('Não compreendi sua mensagem, mas irei enviar para nossa equipe te responder em breve sobre. '
 					+ 'Caso tenha algo adicional para digitar, por favor só escrever.');
 				}
+				console.log('before', context.state.sendPostIssueConfimation);
 				await context.setState({ sendPostIssueConfimation: true });
+				console.log('after', context.state.sendPostIssueConfimation);
 
 				issueTimers[context.session.user.id] = setTimeout(async () => {
 					await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id, context.state.userMessage,
 						context.state.apiaiResp.result.parameters);
 					console.log('Enviei', context.state.userMessage);
+					console.log('inside', context.state.sendPostIssueConfimation);
+
 					await context.setState({ sendIntro: true });
 					await context.typingOff();
 					await context.setState({ userMessage: '' }); // gives a warning but works just fine
