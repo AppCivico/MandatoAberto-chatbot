@@ -132,6 +132,8 @@ async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-dec
 const handler = new MessengerHandler()
 	.onEvent(async (context) => { // eslint-disable-line
 		if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead && context.event.rawEvent.field !== 'feed') {
+			await context.typingOn();
+
 			// we reload politicianData on every useful event
 			// we update context data at every interaction that's not a comment or a post
 			await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
@@ -500,9 +502,7 @@ const handler = new MessengerHandler()
 				await context.setState({ dialog: 'prompt' });
 				break;
 			case 'createIssue':
-				await context.sendText('Não compreendi sua mensagem, mas irei enviar para nossa equipe te responder em breve sobre. '
-				+ 'Caso tenha algo adicional para digitar, por favor só escrever.');
-				// if (context.state.sendIntro === true) {
+			// if (context.state.sendIntro === true) {
 				// 	if (context.state.listening === false) {
 				// 		await context.setState({ sendIntro: false });
 				// 	} else {
@@ -517,6 +517,10 @@ const handler = new MessengerHandler()
 				}
 				if (issueTimers[context.session.user.id]) { // clear timer if it already exists
 					clearTimeout(issueTimers[context.session.user.id]);
+					await context.typingOn();
+				} else {
+					await context.sendText('Não compreendi sua mensagem, mas irei enviar para nossa equipe te responder em breve sobre. '
+							+ 'Caso tenha algo adicional para digitar, por favor só escrever.');
 				}
 				issueTimers[context.session.user.id] = setTimeout(async () => {
 					await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id, context.state.userMessage,
