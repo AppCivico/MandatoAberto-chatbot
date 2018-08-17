@@ -537,7 +537,7 @@ const handler = new MessengerHandler()
 					await context.typingOff();
 					delete issueTimers[context.session.user.id]; // deleting this timer from timers object
 					postIssueTimers[context.session.user.id] = setTimeout(async () => {
-						await context.setState({ issueCreatedMessage: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'introduction') });
+						await context.setState({ issueCreatedMessage: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_created') });
 						await context.sendButtonTemplate(context.state.issueCreatedMessage.content,
 							await checkMenu(context, [opt.trajectory, opt.contacts, opt.doarOption]));
 					}, 5);
