@@ -206,6 +206,9 @@ const handler = new MessengerHandler()
 		if (menuTimers[context.session.user.id]) { // if the user interacts while this timer is running we don't need to run it anymore
 			clearTimeout(menuTimers[context.session.user.id]);
 		}
+		if (issueTimers[context.session.user.id]) { // if the user interacts while this timer is running we don't need to run it anymore
+			await context.setState({ sendPostIssueConfimation: false });
+		}
 
 		if (context.event.rawEvent.postback) {
 			if (context.event.rawEvent.postback.referral) { // if this exists we are on external site
@@ -519,6 +522,7 @@ const handler = new MessengerHandler()
 				} else {
 					await context.setState({ userMessage: `${context.state.userMessage} ${context.state.whatWasTyped}` });
 				}
+
 				if (issueTimers[context.session.user.id]) { // clear timer if it already exists
 					clearTimeout(issueTimers[context.session.user.id]);
 					await context.typingOn();
@@ -531,9 +535,14 @@ const handler = new MessengerHandler()
 						context.state.apiaiResp.result.parameters);
 					console.log('Enviei', context.state.userMessage);
 					await context.setState({ sendIntro: true });
-
-					delete issueTimers[context.session.user.id]; // deleting this timer from timers object
+					await context.typingOff();
 					await context.setState({ userMessage: '' }); // gives a warning but works just fine
+					if (context.state.sendPostIssueConfimation === true) {
+						await context.sendText('Ok! Recebemos sua mensagem com sucesso!');
+						await context.sendButtonTemplate('Ok! Recebemos sua mensagem com sucesso! E agora, como posso te ajudar?',
+							await checkMenu(context, [opt.trajectory, opt.contacts, opt.doarOption]));
+					}
+					delete issueTimers[context.session.user.id]; // deleting this timer from timers object
 				}, IssueTimerlimit);
 				break;
 			case 'aboutMe': {
