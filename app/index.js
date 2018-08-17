@@ -525,12 +525,12 @@ const handler = new MessengerHandler()
 
 				if (issueTimers[context.session.user.id]) { // clear timer if it already exists
 					clearTimeout(issueTimers[context.session.user.id]);
-					await context.setState({ sendPostIssueConfimation: true });
 					await context.typingOn();
 				} else {
 					await context.sendText('Não compreendi sua mensagem, mas irei enviar para nossa equipe te responder em breve sobre. '
-							+ 'Caso tenha algo adicional para digitar, por favor só escrever.');
+					+ 'Caso tenha algo adicional para digitar, por favor só escrever.');
 				}
+				await context.setState({ sendPostIssueConfimation: true });
 
 				issueTimers[context.session.user.id] = setTimeout(async () => {
 					await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id, context.state.userMessage,
