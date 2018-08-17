@@ -74,7 +74,7 @@ function getAboutMe(politicianData) {
 
 	if (politicianData.office.name === 'Outros' || politicianData.office.name === 'Candidato' || politicianData.office.name === 'Candidata') {
 		return `Sobre ${articles.defined} líder`;
-	} if (politicianData.office.name === 'político' || politicianData.office.name === 'pré-candidata') {
+	} if (politicianData.office.name === 'político' || politicianData.office.name === 'política') {
 		return `${articles.defined.toUpperCase()} ${politicianData.office.name}`;
 	}
 	return `Sobre ${articles.defined} ${politicianData.office.name}`;
