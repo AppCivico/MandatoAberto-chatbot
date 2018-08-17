@@ -204,7 +204,7 @@ const handler = new MessengerHandler()
 			clearTimeout(menuTimers[context.session.user.id]);
 		}
 		if (issueTimers[context.session.user.id]) { // if the user interacts while this timer is running we don't send the confimation message
-			await context.setState({ sendPostIssueConfimation: false });
+			await context.setState({ sendPostIssueConfimation: 39 });
 			console.log('on change', context.state.sendPostIssueConfimation);
 		}
 
@@ -344,6 +344,7 @@ const handler = new MessengerHandler()
 			switch (context.state.dialog) {
 			case 'greetings':
 				await context.typingOff();
+				await context.setState({ sendPostIssueConfimation: 0 });
 				areWeListening = true;
 				await context.setState({ sendIntro: true });
 				await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
@@ -515,7 +516,7 @@ const handler = new MessengerHandler()
 					+ 'Caso tenha algo adicional para digitar, por favor só escrever.');
 				}
 				console.log('before', context.state.sendPostIssueConfimation);
-				await context.setState({ sendPostIssueConfimation: true });
+				await context.setState({ sendPostIssueConfimation: context.state.sendPostIssueConfimation + 1 });
 				console.log('after', context.state.sendPostIssueConfimation);
 
 				issueTimers[context.session.user.id] = setTimeout(async () => {
@@ -527,7 +528,7 @@ const handler = new MessengerHandler()
 					await context.setState({ sendIntro: true });
 					await context.typingOff();
 					await context.setState({ userMessage: '' }); // gives a warning but works just fine
-					if (context.state.sendPostIssueConfimation === true) {
+					if (context.state.sendPostIssueConfimation === 1) {
 						await context.sendButtonTemplate('Ok! Recebemos sua mensagem com sucesso! E agora, como posso te ajudar?',
 							await checkMenu(context, [opt.trajectory, opt.contacts, opt.doarOption]));
 					}
