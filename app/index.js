@@ -530,6 +530,8 @@ const handler = new MessengerHandler()
 					await context.sendText('Não compreendi sua mensagem, mas irei enviar para nossa equipe te responder em breve sobre. '
 							+ 'Caso tenha algo adicional para digitar, por favor só escrever.');
 				}
+				await context.setState({ sendPostIssueConfimation: true });
+
 				issueTimers[context.session.user.id] = setTimeout(async () => {
 					await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id, context.state.userMessage,
 						context.state.apiaiResp.result.parameters);
