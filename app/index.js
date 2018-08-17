@@ -538,8 +538,8 @@ const handler = new MessengerHandler()
 					console.log('Enviei', context.state.userMessage);
 					await context.setState({ sendIntro: true });
 					await context.typingOff();
+					await context.setState({ userMessage: '' }); // gives a warning but works just fine
 					if (context.state.sendPostIssueConfimation === true) {
-						await context.setState({ userMessage: '' }); // gives a warning but works just fine
 						await context.sendButtonTemplate('Ok! Recebemos sua mensagem com sucesso! E agora, como posso te ajudar?',
 							await checkMenu(context, [opt.trajectory, opt.contacts, opt.doarOption]));
 					}
