@@ -123,11 +123,9 @@ async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-dec
 	if (dialogs.find(x => x.payload === 'poll')) {
 		if (await checkPollAnswered(context) === true) { // already answered so we remove option
 			dialogs = dialogs.filter(obj => obj.payload !== 'poll');
-			dialogs.talkToUs = opt.talkToUs;
+			dialogs.push(opt.talkToUs);
 		}
 	}
-	console.log(dialogs);
-
 	return dialogs;
 }
 
