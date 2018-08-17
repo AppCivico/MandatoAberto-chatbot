@@ -32,11 +32,12 @@ function formatReal(int) {
 }
 
 const IssueTimerlimit = 10000 * 2; // 20 seconds
-
+const MenuTimerlimit = 10000 * 1; // 60 seconds
 
 const issueTimers = {};
+const menuTimers = {};
 // const pollTimers = {};
-// timers -> object that stores every 'issue' timers from user. Each user_id stores it's respective timer.
+// timers -> object that stores timers. Each user_id stores it's respective timer.
 // userMessage -> context.state.userMessage -> stores the texts the user wirtes before sending them to politician [issue]
 // sendIntro = true -> context.state.sendIntro -> verifies if we should send the intro text for issue creation.
 let areWeListening = true;
@@ -340,7 +341,16 @@ const handler = new MessengerHandler()
 				await context.setState({ greeting: context.state.politicianData.greeting.replace('${user.office.name}', context.state.politicianData.office.name) }); // eslint-disable-line no-template-curly-in-string
 				await context.setState({ greeting: context.state.greeting.replace('${user.name}', context.state.politicianData.name) }); // eslint-disable-line no-template-curly-in-string
 				await context.sendText(context.state.greeting);
-				await context.sendButtonTemplate(context.state.issueMessage, await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
+				await context.sendText(context.state.issueMessage);
+				if (menuTimers[context.session.user.id]) { // clear timer if it already exists
+					clearTimeout(menuTimers[context.session.user.id]);
+				}
+				// wait 'MenuTimerlimit' to show options menu
+				menuTimers[context.session.user.id] = setTimeout(async () => {
+					await context.sendButtonTemplate('Deixe me te ajudar. Escolha uma das opções abaixo ou digite sua pergunta:', await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
+					delete menuTimers[context.session.user.id]; // deleting this timer from timers object
+				}, MenuTimerlimit);
+				// await context.sendButtonTemplate(context.state.issueMessage, await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
 				await context.setState({ dialog: 'prompt' });
 				break;
 			case 'mainMenu':
