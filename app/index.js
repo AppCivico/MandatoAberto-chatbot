@@ -32,6 +32,7 @@ const IssueTimerlimit = 10000 * 2; // 20 seconds
 const MenuTimerlimit = 10000 * 1; // 60 seconds
 
 const issueTimers = {};
+const postIssueTimers = {};
 const menuTimers = {};
 // const pollTimers = {};
 // timers -> object that stores timers. Each user_id stores it's respective timer.
@@ -203,6 +204,9 @@ const handler = new MessengerHandler()
 		}
 
 		if (menuTimers[context.session.user.id]) { // if the user interacts while this timer is running we don't need to run it anymore
+			clearTimeout(menuTimers[context.session.user.id]);
+		}
+		if (postIssueTimers[context.session.user.id]) { // if the user interacts while this timer is running we don't need to run it anymore
 			clearTimeout(menuTimers[context.session.user.id]);
 		}
 
@@ -499,7 +503,6 @@ const handler = new MessengerHandler()
 				await context.setState({ dialog: 'prompt' });
 				break;
 			case 'createIssue':
-
 				if (context.state.listening === true) {
 					if (!context.state.userMessage || context.state.userMessage === '') { // aggregating user texts
 						await context.setState({ userMessage: context.state.whatWasTyped });
@@ -516,19 +519,20 @@ const handler = new MessengerHandler()
 					+ 'Caso tenha algo adicional para digitar, por favor só escrever.');
 				} else {
 					await context.sendText('Que legal! Para entrar em contato conosco, digite e mande sua mensagem!');
-					await context.setState({ listening: true });
-					await context.setState({ userMessage: '' });
+					await context.setState({ userMessage: '', sendIntro: true, listening: true });
 				}
 
 				issueTimers[context.session.user.id] = setTimeout(async () => {
 					await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id, context.state.userMessage,
 						context.state.apiaiResp.result.parameters);
 					console.log('Enviei', context.state.userMessage);
-
 					await context.setState({ userMessage: '', sendIntro: true, listening: true });
-					console.log('sendIntro', context.state.sendIntro);
 					await context.typingOff();
 					delete issueTimers[context.session.user.id]; // deleting this timer from timers object
+					postIssueTimers[context.session.user.id] = setTimeout(async () => {
+						await context.sendButtonTemplate('Valeu! Já recebemos suas dúvida! Se tiver mais alguma pode digitar abaixo.',
+							await checkMenu(context, [opt.trajectory, opt.contacts, opt.doarOption]));
+					}, 5);
 				}, IssueTimerlimit);
 				break;
 			case 'aboutMe': {
