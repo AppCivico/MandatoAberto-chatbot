@@ -500,16 +500,16 @@ const handler = new MessengerHandler()
 				await context.setState({ dialog: 'prompt' });
 				break;
 			case 'createIssue':
-				if (context.state.sendIntro === true) {
-					if (context.state.listening === false) {
-						await context.sendText('Não compreendi sua mensagem, mas irei enviar para nossa equipe te responder em breve sobre. '
+				await context.sendText('Não compreendi sua mensagem, mas irei enviar para nossa equipe te responder em breve sobre. '
 				+ 'Caso tenha algo adicional para digitar, por favor só escrever.');
-						await context.setState({ sendIntro: false });
-					} else {
-						await context.sendText('Que legal! Para conversar conosco, basta escrever e nos enviar!');
-						await context.setState({ sendIntro: false });
-					}
-				}
+				// if (context.state.sendIntro === true) {
+				// 	if (context.state.listening === false) {
+				// 		await context.setState({ sendIntro: false });
+				// 	} else {
+				// 		await context.sendText('Que legal! Para conversar conosco, basta escrever e nos enviar!');
+				// 		await context.setState({ sendIntro: false });
+				// 	}
+				// }
 				if (!context.state.userMessage || context.state.userMessage === '') { // aggregating user texts
 					await context.setState({ userMessage: context.state.whatWasTyped });
 				} else {
