@@ -455,6 +455,8 @@ const handler = new MessengerHandler()
 			case 'WannaDonate':
 			// if referral.source(CUSTOMER_CHAT_PLUGIN) doesn't exist we are on facebook and should send votolegal's url
 				if (!context.event.rawEvent.postback.referral) {
+					await context.setState({ wantToDonate: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'want_to_donate') });
+
 					await context.setState({
 						participateOptions: [
 							{
@@ -463,8 +465,7 @@ const handler = new MessengerHandler()
 								title: 'Quero doar!',
 							}],
 						participateMessage: '',
-						anotherText: 'Seu apoio é fundamental para nossa pré-campanha! Por isso, cuidamos da segurança de todos os doadores. '
-							+ 'Saiba mais em: www.votolegal.com.br',
+						anotherText: context.state.wantToDonate.content,
 					});
 				} else {
 					await context.setState({
