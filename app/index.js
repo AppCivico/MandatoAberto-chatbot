@@ -126,6 +126,8 @@ async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-dec
 			dialogs.talkToUs = opt.talkToUs;
 		}
 	}
+	console.log(dialogs);
+
 	return dialogs;
 }
 
