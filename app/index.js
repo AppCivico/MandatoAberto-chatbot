@@ -29,7 +29,7 @@ function formatReal(int) {
 }
 
 const IssueTimerlimit = 10000 * 2; // 20 seconds
-const MenuTimerlimit = 10000 * 6; // 60 seconds
+const MenuTimerlimit = 10000 * 1; // 60 seconds
 
 const issueTimers = {};
 const menuTimers = {};
@@ -123,6 +123,7 @@ async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-dec
 	if (dialogs.find(x => x.payload === 'poll')) {
 		if (await checkPollAnswered(context) === true) { // already answered so we remove option
 			dialogs = dialogs.filter(obj => obj.payload !== 'poll');
+			dialogs.talkToUs = opt.talkToUs;
 		}
 	}
 	return dialogs;
@@ -141,6 +142,9 @@ const handler = new MessengerHandler()
 					if (context.event.postback.payload.slice(0, 6) === 'answer') {
 						await context.setState({ question: context.state.knowledge.knowledge_base.find(x => x.id === parseInt(context.event.postback.payload.replace('answer', ''), 10)) });
 						await context.setState({ dialog: 'showAnswer' });
+					} else if (context.event.postback.payload === 'talkToUs') {
+						await context.setState({ listening: true });
+						await context.setState({ dialog: 'createIssue' });
 					} else {
 						await context.setState({ dialog: context.event.postback.payload });
 					}
@@ -162,33 +166,34 @@ const handler = new MessengerHandler()
 					removeEmptyKeys(context.state.apiaiResp.result.parameters);
 
 					if (context.state.apiaiResp.result.metadata.intentName === 'Fallback') {
-					// Fallback --> counldn't find any matching intents
+						// Fallback --> counldn't find any matching intents
 
-					// check if message came from standard flow or from post/comment
+						// check if message came from standard flow or from post/comment
 						if (areWeListening === true) {
 							await context.setState({ dialog: 'createIssue' });
 						} else {
 							await context.setState({ dialog: 'intermediate' });
 						}
-					} else if (Object.keys(context.state.apiaiResp.result.parameters).length === 1) { // found intent and 1 entity
-						console.log(context.state.apiaiResp.result.metadata.intentName);
-
-						await context.setState({
-							knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.apiaiResp.result.parameters),
-						});
-						if (context.state.knowledge.knowledge_base.length === 0) { // we have no questions related to this entity
-						// TODO falta fazer algo quando não tem pergunta cadastrada!
-							if (areWeListening === true) {
-								await context.setState({ dialog: 'createIssue' });
+					} else if (context.state.apiaiResp.result.metadata.intentName === 'Pergunta') {
+						if (Object.keys(context.state.apiaiResp.result.parameters).length === 1) { // found intent and 1 entity
+							await context.setState({
+								knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.apiaiResp.result.parameters),
+							});
+							if (context.state.knowledge.knowledge_base.length === 0) { // we have no questions related to this entity
+								// TODO falta fazer algo quando não tem pergunta cadastrada!
+								if (areWeListening === true) {
+									await context.setState({ dialog: 'createIssue' });
+								} else {
+									await context.setState({ dialog: 'intermediate' });
+								}
 							} else {
-								await context.setState({ dialog: 'intermediate' });
+								await showQuestions(context);
 							}
-						} else {
-							await showQuestions(context);
+						} else { // found intent but 2+ entities
+							await context.setState({ dialog: 'chooseTheme' });
 						}
-					} else { // found intent but 2+ entities
-					// console.log(Object.keys(context.state.apiaiResp.result.parameters).length);
-						await context.setState({ dialog: 'chooseTheme' });
+						// } else if (context.state.apiaiResp.result.metadata.intentName === 'talkToUs') {
+						// // to be added
 					}
 				}
 			}
@@ -349,12 +354,10 @@ const handler = new MessengerHandler()
 				if (menuTimers[context.session.user.id]) { // clear timer if it already exists
 					clearTimeout(menuTimers[context.session.user.id]);
 				}
-				// wait 'MenuTimerlimit' to show options menu
-				menuTimers[context.session.user.id] = setTimeout(async () => {
+				menuTimers[context.session.user.id] = setTimeout(async () => { // wait 'MenuTimerlimit' to show options menu
 					await context.sendButtonTemplate('Deixe-me te ajudar. Escolha uma das opções abaixo ou digite sua pergunta:', await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
 					delete menuTimers[context.session.user.id]; // deleting this timer from timers object
 				}, MenuTimerlimit);
-				// await context.sendButtonTemplate(context.state.issueMessage, await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
 				await context.setState({ dialog: 'prompt' });
 				break;
 			case 'mainMenu':
@@ -431,6 +434,10 @@ const handler = new MessengerHandler()
 					context.state.participateOptions);
 				await context.setState({ dialog: 'prompt', dataPrompt: 'email' });
 				break;
+			// case 'talkToUs':
+			// 	await context.sendMessage('Que legal! Para conversar conosco, basta escrever e nos enviar!');
+			// 	await context.setState({ listening: true });
+			// 	break;
 			case 'WannaHelp':
 				await context.setState({ participateOptions: [opt.wannaDonate] });
 				// checking for picframe_url so we can only show this option when it's available but still show the votoLegal option
@@ -493,9 +500,16 @@ const handler = new MessengerHandler()
 				await context.setState({ dialog: 'prompt' });
 				break;
 			case 'createIssue':
-				await context.sendText('Não compreendi sua mensagem, mas irei enviar para nossa equipe te responder em breve sobre. '
+				if (context.state.sendIntro === true) {
+					if (context.state.listening === false) {
+						await context.sendText('Não compreendi sua mensagem, mas irei enviar para nossa equipe te responder em breve sobre. '
 				+ 'Caso tenha algo adicional para digitar, por favor só escrever.');
-
+						await context.setState({ sendIntro: false });
+					} else {
+						await context.sendText('Que legal! Para conversar conosco, basta escrever e nos enviar!');
+						await context.setState({ sendIntro: false });
+					}
+				}
 				if (!context.state.userMessage || context.state.userMessage === '') { // aggregating user texts
 					await context.setState({ userMessage: context.state.whatWasTyped });
 				} else {
@@ -507,6 +521,8 @@ const handler = new MessengerHandler()
 				issueTimers[context.session.user.id] = setTimeout(async () => {
 					await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id, context.state.userMessage,
 						context.state.apiaiResp.result.parameters);
+					await context.setState({ sendIntro: true });
+
 					delete issueTimers[context.session.user.id]; // deleting this timer from timers object
 					await context.setState({ userMessage: '' }); // gives a warning but works just fine
 				}, IssueTimerlimit);
