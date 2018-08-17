@@ -74,7 +74,7 @@ function getAboutMe(politicianData) {
 
 	if (politicianData.office.name === 'Outros' || politicianData.office.name === 'Candidato' || politicianData.office.name === 'Candidata') {
 		return `Sobre ${articles.defined} líder`;
-	} if (politicianData.office.name === 'pré-candidato' || politicianData.office.name === 'pré-candidata') {
+	} if (politicianData.office.name === 'político' || politicianData.office.name === 'pré-candidata') {
 		return `${articles.defined.toUpperCase()} ${politicianData.office.name}`;
 	}
 	return `Sobre ${articles.defined} ${politicianData.office.name}`;
@@ -459,9 +459,9 @@ const handler = new MessengerHandler()
 							{
 								type: 'web_url',
 								url: `${context.state.politicianData.votolegal_integration.votolegal_url}/#doar`,
-								title: 'Vamos lá!',
+								title: 'Quero doar!',
 							}],
-						participateMessage: 'Você deseja doar agora?',
+						participateMessage: '',
 						anotherText: 'Seu apoio é fundamental para nossa pré-campanha! Por isso, cuidamos da segurança de todos os doadores. '
 							+ 'Saiba mais em: www.votolegal.com.br',
 					});
@@ -483,8 +483,15 @@ const handler = new MessengerHandler()
 				// await participateOptions.push(opt.goBackMainMenu);
 				await context.sendText(context.state.anotherText);
 				await context.setState({ valueLegal: await VotoLegalAPI.getVotoLegalValues(context.state.politicianData.votolegal_integration.votolegal_username) });
-				await context.sendText(`Já consegui R$${formatReal(context.state.valueLegal.candidate.total_donated)} da minha meta de `
+				if (context.state.participateMessage === '') {
+					await context.setState({
+						participateMessage: `Já consegui R$${formatReal(context.state.valueLegal.candidate.total_donated)} da minha meta de `
+								+ `R$${formatReal(getMoney(context.state.valueLegal.candidate.raising_goal))}.`,
+					});
+				} else {
+					await context.sendText(`Já consegui R$${formatReal(context.state.valueLegal.candidate.total_donated)} da minha meta de `
 					+ `R$${formatReal(getMoney(context.state.valueLegal.candidate.raising_goal))}.`);
+				}
 				await context.sendButtonTemplate(context.state.participateMessage, context.state.participateOptions);
 				await context.setState({
 					dialog: 'prompt', valueLegal: undefined, participateOptions: undefined, participateMessage: undefined, anotherText: undefined,
