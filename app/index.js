@@ -166,9 +166,11 @@ const handler = new MessengerHandler()
 					await context.setState({ whatWasTyped: context.event.message.text }); // will be used in case the bot doesn't find the question
 					await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
 					removeEmptyKeys(context.state.apiaiResp.result.parameters);
+					console.log(context.state.apiaiResp.result.metadata.intentName);
 
 					if (context.state.apiaiResp.result.metadata.intentName === 'Fallback') {
 						// Fallback --> counldn't find any matching intents
+						console.log('here');
 
 						// check if message came from standard flow or from post/comment
 						if (areWeListening === true) {
@@ -510,6 +512,8 @@ const handler = new MessengerHandler()
 				// 		await context.setState({ sendIntro: false });
 				// 	}
 				// }
+				console.log('createissue');
+
 				if (!context.state.userMessage || context.state.userMessage === '') { // aggregating user texts
 					await context.setState({ userMessage: context.state.whatWasTyped });
 				} else {
