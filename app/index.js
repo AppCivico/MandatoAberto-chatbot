@@ -120,14 +120,14 @@ async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-dec
 	if (!context.state.trajectory) { dialogs = dialogs.filter(obj => obj.payload !== 'trajectory'); }
 	if (!context.state.pollData) { dialogs = dialogs.filter(obj => obj.payload !== 'poll'); }
 	if (!context.state.politicianData.contact) { dialogs = dialogs.filter(obj => obj.payload !== 'contacts'); }
-	if (!context.state.politicianData.votolegal_integration) { dialogs = dialogs.filter(obj => obj.payload !== 'votoLegal'); }
-	// if (dialogs[0].payload === 'aboutMe') { dialogs[0].title = getAboutMe(context.state.politicianData); }
 	if (dialogs.find(x => x.payload === 'poll')) {
 		if (await checkPollAnswered(context) === true) { // already answered so we remove option
 			dialogs = dialogs.filter(obj => obj.payload !== 'poll');
 			dialogs.push(opt.talkToUs);
 		}
 	}
+	if (!context.state.politicianData.votolegal_integration) { dialogs = dialogs.filter(obj => obj.payload !== 'votoLegal'); }
+	// if (dialogs[0].payload === 'aboutMe') { dialogs[0].title = getAboutMe(context.state.politicianData); }
 	return dialogs;
 }
 
@@ -362,7 +362,8 @@ const handler = new MessengerHandler()
 					clearTimeout(menuTimers[context.session.user.id]);
 				}
 				menuTimers[context.session.user.id] = setTimeout(async () => { // wait 'MenuTimerlimit' to show options menu
-					await context.sendButtonTemplate('Deixe-me te ajudar. Escolha uma das opções abaixo ou digite sua pergunta:', await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
+					await context.setState({ optionPrompt: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'option_prompt') });
+					await context.sendButtonTemplate(context.state.optionPrompt.content, await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
 					delete menuTimers[context.session.user.id]; // deleting this timer from timers object
 				}, MenuTimerlimit);
 				await context.setState({ dialog: 'prompt' });
