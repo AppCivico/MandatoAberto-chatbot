@@ -206,7 +206,7 @@ const handler = new MessengerHandler()
 		if (menuTimers[context.session.user.id]) { // if the user interacts while this timer is running we don't need to run it anymore
 			clearTimeout(menuTimers[context.session.user.id]);
 		}
-		if (issueTimers[context.session.user.id]) { // if the user interacts while this timer is running we don't need to run it anymore
+		if (issueTimers[context.session.user.id]) { // if the user interacts while this timer is running we don't send the confimation message
 			await context.setState({ sendPostIssueConfimation: false });
 		}
 
@@ -525,12 +525,12 @@ const handler = new MessengerHandler()
 
 				if (issueTimers[context.session.user.id]) { // clear timer if it already exists
 					clearTimeout(issueTimers[context.session.user.id]);
+					await context.setState({ sendPostIssueConfimation: true });
 					await context.typingOn();
 				} else {
 					await context.sendText('Não compreendi sua mensagem, mas irei enviar para nossa equipe te responder em breve sobre. '
 							+ 'Caso tenha algo adicional para digitar, por favor só escrever.');
 				}
-				await context.setState({ sendPostIssueConfimation: true });
 
 				issueTimers[context.session.user.id] = setTimeout(async () => {
 					await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id, context.state.userMessage,
@@ -538,9 +538,8 @@ const handler = new MessengerHandler()
 					console.log('Enviei', context.state.userMessage);
 					await context.setState({ sendIntro: true });
 					await context.typingOff();
-					await context.setState({ userMessage: '' }); // gives a warning but works just fine
 					if (context.state.sendPostIssueConfimation === true) {
-						await context.sendText('Ok! Recebemos sua mensagem com sucesso!');
+						await context.setState({ userMessage: '' }); // gives a warning but works just fine
 						await context.sendButtonTemplate('Ok! Recebemos sua mensagem com sucesso! E agora, como posso te ajudar?',
 							await checkMenu(context, [opt.trajectory, opt.contacts, opt.doarOption]));
 					}
