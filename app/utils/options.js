@@ -74,6 +74,11 @@ module.exports = {
 		title: 'Deixar Contato',
 		payload: 'recipientData',
 	},
+	talkToUs: {
+		type: 'postback',
+		title: 'Fale conosco',
+		payload: 'talkToUs',
+	},
 	recipientData_LetsGo: [ // array with two options
 		{
 			type: 'postback',

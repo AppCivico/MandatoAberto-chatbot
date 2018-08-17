@@ -12,9 +12,6 @@ const Articles = require('./utils/articles.js');
 const opt = require('./utils/options');
 const attach = require('./attach');
 
-// const request = require('requisition');
-// const apiUri = process.env.MANDATOABERTO_API_URL;
-
 const apiai = dialogFlow(process.env.DIALOGFLOW_TOKEN);
 
 const phoneRegex = new RegExp(/^\+55\d{2}(\d{1})?\d{8}$/);
@@ -32,12 +29,13 @@ function formatReal(int) {
 }
 
 const IssueTimerlimit = 10000 * 2; // 20 seconds
-const MenuTimerlimit = 10000 * 3; // 60 seconds
+const MenuTimerlimit = 10000 * 6; // 60 seconds
 
 const issueTimers = {};
 const menuTimers = {};
 // const pollTimers = {};
 // timers -> object that stores timers. Each user_id stores it's respective timer.
+
 // userMessage -> context.state.userMessage -> stores the texts the user wirtes before sending them to politician [issue]
 // sendIntro = true -> context.state.sendIntro -> verifies if we should send the intro text for issue creation.
 let areWeListening = true;
@@ -173,6 +171,8 @@ const handler = new MessengerHandler()
 							await context.setState({ dialog: 'intermediate' });
 						}
 					} else if (Object.keys(context.state.apiaiResp.result.parameters).length === 1) { // found intent and 1 entity
+						console.log(context.state.apiaiResp.result.metadata.intentName);
+
 						await context.setState({
 							knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.apiaiResp.result.parameters),
 						});
