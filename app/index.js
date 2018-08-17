@@ -525,8 +525,8 @@ const handler = new MessengerHandler()
 						context.state.apiaiResp.result.parameters);
 					console.log('Enviei', context.state.userMessage);
 
-					await context.setState({ sendIntro: true, listening: true });
-					await context.setState({ userMessage: '' }); // gives a warning but works just fine
+					await context.setState({ userMessage: '', sendIntro: true, listening: true });
+					console.log('sendIntro', context.state.sendIntro);
 					await context.typingOff();
 					delete issueTimers[context.session.user.id]; // deleting this timer from timers object
 				}, IssueTimerlimit);
