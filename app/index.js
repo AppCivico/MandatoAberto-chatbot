@@ -145,7 +145,7 @@ const handler = new MessengerHandler()
 						await context.setState({ question: context.state.knowledge.knowledge_base.find(x => x.id === parseInt(context.event.postback.payload.replace('answer', ''), 10)) });
 						await context.setState({ dialog: 'showAnswer' });
 					} else if (context.event.postback.payload === 'talkToUs') {
-						await context.setState({ listening: true });
+						await context.setState({ sendIntro: false });
 						await context.setState({ dialog: 'createIssue' });
 					} else {
 						await context.setState({ dialog: context.event.postback.payload });
@@ -202,10 +202,6 @@ const handler = new MessengerHandler()
 
 		if (menuTimers[context.session.user.id]) { // if the user interacts while this timer is running we don't need to run it anymore
 			clearTimeout(menuTimers[context.session.user.id]);
-		}
-		if (issueTimers[context.session.user.id]) { // if the user interacts while this timer is running we don't send the confimation message
-			await context.setState({ sendPostIssueConfimation: false });
-			console.log('on change', context.state.sendPostIssueConfimation);
 		}
 
 		if (context.event.rawEvent.postback) {
@@ -510,27 +506,21 @@ const handler = new MessengerHandler()
 				if (issueTimers[context.session.user.id]) { // clear timer if it already exists
 					clearTimeout(issueTimers[context.session.user.id]);
 					await context.typingOn();
-				} else {
+				} else if (context.state.sendIntro === true) {
 					await context.sendText('Não compreendi sua mensagem, mas irei enviar para nossa equipe te responder em breve sobre. '
 					+ 'Caso tenha algo adicional para digitar, por favor só escrever.');
+				} else {
+					await context.sendText('Que legal! Para entrar em contato conosco, digite e mande sua mensagem!');
 				}
-				console.log('before', context.state.sendPostIssueConfimation);
-				await context.setState({ sendPostIssueConfimation: true });
-				console.log('after', context.state.sendPostIssueConfimation);
 
 				issueTimers[context.session.user.id] = setTimeout(async () => {
 					await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id, context.state.userMessage,
 						context.state.apiaiResp.result.parameters);
 					console.log('Enviei', context.state.userMessage);
-					console.log('inside', context.state.sendPostIssueConfimation);
 
 					await context.setState({ sendIntro: true });
 					await context.setState({ userMessage: '' }); // gives a warning but works just fine
 					await context.typingOff();
-					if (context.state.sendPostIssueConfimation === true) {
-						await context.sendButtonTemplate('Ok! Recebemos sua mensagem com sucesso! E agora, como posso te ajudar?',
-							await checkMenu(context, [opt.trajectory, opt.contacts, opt.doarOption]));
-					}
 					delete issueTimers[context.session.user.id]; // deleting this timer from timers object
 				}, IssueTimerlimit);
 				break;
