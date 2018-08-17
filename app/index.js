@@ -69,16 +69,16 @@ function getArticles(gender) {
 	return Articles.masculine;
 }
 
-function getAboutMe(politicianData) {
-	const articles = getArticles(politicianData.gender);
+// function getAboutMe(politicianData) {
+// 	const articles = getArticles(politicianData.gender);
 
-	if (politicianData.office.name === 'Outros' || politicianData.office.name === 'Candidato' || politicianData.office.name === 'Candidata') {
-		return `Sobre ${articles.defined} líder`;
-	} if (politicianData.office.name === 'político' || politicianData.office.name === 'política') {
-		return `${articles.defined.toUpperCase()} ${politicianData.office.name}`;
-	}
-	return `Sobre ${articles.defined} ${politicianData.office.name}`;
-}
+// 	if (politicianData.office.name === 'Outros' || politicianData.office.name === 'Candidato' || politicianData.office.name === 'Candidata') {
+// 		return `Sobre ${articles.defined} líder`;
+// 	} if (politicianData.office.name === 'pré-candidato' || politicianData.office.name === 'pré-candidata') {
+// 		return `${articles.defined.toUpperCase()} ${politicianData.office.name}`;
+// 	}
+// 	return `Sobre ${articles.defined} ${politicianData.office.name}`;
+// }
 
 async function showQuestions(context) {
 	await context.typingOn();
@@ -121,7 +121,7 @@ async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-dec
 	if (!context.state.pollData) { dialogs = dialogs.filter(obj => obj.payload !== 'poll'); }
 	if (!context.state.politicianData.contact) { dialogs = dialogs.filter(obj => obj.payload !== 'contacts'); }
 	if (!context.state.politicianData.votolegal_integration) { dialogs = dialogs.filter(obj => obj.payload !== 'votoLegal'); }
-	if (dialogs[0].payload === 'aboutMe') { dialogs[0].title = getAboutMe(context.state.politicianData); }
+	// if (dialogs[0].payload === 'aboutMe') { dialogs[0].title = getAboutMe(context.state.politicianData); }
 	if (dialogs.find(x => x.payload === 'poll')) {
 		if (await checkPollAnswered(context) === true) { // already answered so we remove option
 			dialogs = dialogs.filter(obj => obj.payload !== 'poll');
