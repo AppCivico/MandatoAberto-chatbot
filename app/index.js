@@ -524,8 +524,8 @@ const handler = new MessengerHandler()
 					clearTimeout(issueTimers[context.session.user.id]);
 					await context.typingOn();
 				} else if (context.state.sendIntro === true) {
-					await context.sendText('Não compreendi sua mensagem, mas irei enviar para nossa equipe te responder em breve sobre. '
-					+ 'Caso tenha algo adicional para digitar, por favor só escrever.');
+					await context.setState({ issueStartedListening: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_started_listening') });
+					await context.sendText(context.state.issueStartedListening.content);
 				} else {
 					await context.sendText('Que legal! Para entrar em contato conosco, digite e mande sua mensagem!');
 					await context.setState({ userMessage: '', sendIntro: true, listening: true });
