@@ -37,7 +37,8 @@ const menuTimers = {};
 // timers -> object that stores timers. Each user_id stores it's respective timer.
 
 // userMessage -> context.state.userMessage -> stores the texts the user wirtes before sending them to politician [issue]
-// sendIntro = true -> context.state.sendIntro -> verifies if we should send the intro text for issue creation.
+// sendIntro = true -> context.state.sendIntro -> verifies if we should send the "coudln't understand" or the "talkToUs" text for issue creation.
+// listening = true -> context.state.listening -> verifies if we should aggregate text on userMessage
 let areWeListening = true;
 // areWeListening -> user.state.areWeListening(doesn't work) -> diferenciates messages that come from
 // the standard flow and messages from comment/post
@@ -146,6 +147,7 @@ const handler = new MessengerHandler()
 						await context.setState({ dialog: 'showAnswer' });
 					} else if (context.event.postback.payload === 'talkToUs') {
 						await context.setState({ sendIntro: false });
+						await context.setState({ listening: false });
 						await context.setState({ dialog: 'createIssue' });
 					} else {
 						await context.setState({ dialog: context.event.postback.payload });
@@ -341,7 +343,7 @@ const handler = new MessengerHandler()
 			case 'greetings':
 				await context.typingOff();
 				areWeListening = true;
-				await context.setState({ sendIntro: true });
+				await context.setState({ sendIntro: true, listening: true });
 				await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 				await context.setState({ trajectory: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'trajectory') });
 				await context.setState({ articles: getArticles(context.state.politicianData.gender) });
@@ -364,7 +366,7 @@ const handler = new MessengerHandler()
 			case 'mainMenu':
 				await context.typingOff();
 				areWeListening = true;
-				await context.setState({ sendIntro: true });
+				await context.setState({ sendIntro: true, listening: true });
 				await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 				await context.setState({ trajectory: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'trajectory') });
 				await context.setState({ articles: getArticles(context.state.politicianData.gender) });
@@ -497,10 +499,13 @@ const handler = new MessengerHandler()
 				await context.setState({ dialog: 'prompt' });
 				break;
 			case 'createIssue':
-				if (!context.state.userMessage || context.state.userMessage === '') { // aggregating user texts
-					await context.setState({ userMessage: context.state.whatWasTyped });
-				} else {
-					await context.setState({ userMessage: `${context.state.userMessage} ${context.state.whatWasTyped}` });
+
+				if (context.state.listening === true) {
+					if (!context.state.userMessage || context.state.userMessage === '') { // aggregating user texts
+						await context.setState({ userMessage: context.state.whatWasTyped });
+					} else {
+						await context.setState({ userMessage: `${context.state.userMessage} ${context.state.whatWasTyped}` });
+					}
 				}
 
 				if (issueTimers[context.session.user.id]) { // clear timer if it already exists
@@ -511,6 +516,8 @@ const handler = new MessengerHandler()
 					+ 'Caso tenha algo adicional para digitar, por favor só escrever.');
 				} else {
 					await context.sendText('Que legal! Para entrar em contato conosco, digite e mande sua mensagem!');
+					await context.setState({ listening: true });
+					await context.setState({ userMessage: '' });
 				}
 
 				issueTimers[context.session.user.id] = setTimeout(async () => {
@@ -518,7 +525,7 @@ const handler = new MessengerHandler()
 						context.state.apiaiResp.result.parameters);
 					console.log('Enviei', context.state.userMessage);
 
-					await context.setState({ sendIntro: true });
+					await context.setState({ sendIntro: true, listening: true });
 					await context.setState({ userMessage: '' }); // gives a warning but works just fine
 					await context.typingOff();
 					delete issueTimers[context.session.user.id]; // deleting this timer from timers object
