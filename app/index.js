@@ -32,7 +32,7 @@ function formatReal(int) {
 }
 
 const IssueTimerlimit = 10000 * 2; // 20 seconds
-const MenuTimerlimit = 10000 * 1; // 60 seconds
+const MenuTimerlimit = 10000 * 3; // 60 seconds
 
 const issueTimers = {};
 const menuTimers = {};
@@ -194,6 +194,10 @@ const handler = new MessengerHandler()
 			}
 		}
 
+		if (menuTimers[context.session.user.id]) { // if the user interacts while this timer is running we don't need to run it anymore
+			clearTimeout(menuTimers[context.session.user.id]);
+		}
+
 		if (context.event.rawEvent.postback) {
 			if (context.event.rawEvent.postback.referral) { // if this exists we are on external site
 				await context.setState({ facebookPlataform: 'CUSTOMER_CHAT_PLUGIN' });
@@ -347,7 +351,7 @@ const handler = new MessengerHandler()
 				}
 				// wait 'MenuTimerlimit' to show options menu
 				menuTimers[context.session.user.id] = setTimeout(async () => {
-					await context.sendButtonTemplate('Deixe me te ajudar. Escolha uma das opções abaixo ou digite sua pergunta:', await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
+					await context.sendButtonTemplate('Deixe-me te ajudar. Escolha uma das opções abaixo ou digite sua pergunta:', await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
 					delete menuTimers[context.session.user.id]; // deleting this timer from timers object
 				}, MenuTimerlimit);
 				// await context.sendButtonTemplate(context.state.issueMessage, await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
