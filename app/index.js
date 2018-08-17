@@ -532,17 +532,19 @@ const handler = new MessengerHandler()
 				}
 
 				issueTimers[context.session.user.id] = setTimeout(async () => {
-					await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id, context.state.userMessage,
-						context.state.apiaiResp.result.parameters);
-					console.log('Enviei', context.state.userMessage);
-					await context.setState({ userMessage: '', sendIntro: true, listening: true });
-					await context.typingOff();
-					delete issueTimers[context.session.user.id]; // deleting this timer from timers object
-					postIssueTimers[context.session.user.id] = setTimeout(async () => {
-						await context.setState({ issueCreatedMessage: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_created') });
-						await context.sendButtonTemplate(context.state.issueCreatedMessage.content,
-							await checkMenu(context, [opt.trajectory, opt.contacts, opt.doarOption]));
-					}, 5);
+					if (context.state.userMessage !== '') {
+						await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id, context.state.userMessage,
+							context.state.apiaiResp.result.parameters);
+						console.log('Enviei', context.state.userMessage);
+						await context.setState({ userMessage: '', sendIntro: true, listening: true });
+						await context.typingOff();
+						delete issueTimers[context.session.user.id]; // deleting this timer from timers object
+						postIssueTimers[context.session.user.id] = setTimeout(async () => {
+							await context.setState({ issueCreatedMessage: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_created') });
+							await context.sendButtonTemplate(context.state.issueCreatedMessage.content,
+								await checkMenu(context, [opt.trajectory, opt.contacts, opt.doarOption]));
+						}, 5);
+					}
 				}, IssueTimerlimit);
 				break;
 			case 'aboutMe': {
