@@ -531,11 +531,11 @@ const handler = new MessengerHandler()
 					await context.setState({ userMessage: '', sendIntro: true, listening: true });
 				}
 
-				issueTimers[context.session.user.id] = setTimeout(async () => {
+				issueTimers[context.session.user.id] = await setTimeout(async () => {
 					if (context.state.userMessage !== '') {
 						await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id, context.state.userMessage,
 							context.state.apiaiResp.result.parameters);
-						console.log('Enviei', context.state.userMessage);
+						await console.log('Enviei', context.state.userMessage);
 						await context.setState({ userMessage: '', sendIntro: true, listening: true });
 						await context.typingOff();
 						delete issueTimers[context.session.user.id]; // deleting this timer from timers object
