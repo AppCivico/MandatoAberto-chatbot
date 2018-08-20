@@ -206,12 +206,13 @@ const handler = new MessengerHandler()
 			}
 		}
 
-		if (menuTimers[context.session.user.id]) { // if the user interacts while this timer is running we don't need to run it anymore
-			clearTimeout(menuTimers[context.session.user.id]);
-		}
-		// if the user interacts while this timer is running we don't need to run it anymore
-		if (postIssueTimers[context.session.user.id]) { clearTimeout(menuTimers[context.session.user.id]); }
+		if (context.session) {
+			// if the user interacts while this timer is running we don't need to show the menu anymore
+			if (menuTimers[context.session.user.id]) { clearTimeout(menuTimers[context.session.user.id]); }
 
+			// if the user interacts while this timer is running we don't need to run confirm that the issue was sent anymore
+			if (postIssueTimers[context.session.user.id]) { clearTimeout(menuTimers[context.session.user.id]); }
+		}
 		if (context.event.rawEvent.postback) {
 			if (context.event.rawEvent.postback.referral) { // if this exists we are on external site
 				await context.setState({ facebookPlataform: 'CUSTOMER_CHAT_PLUGIN' });
