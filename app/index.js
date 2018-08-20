@@ -514,10 +514,10 @@ const handler = new MessengerHandler()
 				break;
 			case 'createIssue':
 				if (context.state.listening === true) {
-					if (!context.state.userMessage || context.state.userMessage === '') { // aggregating user texts
-						await context.setState({ userMessage: context.state.whatWasTyped });
+					if (!userMessages[context.session.user.id] || userMessages[context.session.user.id] === '') { // aggregating user texts
+						userMessages[context.session.user.id] = context.state.whatWasTyped;
 					} else {
-						await context.setState({ userMessage: `${context.state.userMessage} ${context.state.whatWasTyped}` });
+						userMessages[context.session.user.id] = `${userMessages[context.session.user.id]} ${context.state.whatWasTyped}`;
 					}
 				}
 
@@ -529,17 +529,18 @@ const handler = new MessengerHandler()
 					await context.sendText(context.state.issueStartedListening.content);
 				} else {
 					await context.sendText('Que legal! Para entrar em contato conosco, digite e mande sua mensagem!');
-					await context.setState({ userMessage: '', sendIntro: true, listening: true });
+					await context.setState({ sendIntro: true, listening: true });
 				}
 
 				issueTimers[context.session.user.id] = setTimeout(async () => {
-					if (context.state.userMessage !== '') {
-						await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id, context.state.userMessage,
+					if (userMessages[context.session.user.id] !== '') {
+						await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id, userMessages[context.session.user.id],
 							context.state.apiaiResp.result.parameters);
-						console.log('Enviei', context.state.userMessage);
-						await context.setState({ userMessage: await '', sendIntro: await true, listening: await true });
+						console.log('Enviei', userMessages[context.session.user.id]);
+						await context.setState({ userMessage: '', sendIntro: true, listening: true });
 						await context.typingOff();
 						delete issueTimers[context.session.user.id]; // deleting this timer from timers object
+						delete userMessages[context.session.user.id]; // deleting last sent message
 						postIssueTimers[context.session.user.id] = setTimeout(async () => {
 							await context.setState({ issueCreatedMessage: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_created') });
 							await context.sendButtonTemplate(context.state.issueCreatedMessage.content,
