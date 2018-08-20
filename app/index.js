@@ -28,22 +28,24 @@ function formatReal(int) {
 	return tmp;
 }
 
-const IssueTimerlimit = 10000 * 2; // 20 seconds
-const MenuTimerlimit = 10000 * 6; // 60 seconds
+const IssueTimerlimit = 10000 * 2; // 20 seconds -> listening to user doubts
+const MenuTimerlimit = 10000 * 6; // 60 seconds -> wainting to show the initial menu
 
 const issueTimers = {};
 const postIssueTimers = {};
 const menuTimers = {};
 // const pollTimers = {};
 // timers -> object that stores timers. Each user_id stores it's respective timer.
-const userMessages = {};
+// issueTimers -> stores timers that creates issues
+// postIssueTimers -> stores timers that confirm to the user that we have sent his "issue"
+// menuTimers -> stores timers that show to the user the initial menu
 
-// userMessage -> context.state.userMessage -> stores the texts the user wirtes before sending them to politician [issue]
+const userMessages = {};
+// userMessages -> stores user messages from issues. We can't use a regular state for this because the timer can't save state "after session has been written"
 // sendIntro = true -> context.state.sendIntro -> verifies if we should send the "coudln't understand" or the "talkToUs" text for issue creation.
-// listening = true -> context.state.listening -> verifies if we should aggregate text on userMessage
+// listening = true -> context.state.listening -> verifies if we should aggregate text on userMessages
 let areWeListening = true;
-// areWeListening -> user.state.areWeListening(doesn't work) -> diferenciates messages that come from
-// the standard flow and messages from comment/post
+// areWeListening -> user.state.areWeListening(doesn't work) -> diferenciates messages that come from the standard flow and messages from comment/post
 
 function removeEmptyKeys(obj) { Object.keys(obj).forEach((key) => { if (obj[key].length === 0) { delete obj[key]; } }); }
 
@@ -147,7 +149,7 @@ const handler = new MessengerHandler()
 					if (context.event.postback.payload.slice(0, 6) === 'answer') {
 						await context.setState({ question: context.state.knowledge.knowledge_base.find(x => x.id === parseInt(context.event.postback.payload.replace('answer', ''), 10)) });
 						await context.setState({ dialog: 'showAnswer' });
-					} else if (context.event.postback.payload === 'talkToUs') {
+					} else if (context.event.postback.payload === 'talkToUs') { // user wants to enter in contact
 						await context.setState({ sendIntro: false });
 						await context.setState({ listening: false });
 						await context.setState({ dialog: 'createIssue' });
@@ -207,9 +209,8 @@ const handler = new MessengerHandler()
 		if (menuTimers[context.session.user.id]) { // if the user interacts while this timer is running we don't need to run it anymore
 			clearTimeout(menuTimers[context.session.user.id]);
 		}
-		if (postIssueTimers[context.session.user.id]) { // if the user interacts while this timer is running we don't need to run it anymore
-			clearTimeout(menuTimers[context.session.user.id]);
-		}
+		// if the user interacts while this timer is running we don't need to run it anymore
+		if (postIssueTimers[context.session.user.id]) { clearTimeout(menuTimers[context.session.user.id]); }
 
 		if (context.event.rawEvent.postback) {
 			if (context.event.rawEvent.postback.referral) { // if this exists we are on external site
@@ -354,7 +355,6 @@ const handler = new MessengerHandler()
 				await context.setState({ articles: getArticles(context.state.politicianData.gender) });
 				await context.setState({ introduction: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'introduction') });
 				await context.setState({ issueMessage: getIssueMessage(await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_acknowledgment')) });
-				await context.setState({ userMessage: '' }); // cleaning up
 				await context.setState({ greeting: context.state.politicianData.greeting.replace('${user.office.name}', context.state.politicianData.office.name) }); // eslint-disable-line no-template-curly-in-string
 				await context.setState({ greeting: context.state.greeting.replace('${user.name}', context.state.politicianData.name) }); // eslint-disable-line no-template-curly-in-string
 				await context.sendText(context.state.greeting);
@@ -377,7 +377,6 @@ const handler = new MessengerHandler()
 				await context.setState({ trajectory: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'trajectory') });
 				await context.setState({ articles: getArticles(context.state.politicianData.gender) });
 				await context.setState({ introduction: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'introduction') });
-				await context.setState({ userMessage: '' }); // cleaning up
 				await context.sendButtonTemplate(context.state.issueMessage, await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
 				await context.setState({ dialog: 'prompt' });
 				break;
@@ -403,7 +402,6 @@ const handler = new MessengerHandler()
 				await context.setState({ dialog: 'prompt' });
 				break;
 			case 'intermediate':
-			// await context.setState({ userMessage: `${context.state.userMessage} + " "`});;
 				await context.sendText('Você gostaria de enviar uma mensagem para nossa equipe ou conhecer mais sobre '
 					+ `${context.state.articles.defined} ${context.state.politicianData.office.name} ${context.state.politicianData.name}?`);
 				await context.sendButtonTemplate('Selecione a opção desejada em um dos botões abaixo:', [opt.writeMessage, opt.seeAssistent]);
@@ -523,12 +521,13 @@ const handler = new MessengerHandler()
 
 				if (issueTimers[context.session.user.id]) { // clear timer if it already exists
 					clearTimeout(issueTimers[context.session.user.id]);
-					await context.typingOn();
-				} else if (context.state.sendIntro === true) {
+					await context.typingOn(); // show user that we are listening
+				} else if (context.state.sendIntro === true) { // -> we didn't understand the message
 					await context.setState({ issueStartedListening: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_started_listening') });
 					await context.sendText(context.state.issueStartedListening.content);
-				} else {
+				} else { // -> user wants to contact us
 					await context.sendText('Que legal! Para entrar em contato conosco, digite e mande sua mensagem!');
+					userMessages[context.session.user.id] = '';
 					await context.setState({ sendIntro: true, listening: true });
 				}
 
@@ -537,11 +536,12 @@ const handler = new MessengerHandler()
 						await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id, userMessages[context.session.user.id],
 							context.state.apiaiResp.result.parameters);
 						console.log('Enviei', userMessages[context.session.user.id]);
-						await context.setState({ userMessage: '', sendIntro: true, listening: true });
+						await context.setState({ sendIntro: true, listening: true });
 						await context.typingOff();
 						delete issueTimers[context.session.user.id]; // deleting this timer from timers object
 						delete userMessages[context.session.user.id]; // deleting last sent message
-						postIssueTimers[context.session.user.id] = setTimeout(async () => {
+
+						postIssueTimers[context.session.user.id] = setTimeout(async () => { // creating confirmation timer (will only be shown if user doesn't change dialog
 							await context.setState({ issueCreatedMessage: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_created') });
 							await context.sendButtonTemplate(context.state.issueCreatedMessage.content,
 								await checkMenu(context, [opt.trajectory, opt.contacts, opt.doarOption]));
