@@ -36,6 +36,7 @@ const postIssueTimers = {};
 const menuTimers = {};
 // const pollTimers = {};
 // timers -> object that stores timers. Each user_id stores it's respective timer.
+const userMessages = {};
 
 // userMessage -> context.state.userMessage -> stores the texts the user wirtes before sending them to politician [issue]
 // sendIntro = true -> context.state.sendIntro -> verifies if we should send the "coudln't understand" or the "talkToUs" text for issue creation.
@@ -531,14 +532,14 @@ const handler = new MessengerHandler()
 					await context.setState({ userMessage: '', sendIntro: true, listening: true });
 				}
 
-				issueTimers[context.session.user.id] = await setTimeout(async () => {
+				issueTimers[context.session.user.id] = setTimeout(async () => {
 					if (context.state.userMessage !== '') {
 						await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id, context.state.userMessage,
 							context.state.apiaiResp.result.parameters);
-						await console.log('Enviei', context.state.userMessage);
-						await context.setState({ userMessage: '', sendIntro: true, listening: true });
+						console.log('Enviei', context.state.userMessage);
+						context.setState({ userMessage: '', sendIntro: true, listening: true });
 						await context.typingOff();
-						await delete issueTimers[context.session.user.id]; // deleting this timer from timers object
+						delete issueTimers[context.session.user.id]; // deleting this timer from timers object
 						postIssueTimers[context.session.user.id] = setTimeout(async () => {
 							await context.setState({ issueCreatedMessage: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_created') });
 							await context.sendButtonTemplate(context.state.issueCreatedMessage.content,
