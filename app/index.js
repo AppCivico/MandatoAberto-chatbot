@@ -29,7 +29,7 @@ function formatReal(int) {
 }
 
 const IssueTimerlimit = 10000 * 2; // 20 seconds -> listening to user doubts
-const MenuTimerlimit = 10000 * 6; // 60 seconds -> wainting to show the initial menu
+const MenuTimerlimit = 10000 * 6; // 60 seconds -> waiting to show the initial menu
 
 const issueTimers = {};
 const postIssueTimers = {};
