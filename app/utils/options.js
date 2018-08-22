@@ -79,6 +79,18 @@ module.exports = {
 		title: 'Fale conosco',
 		payload: 'talkToUs',
 	},
+	themeConfirmation: [ // array with two options
+		{
+			type: 'postback',
+			title: 'Sim',
+			payload: 'themeYES',
+		},
+		{
+			type: 'postback',
+			title: 'Não',
+			payload: 'NotOneOfThese',
+		},
+	],
 	recipientData_LetsGo: [ // array with two options
 		{
 			type: 'postback',
