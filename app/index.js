@@ -144,6 +144,10 @@ const handler = new MessengerHandler()
 			await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
 			await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 
+			console.log('logging every event:');
+			console.log(context.event);
+
+
 			if (context.state.dialog !== 'recipientData') { // handling input that's not from "asking data"
 				if (context.event.isPostback) { // this could be in a better place
 					if (context.event.postback.payload.slice(0, 6) === 'answer') {
@@ -168,6 +172,9 @@ const handler = new MessengerHandler()
 					} else {
 						await context.setState({ dialog: payload });
 					}
+				} else if (context.event.isAudio) {
+					await context.sendText('Aúdio? Ok!');
+					console.log(context.even);
 				} else if (context.event.isText) {
 					await context.setState({ whatWasTyped: context.event.message.text }); // will be used in case the bot doesn't find the question
 					await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
