@@ -197,9 +197,9 @@ const handler = new MessengerHandler()
 							} else {
 								// instead of showing the questions already, we confirm with the user the one theme
 								console.log(context.state.knowledge);
-								await context.sendButtonTemplate('Você está perguntando sobre '
-									+ `${context.state.knowledge.knowledge_base.join(', ').replace(/,(?=[^,]*$)/, ' e')}?`, opt.themeConfirmation);
-								// await showQuestions(context);
+								// await context.sendButtonTemplate('Você está perguntando sobre '
+								// + `${context.state.knowledge.knowledge_base.join(', ').replace(/,(?=[^,]*$)/, ' e')}?`, opt.themeConfirmation);
+								await showQuestions(context);
 							}
 						} else { // found intent but 2+ entities
 							await context.setState({ dialog: 'chooseTheme' });
