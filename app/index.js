@@ -149,7 +149,14 @@ const handler = new MessengerHandler()
 
 			if (context.state.dialog !== 'recipientData') { // handling input that's not from "asking data"
 				if (context.event.isPostback) { // this could be in a better place
-					if (context.event.postback.payload.slice(0, 6) === 'answer') {
+					if (context.event.postback.payload === 'themeYES') {
+						context.state.themes.forEach(async (element, index) => {
+							const answer = context.state.knowledge.knowledge_base.find(x => x.question === element);
+							console.log(`${index} - ${answer}`);
+
+							await context.sendText(`Sobre ${element}: ${answer}`);
+						});
+					} else if (context.event.postback.payload.slice(0, 6) === 'answer') {
 						await context.setState({ question: context.state.knowledge.knowledge_base.find(x => x.id === parseInt(context.event.postback.payload.replace('answer', ''), 10)) });
 						await context.setState({ dialog: 'showAnswer' });
 					} else if (context.event.postback.payload === 'talkToUs') { // user wants to enter in contact
@@ -180,14 +187,12 @@ const handler = new MessengerHandler()
 					answer.pipe(file);
 					// TODO This doesn't work. The endpoint for voiceRequest is gone.
 					await context.setState({ apiaiResp: await apiai.voiceRequest(file, { sessionId: context.session.user.id }) });
-					console.log(context.state.apiaiResp);
 
 					await fs.unlink(context.state.audioName);
 				} else if (context.event.isText) {
 					await context.setState({ whatWasTyped: context.event.message.text }); // will be used in case the bot doesn't find the question
 					await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
 					removeEmptyKeys(context.state.apiaiResp.result.parameters);
-					console.log(context.state.apiaiResp);
 
 					if (context.state.apiaiResp.result.metadata.intentName === 'Fallback') {
 						// Fallback --> counldn't find any matching intents
@@ -211,7 +216,6 @@ const handler = new MessengerHandler()
 								}
 							} else {
 								// instead of showing the questions already, we confirm with the user the one theme
-								console.log(context.state.knowledge);
 								await context.setState({ themes: [] });
 								context.state.knowledge.knowledge_base.forEach(async (element) => {
 									context.state.themes.push(element.question);
