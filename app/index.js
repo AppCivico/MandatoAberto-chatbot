@@ -7,6 +7,7 @@ const { createServer } = require('bottender/restify');
 const dialogFlow = require('apiai-promise');
 const request = require('requisition');
 const fs = require('fs');
+const util = require('util');
 
 const config = require('./bottender.config.js').messenger;
 const MandatoAbertoAPI = require('./mandatoaberto_api.js');
@@ -181,8 +182,23 @@ const handler = new MessengerHandler()
 
 					const answer = await request(context.event.audio.url);
 					answer.pipe(file);
-					await context.setState({ apiaiResp: await apiai.voiceRequest(file, { sessionId: context.session.user.id }) });
-					console.log(context.state.apiaiResp);
+
+					// Convert fs.readFile into Promise version of same
+					const readFile = util.promisify(fs.readFile);
+
+					async function getStuff(nameFile) {
+						return await readFile(nameFile);
+					}
+
+					// Can't use `await` outside of an async function so you need to chain
+					// with then()
+					getStuff(context.state.audioName).then(async (data) => {
+						await context.setState({ apiaiResp: await apiai.voiceRequest(data, { sessionId: context.session.user.id }) });
+						console.log(context.state.apiaiResp);
+					});
+
+
+					await fs.unlink(context.state.audioName);
 				} else if (context.event.isText) {
 					await context.setState({ whatWasTyped: context.event.message.text }); // will be used in case the bot doesn't find the question
 					await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
