@@ -7,7 +7,6 @@ const { createServer } = require('bottender/restify');
 const dialogFlow = require('apiai-promise');
 const request = require('requisition');
 const fs = require('fs');
-const util = require('util');
 
 const config = require('./bottender.config.js').messenger;
 const MandatoAbertoAPI = require('./mandatoaberto_api.js');
@@ -173,30 +172,15 @@ const handler = new MessengerHandler()
 						await context.setState({ dialog: payload });
 					}
 				} else if (context.event.isAudio) {
-					await context.sendText('Aúdio? Ok!');
-					console.log(context.event.audio.url);
+					await context.sendText('Aúdio? Ainda não!');
 
 					await context.setState({ audioName: `audio${context.session.user.id}.wav` });
-
 					const file = fs.createWriteStream(context.state.audioName);
-
 					const answer = await request(context.event.audio.url);
 					answer.pipe(file);
-
-					// Convert fs.readFile into Promise version of same
-					const readFile = util.promisify(fs.readFile);
-
-					async function getStuff(nameFile) {
-						return await readFile(nameFile);
-					}
-
-					// Can't use `await` outside of an async function so you need to chain
-					// with then()
-					getStuff(context.state.audioName).then(async (data) => {
-						await context.setState({ apiaiResp: await apiai.voiceRequest(data, { sessionId: context.session.user.id }) });
-						console.log(context.state.apiaiResp);
-					});
-
+					// TODO This doesn't work. The endpoint for voiceRequest is gone.
+					await context.setState({ apiaiResp: await apiai.voiceRequest(file, { sessionId: context.session.user.id }) });
+					console.log(context.state.apiaiResp);
 
 					await fs.unlink(context.state.audioName);
 				} else if (context.event.isText) {
@@ -228,9 +212,13 @@ const handler = new MessengerHandler()
 							} else {
 								// instead of showing the questions already, we confirm with the user the one theme
 								console.log(context.state.knowledge);
-								// await context.sendButtonTemplate('Você está perguntando sobre '
-								// + `${context.state.knowledge.knowledge_base.join(', ').replace(/,(?=[^,]*$)/, ' e')}?`, opt.themeConfirmation);
-								await showQuestions(context);
+								await context.setState({ themes: [] });
+								context.state.knowledge.knowledge_base.forEach(async (element) => {
+									await context.setState({ themes: context.state.themes.push(element.question) });
+								});
+								await context.sendButtonTemplate('Você está perguntando sobre '
+									+ `${context.state.themes.join(', ').replace(/,(?=[^,]*$)/, ' e')}?`, opt.themeConfirmation);
+								// await showQuestions(context);
 							}
 						} else { // found intent but 2+ entities
 							await context.setState({ dialog: 'chooseTheme' });
