@@ -11,7 +11,7 @@ const MandatoAbertoAPI = require('./mandatoaberto_api.js');
 const VotoLegalAPI = require('./votolegal_api.js');
 const Articles = require('./utils/articles.js');
 const opt = require('./utils/options');
-const audio = require('./utils/audio');
+// const audio = require('./utils/audio');
 const attach = require('./attach');
 
 const apiai = dialogFlow(process.env.DIALOGFLOW_TOKEN);
@@ -180,7 +180,7 @@ const handler = new MessengerHandler()
 				} else if (context.event.isAudio) {
 					await context.sendText('Aúdio? Ainda não!');
 					if (context.event.audio.url) {
-						audio.voiceRequest(context.event.audio.url, context.session.user.id);
+						// audio.voiceRequest(context.event.audio.url, context.session.user.id);
 					}
 				} else if (context.event.isText) {
 					await context.setState({ whatWasTyped: context.event.message.text }); // will be used in case the bot doesn't find the question
