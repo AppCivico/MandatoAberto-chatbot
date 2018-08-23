@@ -9,6 +9,7 @@
   "dependencies": {
     "apiai-promise": "^1.0.0",
     "bottender": "^0.14.22",
+    "dialogflow": "^0.6.0",
     "dotenv": "^4.0.0",
     "nodemon": "1.12.7",
     "query-string": "^5.1.0",

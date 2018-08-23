@@ -5,14 +5,13 @@ const {
 } = require('bottender');
 const { createServer } = require('bottender/restify');
 const dialogFlow = require('apiai-promise');
-const request = require('requisition');
-const fs = require('fs');
 
 const config = require('./bottender.config.js').messenger;
 const MandatoAbertoAPI = require('./mandatoaberto_api.js');
 const VotoLegalAPI = require('./votolegal_api.js');
 const Articles = require('./utils/articles.js');
 const opt = require('./utils/options');
+const audio = require('./utils/audio');
 const attach = require('./attach');
 
 const apiai = dialogFlow(process.env.DIALOGFLOW_TOKEN);
@@ -180,15 +179,9 @@ const handler = new MessengerHandler()
 					}
 				} else if (context.event.isAudio) {
 					await context.sendText('Aúdio? Ainda não!');
-
-					await context.setState({ audioName: `audio${context.session.user.id}.wav` });
-					const file = fs.createWriteStream(context.state.audioName);
-					const answer = await request(context.event.audio.url);
-					answer.pipe(file);
-					// TODO This doesn't work. The endpoint for voiceRequest is gone.
-					await context.setState({ apiaiResp: await apiai.voiceRequest(file, { sessionId: context.session.user.id }) });
-
-					await fs.unlink(context.state.audioName);
+					if (context.event.audio.url) {
+						audio.voiceRequest(context.event.audio.url, context.session.user.id);
+					}
 				} else if (context.event.isText) {
 					await context.setState({ whatWasTyped: context.event.message.text }); // will be used in case the bot doesn't find the question
 					await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });

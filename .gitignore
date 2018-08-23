@@ -64,4 +64,10 @@ typings/
 
 # Sessions
 .sessions
-audio.js
+audio2.js
+
+MA-DF-Secret-Key.json
+
+*.wav
+*.mp4
+*.flac
