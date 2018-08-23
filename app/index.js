@@ -215,7 +215,7 @@ const handler = new MessengerHandler()
 
 								await context.setState({ themes: [] });
 								await context.state.knowledge.knowledge_base.forEach(async (element, index) => {
-									await context.state.themes.push(context.state.knowledge.knowledge_base[index].entities.tag);
+									await context.state.themes.push(element[index].entities.tag);
 								});
 
 								await context.sendButtonTemplate('Você está perguntando sobre '
