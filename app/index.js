@@ -215,7 +215,7 @@ const handler = new MessengerHandler()
 								// instead of showing the questions already, we confirm with the user the one theme
 								console.log(context.state.knowledge.knowledge_base[0].entities);
 
-								await context.setState({ themes: {} });
+								await context.setState({ themes: [] });
 								await context.state.knowledge.knowledge_base.forEach(async (element) => {
 									await context.state.themes.push(element.entities[0].tag);
 									// We don't need to iterate over the entities array because for now there isn't going to be more than one entity
