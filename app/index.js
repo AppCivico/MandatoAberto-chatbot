@@ -216,12 +216,12 @@ const handler = new MessengerHandler()
 								}
 							} else {
 								// instead of showing the questions already, we confirm with the user the one theme
-								await context.setState({ themes: [] });
-								context.state.knowledge.knowledge_base.forEach(async (element) => {
-									context.state.themes.push(element.question);
-								});
+								console.log(context.state.knowledge.knowledge_base);
 
-								console.log(context.state.themes);
+								await context.setState({ themes: [] });
+								await context.state.knowledge.knowledge_base.forEach(async (element) => {
+									await context.state.themes.push(element.question);
+								});
 
 								await context.sendButtonTemplate('Você está perguntando sobre '
 									+ `${context.state.themes.join(', ').replace(/,(?=[^,]*$)/, ' e')}?`, opt.themeConfirmation);
