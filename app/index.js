@@ -152,7 +152,7 @@ const handler = new MessengerHandler()
 
 			if (context.state.dialog !== 'recipientData') { // handling input that's not from "asking data"
 				if (context.event.isPostback) { // this could be in a better place
-					if (context.event.postback.payload === 'themeYES') {
+					if (context.event.postback.payload === 'themeYes') {
 						await context.state.themes.forEach(async (element) => {
 							const currentTheme = await context.state.knowledge.knowledge_base.find(x => x.question === element);
 							await context.sendText(`Sobre ${element}: ${currentTheme.answer}`);
@@ -213,15 +213,15 @@ const handler = new MessengerHandler()
 								}
 							} else {
 								// instead of showing the questions already, we confirm with the user the one theme
-								console.log('i am here');
-
 								console.log(context.state.knowledge.knowledge_base[0].entities);
 
-								await context.setState({ themes: [] });
+								await context.setState({ themes: {} });
 								await context.state.knowledge.knowledge_base.forEach(async (element) => {
-									await element.entities.forEach(async (element2) => {
-										await context.state.themes.push(element2.tag);
-									});
+									await context.state.themes.push(element.entities[0].tag);
+									// We don't need to iterate over the entities array because for now there isn't going to be more than one entity
+									// await element.entities.forEach(async (element2) => {
+									// await context.state.themes.push(element2.tag);
+									// });
 								});
 
 								checkThemes(context);
