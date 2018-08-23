@@ -214,10 +214,10 @@ const handler = new MessengerHandler()
 								console.log(context.state.knowledge.knowledge_base[0].entities);
 
 								await context.setState({ themes: [] });
-								await context.state.knowledge.knowledge_base.forEach(async (element, index) => {
+								await context.state.knowledge.knowledge_base.forEach(async (element) => {
 									console.log(element);
 
-									await element[index].entities.forEach(async (element2) => {
+									await element.entities.forEach(async (element2) => {
 										console.log(element2);
 										await context.state.themes.push(element2.tag);
 									});
