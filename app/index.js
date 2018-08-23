@@ -199,9 +199,8 @@ const handler = new MessengerHandler()
 					await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
 					console.log(context.state.apiaiResp);
 
-					removeEmptyKeys(context.state.apiaiResp.result.parameters);
+					// removeEmptyKeys(context.state.apiaiResp.result.parameters);
 
-					console.log(context.state.apiaiResp);
 
 					if (context.state.apiaiResp.result.metadata.intentName === 'Fallback') {
 						// Fallback --> counldn't find any matching intents
