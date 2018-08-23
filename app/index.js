@@ -154,8 +154,15 @@ const handler = new MessengerHandler()
 				if (context.event.isPostback) { // this could be in a better place
 					if (context.event.postback.payload === 'themeYes') {
 						await context.state.themes.forEach(async (element) => {
-							const currentTheme = await context.state.knowledge.knowledge_base.find(x => x.question === element);
-							await context.sendText(`Sobre ${element}: ${currentTheme.answer}`);
+							const currentTheme = await context.state.knowledge.knowledge_base.find(x => x.entities[0].tag === element);
+							if (currentTheme.answer) { // check if this tag has an answer
+								await context.sendText(`Sobre ${element}: ${currentTheme.answer}`);
+							} else {
+								await context.sendText(`Sobre ${element} fico te devendo uma resposta. `
+								+ 'Mas já entou enviando para nossas equipe e estaremos te respondendo em breve.');
+								await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
+									context.state.whatWasTyped, context.state.apiaiResp.result.parameters);
+							}
 						});
 
 						await context.sendButtonTemplate('Que tal?', await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
@@ -213,7 +220,7 @@ const handler = new MessengerHandler()
 								}
 							} else {
 								// instead of showing the questions already, we confirm with the user the one theme
-								console.log(context.state.knowledge.knowledge_base[0].entities);
+								console.dir(context.state.knowledge.knowledge_base);
 
 								await context.setState({ themes: [] });
 								await context.state.knowledge.knowledge_base.forEach(async (element) => {
