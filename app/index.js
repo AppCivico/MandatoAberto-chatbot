@@ -211,7 +211,7 @@ const handler = new MessengerHandler()
 								// instead of showing the questions already, we confirm with the user the one theme
 								console.log('i am here');
 
-								console.log(context.state.knowledge.knowledge_base);
+								console.log(context.state.knowledge.knowledge_base[0].entities);
 
 								await context.setState({ themes: [] });
 								await context.state.knowledge.knowledge_base.forEach(async (element) => {
