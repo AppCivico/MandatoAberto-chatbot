@@ -85,6 +85,10 @@ function getArticles(gender) {
 // 	return `Sobre ${articles.defined} ${politicianData.office.name}`;
 // }
 
+async function checkThemes(context) {
+	await context.sendButtonTemplate('Você está perguntando sobre '
+		+ `${context.state.themes.join(', ').replace(/,(?=[^,]*$)/, ' e')}?`, opt.themeConfirmation);
+}
 async function showQuestions(context) {
 	await context.typingOn();
 	await attach.sendQuestions(context, context.state.knowledge.knowledge_base);
@@ -215,21 +219,12 @@ const handler = new MessengerHandler()
 
 								await context.setState({ themes: [] });
 								await context.state.knowledge.knowledge_base.forEach(async (element) => {
-									console.log(element);
-
 									await element.entities.forEach(async (element2) => {
-										console.log(element2);
 										await context.state.themes.push(element2.tag);
 									});
 								});
 
-								console.log('themes');
-
-								console.log(context.state.themes);
-
-								await context.sendButtonTemplate('Você está perguntando sobre '
-									+ `${context.state.themes.join(', ').replace(/,(?=[^,]*$)/, ' e')}?`, opt.themeConfirmation);
-								// await showQuestions(context);
+								checkThemes(context);
 							}
 						} else { // found intent but 2+ entities
 							await context.setState({ dialog: 'chooseTheme' });
