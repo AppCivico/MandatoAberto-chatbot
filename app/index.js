@@ -191,6 +191,7 @@ const handler = new MessengerHandler()
 				} else if (context.event.isAudio) {
 					await context.sendText('Aúdio? Ainda não!');
 					if (context.event.audio.url) {
+						console.log(context.event.audio.url);
 						// audio.voiceRequest(context.event.audio.url, context.session.user.id);
 					}
 				} else if (context.event.isText) {
