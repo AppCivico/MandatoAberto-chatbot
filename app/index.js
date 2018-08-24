@@ -228,7 +228,10 @@ const handler = new MessengerHandler()
 							});
 							if (context.state.knowledge.knowledge_base
 								&& context.state.knowledge.knowledge_base.length === 0) { // we have no questions related to these entities
-								sendToCreateIssue(context);
+								await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
+									context.state.whatWasTyped, context.state.apiaiResp.result.parameters);
+								await context.sendText('Que pena! Mas recebi sua dúvida e estarei te respondendo logo mais!');
+								// sendToCreateIssue(context);
 							} else {
 								// instead of showing the questions already, we confirm with the user the themes he mentioned
 								console.log('temos respostas: ', context.state.knowledge.knowledge_base.length);
