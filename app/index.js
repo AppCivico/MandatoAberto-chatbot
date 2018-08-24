@@ -166,6 +166,9 @@ const handler = new MessengerHandler()
 						});
 
 						await context.sendButtonTemplate('Que tal?', await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
+						await context.setState({ // cleaning up
+							apiaiResp: '', knowledge: '', themes: '', whatWasTyped: '',
+						});
 					} else if (context.event.postback.payload.slice(0, 6) === 'answer') {
 						await context.setState({ question: context.state.knowledge.knowledge_base.find(x => x.id === parseInt(context.event.postback.payload.replace('answer', ''), 10)) });
 						await context.setState({ dialog: 'showAnswer' });
@@ -205,6 +208,8 @@ const handler = new MessengerHandler()
 					if (context.state.apiaiResp.result.metadata.intentName === 'Fallback') {
 						// Fallback --> counldn't find any matching intents
 						// check if message came from standard flow or from post/comment
+						console.log('\ncai no fallback');
+
 						if (areWeListening === true) {
 							await context.setState({ dialog: 'createIssue' });
 						} else {
@@ -212,10 +217,13 @@ const handler = new MessengerHandler()
 						}
 					} else if (context.state.apiaiResp.result.metadata.intentName === 'Pergunta') {
 						if (Object.keys(context.state.apiaiResp.result.parameters).length >= 1) { // found at least one entity
+							console.log('\nAchamos uma entidade');
+
 							await context.setState({
 								knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.apiaiResp.result.parameters),
 							});
 							if (context.state.knowledge.knowledge_base.length === 0) { // we have no questions related to this entity
+								console.log('\nNão temos nenhuma resposta!');
 								// TODO falta fazer algo quando não tem pergunta cadastrada!
 								if (areWeListening === true) {
 									await context.setState({ dialog: 'createIssue' });
@@ -224,6 +232,8 @@ const handler = new MessengerHandler()
 								}
 							} else {
 								// instead of showing the questions already, we confirm with the user the themes he mentioned
+								console.log('temos respostas:');
+
 								console.dir(context.state.knowledge.knowledge_base);
 
 								await context.setState({ themes: [] });
@@ -237,7 +247,8 @@ const handler = new MessengerHandler()
 
 								checkThemes(context);
 							}
-						} else { // didn't found any answers
+						} else { // didn't found any entity
+							console.log('\nNão temos nenhuma entity!');
 							if (areWeListening === true) {
 								await context.setState({ dialog: 'createIssue' });
 							} else {
