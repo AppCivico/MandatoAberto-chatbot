@@ -122,7 +122,7 @@ async function checkPollAnswered(context) {
 }
 
 async function sendToCreateIssue(context) {
-	console.log('Status do arewelistening:', areWeListening);
+	console.log('Status do arewelistening: ', areWeListening);
 	if (areWeListening === true) {
 		await context.setState({ dialog: 'createIssue' });
 	} else {
