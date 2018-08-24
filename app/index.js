@@ -124,7 +124,7 @@ async function checkPollAnswered(context) {
 
 async function sendToCreateIssue(context) {
 	// console.log('Status do arewelistening: ', areWeListening);
-	console.log(cameFromOutside[context.session.user.id]);
+	console.log(cameFromOutside);
 
 	if (await cameFromOutside[context.session.user.id] === 123) { // if user id is in cameFromOutside that means the user came from comment/feed
 		await context.setState({ dialog: 'intermediate' });
