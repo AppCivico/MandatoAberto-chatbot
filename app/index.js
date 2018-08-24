@@ -218,7 +218,6 @@ const handler = new MessengerHandler()
 					if (context.state.apiaiResp.result.metadata.intentName === 'Fallback') {
 						// Fallback --> counldn't find any matching intents
 						// check if message came from standard flow or from post/comment
-						await context.setState({ apiaiResp: '', knowledge: '', themes: '' }); // cleaning up
 						sendToCreateIssue(context);
 					} else if (context.state.apiaiResp.result.metadata.intentName === 'Pergunta') {
 						if (Object.keys(context.state.apiaiResp.result.parameters).length >= 1) { // found at least one entity
@@ -229,7 +228,6 @@ const handler = new MessengerHandler()
 							});
 							if (context.state.knowledge.knowledge_base
 								&& context.state.knowledge.knowledge_base.length === 0) { // we have no questions related to these entities
-								await context.setState({ apiaiResp: '', knowledge: '', themes: '' }); // cleaning up
 								sendToCreateIssue(context);
 							} else {
 								// instead of showing the questions already, we confirm with the user the themes he mentioned
@@ -584,14 +582,13 @@ const handler = new MessengerHandler()
 						userMessages[context.session.user.id] = '';
 						await context.setState({ sendIntro: true, listening: true });
 					}
-					console.log('I shouldnt be called');
-
 					issueTimers[context.session.user.id] = setTimeout(async () => {
 						if (userMessages[context.session.user.id] !== '') {
 							await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id, userMessages[context.session.user.id],
 								context.state.apiaiResp.result.parameters);
 							console.log('Enviei', userMessages[context.session.user.id]);
 							await context.setState({ sendIntro: true, listening: true });
+							await context.setState({ apiaiResp: '', knowledge: '', themes: '' }); // cleaning up
 							await context.typingOff();
 							delete issueTimers[context.session.user.id]; // deleting this timer from timers object
 							delete userMessages[context.session.user.id]; // deleting last sent message
