@@ -234,7 +234,7 @@ const handler = new MessengerHandler()
 								await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
 									context.state.whatWasTyped, context.state.apiaiResp.result.parameters);
 								await context.sendText(`Parece que ${context.state.articles.defined} ${context.state.politicianData.office.name} ${context.state.politicianData.name} `
-									+ `ainda não se posicionou sobre ${listThemes(Object.keys(context.state.apiaiResp.result.parameters))}. Estarei avisando a nossa equipe.`);
+									+ `ainda não se posicionou sobre ${await listThemes(Object.keys(context.state.apiaiResp.result.parameters))}. Estarei avisando a nossa equipe.`);
 								// sendToCreateIssue(context);
 							} else {
 								// instead of showing the questions already, we confirm with the user the themes he mentioned
