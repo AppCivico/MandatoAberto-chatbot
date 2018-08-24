@@ -123,7 +123,9 @@ async function checkPollAnswered(context) {
 }
 
 async function sendToCreateIssue(context) {
-	console.log('Status do arewelistening: ', areWeListening);
+	// console.log('Status do arewelistening: ', areWeListening);
+	console.log(cameFromOutside);
+
 	if (cameFromOutside[context.session.user.id]) { // if user id is in cameFromOutside that means the user came from comment/feed
 		delete cameFromOutside[context.session.user.id];
 		await context.setState({ dialog: 'intermediate' });
@@ -311,6 +313,8 @@ const handler = new MessengerHandler()
 			const page_id = post_id.substr(0, post_id.indexOf('_'));
 			const user_id = context.event.rawEvent.value.from.id;
 			cameFromOutside[user_id] = true;
+			console.log(cameFromOutside);
+
 			areWeListening = false;
 			switch (context.event.rawEvent.value.item) {
 			case 'comment':
