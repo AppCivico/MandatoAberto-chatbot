@@ -235,7 +235,7 @@ const handler = new MessengerHandler()
 								}
 							} else {
 								// instead of showing the questions already, we confirm with the user the themes he mentioned
-								console.log('temos respostas:');
+								console.log('temos respostas: ', context.state.knowledge.knowledge_base.length);
 
 								console.dir(context.state.knowledge.knowledge_base);
 
@@ -268,13 +268,13 @@ const handler = new MessengerHandler()
 			}
 		}
 
-		if (context.session) {
-			// if the user interacts while this timer is running we don't need to show the menu anymore
-			if (menuTimers[context.session.user.id]) { clearTimeout(menuTimers[context.session.user.id]); }
+		// if (context.session) {
+		// 	// if the user interacts while this timer is running we don't need to show the menu anymore
+		// 	if (menuTimers[context.session.user.id]) { clearTimeout(menuTimers[context.session.user.id]); }
 
-			// if the user interacts while this timer is running we don't need to run confirm that the issue was sent anymore
-			if (postIssueTimers[context.session.user.id]) { clearTimeout(menuTimers[context.session.user.id]); }
-		}
+		// 	// if the user interacts while this timer is running we don't need to run confirm that the issue was sent anymore
+		// 	if (postIssueTimers[context.session.user.id]) { clearTimeout(menuTimers[context.session.user.id]); }
+		// }
 		if (context.event.rawEvent.postback) {
 			if (context.event.rawEvent.postback.referral) { // if this exists we are on external site
 				await context.setState({ facebookPlataform: 'CUSTOMER_CHAT_PLUGIN' });
