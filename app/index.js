@@ -223,7 +223,7 @@ const handler = new MessengerHandler()
 						sendToCreateIssue(context);
 					} else if (context.state.apiaiResp.result.metadata.intentName === 'Pergunta') {
 						if (Object.keys(context.state.apiaiResp.result.parameters).length >= 1) { // found at least one entity
-							console.log(`\nAchamos ${Object.keys(context.state.apiaiResp.result.parameters).length}entidade`);
+							console.log(`\nAchamos ${Object.keys(context.state.apiaiResp.result.parameters).length} entidade`);
 
 							await context.setState({
 								knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.apiaiResp.result.parameters),
