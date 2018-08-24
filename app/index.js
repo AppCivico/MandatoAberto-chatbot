@@ -163,7 +163,8 @@ const handler = new MessengerHandler()
 			if (context.state.dialog !== 'recipientData') { // handling input that's not from "asking data"
 				if (context.event.isPostback) { // this could be in a better place
 					if (context.event.postback.payload === 'themeYes') {
-						await context.state.themes.forEach(async (element) => {
+						// await context.state.themes.forEach(async (element) => {
+						await Object.keys(context.state.apiaiResp.result.parameters).forEach(async (element) => {
 							const currentTheme = await context.state.knowledge.knowledge_base.find(x => x.entities[0].tag === element);
 							if (currentTheme.answer) { // check if this tag has an answer
 								await context.sendText(`Sobre ${element}: ${currentTheme.answer}`);
@@ -183,8 +184,6 @@ const handler = new MessengerHandler()
 						await context.setState({ question: context.state.knowledge.knowledge_base.find(x => x.id === parseInt(context.event.postback.payload.replace('answer', ''), 10)) });
 						await context.setState({ dialog: 'showAnswer' });
 					} else if (context.event.postback.payload === 'talkToUs') { // user wants to enter in contact
-						console.log('i am here');
-
 						await context.setState({ sendIntro: false });
 						await context.setState({ listening: false });
 						await context.setState({ dialog: 'createIssue' });
@@ -253,16 +252,7 @@ const handler = new MessengerHandler()
 
 								checkThemes(context);
 							}
-						// } else { // didn't found any entity
-						// 	console.log('\nNão temos nenhuma entity!');
-						// 	if (areWeListening === true) {
-						// 		await context.setState({ dialog: 'createIssue' });
-						// 	} else {
-						// 		await context.setState({ dialog: 'intermediate' });
-						// 	}
 						}
-						// } else if (context.state.apiaiResp.result.metadata.intentName === 'talkToUs') {
-						// // to be added
 					}
 				}
 			}
