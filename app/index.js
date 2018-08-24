@@ -561,8 +561,8 @@ const handler = new MessengerHandler()
 				await context.setState({ dialog: 'prompt' });
 				break;
 			case 'createIssue':
-				if (!context.state.apiaiResp || context.state.apiaiResp === ''
-						|| (context.state.apiaiResp && context.state.apiaiResp.result && context.state.apiaiResp.result.metadata && context.state.apiaiResp.result.metadata.intentName !== 'Pergunta')) {
+				if ((context.state.apiaiResp && context.state.apiaiResp.result
+					&& context.state.apiaiResp.result.metadata && context.state.apiaiResp.result.metadata.intentName === 'Fallback')) {
 					if (context.state.listening === true) {
 						if (!userMessages[context.session.user.id] || userMessages[context.session.user.id] === '') { // aggregating user texts
 							userMessages[context.session.user.id] = context.state.whatWasTyped;
