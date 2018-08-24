@@ -86,8 +86,9 @@ function getArticles(gender) {
 // }
 
 async function checkThemes(context) {
+	// we confirm every theme the user asked, even though we might not be able to answer them all
 	await context.sendButtonTemplate('Você está perguntando sobre '
-		+ `${context.state.themes.join(', ').replace(/,(?=[^,]*$)/, ' e')}?`, opt.themeConfirmation);
+		+ `${Object.keys(context.state.apiaiResp.result.parameters).join(', ').replace(/,(?=[^,]*$)/, ' e')}?`, opt.themeConfirmation);
 }
 async function showQuestions(context) {
 	await context.typingOn();
@@ -222,7 +223,7 @@ const handler = new MessengerHandler()
 							await context.setState({
 								knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.apiaiResp.result.parameters),
 							});
-							if (context.state.knowledge.knowledge_base.length === 0) { // we have no questions related to this entity
+							if (context.state.knowledge.knowledge_base.length === 0) { // we have no questions related to these entities
 								console.log('\nNão temos nenhuma resposta!');
 								// TODO falta fazer algo quando não tem pergunta cadastrada!
 								if (areWeListening === true) {
@@ -236,7 +237,10 @@ const handler = new MessengerHandler()
 
 								console.dir(context.state.knowledge.knowledge_base);
 
-								await context.setState({ themes: [] });
+								// the themes the user ask come from apiaiResp.result.parameters
+								// the themes we have an answer for come from knowledge_base.entities[n].tag
+								await context.setState({ themes: [] }); // where the themes we have an answer for will be stored
+
 								await context.state.knowledge.knowledge_base.forEach(async (element) => {
 									await context.state.themes.push(element.entities[0].tag);
 									// We don't need to iterate over the entities array because for now there isn't going to be more than one entity
