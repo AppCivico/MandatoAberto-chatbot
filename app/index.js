@@ -125,13 +125,12 @@ async function checkPollAnswered(context) {
 async function sendToCreateIssue(context) {
 	// console.log('Status do arewelistening: ', areWeListening);
 	console.log(cameFromOutside);
-	console.log(cameFromOutside[context.session.user.id] === true);
 
-	if (cameFromOutside[context.session.user.id] === true) { // if user id is in cameFromOutside that means the user came from comment/feed
+	if (!cameFromOutside[context.session.user.id]) { // if user id is in cameFromOutside that means the user came from comment/feed
+		await context.setState({ dialog: 'createIssue' });
+	} else {
 		delete cameFromOutside[context.session.user.id];
 		await context.setState({ dialog: 'intermediate' });
-	} else {
-		await context.setState({ dialog: 'createIssue' });
 	}
 	// if (areWeListening === true) {
 	// 	await context.setState({ dialog: 'createIssue' });
