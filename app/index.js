@@ -91,7 +91,7 @@ async function listThemes(array) {
 async function checkThemes(context) {
 	// we confirm every theme the user asked, even though we might not be able to answer them all
 	await context.sendButtonTemplate('Você está perguntando sobre '
-		+ `${listThemes(Object.keys(context.state.apiaiResp.result.parameters))}?`, opt.themeConfirmation);
+		+ `${await listThemes(Object.keys(context.state.apiaiResp.result.parameters))}?`, opt.themeConfirmation);
 }
 async function showQuestions(context) {
 	await context.typingOn();
@@ -233,8 +233,11 @@ const handler = new MessengerHandler()
 								&& context.state.knowledge.knowledge_base.length === 0) { // we have no questions related to these entities
 								await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
 									context.state.whatWasTyped, context.state.apiaiResp.result.parameters);
-								await context.sendText(`Parece que ${context.state.articles.defined} ${context.state.politicianData.office.name} ${context.state.politicianData.name} `
-									+ `ainda não se posicionou sobre ${await listThemes(Object.keys(context.state.apiaiResp.result.parameters))}. Estarei avisando a nossa equipe.`);
+								await context.sendText(
+									`Parece que ${context.state.articles.defined} ${context.state.politicianData.office.name} ${context.state.politicianData.name} `
+									+ `ainda não se posicionou sobre ${await listThemes(Object.keys(context.state.apiaiResp.result.parameters))}. Estarei avisando a nossa equipe. `
+									+ 'Se tiver mais alguma dúvida, por favor, digite.',
+								);
 								// sendToCreateIssue(context);
 							} else {
 								// instead of showing the questions already, we confirm with the user the themes he mentioned
