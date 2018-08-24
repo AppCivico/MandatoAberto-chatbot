@@ -174,6 +174,8 @@ const handler = new MessengerHandler()
 						await context.setState({ question: context.state.knowledge.knowledge_base.find(x => x.id === parseInt(context.event.postback.payload.replace('answer', ''), 10)) });
 						await context.setState({ dialog: 'showAnswer' });
 					} else if (context.event.postback.payload === 'talkToUs') { // user wants to enter in contact
+						console.log('i am here');
+
 						await context.setState({ sendIntro: false });
 						await context.setState({ listening: false });
 						await context.setState({ dialog: 'createIssue' });
