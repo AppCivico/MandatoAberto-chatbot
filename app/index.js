@@ -230,7 +230,7 @@ const handler = new MessengerHandler()
 							});
 							if (context.state.knowledge.knowledge_base
 								&& context.state.knowledge.knowledge_base.length === 0) { // we have no questions related to these entities
-								console.log('\nNão temos nenhuma resposta!');
+								console.log('Não temos nenhuma resposta!');
 								await context.setState({ apiaiResp: '', knowledge: '', themes: '' }); // cleaning up
 								sendToCreateIssue(context);
 							} else {
