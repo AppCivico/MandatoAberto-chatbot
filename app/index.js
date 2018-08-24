@@ -215,11 +215,10 @@ const handler = new MessengerHandler()
 
 					console.log(context.state.apiaiResp.result.parameters);
 
-
 					if (context.state.apiaiResp.result.metadata.intentName === 'Fallback') {
 						// Fallback --> counldn't find any matching intents
 						// check if message came from standard flow or from post/comment
-						console.log('\ncai no fallback');
+						await context.setState({ apiaiResp: '', knowledge: '', themes: '' }); // cleaning up
 						sendToCreateIssue(context);
 					} else if (context.state.apiaiResp.result.metadata.intentName === 'Pergunta') {
 						if (Object.keys(context.state.apiaiResp.result.parameters).length >= 1) { // found at least one entity
@@ -230,7 +229,6 @@ const handler = new MessengerHandler()
 							});
 							if (context.state.knowledge.knowledge_base
 								&& context.state.knowledge.knowledge_base.length === 0) { // we have no questions related to these entities
-								console.log('Não temos nenhuma resposta!');
 								await context.setState({ apiaiResp: '', knowledge: '', themes: '' }); // cleaning up
 								sendToCreateIssue(context);
 							} else {
