@@ -313,7 +313,7 @@ const handler = new MessengerHandler()
 			const post_id = context.event.rawEvent.value.post_id;
 			const page_id = post_id.substr(0, post_id.indexOf('_'));
 			const user_id = context.event.rawEvent.value.from.id;
-			cameFromOutside[user_id] = true;
+			cameFromOutside[user_id] = false;
 			console.log(cameFromOutside);
 
 			areWeListening = false;
