@@ -125,6 +125,7 @@ async function checkPollAnswered(context) {
 async function sendToCreateIssue(context) {
 	// console.log('Status do arewelistening: ', areWeListening);
 	console.log(cameFromOutside);
+	console.log(cameFromOutside[context.session.user.id] === true);
 
 	if (cameFromOutside[context.session.user.id] === true) { // if user id is in cameFromOutside that means the user came from comment/feed
 		delete cameFromOutside[context.session.user.id];
