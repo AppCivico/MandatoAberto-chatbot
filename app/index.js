@@ -225,14 +225,15 @@ const handler = new MessengerHandler()
 							await context.setState({
 								knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.apiaiResp.result.parameters),
 							});
-							if (context.state.knowledge.knowledge_base.length === 0) { // we have no questions related to these entities
+							if (context.state.knowledge.knowledge_base
+								&& context.state.knowledge.knowledge_base.length === 0) { // we have no questions related to these entities
 								console.log('\nNão temos nenhuma resposta!');
 								// TODO falta fazer algo quando não tem pergunta cadastrada!
-								// if (areWeListening === true) {
-								// 	await context.setState({ dialog: 'createIssue' });
-								// } else {
-								// 	await context.setState({ dialog: 'intermediate' });
-								// }
+								if (areWeListening === true) {
+									await context.setState({ dialog: 'createIssue' });
+								} else {
+									await context.setState({ dialog: 'intermediate' });
+								}
 							} else {
 								// instead of showing the questions already, we confirm with the user the themes he mentioned
 								console.log('temos respostas: ', context.state.knowledge.knowledge_base.length);
