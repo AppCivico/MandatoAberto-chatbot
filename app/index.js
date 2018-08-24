@@ -199,6 +199,8 @@ const handler = new MessengerHandler()
 					await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
 					removeEmptyKeys(context.state.apiaiResp.result.parameters);
 
+					console.log(context.state.apiaiResp.result.parameters);
+
 
 					if (context.state.apiaiResp.result.metadata.intentName === 'Fallback') {
 						// Fallback --> counldn't find any matching intents
@@ -209,7 +211,7 @@ const handler = new MessengerHandler()
 							await context.setState({ dialog: 'intermediate' });
 						}
 					} else if (context.state.apiaiResp.result.metadata.intentName === 'Pergunta') {
-						if (Object.keys(context.state.apiaiResp.result.parameters).length === 1) { // found intent and 1 entity
+						if (Object.keys(context.state.apiaiResp.result.parameters).length >= 1) { // found at least one entity
 							await context.setState({
 								knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.apiaiResp.result.parameters),
 							});
@@ -221,7 +223,7 @@ const handler = new MessengerHandler()
 									await context.setState({ dialog: 'intermediate' });
 								}
 							} else {
-								// instead of showing the questions already, we confirm with the user the one theme
+								// instead of showing the questions already, we confirm with the user the themes he mentioned
 								console.dir(context.state.knowledge.knowledge_base);
 
 								await context.setState({ themes: [] });
@@ -235,8 +237,12 @@ const handler = new MessengerHandler()
 
 								checkThemes(context);
 							}
-						} else { // found intent but 2+ entities
-							await context.setState({ dialog: 'chooseTheme' });
+						} else { // didn't found any answers
+							if (areWeListening === true) {
+								await context.setState({ dialog: 'createIssue' });
+							} else {
+								await context.setState({ dialog: 'intermediate' });
+							}
 						}
 						// } else if (context.state.apiaiResp.result.metadata.intentName === 'talkToUs') {
 						// // to be added
