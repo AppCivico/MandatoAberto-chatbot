@@ -121,6 +121,14 @@ async function checkPollAnswered(context) {
 	return false;
 }
 
+async function sendToCreateIssue(context) {
+	if (areWeListening === true) {
+		await context.setState({ dialog: 'createIssue' });
+	} else {
+		await context.setState({ dialog: 'intermediate' });
+	}
+}
+
 async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-declarations
 	if (!context.state.introduction) { // just in case something goes way off
 		await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
@@ -212,12 +220,7 @@ const handler = new MessengerHandler()
 						// Fallback --> counldn't find any matching intents
 						// check if message came from standard flow or from post/comment
 						console.log('\ncai no fallback');
-
-						if (areWeListening === true) {
-							await context.setState({ dialog: 'createIssue' });
-						} else {
-							await context.setState({ dialog: 'intermediate' });
-						}
+						sendToCreateIssue(context);
 					} else if (context.state.apiaiResp.result.metadata.intentName === 'Pergunta') {
 						if (Object.keys(context.state.apiaiResp.result.parameters).length >= 1) { // found at least one entity
 							console.log(`\nAchamos ${Object.keys(context.state.apiaiResp.result.parameters).length}entidade`);
@@ -228,12 +231,7 @@ const handler = new MessengerHandler()
 							if (context.state.knowledge.knowledge_base
 								&& context.state.knowledge.knowledge_base.length === 0) { // we have no questions related to these entities
 								console.log('\nNão temos nenhuma resposta!');
-								// TODO falta fazer algo quando não tem pergunta cadastrada!
-								if (areWeListening === true) {
-									await context.setState({ dialog: 'createIssue' });
-								} else {
-									await context.setState({ dialog: 'intermediate' });
-								}
+								sendToCreateIssue(context);
 							} else {
 								// instead of showing the questions already, we confirm with the user the themes he mentioned
 								console.log('temos respostas: ', context.state.knowledge.knowledge_base.length);
