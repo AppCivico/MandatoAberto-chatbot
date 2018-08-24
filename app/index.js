@@ -572,6 +572,7 @@ const handler = new MessengerHandler()
 				await context.setState({ dialog: 'prompt' });
 				break;
 			case 'createIssue':
+
 				if (context.state.listening === true) {
 					if (!userMessages[context.session.user.id] || userMessages[context.session.user.id] === '') { // aggregating user texts
 						userMessages[context.session.user.id] = context.state.whatWasTyped;
@@ -591,6 +592,7 @@ const handler = new MessengerHandler()
 					userMessages[context.session.user.id] = '';
 					await context.setState({ sendIntro: true, listening: true });
 				}
+				console.log('I shouldnt be called');
 
 				issueTimers[context.session.user.id] = setTimeout(async () => {
 					if (userMessages[context.session.user.id] !== '') {
