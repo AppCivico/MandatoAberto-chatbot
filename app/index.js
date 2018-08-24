@@ -47,7 +47,6 @@ const userMessages = {};
 // sendIntro = true -> context.state.sendIntro -> verifies if we should send the "coudln't understand" or the "talkToUs" text for issue creation.
 // listening = true -> context.state.listening -> verifies if we should aggregate text on userMessages
 let areWeListening = true;
-const cameFromOutside = {};
 // areWeListening -> user.state.areWeListening(doesn't work) -> diferenciates messages that come from the standard flow and messages from comment/post
 
 function removeEmptyKeys(obj) { Object.keys(obj).forEach((key) => { if (obj[key].length === 0) { delete obj[key]; } }); }
@@ -123,20 +122,12 @@ async function checkPollAnswered(context) {
 }
 
 async function sendToCreateIssue(context) {
-	// console.log('Status do arewelistening: ', areWeListening);
-	console.log(cameFromOutside);
-
-	if (cameFromOutside[context.session.user.id]) { // if user id is in cameFromOutside that means the user came from comment/feed
-		await context.setState({ dialog: 'intermediate' });
-		delete cameFromOutside[context.session.user.id];
-	} else {
+	console.log('Status do arewelistening:', areWeListening);
+	if (areWeListening === true) {
 		await context.setState({ dialog: 'createIssue' });
+	} else {
+		await context.setState({ dialog: 'intermediate' });
 	}
-	// if (areWeListening === true) {
-	// 	await context.setState({ dialog: 'createIssue' });
-	// } else {
-	// 	await context.setState({ dialog: 'intermediate' });
-	// }
 }
 
 async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-declarations
@@ -283,7 +274,6 @@ const handler = new MessengerHandler()
 
 			// if the user interacts while this timer is running we don't need to run confirm that the issue was sent anymore
 			if (postIssueTimers[context.session.user.id]) { clearTimeout(menuTimers[context.session.user.id]); }
-			// if (cameFromOutside[context.session.user.id]) { delete cameFromOutside[context.session.user.id]; }
 		}
 		if (context.event.rawEvent.postback) {
 			if (context.event.rawEvent.postback.referral) { // if this exists we are on external site
@@ -312,9 +302,6 @@ const handler = new MessengerHandler()
 			const post_id = context.event.rawEvent.value.post_id;
 			const page_id = post_id.substr(0, post_id.indexOf('_'));
 			const user_id = context.event.rawEvent.value.from.id;
-			cameFromOutside[user_id] = true;
-			console.log(cameFromOutside);
-
 			areWeListening = false;
 			switch (context.event.rawEvent.value.item) {
 			case 'comment':
@@ -424,7 +411,7 @@ const handler = new MessengerHandler()
 			switch (context.state.dialog) {
 			case 'greetings':
 				await context.typingOff();
-				// areWeListening = true;
+				areWeListening = true;
 				await context.setState({ sendIntro: true, listening: true });
 				await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 				await context.setState({ trajectory: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'trajectory') });
@@ -447,7 +434,7 @@ const handler = new MessengerHandler()
 				break;
 			case 'mainMenu':
 				await context.typingOff();
-				// areWeListening = true;
+				areWeListening = true;
 				await context.setState({ sendIntro: true, listening: true });
 				await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 				await context.setState({ trajectory: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'trajectory') });
