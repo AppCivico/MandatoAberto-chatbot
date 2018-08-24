@@ -218,7 +218,7 @@ const handler = new MessengerHandler()
 						}
 					} else if (context.state.apiaiResp.result.metadata.intentName === 'Pergunta') {
 						if (Object.keys(context.state.apiaiResp.result.parameters).length >= 1) { // found at least one entity
-							console.log('\nAchamos uma entidade');
+							console.log(`\nAchamos ${Object.keys(context.state.apiaiResp.result.parameters).length}entidade`);
 
 							await context.setState({
 								knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.apiaiResp.result.parameters),
@@ -251,13 +251,13 @@ const handler = new MessengerHandler()
 
 								checkThemes(context);
 							}
-						} else { // didn't found any entity
-							console.log('\nNão temos nenhuma entity!');
-							if (areWeListening === true) {
-								await context.setState({ dialog: 'createIssue' });
-							} else {
-								await context.setState({ dialog: 'intermediate' });
-							}
+						// } else { // didn't found any entity
+						// 	console.log('\nNão temos nenhuma entity!');
+						// 	if (areWeListening === true) {
+						// 		await context.setState({ dialog: 'createIssue' });
+						// 	} else {
+						// 		await context.setState({ dialog: 'intermediate' });
+						// 	}
 						}
 						// } else if (context.state.apiaiResp.result.metadata.intentName === 'talkToUs') {
 						// // to be added
