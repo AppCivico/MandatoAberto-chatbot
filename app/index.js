@@ -236,8 +236,7 @@ const handler = new MessengerHandler()
 								await context.sendText(
 									`Parece que ${context.state.articles.defined} ${context.state.politicianData.office.name} ${context.state.politicianData.name} `
 									+ `ainda não se posicionou sobre ${await listThemes(Object.keys(context.state.apiaiResp.result.parameters))}. Estarei avisando a nossa equipe. `
-									+ 'Se tiver mais alguma dúvida, por favor, digite.',
-								);
+									+ 'Se tiver mais alguma dúvida, por favor, digite.');// eslint-disable-line
 								// sendToCreateIssue(context);
 							} else {
 								// instead of showing the questions already, we confirm with the user the themes he mentioned
