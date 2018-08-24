@@ -124,7 +124,7 @@ async function checkPollAnswered(context) {
 
 async function sendToCreateIssue(context) {
 	// console.log('Status do arewelistening: ', areWeListening);
-	console.log(cameFromOutside);
+	console.log(areWeListening);
 
 	if (await cameFromOutside[context.session.user.id] === 123) { // if user id is in cameFromOutside that means the user came from comment/feed
 		await context.setState({ dialog: 'intermediate' });
@@ -283,7 +283,7 @@ const handler = new MessengerHandler()
 
 			// if the user interacts while this timer is running we don't need to run confirm that the issue was sent anymore
 			if (postIssueTimers[context.session.user.id]) { clearTimeout(menuTimers[context.session.user.id]); }
-			if (cameFromOutside[context.session.user.id]) { delete cameFromOutside[context.session.user.id]; }
+			// if (cameFromOutside[context.session.user.id]) { delete cameFromOutside[context.session.user.id]; }
 		}
 		if (context.event.rawEvent.postback) {
 			if (context.event.rawEvent.postback.referral) { // if this exists we are on external site
