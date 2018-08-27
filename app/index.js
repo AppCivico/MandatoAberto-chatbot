@@ -255,7 +255,7 @@ const handler = new MessengerHandler()
 								// instead of showing the questions already, we confirm with the user the themes he mentioned
 								console.log('temos respostas: ', context.state.knowledge.knowledge_base.length);
 
-								console.dir(context.state.knowledge.knowledge_base);
+								// console.dir(context.state.knowledge.knowledge_base);
 
 								// the themes the user ask come from apiaiResp.result.parameters
 								// the themes we have an answer for come from knowledge_base.entities[n].tag
