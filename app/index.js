@@ -96,7 +96,7 @@ async function listThemes(obj) {
 		}
 	});
 
-	return 'o tema';
+	// return 'o tema';
 }
 
 async function showQuestions(context) {
