@@ -93,11 +93,10 @@ async function listThemes(obj) {
 
 		if (index === (Object.keys(obj).length - 1)) {
 			console.log('entrei aqui');
-
-			return themes.sort().join(', ').replace(/,(?=[^,]*$)/, ' e');
 		}
 	});
 
+	return themes.sort().join(', ').replace(/,(?=[^,]*$)/, ' e');
 	// return 'o tema';
 }
 
