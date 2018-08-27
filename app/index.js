@@ -198,27 +198,29 @@ const handler = new MessengerHandler()
 			if (context.state.dialog !== 'recipientData') { // handling input that's not from "asking data"
 				if (context.event.isPostback) { // this could be in a better place
 					if (context.event.postback.payload === 'themeYes') {
-						for (const [element, key] of Object.entries(context.state.apiaiResp.result.parameters)) { // eslint-disable-line
-							const currentTheme = context.state.knowledge.knowledge_base.find(x => x.entities[0].tag === element);
+						/* eslint-disable */
+						for (const [element] of Object.entries(context.state.apiaiResp.result.parameters)) { // eslint-disable-line no-restricted-syntax
+							const currentTheme = await context.state.knowledge.knowledge_base.find(x => x.entities[0].tag === element);
 							// check if there's either a text answer or a media attachment linked to current theme
 							if (currentTheme && (currentTheme.answer || (currentTheme.saved_attachment_type !== null && currentTheme.saved_attachment_id !== null))) {
 								if (currentTheme.answer) { // if there's a text asnwer we send it
-									context.sendText(`Sobre ${dictionary[element].toLowerCase()}: ${currentTheme.answer}`);
+									await context.sendText(`Sobre ${dictionary[element].toLowerCase()}: ${currentTheme.answer}`);
 								}
 								if (currentTheme.saved_attachment_type === 'image') { // if attachment is image
-									context.sendImage({ attachment_id: currentTheme.saved_attachment_id });
+									await context.sendImage({ attachment_id: currentTheme.saved_attachment_id });
 								} else if (currentTheme.saved_attachment_type === 'video') { // if attachment is video
-									context.sendVideo({ attachment_id: currentTheme.saved_attachment_id });
+									await context.sendVideo({ attachment_id: currentTheme.saved_attachment_id });
 								} else if (currentTheme.saved_attachment_type === 'audio') { // if attachment is audio
-									context.sendAudio({ attachment_id: currentTheme.saved_attachment_id });
+									await context.sendAudio({ attachment_id: currentTheme.saved_attachment_id });
 								}
 							} else { // we couldn't find neither text answer nor attachment
-								context.sendText(`Sobre ${dictionary[element].toLowerCase()} fico te devendo uma resposta. `
+								await context.sendText(`Sobre ${dictionary[element].toLowerCase()} fico te devendo uma resposta. `
 									+ 'Mas já entou enviando para nossas equipe e estaremos te respondendo em breve.');
-								MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
+								await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
 									context.state.whatWasTyped, context.state.apiaiResp.result.parameters);
 							}
 						}
+						/* eslint-enable */
 
 						await context.sendButtonTemplate('Que tal?', await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
 						await context.setState({ // cleaning up
