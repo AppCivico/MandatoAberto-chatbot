@@ -176,9 +176,10 @@ const handler = new MessengerHandler()
 								}
 								if (currentTheme.saved_attachment_type === 'image') { // if attachment is image
 									await context.sendImage({ attachment_id: currentTheme.saved_attachment_id });
-								}
-								if (currentTheme.saved_attachment_type === 'video') { // if attachment is video
+								} else if (currentTheme.saved_attachment_type === 'video') { // if attachment is video
 									await context.sendVideo({ attachment_id: currentTheme.saved_attachment_id });
+								} else if (currentTheme.saved_attachment_type === 'audio') { // if attachment is audio
+									await context.sendAudio({ attachment_id: currentTheme.saved_attachment_id });
 								}
 							} else { // we couldn't find neither text answer nor attachment
 								await context.sendText(`Sobre ${element} fico te devendo uma resposta. `
