@@ -86,14 +86,10 @@ function getArticles(gender) {
 // 	return `Sobre ${articles.defined} ${politicianData.office.name}`;
 // }
 async function listThemes(obj) {
-	console.log(obj);
-
 	const themes = [];
 	await Object.keys(obj).forEach(async (element) => {
-		themes.push(dictionary[obj[element]]);
-		console.log(themes);
+		themes.push(dictionary[obj[element]].toLowerCase());
 	});
-
 	return themes.sort().join(', ').replace(/,(?=[^,]*$)/, ' e');
 }
 
@@ -134,6 +130,7 @@ async function sendToCreateIssue(context) {
 		await context.setState({ dialog: 'createIssue' });
 	} else {
 		await context.setState({ dialog: 'intermediate' });
+		areWeListening = true;
 	}
 }
 
@@ -162,7 +159,7 @@ async function sendKnowledgeBase(context, element, index) {
 	// check if there's either a text answer or a media attachment linked to current theme
 	if (currentTheme && (currentTheme.answer || (currentTheme.saved_attachment_type !== null && currentTheme.saved_attachment_id !== null))) {
 		if (currentTheme.answer) { // if there's a text asnwer we send it
-			await context.sendText(`Sobre ${dictionary[element]}: ${currentTheme.answer}`);
+			await context.sendText(`Sobre ${dictionary[element].toLowerCase()}: ${currentTheme.answer}`);
 		}
 		if (currentTheme.saved_attachment_type === 'image') { // if attachment is image
 			await context.sendImage({ attachment_id: currentTheme.saved_attachment_id });
@@ -172,7 +169,7 @@ async function sendKnowledgeBase(context, element, index) {
 			await context.sendAudio({ attachment_id: currentTheme.saved_attachment_id });
 		}
 	} else { // we couldn't find neither text answer nor attachment
-		await context.sendText(`Sobre ${dictionary[element]} fico te devendo uma resposta. `
+		await context.sendText(`Sobre ${dictionary[element].toLowerCase()} fico te devendo uma resposta. `
 				+ 'Mas já entou enviando para nossas equipe e estaremos te respondendo em breve.');
 		await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
 			context.state.whatWasTyped, context.state.apiaiResp.result.parameters);
@@ -276,7 +273,7 @@ const handler = new MessengerHandler()
 								// await context.state.themes.push(element2.tag);
 								// });
 								// });
-								await context.sendButtonTemplate('Você está perguntando sobre '
+								await context.sendButtonTemplate('Você está perguntando meu posicionamente sobre '
 									+ `${await listThemes(Object.keys(context.state.apiaiResp.result.parameters))}?`, opt.themeConfirmation);
 							}
 						}
