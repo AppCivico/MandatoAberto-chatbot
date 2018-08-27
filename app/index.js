@@ -157,35 +157,33 @@ async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-dec
 	return dialogs;
 }
 
-async function sendKnowledgeBase(context) {
-	await Object.keys(context.state.apiaiResp.result.parameters).sort().forEach(async (element, index) => {
-		const currentTheme = await context.state.knowledge.knowledge_base.find(x => x.entities[0].tag === element);
-		// check if there's either a text answer or a media attachment linked to current theme
-		if (currentTheme && (currentTheme.answer || (currentTheme.saved_attachment_type !== null && currentTheme.saved_attachment_id !== null))) {
-			if (currentTheme.answer) { // if there's a text asnwer we send it
-				await context.sendText(`Sobre ${dictionary[element]}: ${currentTheme.answer}`);
-			}
-			if (currentTheme.saved_attachment_type === 'image') { // if attachment is image
-				await context.sendImage({ attachment_id: currentTheme.saved_attachment_id });
-			} else if (currentTheme.saved_attachment_type === 'video') { // if attachment is video
-				await context.sendVideo({ attachment_id: currentTheme.saved_attachment_id });
-			} else if (currentTheme.saved_attachment_type === 'audio') { // if attachment is audio
-				await context.sendAudio({ attachment_id: currentTheme.saved_attachment_id });
-			}
-		} else { // we couldn't find neither text answer nor attachment
-			await context.sendText(`Sobre ${dictionary[element]} fico te devendo uma resposta. `
+async function sendKnowledgeBase(context, element, index) {
+	const currentTheme = await context.state.knowledge.knowledge_base.find(x => x.entities[0].tag === element);
+	// check if there's either a text answer or a media attachment linked to current theme
+	if (currentTheme && (currentTheme.answer || (currentTheme.saved_attachment_type !== null && currentTheme.saved_attachment_id !== null))) {
+		if (currentTheme.answer) { // if there's a text asnwer we send it
+			await context.sendText(`Sobre ${dictionary[element]}: ${currentTheme.answer}`);
+		}
+		if (currentTheme.saved_attachment_type === 'image') { // if attachment is image
+			await context.sendImage({ attachment_id: currentTheme.saved_attachment_id });
+		} else if (currentTheme.saved_attachment_type === 'video') { // if attachment is video
+			await context.sendVideo({ attachment_id: currentTheme.saved_attachment_id });
+		} else if (currentTheme.saved_attachment_type === 'audio') { // if attachment is audio
+			await context.sendAudio({ attachment_id: currentTheme.saved_attachment_id });
+		}
+	} else { // we couldn't find neither text answer nor attachment
+		await context.sendText(`Sobre ${dictionary[element]} fico te devendo uma resposta. `
 				+ 'Mas já entou enviando para nossas equipe e estaremos te respondendo em breve.');
-			await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
-				context.state.whatWasTyped, context.state.apiaiResp.result.parameters);
-		}
+		await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
+			context.state.whatWasTyped, context.state.apiaiResp.result.parameters);
+	}
 
-		if (index === (Object.keys(context.state.apiaiResp.result.parameters).length - 1)) {
-			await context.sendButtonTemplate('Que tal?', await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
-			await context.setState({ // cleaning up
-				apiaiResp: '', knowledge: '', themes: '', whatWasTyped: '',
-			});
-		}
-	});
+	if (index === (Object.keys(context.state.apiaiResp.result.parameters).length - 1)) {
+		await context.sendButtonTemplate('Que tal?', await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
+		await context.setState({ // cleaning up
+			apiaiResp: '', knowledge: '', themes: '', whatWasTyped: '',
+		});
+	}
 }
 
 const handler = new MessengerHandler()
@@ -201,7 +199,9 @@ const handler = new MessengerHandler()
 			if (context.state.dialog !== 'recipientData') { // handling input that's not from "asking data"
 				if (context.event.isPostback) { // this could be in a better place
 					if (context.event.postback.payload === 'themeYes') {
-						await sendKnowledgeBase(context);
+						await Object.keys(context.state.apiaiResp.result.parameters).sort().forEach(async (element, index) => {
+							await sendKnowledgeBase(context, element, index);
+						});
 					} else if (context.event.postback.payload.slice(0, 6) === 'answer') {
 						await context.setState({ question: context.state.knowledge.knowledge_base.find(x => x.id === parseInt(context.event.postback.payload.replace('answer', ''), 10)) });
 						await context.setState({ dialog: 'showAnswer' });
