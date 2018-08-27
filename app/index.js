@@ -200,7 +200,7 @@ const handler = new MessengerHandler()
 				if (context.event.isPostback) { // this could be in a better place
 					if (context.event.postback.payload === 'themeYes') {
 						await Object.keys(context.state.apiaiResp.result.parameters).sort().forEach(async (element, index) => {
-							await sendKnowledgeBase(context, element, index);
+							await*  sendKnowledgeBase(context, element, index);
 						});
 					} else if (context.event.postback.payload.slice(0, 6) === 'answer') {
 						await context.setState({ question: context.state.knowledge.knowledge_base.find(x => x.id === parseInt(context.event.postback.payload.replace('answer', ''), 10)) });
