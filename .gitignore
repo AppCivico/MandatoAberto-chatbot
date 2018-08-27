@@ -67,6 +67,7 @@ typings/
 # audio2.js
 
 MA-DF-Secret-Key.json
+audio2.js
 
 *.wav
 *.mp4
