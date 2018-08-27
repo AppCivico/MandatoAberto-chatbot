@@ -90,7 +90,7 @@ async function listThemes(obj) {
 	await Object.keys(obj).forEach(async (element, index) => {
 		themes.push(dictionary[obj[element]]);
 
-		if (index === (Object.keys.length - 1)) {
+		if (index === (Object.keys(obj).length - 1)) {
 			themes = await themes.sort().join(', ').replace(/,(?=[^,]*$)/, ' e');
 			return themes;
 		}
