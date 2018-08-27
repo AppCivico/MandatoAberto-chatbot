@@ -85,20 +85,15 @@ function getArticles(gender) {
 // 	}
 // 	return `Sobre ${articles.defined} ${politicianData.office.name}`;
 // }
-async function listThemes(array) {
-	return array.sort().join(', ').replace(/,(?=[^,]*$)/, ' e');
-}
-
-async function checkThemes(context) {
-	// we confirm every theme the user asked, even though we might not be able to answer them all
-	const themes = [];
-	await Object.keys(context.state.apiaiResp.result.parameters).forEach(async (element) => {
-		themes.push(dictionary[context.state.apiaiResp.result.parameters[element]]);
+async function listThemes(obj) {
+	const themesArray = [];
+	await Object.keys(obj).forEach(async (element) => {
+		themesArray.push(dictionary[obj[element]]);
 	});
 
-	await context.sendButtonTemplate('Você está perguntando sobre '
-		+ `${await listThemes(Object.keys(context.state.apiaiResp.result.parameters))}?`, opt.themeConfirmation);
+	return themesArray.sort().join(', ').replace(/,(?=[^,]*$)/, ' e');
 }
+
 async function showQuestions(context) {
 	await context.typingOn();
 	await attach.sendQuestions(context, context.state.knowledge.knowledge_base);
@@ -273,8 +268,8 @@ const handler = new MessengerHandler()
 								// await context.state.themes.push(element2.tag);
 								// });
 								// });
-
-								checkThemes(context);
+								await context.sendButtonTemplate('Você está perguntando sobre '
+									+ `${await listThemes(Object.keys(context.state.apiaiResp.result.parameters))}?`, opt.themeConfirmation);
 							}
 						}
 					}
