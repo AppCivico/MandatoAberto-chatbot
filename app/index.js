@@ -86,12 +86,17 @@ function getArticles(gender) {
 // 	return `Sobre ${articles.defined} ${politicianData.office.name}`;
 // }
 async function listThemes(obj) {
-	const themesArray = [];
-	await Object.keys(obj).forEach(async (element) => {
-		themesArray.push(dictionary[obj[element]]);
+	let themes = [];
+	await Object.keys(obj).forEach(async (element, index) => {
+		themes.push(dictionary[obj[element]]);
+
+		if (index === (Object.keys.length - 1)) {
+			themes = await themes.sort().join(', ').replace(/,(?=[^,]*$)/, ' e');
+			return themes;
+		}
 	});
 
-	return themesArray.sort().join(', ').replace(/,(?=[^,]*$)/, ' e');
+	return 'o tema';
 }
 
 async function showQuestions(context) {
