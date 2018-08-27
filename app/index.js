@@ -86,7 +86,7 @@ function getArticles(gender) {
 // 	return `Sobre ${articles.defined} ${politicianData.office.name}`;
 // }
 async function listThemes(obj) {
-	let themes = [];
+	const themes = [];
 	await Object.keys(obj).forEach(async (element, index) => {
 		themes.push(dictionary[obj[element]]);
 		console.log(themes);
@@ -94,8 +94,7 @@ async function listThemes(obj) {
 		if (index === (Object.keys(obj).length - 1)) {
 			console.log('entrei aqui');
 
-			themes = await themes.sort().join(', ').replace(/,(?=[^,]*$)/, ' e');
-			return themes;
+			return themes.sort().join(', ').replace(/,(?=[^,]*$)/, ' e');
 		}
 	});
 
