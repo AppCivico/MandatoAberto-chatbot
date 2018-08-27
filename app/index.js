@@ -201,6 +201,10 @@ const handler = new MessengerHandler()
 							knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id,
 								{ [context.state.payload]: context.state.apiaiResp.result.parameters[context.state.payload] }),
 						});
+
+						console.log(context.state.knowledge);
+
+
 						await showQuestions(context);
 					} else {
 						await context.setState({ dialog: payload });
