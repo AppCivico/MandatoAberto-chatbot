@@ -199,8 +199,6 @@ const handler = new MessengerHandler()
 				if (context.event.isPostback) { // this could be in a better place
 					if (context.event.postback.payload === 'themeYes') {
 						for (const [element, key] of Object.entries(context.state.apiaiResp.result.parameters)) { // eslint-disable-line
-							console.log(element);
-							console.log(key);
 							const currentTheme = await context.state.knowledge.knowledge_base.find(x => x.entities[0].tag === element);
 							// check if there's either a text answer or a media attachment linked to current theme
 							if (currentTheme && (currentTheme.answer || (currentTheme.saved_attachment_type !== null && currentTheme.saved_attachment_id !== null))) {
@@ -221,6 +219,11 @@ const handler = new MessengerHandler()
 									context.state.whatWasTyped, context.state.apiaiResp.result.parameters);
 							}
 						}
+
+						await context.sendButtonTemplate('Que tal?', await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
+						await context.setState({ // cleaning up
+							apiaiResp: '', knowledge: '', themes: '', whatWasTyped: '',
+						});
 					} else if (context.event.postback.payload.slice(0, 6) === 'answer') {
 						await context.setState({ question: context.state.knowledge.knowledge_base.find(x => x.id === parseInt(context.event.postback.payload.replace('answer', ''), 10)) });
 						await context.setState({ dialog: 'showAnswer' });
