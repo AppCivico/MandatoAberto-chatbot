@@ -12,6 +12,7 @@ const VotoLegalAPI = require('./votolegal_api.js');
 const Articles = require('./utils/articles.js');
 const opt = require('./utils/options');
 const attach = require('./attach');
+const dictionary = require('./utils/dictionary');
 // const audio = require('./utils/audio');
 
 const apiai = dialogFlow(process.env.DIALOGFLOW_TOKEN);
@@ -90,6 +91,11 @@ async function listThemes(array) {
 
 async function checkThemes(context) {
 	// we confirm every theme the user asked, even though we might not be able to answer them all
+	const themes = [];
+	await Object.keys(context.state.apiaiResp.result.parameters).forEach(async (element) => {
+		themes.push(dictionary[context.state.apiaiResp.result.parameters[element]]);
+	});
+
 	await context.sendButtonTemplate('Você está perguntando sobre '
 		+ `${await listThemes(Object.keys(context.state.apiaiResp.result.parameters))}?`, opt.themeConfirmation);
 }
@@ -166,7 +172,6 @@ const handler = new MessengerHandler()
 			if (context.state.dialog !== 'recipientData') { // handling input that's not from "asking data"
 				if (context.event.isPostback) { // this could be in a better place
 					if (context.event.postback.payload === 'themeYes') {
-						// await context.state.themes.forEach(async (element) => {
 						await Object.keys(context.state.apiaiResp.result.parameters).sort().forEach(async (element, index) => {
 							const currentTheme = await context.state.knowledge.knowledge_base.find(x => x.entities[0].tag === element);
 							// check if there's either a text answer or a media attachment linked to current theme
@@ -259,15 +264,15 @@ const handler = new MessengerHandler()
 
 								// the themes the user ask come from apiaiResp.result.parameters
 								// the themes we have an answer for come from knowledge_base.entities[n].tag
-								await context.setState({ themes: [] }); // where the themes we have an answer for will be stored
+								// await context.setState({ themes: [] }); // where the themes we have an answer for will be stored
 
-								await context.state.knowledge.knowledge_base.forEach(async (element) => {
-									await context.state.themes.push(element.entities[0].tag);
-									// We don't need to iterate over the entities array because for now there isn't going to be more than one entity
-									// await element.entities.forEach(async (element2) => {
-									// await context.state.themes.push(element2.tag);
-									// });
-								});
+								// await context.state.knowledge.knowledge_base.forEach(async (element) => {
+								// await context.state.themes.push(element.entities[0].tag);
+								// We don't need to iterate over the entities array because for now there isn't going to be more than one entity
+								// await element.entities.forEach(async (element2) => {
+								// await context.state.themes.push(element2.tag);
+								// });
+								// });
 
 								checkThemes(context);
 							}
