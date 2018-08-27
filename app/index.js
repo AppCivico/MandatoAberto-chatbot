@@ -11,8 +11,8 @@ const MandatoAbertoAPI = require('./mandatoaberto_api.js');
 const VotoLegalAPI = require('./votolegal_api.js');
 const Articles = require('./utils/articles.js');
 const opt = require('./utils/options');
-const audio = require('./utils/audio');
 const attach = require('./attach');
+// const audio = require('./utils/audio');
 
 const apiai = dialogFlow(process.env.DIALOGFLOW_TOKEN);
 
@@ -219,11 +219,11 @@ const handler = new MessengerHandler()
 						await context.setState({ dialog: payload });
 					}
 				} else if (context.event.isAudio) {
-					await context.sendText('Recebi seu áudio!');
-					if (context.event.audio.url) {
-						// console.log(context.event.audio.url);
-						audio.voiceRequest(context.event.audio.url, context.session.user.id);
-					}
+					await context.sendButtonTemplate('Ainda não entendo áudio. Por favor, mande mensagens de texto', await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
+					// if (context.event.audio.url) {
+					// 	// console.log(context.event.audio.url);
+					// 	audio.voiceRequest(context.event.audio.url, context.session.user.id);
+					// }
 				} else if (context.event.isText) {
 					await context.setState({ whatWasTyped: context.event.message.text }); // will be used in case the bot doesn't find the question
 					await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
