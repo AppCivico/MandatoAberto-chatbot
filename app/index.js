@@ -167,8 +167,9 @@ const handler = new MessengerHandler()
 			if (context.state.dialog !== 'recipientData') { // handling input that's not from "asking data"
 				if (context.event.isPostback) { // this could be in a better place
 					if (context.event.postback.payload === 'themeYes') {
-						await Object.keys(context.state.apiaiResp.result.parameters).forEach(async (element, index) => {
-							const currentTheme = await context.state.knowledge.knowledge_base.find(x => x.entities.tag === element);
+						// await Object.keys(context.state.apiaiResp.result.parameters).forEach(async (element, index) => {
+						for (element of context.state.apiaiResp.result.parameters) {
+							const currentTheme = await context.state.knowledge.knowledge_base.find(x => x.entities[0].tag === element);
 							// check if there's either a text answer or a media attachment linked to current theme
 							if (currentTheme && (currentTheme.answer || (currentTheme.saved_attachment_type !== null && currentTheme.saved_attachment_id !== null))) {
 								if (currentTheme.answer) { // if there's a text asnwer we send it
@@ -187,14 +188,14 @@ const handler = new MessengerHandler()
 								await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
 									context.state.whatWasTyped, context.state.apiaiResp.result.parameters);
 							}
-
-							if (index === (Object.keys(context.state.apiaiResp.result.parameters).length - 1)) {
-								await context.sendButtonTemplate('Que tal?', await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
-								await context.setState({ // cleaning up
-									apiaiResp: '', knowledge: '', themes: '', whatWasTyped: '',
-								});
-							}
+						}
+						// if (index === (Object.keys(context.state.apiaiResp.result.parameters).length - 1)) {
+						await context.sendButtonTemplate('Que tal?', await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
+						await context.setState({ // cleaning up
+							apiaiResp: '', knowledge: '', themes: '', whatWasTyped: '',
 						});
+						// }
+						// });
 					} else if (context.event.postback.payload.slice(0, 6) === 'answer') {
 						await context.setState({ question: context.state.knowledge.knowledge_base.find(x => x.id === parseInt(context.event.postback.payload.replace('answer', ''), 10)) });
 						await context.setState({ dialog: 'showAnswer' });
