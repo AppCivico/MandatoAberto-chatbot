@@ -167,7 +167,7 @@ const handler = new MessengerHandler()
 			if (context.state.dialog !== 'recipientData') { // handling input that's not from "asking data"
 				if (context.event.isPostback) { // this could be in a better place
 					if (context.event.postback.payload === 'themeYes') {
-						await Object.keys(context.state.apiaiResp.result.parameters).sort().forEach(async (element, index) => {
+						Object.keys(context.state.apiaiResp.result.parameters).sort().forEach(async (element, index) => {
 							const currentTheme = await context.state.knowledge.knowledge_base.find(x => x.entities[0].tag === element);
 							// check if there's either a text answer or a media attachment linked to current theme
 							if (currentTheme && (currentTheme.answer || (currentTheme.saved_attachment_type !== null && currentTheme.saved_attachment_id !== null))) {
