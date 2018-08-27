@@ -172,17 +172,17 @@ const handler = new MessengerHandler()
 							// check if there's either a text answer or a media attachment linked to current theme
 							if (currentTheme && (currentTheme.answer || (currentTheme.saved_attachment_type !== null && currentTheme.saved_attachment_id !== null))) {
 								if (currentTheme.answer) { // if there's a text asnwer we send it
-									await context.sendText(`Sobre ${dictionary[element].toLowerCase()}: ${currentTheme.answer}`);
+									context.sendText(`Sobre ${dictionary[element].toLowerCase()}: ${currentTheme.answer}`);
 								}
 								if (currentTheme.saved_attachment_type === 'image') { // if attachment is image
-									await context.sendImage({ attachment_id: currentTheme.saved_attachment_id });
+									context.sendImage({ attachment_id: currentTheme.saved_attachment_id });
 								} else if (currentTheme.saved_attachment_type === 'video') { // if attachment is video
-									await context.sendVideo({ attachment_id: currentTheme.saved_attachment_id });
+									context.sendVideo({ attachment_id: currentTheme.saved_attachment_id });
 								} else if (currentTheme.saved_attachment_type === 'audio') { // if attachment is audio
-									await context.sendAudio({ attachment_id: currentTheme.saved_attachment_id });
+									context.sendAudio({ attachment_id: currentTheme.saved_attachment_id });
 								}
 							} else { // we couldn't find neither text answer nor attachment
-								await context.sendText(`Sobre ${dictionary[element].toLowerCase()} fico te devendo uma resposta. `
+								context.sendText(`Sobre ${dictionary[element].toLowerCase()} fico te devendo uma resposta. `
 									+ 'Mas já entou enviando para nossas equipe e estaremos te respondendo em breve.');
 								await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
 									context.state.whatWasTyped, context.state.apiaiResp.result.parameters);
