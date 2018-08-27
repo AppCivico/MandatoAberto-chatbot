@@ -187,6 +187,8 @@ const handler = new MessengerHandler()
 								await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
 									context.state.whatWasTyped, context.state.apiaiResp.result.parameters);
 							}
+							console.log('length: ', Object.keys(context.state.apiaiResp.result.parameters).length);
+							console.log('index: ', index);
 
 							if (index === Object.keys(context.state.apiaiResp.result.parameters).length) {
 								await context.sendButtonTemplate('Que tal?', await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
