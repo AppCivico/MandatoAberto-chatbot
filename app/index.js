@@ -167,7 +167,7 @@ const handler = new MessengerHandler()
 				if (context.event.isPostback) { // this could be in a better place
 					if (context.event.postback.payload === 'themeYes') {
 						// await context.state.themes.forEach(async (element) => {
-						await Object.keys(context.state.apiaiResp.result.parameters).sort().forEach(async (element) => {
+						await Object.keys(context.state.apiaiResp.result.parameters).sort().forEach(async (element, index) => {
 							const currentTheme = await context.state.knowledge.knowledge_base.find(x => x.entities[0].tag === element);
 							// check if there's either a text answer or a media attachment linked to current theme
 							if (currentTheme && (currentTheme.answer || (currentTheme.saved_attachment_type !== null && currentTheme.saved_attachment_id !== null))) {
@@ -187,11 +187,13 @@ const handler = new MessengerHandler()
 								await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
 									context.state.whatWasTyped, context.state.apiaiResp.result.parameters);
 							}
-						});
 
-						await context.sendButtonTemplate('Que tal?', await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
-						await context.setState({ // cleaning up
-							apiaiResp: '', knowledge: '', themes: '', whatWasTyped: '',
+							if (index === Object.keys(context.state.apiaiResp.result.parameters).length) {
+								await context.sendButtonTemplate('Que tal?', await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
+								await context.setState({ // cleaning up
+									apiaiResp: '', knowledge: '', themes: '', whatWasTyped: '',
+								});
+							}
 						});
 					} else if (context.event.postback.payload.slice(0, 6) === 'answer') {
 						await context.setState({ question: context.state.knowledge.knowledge_base.find(x => x.id === parseInt(context.event.postback.payload.replace('answer', ''), 10)) });
