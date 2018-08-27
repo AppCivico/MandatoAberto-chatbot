@@ -169,9 +169,18 @@ const handler = new MessengerHandler()
 						// await context.state.themes.forEach(async (element) => {
 						await Object.keys(context.state.apiaiResp.result.parameters).sort().forEach(async (element) => {
 							const currentTheme = await context.state.knowledge.knowledge_base.find(x => x.entities[0].tag === element);
-							if (currentTheme && currentTheme.answer) { // check if this tag has been found on the answers
-								await context.sendText(`Sobre ${element}: ${currentTheme.answer}`);
-							} else {
+							// check if there's either a text answer or a media attachment linked to current theme
+							if (currentTheme && (currentTheme.answer || (currentTheme.saved_attachment_type !== null && currentTheme.saved_attachment_id !== null))) {
+								if (currentTheme.answer) { // if there's a text asnwer we send it
+									await context.sendText(`Sobre ${element}: ${currentTheme.answer}`);
+								}
+								if (currentTheme.saved_attachment_type === 'image') { // if attachment is image
+									await context.sendImage({ attachment_id: currentTheme.saved_attachment_id });
+								}
+								if (currentTheme.saved_attachment_type === 'video') { // if attachment is video
+									await context.sendVideo({ attachment_id: currentTheme.saved_attachment_id });
+								}
+							} else { // we couldn't find neither text answer nor attachment
 								await context.sendText(`Sobre ${element} fico te devendo uma resposta. `
 								+ 'Mas já entou enviando para nossas equipe e estaremos te respondendo em breve.');
 								await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
@@ -201,9 +210,6 @@ const handler = new MessengerHandler()
 							knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id,
 								{ [context.state.payload]: context.state.apiaiResp.result.parameters[context.state.payload] }),
 						});
-
-						console.log(context.state.knowledge);
-
 
 						await showQuestions(context);
 					} else {
