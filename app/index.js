@@ -233,6 +233,7 @@ const handler = new MessengerHandler()
 					removeEmptyKeys(context.state.apiaiResp.result.parameters);
 
 					// console.log(context.state.apiaiResp.result.parameters);
+					console.log(context.state.apiaiResp.result.metadata.intentName);
 
 					if (context.state.apiaiResp.result.metadata.intentName === 'Fallback') {
 						// Fallback --> counldn't find any matching intents
