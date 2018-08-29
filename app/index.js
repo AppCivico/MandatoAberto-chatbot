@@ -269,7 +269,7 @@ const handler = new MessengerHandler()
 								// await context.state.themes.push(element2.tag);
 								// });
 								// });
-								await context.sendButtonTemplate('Você está perguntando meu posicionamente sobre '
+								await context.sendButtonTemplate('Você está perguntando meu posicionamento sobre '
 									+ `${await listThemes(Object.keys(context.state.apiaiResp.result.parameters))}?`, opt.themeConfirmation);
 							}
 						}
