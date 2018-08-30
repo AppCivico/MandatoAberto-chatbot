@@ -1,3 +1,6 @@
+require('dotenv').config();
+
+
 const dialogflow = require('dialogflow');
 const request = require('requisition');
 const fs = require('fs');
@@ -34,7 +37,7 @@ async function voiceRequest(urlMessenger, sessionID, context) {
 	// The path to identify the agent that owns the created intent
 	const sessionPath = sessionClient.sessionPath(projectId, sessionID);
 
-	const fileIn = `${sessionID}.mp4`;
+	const fileIn = `${sessionID}.mp3`;
 	const fileOut = `${sessionID}.wav`;
 
 	// if any of the two files alreay existes, delete them (just to be safe)
@@ -134,3 +137,8 @@ async function voiceRequest(urlMessenger, sessionID, context) {
 }
 
 module.exports.voiceRequest = voiceRequest;
+
+const url = `
+https://cdn.fbsbx.com/v/t59.3654-21/39962059_1855136381260716_969037238652370944_n.mp4/audioclip-1535383065000-2879.mp4?_nc_cat=0&oh=74f235bf4babd6545fd91cd6737e7da4&oe=5B870862
+`;
+voiceRequest(url, '123123');
