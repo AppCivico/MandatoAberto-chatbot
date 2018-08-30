@@ -55,7 +55,7 @@ async function voiceRequest(urlMessenger, sessionID, context) {
 				if (err) {
 					await checkAndDelete(fileIn);
 					await checkAndDelete(fileOut);
-					console.log(err);
+					// console.log(err);
 				}
 			});
 
