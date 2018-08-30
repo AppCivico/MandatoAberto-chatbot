@@ -237,6 +237,8 @@ const handler = new MessengerHandler()
 						// check if message came from standard flow or from post/comment
 						sendToCreateIssue(context);
 					} else if (context.state.apiaiResp.result.metadata.intentName === 'Pergunta') {
+						console.log('Detectei uma pergunta');
+
 						if (Object.keys(context.state.apiaiResp.result.parameters).length >= 1) { // found at least one entity
 							console.log(`\nAchamos ${Object.keys(context.state.apiaiResp.result.parameters).length} entidade`);
 
@@ -245,12 +247,13 @@ const handler = new MessengerHandler()
 							});
 							if (context.state.knowledge.knowledge_base
 								&& context.state.knowledge.knowledge_base.length === 0) { // we have no questions related to these entities
-								await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
-									context.state.whatWasTyped, context.state.apiaiResp.result.parameters);
 								await context.sendText(
 									`Parece que ${context.state.articles.defined} ${context.state.politicianData.office.name} ${context.state.politicianData.name} `
-									+ `ainda não se posicionou sobre ${await listThemes(Object.keys(context.state.apiaiResp.result.parameters))}. Estarei avisando a nossa equipe. `
-									+ 'Se tiver mais alguma dúvida, por favor, digite.');// eslint-disable-line
+										+ `ainda não se posicionou sobre ${await listThemes(Object.keys(context.state.apiaiResp.result.parameters))}. Estarei avisando a nossa equipe. `
+										+ 'Se tiver mais alguma dúvida, por favor, digite.');// eslint-disable-line
+
+								await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
+									context.state.whatWasTyped, context.state.apiaiResp.result.parameters);
 								// sendToCreateIssue(context);
 							} else {
 								// instead of showing the questions already, we confirm with the user the themes he mentioned
@@ -273,6 +276,8 @@ const handler = new MessengerHandler()
 									+ `${await listThemes(Object.keys(context.state.apiaiResp.result.parameters))}?`, opt.themeConfirmation);
 							}
 						} else {
+							console.log('on else');
+
 							sendToCreateIssue(context);
 						}
 					}
