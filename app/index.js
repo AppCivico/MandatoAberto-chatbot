@@ -158,7 +158,8 @@ async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-dec
 
 async function createIssue(context) {
 	if ((context.state.apiaiResp && context.state.apiaiResp.result
-		&& context.state.apiaiResp.result.metadata && context.state.apiaiResp.result.metadata.intentName === 'Fallback')) {
+		&& context.state.apiaiResp.result.metadata && context.state.apiaiResp.result.metadata.intentName === 'Fallback') || (
+		context.state.apiaiResp.result.parameters).length === 1) {
 		if (context.state.listening === true) {
 			if (!userMessages[context.session.user.id] || userMessages[context.session.user.id] === '') { // aggregating user texts
 				userMessages[context.session.user.id] = context.state.whatWasTyped;
