@@ -233,12 +233,13 @@ const handler = new MessengerHandler()
 
 					// console.log(context.state.apiaiResp.result.parameters);
 					// console.log(context.state.apiaiResp.result.metadata.intentName);
+					console.log(context.state.whatWasTyped);
 
 					console.log(context.state.apiaiResp);
 
-					if (context.state.apiaiResp.result.intentName === 'Pergunta') { // detected Pergunta intent
+					if (context.state.apiaiResp.result.metadata.intentName === 'Pergunta') { // detected Pergunta intent
 						console.log('pergunta');
-					} else if (context.state.apiaiResp.result.intentName === 'Fallback') {
+					} else if (context.state.apiaiResp.result.metadata.intentName === 'Fallback') {
 						// 	// Fallback --> counldn't find any matching intents
 						// 	// check if message came from standard flow or from post/comment
 						console.log('aaaaaaaaaaaaaaaaa');
