@@ -272,6 +272,8 @@ const handler = new MessengerHandler()
 								await context.sendButtonTemplate('Você está perguntando meu posicionamento sobre '
 									+ `${await listThemes(Object.keys(context.state.apiaiResp.result.parameters))}?`, opt.themeConfirmation);
 							}
+						} else {
+							sendToCreateIssue(context);
 						}
 					}
 				}
