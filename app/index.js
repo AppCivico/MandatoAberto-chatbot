@@ -31,7 +31,7 @@ function formatReal(int) {
 	return tmp;
 }
 
-const IssueTimerlimit = 10000 * 2; // 20 seconds -> listening to user doubts
+const IssueTimerlimit = 10000 * 20; // 20 seconds -> listening to user doubts
 const MenuTimerlimit = 10000 * 6; // 60 seconds -> waiting to show the initial menu
 
 const issueTimers = {};
@@ -233,70 +233,53 @@ const handler = new MessengerHandler()
 
 					// console.log(context.state.apiaiResp.result.parameters);
 					// console.log(context.state.apiaiResp.result.metadata.intentName);
-					console.log(context.state.whatWasTyped);
-					console.log(context.state.apiaiResp);
+					if (context.state.apiaiResp.result.metadata.intentName === 'Fallback') {
+						sendToCreateIssue(context);
+					} else if (context.state.apiaiResp.result.metadata.intentName === 'Pergunta') {
+						console.log('Detectei uma pergunta');
 
-					if (context.state.apiaiResp.result.metadata.intentName === 'Pergunta') { // detected Pergunta intent
-						console.log('pergunta');
-					} else if (context.state.apiaiResp.result.metadata.intentName === 'Fallback') {
-						// 	// Fallback --> counldn't find any matching intents
-						// 	// check if message came from standard flow or from post/comment
+						if (Object.keys(context.state.apiaiResp.result.parameters).length >= 1) { // found at least one entity
+							console.log(`\nAchamos ${Object.keys(context.state.apiaiResp.result.parameters).length} entidade`);
 
-						if (areWeListening === true) {
-							await context.setState({ dialog: 'createIssue' });
+							await context.setState({
+								knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.apiaiResp.result.parameters),
+							});
+							if (context.state.knowledge.knowledge_base
+								&& context.state.knowledge.knowledge_base.length === 0) { // we have no questions related to these entities
+								await context.setState({ currentThemes: await listThemes(Object.keys(context.state.apiaiResp.result.parameters)) });
+								await context.sendText(
+									`Parece que ${context.state.articles.defined} ${context.state.politicianData.office.name} ${context.state.politicianData.name} `
+									+ `ainda não se posicionou sobre ${context.state.currentThemes.lenght > 0 ? context.state.currentThemes : 'esses assuntos'}. Estarei avisando a nossa equipe. `
+									+ 'Se tiver mais alguma dúvida, por favor, digite.');// eslint-disable-line
+
+								await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
+									context.state.whatWasTyped, context.state.apiaiResp.result.parameters);
+								// sendToCreateIssue(context);
+							} else {
+								// instead of showing the questions already, we confirm with the user the themes he mentioned
+								console.log('temos respostas: ', context.state.knowledge.knowledge_base.length);
+
+								// console.dir(context.state.knowledge.knowledge_base);
+
+								// the themes the user ask come from apiaiResp.result.parameters
+								// the themes we have an answer for come from knowledge_base.entities[n].tag
+								// await context.setState({ themes: [] }); // where the themes we have an answer for will be stored
+
+								// await context.state.knowledge.knowledge_base.forEach(async (element) => {
+								// await context.state.themes.push(element.entities[0].tag);
+								// We don't need to iterate over the entities array because for now there isn't going to be more than one entity
+								// await element.entities.forEach(async (element2) => {
+								// await context.state.themes.push(element2.tag);
+								// });
+								// });
+								await context.sendButtonTemplate('Você está perguntando meu posicionamento sobre '
+									+ `${await listThemes(Object.keys(context.state.apiaiResp.result.parameters))}?`, opt.themeConfirmation);
+							}
 						} else {
-							await context.setState({ dialog: 'intermediate' });
-							areWeListening = true;
+							console.log('on else');
+							await context.setState({ dialog: 'createIssue' });
 						}
-					} // end-if fallback
-
-
-					// if (context.state.apiaiResp.result.metadata.intentName === 'Fallback') {
-					// } else if (context.state.apiaiResp.result.metadata.intentName === 'Pergunta') {
-					// 	console.log('Detectei uma pergunta');
-
-					// 	if (Object.keys(context.state.apiaiResp.result.parameters).length >= 1) { // found at least one entity
-					// 		console.log(`\nAchamos ${Object.keys(context.state.apiaiResp.result.parameters).length} entidade`);
-
-					// 		await context.setState({
-					// 			knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.apiaiResp.result.parameters),
-					// 		});
-					// 		if (context.state.knowledge.knowledge_base
-					// 			&& context.state.knowledge.knowledge_base.length === 0) { // we have no questions related to these entities
-					// 			await context.setState({ currentThemes: await listThemes(Object.keys(context.state.apiaiResp.result.parameters)) });
-					// 			await context.sendText(
-					// 				`Parece que ${context.state.articles.defined} ${context.state.politicianData.office.name} ${context.state.politicianData.name} `
-					// 				+ `ainda não se posicionou sobre ${context.state.currentThemes.lenght > 0 ? context.state.currentThemes : 'esses assuntos'}. Estarei avisando a nossa equipe. `
-					// 				+ 'Se tiver mais alguma dúvida, por favor, digite.');// eslint-disable-line
-
-					// 			await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
-					// 				context.state.whatWasTyped, context.state.apiaiResp.result.parameters);
-					// 			// sendToCreateIssue(context);
-					// 		} else {
-					// 			// instead of showing the questions already, we confirm with the user the themes he mentioned
-					// 			console.log('temos respostas: ', context.state.knowledge.knowledge_base.length);
-
-					// 			// console.dir(context.state.knowledge.knowledge_base);
-
-					// 			// the themes the user ask come from apiaiResp.result.parameters
-					// 			// the themes we have an answer for come from knowledge_base.entities[n].tag
-					// 			// await context.setState({ themes: [] }); // where the themes we have an answer for will be stored
-
-					// 			// await context.state.knowledge.knowledge_base.forEach(async (element) => {
-					// 			// await context.state.themes.push(element.entities[0].tag);
-					// 			// We don't need to iterate over the entities array because for now there isn't going to be more than one entity
-					// 			// await element.entities.forEach(async (element2) => {
-					// 			// await context.state.themes.push(element2.tag);
-					// 			// });
-					// 			// });
-					// 			await context.sendButtonTemplate('Você está perguntando meu posicionamento sobre '
-					// 				+ `${await listThemes(Object.keys(context.state.apiaiResp.result.parameters))}?`, opt.themeConfirmation);
-					// 		}
-					// 	} else {
-					// 		console.log('on else');
-					// 		await context.setState({ dialog: 'createIssue' });
-					// 	}
-					// }
+					}
 				}
 			}
 		}
