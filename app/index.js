@@ -278,7 +278,9 @@ const handler = new MessengerHandler()
 						} else {
 							console.log('on else');
 
-							sendToCreateIssue(context);
+							await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
+								context.state.whatWasTyped, context.state.apiaiResp.result.parameters);
+							await context.sendText('Que pena! Mas recebi sua dúvida e estarei te respondendo logo mais!');
 						}
 					}
 				}
