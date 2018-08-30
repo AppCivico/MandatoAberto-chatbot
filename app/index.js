@@ -277,12 +277,7 @@ const handler = new MessengerHandler()
 							}
 						} else {
 							console.log('on else');
-							if (areWeListening === true) {
-								await context.setState({ dialog: 'createIssue' });
-							} else {
-								await context.setState({ dialog: 'intermediate' });
-								areWeListening = true;
-							}
+							await context.setState({ dialog: 'createIssue' });
 						}
 					}
 				}
