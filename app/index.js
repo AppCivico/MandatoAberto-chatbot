@@ -234,6 +234,8 @@ const handler = new MessengerHandler()
 					// console.log(context.state.apiaiResp.result.parameters);
 					// console.log(context.state.apiaiResp.result.metadata.intentName);
 
+					console.log(context.state.apiaiResp);
+
 					if (context.state.apiaiResp.result.intentName === 'Pergunta') { // detected Pergunta intent
 						console.log('pergunta');
 					} else if (context.state.apiaiResp.result.intentName === 'Fallback') {
