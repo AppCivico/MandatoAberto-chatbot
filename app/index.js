@@ -277,10 +277,12 @@ const handler = new MessengerHandler()
 							}
 						} else {
 							console.log('on else');
-
-							await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
-								context.state.whatWasTyped, context.state.apiaiResp.result.parameters);
-							await context.sendText('Que pena! Mas recebi sua dúvida e estarei te respondendo logo mais!');
+							if (areWeListening === true) {
+								await context.setState({ dialog: 'createIssue' });
+							} else {
+								await context.setState({ dialog: 'intermediate' });
+								areWeListening = true;
+							}
 						}
 					}
 				}
