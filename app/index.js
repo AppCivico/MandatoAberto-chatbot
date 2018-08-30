@@ -239,6 +239,9 @@ const handler = new MessengerHandler()
 					} else if (context.state.apiaiResp.result.intentName === 'Fallback') {
 						// 	// Fallback --> counldn't find any matching intents
 						// 	// check if message came from standard flow or from post/comment
+						console.log('aaaaaaaaaaaaaaaaa');
+						console.log(areWeListening);
+
 						if (areWeListening === true) {
 							await context.setState({ dialog: 'createIssue' });
 						} else {
