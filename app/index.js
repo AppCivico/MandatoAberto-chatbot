@@ -229,12 +229,11 @@ const handler = new MessengerHandler()
 				} else if (context.event.isText) {
 					await context.setState({ whatWasTyped: context.event.message.text }); // will be used in case the bot doesn't find the question
 					await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
-					// removeEmptyKeys(context.state.apiaiResp.result.parameters);
+					removeEmptyKeys(context.state.apiaiResp.result.parameters);
 
 					// console.log(context.state.apiaiResp.result.parameters);
 					// console.log(context.state.apiaiResp.result.metadata.intentName);
 					console.log(context.state.whatWasTyped);
-
 					console.log(context.state.apiaiResp);
 
 					if (context.state.apiaiResp.result.metadata.intentName === 'Pergunta') { // detected Pergunta intent
@@ -242,8 +241,6 @@ const handler = new MessengerHandler()
 					} else if (context.state.apiaiResp.result.metadata.intentName === 'Fallback') {
 						// 	// Fallback --> counldn't find any matching intents
 						// 	// check if message came from standard flow or from post/comment
-						console.log('aaaaaaaaaaaaaaaaa');
-						console.log(areWeListening);
 
 						if (areWeListening === true) {
 							await context.setState({ dialog: 'createIssue' });
@@ -251,7 +248,7 @@ const handler = new MessengerHandler()
 							await context.setState({ dialog: 'intermediate' });
 							areWeListening = true;
 						}
-					}
+					} // end-if fallback
 
 
 					// if (context.state.apiaiResp.result.metadata.intentName === 'Fallback') {
