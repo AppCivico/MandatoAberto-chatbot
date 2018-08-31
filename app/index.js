@@ -51,6 +51,7 @@ let areWeListening = true;
 // areWeListening -> user.state.areWeListening(doesn't work) -> diferenciates messages that come from the standard flow and messages from comment/post
 
 
+// removes every empty intent object and returns the intents
 function removeEmptyKeys(obj) { Object.keys(obj).forEach((key) => { if (obj[key].length === 0) { delete obj[key]; } }); return obj; }
 
 const mapPageToAccessToken = async (pageId) => {
@@ -229,11 +230,26 @@ const handler = new MessengerHandler()
 				} else if (context.event.isText) {
 					await context.setState({ whatWasTyped: context.event.message.text }); // will be used in case the bot doesn't find the question
 					await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
-					console.log(context.state.apiaiResp);
 					await context.setState({ intents: await removeEmptyKeys(context.state.apiaiResp.result.parameters) });
 
 					console.log(context.state.intents);
 
+					switch (context.state.apiaiResp.result.metadata.intentName) {
+					case 'Pergunta':
+
+						break;
+					case 'Saudação':
+						await context.setState({ dialog: 'greetings' });
+						break;
+					case 'Trajetoria':
+						await context.setState({ dialog: 'trajectory' });
+						break;
+					case 'Fallback': // didn't understand
+					// falls throught
+					default: // any new intent that gets added to dialogflow but it's not added here will also act like fallback
+						sendToCreateIssue(context);
+						break;
+					}
 
 					// console.log(context.state.apiaiResp.result.parameters);
 					// console.log(context.state.apiaiResp.result.metadata.intentName);
@@ -253,7 +269,8 @@ const handler = new MessengerHandler()
 					// 			await context.setState({ currentThemes: await listThemes(Object.keys(context.state.apiaiResp.result.parameters)) });
 					// 			await context.sendText(
 					// 				`Parece que ${context.state.articles.defined} ${context.state.politicianData.office.name} ${context.state.politicianData.name} `
-					// 				+ `ainda não se posicionou sobre ${context.state.currentThemes.lenght > 0 ? context.state.currentThemes : 'esses assuntos'}. Estarei avisando a nossa equipe. `
+					// 				+ `ainda não se posicionou sobre
+					// ${context.state.currentThemes.lenght > 0 ? context.state.currentThemes : 'esses assuntos'}. Estarei avisando a nossa equipe. `
 					// 				+ 'Se tiver mais alguma dúvida, por favor, digite.');// eslint-disable-line
 
 					// 			await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
