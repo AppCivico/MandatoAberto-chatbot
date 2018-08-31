@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "nodemon app/index.js",
-    "postinstall": "npm rebuild",
+    "prerestart": "npm rebuild",
     "start": "node app/index.js"
   },
   "dependencies": {
