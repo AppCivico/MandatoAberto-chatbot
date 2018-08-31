@@ -247,7 +247,7 @@ const handler = new MessengerHandler()
 							if (context.state.knowledge && context.state.knowledge.knowledge_base && context.state.knowledge.knowledge_base.length >= 100) {
 
 							} else { // no answers in knowledge_base (We know the entity but politician doesn't have a position)
-								await context.setState({ currentThemes: await listThemes(Object.keys(context.state.apiaiResp.result.parameters)) });
+								await context.setState({ currentThemes: await listThemes(context.state.entities) });
 								console.log('currentThemes', context.state.currentThemes);
 
 								await context.sendText(`Parece que ${context.state.articles.defined} ${context.state.politicianData.office.name} `
