@@ -14,7 +14,7 @@ module.exports = {
 	Infraestrutura: 'Infraestrutura',
 	Lava_Jato: 'Lava Jato',
 	Partido: 'Partido',
-	Política: 'Política',
+	Politica: 'Política',
 	Politica_Externa: 'Política Externa',
 	Presidente: 'Presidente',
 	Previdencia_Social: 'Previdência Social',
