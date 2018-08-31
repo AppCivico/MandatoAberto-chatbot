@@ -252,7 +252,7 @@ const handler = new MessengerHandler()
 
 								await context.sendText(`Parece que ${context.state.articles.defined} ${context.state.politicianData.office.name} `
 								+ `${context.state.politicianData.name} ainda não se posicionou sobre `
-								+ `${context.state.currentThemes.lenght > 0 ? context.state.currentThemes : 'esses assuntos'}. `
+								+ `${context.state.currentThemes.length > 0 ? context.state.currentThemes : 'esses assuntos'}. `
 								+ 'Estarei avisando a nossa equipe. Se tiver mais alguma dúvida, por favor, digite.');// eslint-disable-line
 
 								await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
