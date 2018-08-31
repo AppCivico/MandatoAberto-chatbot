@@ -90,7 +90,9 @@ function getArticles(gender) {
 async function listThemes(obj) {
 	const themes = [];
 	await Object.keys(obj).forEach(async (element) => {
-		themes.push(dictionary[obj[element]].toLowerCase());
+		if (dictionary[obj[element]]) {
+			themes.push(dictionary[obj[element]].toLowerCase());
+		}
 	});
 	return themes.sort().join(', ').replace(/,(?=[^,]*$)/, ' e');
 }
