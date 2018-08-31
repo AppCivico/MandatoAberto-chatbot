@@ -132,7 +132,7 @@ module.exports = {
 			payload: 'knowMore',
 		},
 	],
-	frases_aleatorias: ['Essa resposta eu não tenho 🤔. Muito boa a sua pergunta! irei encaminhar para nosso time e já te respondo.',
+	frases_fallback: ['Essa resposta eu não tenho 🤔. Muito boa a sua pergunta! irei encaminhar para nosso time e já te respondo.',
 		'Uma pergunta nova 👏👏👏! Irei encaminhar para nossa equipe, que deve responder em breve.',
 		'Ainda não fizeram pergunta. Vamos descobrir a resposta 🤗 ! Vou encaminhar para nosso time.',
 		'Eu não sei te responder, estou aprendendo com suas perguntas 👨‍🎓. Vou encaminhar para nossa equipe.',
