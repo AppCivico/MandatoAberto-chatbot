@@ -89,9 +89,15 @@ function getArticles(gender) {
 // }
 async function listThemes(obj) {
 	const themes = [];
+	console.log(obj);
+
 	await Object.keys(obj).forEach(async (element) => {
-		if (dictionary[obj[element]]) {
+		console.log(element);
+
+		if (dictionary[obj[element]]) { // checks if there is a dictionary entry for element
 			themes.push(dictionary[obj[element]].toLowerCase());
+		} else {
+			themes.push('aa');
 		}
 	});
 	return themes.sort().join(', ').replace(/,(?=[^,]*$)/, ' e');
