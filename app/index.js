@@ -235,7 +235,7 @@ const handler = new MessengerHandler()
 						await context.setState({ dialog: payload });
 					}
 				} else if (context.event.isAudio) {
-					await context.sendButtonTemplate('Ainda não entendo áudio. Por favor, mande mensagens de texto', await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
+					await context.sendButtonTemplate('Ainda não entendo áudio. Por favor, mande somente mensagens de texto', await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
 					if (context.event.audio.url) {
 						console.log(context.event.audio.url);
 						// audio.voiceRequest(context.event.audio.url, context.session.user.id);
