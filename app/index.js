@@ -175,7 +175,7 @@ const handler = new MessengerHandler()
 			await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 
 			if (context.state.dialog !== 'recipientData') { // handling input that's not from "asking data"
-				if (context.event.isPostback) { // this could be in a better place
+				if (context.event.isPostback) {
 					if (context.event.postback.payload === 'themeYes') {
 						/* eslint-disable */
 						for (const [element] of Object.entries(context.state.apiaiResp.result.parameters)) { // eslint-disable-line no-restricted-syntax
@@ -267,6 +267,8 @@ const handler = new MessengerHandler()
 									context.state.whatWasTyped, context.state.apiaiResp.result.parameters);
 							}
 						} else { // dialogFlow knows it's a question but has no entities
+							console.log('Cai aqui');
+
 							await context.setState({ dialog: 'createIssue' });
 						}
 						break;
