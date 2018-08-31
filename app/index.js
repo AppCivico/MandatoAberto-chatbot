@@ -250,11 +250,10 @@ const handler = new MessengerHandler()
 								await context.setState({ currentThemes: await listThemes(Object.keys(context.state.apiaiResp.result.parameters)) });
 								console.log('currentThemes', context.state.currentThemes);
 
-								await context.sendText('Parece que '
-								+ ` ${context.state.articles.defined} ${context.state.politicianData.office.name} ${context.state.politicianData.name} `
-								+ `ainda não se posicionou sobre
-								${context.state.currentThemes.lenght > 0 ? context.state.currentThemes : 'esses assuntos'}. Estarei avisando a nossa equipe. `
-								+ 'Se tiver mais alguma dúvida, por favor, digite.');// eslint-disable-line
+								await context.sendText(`Parece que ${context.state.articles.defined} ${context.state.politicianData.office.name} `
+								+ `${context.state.politicianData.name} ainda não se posicionou sobre `
+								+ `${context.state.currentThemes.lenght > 0 ? context.state.currentThemes : 'esses assuntos'}.`
+								+ 'Estarei avisando a nossa equipe. Se tiver mais alguma dúvida, por favor, digite.');// eslint-disable-line
 
 								await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
 									context.state.whatWasTyped, context.state.apiaiResp.result.parameters);
