@@ -54,6 +54,11 @@ function getRandom(myArray) {
 	return myArray[Math.floor(Math.random() * myArray.length)];
 }
 
+function getArtigoCargoNome(context) {
+	return `${context.state.articles.defined} ${context.state.politicianData.office.name} ${context.state.politicianData.name}`;
+}
+
+
 // removes every empty intent object and returns the intents as an array
 function removeEmptyKeys(obj) { Object.keys(obj).forEach((key) => { if (obj[key].length === 0) { delete obj[key]; } }); return Object.keys(obj); }
 
@@ -258,8 +263,8 @@ const handler = new MessengerHandler()
 										+ `${context.state.currentThemes}?`, opt.themeConfirmation);
 							} else { // no answers in knowledge_base (We know the entity but politician doesn't have a position)
 								// before sending the themes we check if there is anything on them, if there isn't we send 'esses assuntos'
-								await context.sendButtonTemplate(`Parece que ${context.state.articles.defined} ${context.state.politicianData.office.name} `
-										+ `${context.state.politicianData.name} ainda não se posicionou sobre `
+								await context.sendButtonTemplate(`Parece que ${getArtigoCargoNome(context)} `
+										+ 'ainda não se posicionou sobre'
 										+ `${context.state.currentThemes.length > 0 ? context.state.currentThemes : 'esses assuntos'}. `
 										+ 'Estarei avisando a nossa equipe. Se tiver mais alguma dúvida, por favor, digite.',
 										await checkMenu(context, [opt.trajectory, opt.contacts, opt.doarOption]));// eslint-disable-line
