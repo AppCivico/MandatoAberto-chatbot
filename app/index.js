@@ -230,27 +230,31 @@ const handler = new MessengerHandler()
 				} else if (context.event.isText) {
 					await context.setState({ whatWasTyped: context.event.message.text }); // will be used in case the bot doesn't find the question
 					await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
-					await context.setState({ intents: await removeEmptyKeys(context.state.apiaiResp.result.parameters) });
 					console.log('recebi um texto');
 
-					console.log(context.state.intents);
 					console.log('IntentNme ', context.state.apiaiResp.result.metadata.intentName);
 
 					switch (context.state.apiaiResp.result.metadata.intentName) {
 					case 'Pergunta':
+						await context.setState({ intents: await removeEmptyKeys(context.state.apiaiResp.result.parameters) });
+						console.log(context.state.intents);
+						if (context.state.intents.length === 0) { // dialogFlow knows it's a question but has no entities
+							await context.setState({ dialog: 'createIssue' });
+						} else if (
+							console.log('At least one intent');
+							
+						)
 
 						break;
 					case 'Saudação':
 						await context.setState({ dialog: 'greetings' });
 						break;
 					case 'Trajetoria':
-						console.log('trajatória');
-
 						await context.setState({ dialog: 'trajectory' });
 						break;
 					case 'Fallback': // didn't understand
 					// falls throught
-					default: // any new intent that gets added to dialogflow but it's not added here will also act like fallback
+					default: // any new intent that gets added to dialogflow but it's not added here will also act like 'Fallback'
 						await context.setState({ dialog: 'createIssue' });
 						break;
 					}
