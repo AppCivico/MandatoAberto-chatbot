@@ -47,7 +47,7 @@ const userMessages = {};
 // userMessages -> stores user messages from issues. We can't use a regular state for this because the timer can't save state "after session has been written"
 // sendIntro = true -> context.state.sendIntro -> verifies if we should send the "coudln't understand" or the "talkToUs" text for issue creation.
 // listening = true -> context.state.listening -> verifies if we should aggregate text on userMessages
-let areWeListening = true;
+// let areWeListening = true; // disabled until we fix the comment/post issue
 // areWeListening -> user.state.areWeListening(doesn't work) -> diferenciates messages that come from the standard flow and messages from comment/post
 
 
@@ -269,6 +269,14 @@ const handler = new MessengerHandler()
 						break;
 					case 'Trajetoria':
 						await context.setState({ dialog: 'trajectory' });
+						break;
+					case 'Voluntário':
+					// check if politician is integrated with votoLegal
+						if (context.state.politicianData.votolegal_integration && context.state.politicianData.votolegal_integration.votolegal_url) {
+							await context.setState({ dialog: 'WannaHelp' });
+						} else {
+							await context.setState({ dialog: 'createIssue' });
+						}
 						break;
 					case 'Fallback': // didn't understand what was typed
 					// falls throught
