@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "nodemon app/index.js",
+    "prestart": "npm install grpc --save",
     "start": "node app/index.js"
   },
   "dependencies": {
