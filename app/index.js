@@ -258,10 +258,11 @@ const handler = new MessengerHandler()
 										+ `${context.state.currentThemes}?`, opt.themeConfirmation);
 							} else { // no answers in knowledge_base (We know the entity but politician doesn't have a position)
 								// before sending the themes we check if there is anything on them, if there isn't we send 'esses assuntos'
-								await context.sendText(`Parece que ${context.state.articles.defined} ${context.state.politicianData.office.name} `
+								await context.sendButtonTemplate(`Parece que ${context.state.articles.defined} ${context.state.politicianData.office.name} `
 										+ `${context.state.politicianData.name} ainda não se posicionou sobre `
 										+ `${context.state.currentThemes.length > 0 ? context.state.currentThemes : 'esses assuntos'}. `
-										+ 'Estarei avisando a nossa equipe. Se tiver mais alguma dúvida, por favor, digite.');// eslint-disable-line
+										+ 'Estarei avisando a nossa equipe. Se tiver mais alguma dúvida, por favor, digite.',
+										await checkMenu(context, [opt.trajectory, opt.contacts, opt.doarOption]));// eslint-disable-line
 
 								await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
 									context.state.whatWasTyped, context.state.apiaiResp.result.parameters);

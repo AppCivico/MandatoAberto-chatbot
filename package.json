@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "nodemon app/index.js",
     "prerestart": "npm rebuild",
+    "build": "npm rebuild",
     "start": "node app/index.js"
   },
   "dependencies": {

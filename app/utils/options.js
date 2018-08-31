@@ -132,4 +132,5 @@ module.exports = {
 			payload: 'knowMore',
 		},
 	],
+	frases_aleatorias: ['Maravilha!', 'Que legal!', 'Sucesso!', ''],
 };
