@@ -9,6 +9,7 @@
   "dependencies": {
     "apiai-promise": "^1.0.0",
     "bottender": "^0.14.22",
+    "child_process": "^1.0.2",
     "dialogflow": "^0.6.0",
     "dotenv": "^4.0.0",
     "get-audio-duration": "0.0.1",
