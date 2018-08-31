@@ -290,7 +290,9 @@ const handler = new MessengerHandler()
 					case 'Fallback': // didn't understand what was typed
 						// falls throught
 					default: // any new intent that gets added to dialogflow but it's not added here will also act like 'Fallback'
-						await context.setState({ dialog: 'createIssue' });
+						await context.sendButtonTemplate(getRandom(opt.frases_aleatorias),
+							await checkMenu(context, [opt.trajectory, opt.contacts, opt.doarOption]));
+						// await context.setState({ dialog: 'createIssue' });
 						break;
 					}
 				}
