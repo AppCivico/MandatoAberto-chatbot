@@ -238,13 +238,29 @@ const handler = new MessengerHandler()
 					case 'Pergunta':
 						await context.setState({ entities: await removeEmptyKeys(context.state.apiaiResp.result.parameters) });
 						console.log(context.state.entities);
-						if (Object.keys(context.state.entities).length === 0) { // dialogFlow knows it's a question but has no entities
-							await context.setState({ dialog: 'createIssue' });
-						} else { // at least one entity
+						if (Object.keys(context.state.entities).length > 1) { // at least one entity
 							await context.setState({ // getting knowledge base
 								knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.apiaiResp.result.parameters),
 							});
 							console.log('knowledge:', context.state.knowledge);
+							// check if there's at least one answer in knowledge_base
+							if (context.state.knowledge && context.state.knowledge.knowledge_base && context.state.knowledge.knowledge_base.length >= 100) {
+
+							} else { // no answers in knowledge_base (We know the entity but politician doesn't have a position)
+								await context.setState({ currentThemes: await listThemes(Object.keys(context.state.apiaiResp.result.parameters)) });
+								console.log('currentThemes', context.state.currentThemes);
+
+								await context.sendText('Parece que '
+								+ ` ${context.state.articles.defined} ${context.state.politicianData.office.name} ${context.state.politicianData.name} `
+								+ `ainda não se posicionou sobre
+								${context.state.currentThemes.lenght > 0 ? context.state.currentThemes : 'esses assuntos'}. Estarei avisando a nossa equipe. `
+								+ 'Se tiver mais alguma dúvida, por favor, digite.');// eslint-disable-line
+
+								await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
+									context.state.whatWasTyped, context.state.apiaiResp.result.parameters);
+							}
+						} else { // dialogFlow knows it's a question but has no entities
+							await context.setState({ dialog: 'createIssue' });
 						}
 						break;
 					case 'Saudação':
