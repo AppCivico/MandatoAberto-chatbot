@@ -238,12 +238,14 @@ const handler = new MessengerHandler()
 					case 'Pergunta':
 						await context.setState({ entities: await removeEmptyKeys(context.state.apiaiResp.result.parameters) });
 						console.log(context.state.entities);
-						if (Object.keys(context.state.entities).length === 1) { // dialogFlow knows it's a question but has no entities
+						if (Object.keys(context.state.entities).length === 0) { // dialogFlow knows it's a question but has no entities
 							await context.setState({ dialog: 'createIssue' });
-						} else {
-							console.log('At least one intent');
+						} else { // at least one entity
+							await context.setState({ // getting knowledge base
+								knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.apiaiResp.result.parameters),
+							});
+							console.log('knowledge:', context.state.knowledge);
 						}
-						// await context.setState({ entities: '', apiaiResp: '' });
 						break;
 					case 'Saudação':
 						await context.setState({ dialog: 'greetings' });
@@ -251,7 +253,7 @@ const handler = new MessengerHandler()
 					case 'Trajetoria':
 						await context.setState({ dialog: 'trajectory' });
 						break;
-					case 'Fallback': // didn't understand
+					case 'Fallback': // didn't understand what was typed
 					// falls throught
 					default: // any new intent that gets added to dialogflow but it's not added here will also act like 'Fallback'
 						await context.setState({ dialog: 'createIssue' });
