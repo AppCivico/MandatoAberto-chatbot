@@ -249,7 +249,7 @@ const handler = new MessengerHandler()
 
 							if (context.state.knowledge && context.state.knowledge.knowledge_base && context.state.knowledge.knowledge_base.length >= 1) {
 								await context.sendButtonTemplate('Você está perguntando meu posicionamento sobre ' // confirm themes with user
-								+ `${await listThemes(context.state.currentThemes)}?`, opt.themeConfirmation);
+								+ `${context.state.currentThemes}?`, opt.themeConfirmation);
 							} else { // no answers in knowledge_base (We know the entity but politician doesn't have a position)
 								// before sending the themes we check if there is anything on them, if there isn't we send 'esses assuntos'
 								await context.sendText(`Parece que ${context.state.articles.defined} ${context.state.politicianData.office.name} `
