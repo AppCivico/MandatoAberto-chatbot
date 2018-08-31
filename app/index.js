@@ -237,7 +237,7 @@ const handler = new MessengerHandler()
 					switch (context.state.apiaiResp.result.metadata.intentName) {
 					case 'Pergunta':
 						await context.setState({ entities: await removeEmptyKeys(context.state.apiaiResp.result.parameters) });
-						console.log(context.state.intents);
+						console.log(context.state.entities);
 						if (Object.keys(context.state.entities).length === 1) { // dialogFlow knows it's a question but has no entities
 							await context.setState({ dialog: 'createIssue' });
 						} else {
@@ -617,6 +617,8 @@ const handler = new MessengerHandler()
 				await context.setState({ dialog: 'prompt' });
 				break;
 			case 'createIssue':
+				console.log('Cheguei no create issue');
+
 				if ((context.state.apiaiResp && context.state.apiaiResp.result
 						&& context.state.apiaiResp.result.metadata && context.state.apiaiResp.result.metadata.intentName === 'Fallback') || (
 					context.state.apiaiResp.result.parameters).length === 0) {
