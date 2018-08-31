@@ -96,7 +96,7 @@ function getArticles(gender) {
 // 	return `Sobre ${articles.defined} ${politicianData.office.name}`;
 // }
 async function listThemes(obj) {
-	const themes = [];
+	let themes = [];
 	await Object.keys(obj).forEach(async (element) => {
 		if (dictionary[obj[element]]) { // checks if there is a dictionary entry for element
 			themes.push(dictionary[obj[element]].toLowerCase());
@@ -104,7 +104,8 @@ async function listThemes(obj) {
 			themes.push(obj[element].toLowerCase().replace('_', ' ')); // remove upper case and underscore just to be safe
 		}
 	});
-	return themes.sort().join(', ').replace(/,(?=[^,]*$)/, ' e');
+	themes = themes.sort().join(', ').replace(/,(?=[^,]*$)/, ' e');
+	return themes.length > 0 ? themes.currentThemes : 'esses assuntos';
 }
 
 async function showQuestions(context) {
@@ -264,10 +265,9 @@ const handler = new MessengerHandler()
 							} else { // no answers in knowledge_base (We know the entity but politician doesn't have a position)
 								// before sending the themes we check if there is anything on them, if there isn't we send 'esses assuntos'
 								await context.sendButtonTemplate(`Parece que ${getArtigoCargoNome(context)} `
-										+ 'ainda não se posicionou sobre'
-										+ `${context.state.currentThemes.length > 0 ? context.state.currentThemes : 'esses assuntos'}. `
-										+ 'Estarei avisando a nossa equipe. Se tiver mais alguma dúvida, por favor, digite.',
-										await checkMenu(context, [opt.trajectory, opt.contacts, opt.doarOption]));// eslint-disable-line
+								+ `ainda não se posicionou sobre ${context.state.currentThemes}. `
+								+ 'Estarei avisando a nossa equipe. Se tiver mais alguma dúvida, por favor, digite.',
+								await checkMenu(context, [opt.trajectory, opt.contacts, opt.doarOption]));// eslint-disable-line
 
 								await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
 									context.state.whatWasTyped, context.state.apiaiResp.result.parameters);
