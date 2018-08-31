@@ -243,7 +243,7 @@ const handler = new MessengerHandler()
 						} else {
 							console.log('At least one intent');
 						}
-						await context.setState({ entities: '', apiaiResp: '' });
+						// await context.setState({ entities: '', apiaiResp: '' });
 						break;
 					case 'Saudação':
 						await context.setState({ dialog: 'greetings' });
