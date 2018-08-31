@@ -231,8 +231,10 @@ const handler = new MessengerHandler()
 					await context.setState({ whatWasTyped: context.event.message.text }); // will be used in case the bot doesn't find the question
 					await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
 					await context.setState({ intents: await removeEmptyKeys(context.state.apiaiResp.result.parameters) });
+					console.log('recebi um texto');
 
 					console.log(context.state.intents);
+					console.log('IntentNme ', context.state.apiaiResp.result.metadata.intentName);
 
 					switch (context.state.apiaiResp.result.metadata.intentName) {
 					case 'Pergunta':
@@ -242,6 +244,8 @@ const handler = new MessengerHandler()
 						await context.setState({ dialog: 'greetings' });
 						break;
 					case 'Trajetoria':
+						console.log('trajatória');
+
 						await context.setState({ dialog: 'trajectory' });
 						break;
 					case 'Fallback': // didn't understand
