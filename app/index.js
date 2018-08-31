@@ -51,8 +51,8 @@ let areWeListening = true;
 // areWeListening -> user.state.areWeListening(doesn't work) -> diferenciates messages that come from the standard flow and messages from comment/post
 
 
-// removes every empty intent object and returns the intents
-function removeEmptyKeys(obj) { Object.keys(obj).forEach((key) => { if (obj[key].length === 0) { delete obj[key]; } }); return obj; }
+// removes every empty intent object and returns the intents as an array
+function removeEmptyKeys(obj) { Object.keys(obj).forEach((key) => { if (obj[key].length === 0) { delete obj[key]; } }); return Object.keys(obj); }
 
 const mapPageToAccessToken = async (pageId) => {
 	const politicianData2 = await MandatoAbertoAPI.getPoliticianData(pageId);
@@ -238,7 +238,7 @@ const handler = new MessengerHandler()
 					case 'Pergunta':
 						await context.setState({ entities: await removeEmptyKeys(context.state.apiaiResp.result.parameters) });
 						console.log(context.state.entities);
-						if (Object.keys(context.state.entities).length >= 1) { // at least one entity
+						if (context.state.entities.length >= 1) { // at least one entity
 							await context.setState({ // getting knowledge base
 								knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.apiaiResp.result.parameters),
 							});
