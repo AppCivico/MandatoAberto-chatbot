@@ -63,7 +63,7 @@ function getAboutMe(politicianData) {
 
 	if (politicianData.office.name === 'Outros' || politicianData.office.name === 'Candidato' || politicianData.office.name === 'Candidata') {
 		return `Sobre ${articles.defined} líder`;
-	} if (politicianData.office.name === 'pré-candidato' || politicianData.office.name === 'pré-candidata') {
+	} if (politicianData.office.name === 'candidato' || politicianData.office.name === 'candidata') {
 		return `${articles.defined.toUpperCase()} ${politicianData.office.name}`;
 	}
 	return `Sobre ${articles.defined} ${politicianData.office.name}`;
@@ -287,13 +287,13 @@ bot.onEvent(async (context) => { // eslint-disable-line
 		await context.setState({ dialog: 'prompt' });
 		break;
 	case 'votoLegal':
-		await context.sendText('Estamos em pré-campanha e contamos com você.');
+		await context.sendText('Estamos em campanha e contamos com você.');
 		await context.sendButtonTemplate('Quer fazer parte?', opt.votoLegal_participateOptions);
 		await context.setState({ dialog: 'prompt' });
 		break;
 	case 'knowMore': {
 		await context.sendButtonTemplate('Existem diversas formas de participar da construção de uma candidatura. '
-        + 'Posso ajudá-lo a realizar uma doação ou divulgar a pré-campanha. Quer entender melhor?', [opt.AboutDonation, opt.AboutDivulgation, opt.goBackMainMenu]);
+        + 'Posso ajudá-lo a realizar uma doação ou divulgar a campanha. Quer entender melhor?', [opt.AboutDonation, opt.AboutDivulgation, opt.goBackMainMenu]);
 		await context.setState({ dialog: 'prompt' });
 		break; }
 	case 'aboutDonation':
@@ -340,14 +340,14 @@ bot.onEvent(async (context) => { // eslint-disable-line
 						title: 'Vamos lá!',
 					}],
 				participateMessage: 'Você deseja doar agora?',
-				anotherText: 'Seu apoio é fundamental para nossa pré-campanha! Por isso, cuidamos da segurança de todos os doadores. '
+				anotherText: 'Seu apoio é fundamental para nossa campanha! Por isso, cuidamos da segurança de todos os doadores. '
 				+ 'Saiba mais em: www.votolegal.com.br',
 			});
 		} else {
 			await context.setState({
 				participateOptions: [],
 				participateMessage: 'Você já está na nossa página para doar. Se quiser, também poderá divulgar seu apoio!',
-				anotherText: 'Seu apoio é fundamental para nossa pré-campanha! Por isso, cuidamos da segurança de todos os doadores. ',
+				anotherText: 'Seu apoio é fundamental para nossa campanha! Por isso, cuidamos da segurança de todos os doadores. ',
 			});
 		}
 		// checking for picframe_url so we can only show this option when it's available but still show the votoLegal option
