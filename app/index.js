@@ -240,11 +240,9 @@ const handler = new MessengerHandler()
 						console.log(context.state.intents);
 						if (context.state.intents.length === 0) { // dialogFlow knows it's a question but has no entities
 							await context.setState({ dialog: 'createIssue' });
-						} else if (
+						} else {
 							console.log('At least one intent');
-							
-						)
-
+						}
 						break;
 					case 'Saudação':
 						await context.setState({ dialog: 'greetings' });
