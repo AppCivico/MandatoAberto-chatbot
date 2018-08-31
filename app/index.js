@@ -229,8 +229,9 @@ const handler = new MessengerHandler()
 				} else if (context.event.isText) {
 					await context.setState({ whatWasTyped: context.event.message.text }); // will be used in case the bot doesn't find the question
 					await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
-					await context.setState({ apiaiResp: await removeEmptyKeys(context.state.apiaiResp.result.parameters) });
+					await context.setState({ intents: await removeEmptyKeys(context.state.apiaiResp.result.parameters) });
 
+					console.log(context.state.intents);
 					console.log(context.state.apiaiResp);
 
 
