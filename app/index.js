@@ -105,7 +105,7 @@ async function listThemes(obj) {
 		}
 	});
 	themes = themes.sort().join(', ').replace(/,(?=[^,]*$)/, ' e');
-	return themes.length > 0 ? themes.currentThemes : 'esses assuntos';
+	return themes.length > 0 ? themes : 'esses assuntos';
 }
 
 async function showQuestions(context) {
