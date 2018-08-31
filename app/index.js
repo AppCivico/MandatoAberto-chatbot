@@ -605,7 +605,7 @@ const handler = new MessengerHandler()
 				// console.log('Cheguei no create issue');
 				if ((context.state.apiaiResp && context.state.apiaiResp.result
 						&& context.state.apiaiResp.result.metadata && context.state.apiaiResp.result.metadata.intentName === 'Fallback') || (
-					context.state.apiaiResp.result.parameters).length === 0) {
+					context.state.entities.length === 0)) {
 					if (context.state.listening === true) {
 						if (!userMessages[context.session.user.id] || userMessages[context.session.user.id] === '') { // aggregating user texts
 							userMessages[context.session.user.id] = context.state.whatWasTyped;
