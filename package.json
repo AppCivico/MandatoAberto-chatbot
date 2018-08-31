@@ -4,10 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "nodemon app/index.js",
-    "start": "npm install -S grpc && node app/index.js",
-    "poststop": "npm install -S grpc",
-    "prestart": "npm install -S grpc",
-    "prerestart": "npm install -S grpc"
+    "start": "node app/index.js"
   },
   "dependencies": {
     "apiai-promise": "^1.0.0",
