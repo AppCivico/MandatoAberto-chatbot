@@ -89,15 +89,11 @@ function getArticles(gender) {
 // }
 async function listThemes(obj) {
 	const themes = [];
-	console.log(obj);
-
 	await Object.keys(obj).forEach(async (element) => {
-		console.log(element);
-
 		if (dictionary[obj[element]]) { // checks if there is a dictionary entry for element
 			themes.push(dictionary[obj[element]].toLowerCase());
 		} else {
-			themes.push(obj[element].toLowerCase().replace('_', ' '));
+			themes.push(obj[element].toLowerCase().replace('_', ' ')); // remove upper case and underscore just to be safe
 		}
 	});
 	return themes.sort().join(', ').replace(/,(?=[^,]*$)/, ' e');
@@ -238,22 +234,21 @@ const handler = new MessengerHandler()
 				} else if (context.event.isText) {
 					await context.setState({ whatWasTyped: context.event.message.text }); // will be used in case the bot doesn't find the question
 					await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
-					console.log('recebi um texto');
-
-					console.log('IntentNme ', context.state.apiaiResp.result.metadata.intentName);
+					// console.log('recebi um texto');
+					// console.log('IntentNme ', context.state.apiaiResp.result.metadata.intentName);
 
 					switch (context.state.apiaiResp.result.metadata.intentName) {
 					case 'Pergunta':
 						await context.setState({ entities: await removeEmptyKeys(context.state.apiaiResp.result.parameters) });
-						console.log(context.state.entities);
+						// console.log(context.state.entities);
 						if (context.state.entities.length >= 1) { // at least one entity
 							await context.setState({ // getting knowledge base
 								knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.apiaiResp.result.parameters),
 							});
-							console.log('knowledge:', context.state.knowledge);
+							// console.log('knowledge:', context.state.knowledge);
 							// check if there's at least one answer in knowledge_base
 							await context.setState({ currentThemes: await listThemes(context.state.entities) }); // format themes
-							console.log('currentThemes', context.state.currentThemes);
+							// console.log('currentThemes', context.state.currentThemes);
 
 							if (context.state.knowledge && context.state.knowledge.knowledge_base && context.state.knowledge.knowledge_base.length >= 1) {
 								await context.sendButtonTemplate('Você está perguntando meu posicionamento sobre ' // confirm themes with user
@@ -602,8 +597,7 @@ const handler = new MessengerHandler()
 				await context.setState({ dialog: 'prompt' });
 				break;
 			case 'createIssue':
-				console.log('Cheguei no create issue');
-
+				// console.log('Cheguei no create issue');
 				if ((context.state.apiaiResp && context.state.apiaiResp.result
 						&& context.state.apiaiResp.result.metadata && context.state.apiaiResp.result.metadata.intentName === 'Fallback') || (
 					context.state.apiaiResp.result.parameters).length === 0) {

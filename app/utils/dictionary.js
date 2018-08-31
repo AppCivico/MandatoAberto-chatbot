@@ -5,7 +5,7 @@ module.exports = {
 	Combate_a_corrupcao: 'Combate a Corrupção',
 	Desemprego: 'Desemprego',
 	Direita_ou_Esquerda: 'Direita ou Esquerda',
-	// Direitos_Humanos: 'Direitos Humanos',
+	Direitos_Humanos: 'Direitos Humanos',
 	Economia: 'Economia',
 	Educacao: 'Educação',
 	Emprego: 'Emprego',
