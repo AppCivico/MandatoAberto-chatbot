@@ -236,9 +236,9 @@ const handler = new MessengerHandler()
 
 					switch (context.state.apiaiResp.result.metadata.intentName) {
 					case 'Pergunta':
-						await context.setState({ intents: await removeEmptyKeys(context.state.apiaiResp.result.parameters) });
+						await context.setState({ entities: await removeEmptyKeys(context.state.apiaiResp.result.parameters) });
 						console.log(context.state.intents);
-						if (context.state.intents.length === 0) { // dialogFlow knows it's a question but has no entities
+						if (Object.keys(context.state.entities).length === 1) { // dialogFlow knows it's a question but has no entities
 							await context.setState({ dialog: 'createIssue' });
 						} else {
 							console.log('At least one intent');
