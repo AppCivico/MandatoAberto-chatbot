@@ -238,7 +238,7 @@ const handler = new MessengerHandler()
 					case 'Pergunta':
 						await context.setState({ entities: await removeEmptyKeys(context.state.apiaiResp.result.parameters) });
 						console.log(context.state.entities);
-						if (Object.keys(context.state.entities).length > 1) { // at least one entity
+						if (Object.keys(context.state.entities).length >= 1) { // at least one entity
 							await context.setState({ // getting knowledge base
 								knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.apiaiResp.result.parameters),
 							});
