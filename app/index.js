@@ -126,15 +126,15 @@ async function checkPollAnswered(context) {
 	return false;
 }
 
-async function sendToCreateIssue(context) {
-	console.log('Status do arewelistening:', areWeListening);
-	if (areWeListening === true) {
-		await context.setState({ dialog: 'createIssue' });
-	} else {
-		await context.setState({ dialog: 'intermediate' });
-		areWeListening = true;
-	}
-}
+// async function sendToCreateIssue(context) { // before we can use this we need to fix the comment/post status issue
+// 	console.log('Status do arewelistening:', areWeListening);
+// 	if (areWeListening === true) {
+// 		await context.setState({ dialog: 'createIssue' });
+// 	} else {
+// 		await context.setState({ dialog: 'intermediate' });
+// 		areWeListening = true;
+// 	}
+// }
 
 async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-declarations
 	if (!context.state.introduction) { // just in case something goes way off
