@@ -97,7 +97,7 @@ async function listThemes(obj) {
 		if (dictionary[obj[element]]) { // checks if there is a dictionary entry for element
 			themes.push(dictionary[obj[element]].toLowerCase());
 		} else {
-			themes.push('aa');
+			themes.push([obj[element]].toLowerCase().replace('_', ' '));
 		}
 	});
 	return themes.sort().join(', ').replace(/,(?=[^,]*$)/, ' e');
