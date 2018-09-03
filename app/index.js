@@ -371,7 +371,7 @@ const handler = new MessengerHandler()
 				await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
 				await context.setState({ dialog: 'greetings' });
 				pollTimers[context.session.user.id] = setTimeout(async () => { // create pollTimer for user
-					if (await checkPollAnswered() !== true) { // checks if user already answered poll (if he did, there's no reason to send it)
+					if (await checkPollAnswered(context) !== true) { // checks if user already answered poll (if he did, there's no reason to send it)
 						await context.sendText('Quero conhecer você melhor. Deixe sua resposta e participe deste debate.');
 						await context.sendText(`Pergunta: ${context.state.pollData.questions[0].content}`, {
 							quick_replies: [
@@ -706,7 +706,7 @@ const handler = new MessengerHandler()
 				await context.setState({ dialog: 'prompt', politicianCellPhone: undefined });
 				break;
 			case 'poll': {
-				if (await checkPollAnswered() === true) {
+				if (await checkPollAnswered(context) === true) {
 					await context.sendText('Ah, que pena! Você já respondeu essa pergunta.');
 					await context.sendButtonTemplate('Se quiser, eu posso te ajudar com outra coisa.',
 						await checkMenu(context, [opt.trajectory, opt.contacts, opt.doarOption]));
