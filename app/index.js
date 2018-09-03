@@ -394,7 +394,7 @@ const handler = new MessengerHandler()
 						await context.setState({ dialog: 'pollAnswer' });
 						console.log('dialog', context.state.dialog);
 					}
-				}, 1000 * 20);
+				}, pollTimerlimit);
 			}
 
 			// Switch de dialogos
