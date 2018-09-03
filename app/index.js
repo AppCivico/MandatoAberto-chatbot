@@ -369,7 +369,7 @@ const handler = new MessengerHandler()
 			}
 
 			// Tratando botão GET_STARTED
-			console.log('testar');
+			console.log('testar2');
 
 			if (context.event.postback && context.event.postback.payload === 'greetings') {
 				await context.resetState();
