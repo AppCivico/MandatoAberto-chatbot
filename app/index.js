@@ -225,6 +225,9 @@ const handler = new MessengerHandler()
 					}
 				} else if (context.event.isQuickReply) {
 					const { payload } = context.event.message.quick_reply;
+					console.log('i am here');
+					console.log('payload', payload);
+
 					if (payload.slice(0, 6) === 'option') {
 						await context.setState({ payload: payload.replace('option', '') });
 						await context.setState({
