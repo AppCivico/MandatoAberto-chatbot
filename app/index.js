@@ -369,6 +369,8 @@ const handler = new MessengerHandler()
 			}
 
 			// Tratando botão GET_STARTED
+			console.log('testar');
+
 			if (context.event.postback && context.event.postback.payload === 'greetings') {
 				await context.resetState();
 				await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
