@@ -368,6 +368,8 @@ const handler = new MessengerHandler()
 			// Tratando botão GET_STARTED
 			if (context.event.postback && context.event.postback.payload === 'greetings') {
 				await context.resetState();
+				await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
+				await context.setState({ dialog: 'greetings' });
 				pollTimers[context.session.user.id] = setTimeout(async () => { // create pollTimer for user
 					if (await checkPollAnswered() !== true) { // checks if user already answered poll (if he did, there's no reason to send it)
 						await context.sendText('Quero conhecer você melhor. Deixe sua resposta e participe deste debate.');
@@ -389,8 +391,6 @@ const handler = new MessengerHandler()
 						await context.setState({ dialog: 'pollAnswer' });
 					}
 				}, 10);
-				await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
-				await context.setState({ dialog: 'greetings' });
 			}
 
 			// Switch de dialogos
