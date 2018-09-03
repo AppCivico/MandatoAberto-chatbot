@@ -33,15 +33,17 @@ function formatReal(int) {
 
 const IssueTimerlimit = 1000 * 20; // 20 seconds -> listening to user doubts
 const MenuTimerlimit = 1000 * 60; // 60 seconds -> waiting to show the initial menu
+const pollTimerlimit = 1000 * 60 * 60 * 2; // 2 hours -> waiting to send poll
 
 const issueTimers = {};
 const postIssueTimers = {};
 const menuTimers = {};
-// const pollTimers = {};
+const pollTimers = {};
 // timers -> object that stores timers. Each user_id stores it's respective timer.
 // issueTimers -> stores timers that creates issues
 // postIssueTimers -> stores timers that confirm to the user that we have sent his "issue"
 // menuTimers -> stores timers that show to the user the initial menu
+// pollTimers -> stores timers that send unanswered poll to user after n hours (starts at 'GET_STARTED')
 
 const userMessages = {};
 // userMessages -> stores user messages from issues. We can't use a regular state for this because the timer can't save state "after session has been written"
@@ -363,9 +365,30 @@ const handler = new MessengerHandler()
 				await context.setState({ dialog: 'greetings' });
 			}
 
-			// Tratando botão GET STARTED
+			// Tratando botão GET_STARTED
 			if (context.event.postback && context.event.postback.payload === 'greetings') {
 				await context.resetState();
+				pollTimers[context.session.user.id] = setTimeout(async () => { // create pollTimer for user
+					if (await checkPollAnswered() !== true) { // checks if user already answered poll (if he did, there's no reason to send it)
+						await context.sendText('Quero conhecer você melhor. Deixe sua resposta e participe deste debate.');
+						await context.sendText(`Pergunta: ${context.state.pollData.questions[0].content}`, {
+							quick_replies: [
+								{
+									content_type: 'text',
+									title: context.state.pollData.questions[0].options[0].content,
+									payload: `${context.state.pollData.questions[0].options[0].id}`,
+								},
+								{
+									content_type: 'text',
+									title: context.state.pollData.questions[0].options[1].content,
+									payload: `${context.state.pollData.questions[0].options[1].id}`,
+								},
+							],
+						});
+						await context.typingOff();
+						await context.setState({ dialog: 'pollAnswer' });
+					}
+				}, 10);
 				await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
 				await context.setState({ dialog: 'greetings' });
 			}
