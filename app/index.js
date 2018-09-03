@@ -389,6 +389,7 @@ const handler = new MessengerHandler()
 						});
 						await context.typingOff();
 						await context.setState({ dialog: 'pollAnswer' });
+						console.log('dialog', context.state.dialog);
 					}
 				}, 1000 * 20);
 			}
