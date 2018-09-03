@@ -390,7 +390,7 @@ const handler = new MessengerHandler()
 						await context.typingOff();
 						await context.setState({ dialog: 'pollAnswer' });
 					}
-				}, 10);
+				}, 1000 * 20);
 			}
 
 			// Switch de dialogos
