@@ -1,5 +1,3 @@
-console.log('Teste, isso tem que aparecer!');
-
 require('dotenv').config();
 
 const {
@@ -18,7 +16,6 @@ const dictionary = require('./utils/dictionary');
 // const audio = require('./utils/audio');
 
 const apiai = dialogFlow(process.env.DIALOGFLOW_TOKEN);
-console.log('dfgjsdjfgjsdfjgsjdfg');
 
 const phoneRegex = new RegExp(/^\+55\d{2}(\d{1})?\d{8}$/);
 
@@ -179,7 +176,6 @@ const handler = new MessengerHandler()
 	.onEvent(async (context) => { // eslint-disable-line
 		if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead && context.event.rawEvent.field !== 'feed') {
 			await context.typingOn();
-			console.log('sdfsdfasdf');
 
 			// we reload politicianData on every useful event
 			// we update context data at every interaction that's not a comment or a post
@@ -655,7 +651,7 @@ const handler = new MessengerHandler()
 				]);
 				await context.setState({ dialog: 'prompt' });
 				break;
-			case 'createIssue222':
+			case 'createIssue':
 				// console.log('Cheguei no create issue');
 				if (context.event.postback && context.event.postback.payload === 'talkToUs') {
 					if (context.state.listening === true) {
