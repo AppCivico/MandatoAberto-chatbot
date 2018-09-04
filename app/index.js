@@ -182,7 +182,7 @@ const handler = new MessengerHandler()
 			await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
 			await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 
-			if (context.state.dialog !== 'recipientData' && context.state.dialog !== 'pollAnswer') { // handling input that's not from "asking data"
+			if (context.state.dialog !== 'recipientData' && context.state.dialog !== 'pollAnswer') { // handling input that's not from "asking data" or answering poll (obs: 'pollAnswer' from timer will bypass this)
 				if (context.event.isPostback) {
 					if (context.event.postback.payload === 'themeYes') {
 						/* eslint-disable */
@@ -237,6 +237,8 @@ const handler = new MessengerHandler()
 								{ [context.state.payload]: context.state.apiaiResp.result.parameters[context.state.payload] }),
 						});
 						await showQuestions(context);
+					} else if (payload.slice(0, 4) === 'poll') {
+						await context.setState({ dialog: 'pollAnswer' });
 					} else {
 						await context.setState({ dialog: payload });
 					}
@@ -396,17 +398,17 @@ const handler = new MessengerHandler()
 								{
 									content_type: 'text',
 									title: context.state.pollData.questions[0].options[0].content,
-									payload: `${context.state.pollData.questions[0].options[0].id}`,
+									payload: `poll${context.state.pollData.questions[0].options[0].id}`,
 								},
 								{
 									content_type: 'text',
 									title: context.state.pollData.questions[0].options[1].content,
-									payload: `${context.state.pollData.questions[0].options[1].id}`,
+									payload: `poll${context.state.pollData.questions[0].options[1].id}`,
 								},
 							],
 						});
 						await context.typingOff();
-						await context.setState({ dialog: 'pollAnswer' });
+						await context.setState({ dialog: 'pollAnswer' }); // don't really work, we will be using the 'poll' text on the options's payloads to react correctly
 						console.log('dialog', context.state.dialog);
 					}
 				}, pollTimerlimit);
