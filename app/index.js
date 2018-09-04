@@ -427,8 +427,8 @@ const handler = new MessengerHandler()
 				}
 
 				console.log(context.state.answer);
-				const poll_question_option_id = context.event.message.quick_reply.payload;
-				await MandatoAbertoAPI.postPollAnswer(context.session.user.id, poll_question_option_id, 'dialog');
+				// const poll_question_option_id = context.event.message.quick_reply.payload;
+				await MandatoAbertoAPI.postPollAnswer(context.session.user.id, context.state.answer, 'dialog');
 				await context.setState({ answer: '' });
 			} else if (context.event.isQuickReply && context.event.message.quick_reply.payload && context.event.message.quick_reply.payload.includes('pollAnswerPropagate')) {
 				// Tratando resposta da enquete através de propagação
