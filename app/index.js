@@ -576,7 +576,6 @@ const handler = new MessengerHandler()
 				} else {
 					await context.sendText(context.state.participateText);
 				}
-				await context.sendText(context.state.participateText);
 				if (context.state.politicianData.picframe_url) { // check if there is a picframe_url so we can show the option
 					await context.sendButtonTemplate('Para ajudar na divulgação, basta clicar na opção abaixo!', // esse texto será customizável no futuro
 						[{
