@@ -570,19 +570,18 @@ const handler = new MessengerHandler()
 					});
 					await context.sendButtonTemplate(`${context.state.participateText} Apoie nossa campanha de arrecadação.`, [{
 						type: 'web_url',
-						url: context.state.politicianData.picframe_url,
-						title: 'Divulgar',
+						url: `${context.state.politicianData.votolegal_integration.votolegal_url}/#doar`,
+						title: 'Quero doar!',
 					}]);
 				} else {
 					await context.sendText(context.state.participateText);
 				}
 				if (context.state.politicianData.picframe_url) { // check if there is a picframe_url so we can show the option
-					await context.sendButtonTemplate('Para ajudar na divulgação, basta clicar na opção abaixo!', // esse texto será customizável no futuro
-						[{
-							type: 'web_url',
-							url: context.state.politicianData.picframe_url,
-							title: 'Divulgar',
-						}]);
+					await context.sendButtonTemplate('Para ajudar na divulgação, basta clicar na opção abaixo!', [{ // esse texto será customizável no futuro
+						type: 'web_url',
+						url: context.state.politicianData.picframe_url,
+						title: 'Divulgar',
+					}]);
 				}
 				await context.sendButtonTemplate('Você também pode deixar seus contatos conosco!', [opt.leaveInfo, opt.backToBeginning]);
 				await context.setState({ dialog: 'prompt' });
