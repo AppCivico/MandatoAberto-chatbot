@@ -561,12 +561,14 @@ const handler = new MessengerHandler()
 				break;
 			case 'participateMenu':
 				await context.setState({ participateText: 'Estamos em campanha e contamos com você.' }); // getting the first part of the text
+
 				if (context.state.politicianData.votolegal_integration.votolegal_url) { // check if politician is on votoLegal so we can info and option
+					await context.setState({ valueLegal: await VotoLegalAPI.getVotoLegalValues(context.state.politicianData.votolegal_integration.votolegal_username) });
 					await context.setState({
 						participateText: `${context.state.participateText} Já consegui R$${formatReal(context.state.valueLegal.candidate.total_donated)} da minha meta de `
-							+ `R$${formatReal(getMoney(context.state.valueLegal.candidate.raising_goal))}. Apoie nossa campanha de arrecadação.`,
+							+ `R$${formatReal(getMoney(context.state.valueLegal.candidate.raising_goal))}. `,
 					});
-					await context.sendButtonTemplate(context.state.participateText, [{
+					await context.sendButtonTemplate(`${context.state.participateText} Apoie nossa campanha de arrecadação.`, [{
 						type: 'web_url',
 						url: context.state.politicianData.picframe_url,
 						title: 'Divulgar',
