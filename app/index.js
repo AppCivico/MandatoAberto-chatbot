@@ -1,3 +1,5 @@
+console.log('adfkgmadfkgmsdfgklsmdfglsdfkgmsdflgk');
+
 require('dotenv').config();
 
 const {
@@ -281,7 +283,13 @@ const handler = new MessengerHandler()
 						} else { // dialogFlow knows it's a question but has no entities
 							console.log('Cai aqui');
 
-							await context.setState({ dialog: 'createIssue' });
+							await context.sendButtonTemplate(`Parece que ${getArtigoCargoNome(context)} `
+								+ 'Estarei avisando a nossa equipe. Se tiver mais alguma dúvida, por favor, digite.',
+								await checkMenu(context, [opt.trajectory, opt.contacts, opt.doarOption]));// eslint-disable-line
+
+							await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
+								context.state.whatWasTyped, context.state.apiaiResp.result.parameters);
+							// await context.setState({ dialog: 'createIssue' });
 						}
 						break;
 					case 'Saudação':
@@ -295,7 +303,14 @@ const handler = new MessengerHandler()
 						if (context.state.politicianData.votolegal_integration && context.state.politicianData.votolegal_integration.votolegal_url2) {
 							await context.setState({ dialog: 'WannaHelp' });
 						} else {
-							await context.setState({ dialog: 'createIssue' });
+							await context.sendButtonTemplate(`Parece que ${getArtigoCargoNome(context)} `
+								+ `ainda não se posicionou sobre ${context.state.currentThemes}. `
+								+ 'Estarei avisando a nossa equipe. Se tiver mais alguma dúvida, por favor, digite.',
+								await checkMenu(context, [opt.trajectory, opt.contacts, opt.doarOption]));// eslint-disable-line
+
+							await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
+								context.state.whatWasTyped, context.state.apiaiResp.result.parameters);
+							// await context.setState({ dialog: 'createIssue' });
 						}
 						break;
 					case 'Fallback': // didn't understand what was typed
@@ -640,9 +655,9 @@ const handler = new MessengerHandler()
 				]);
 				await context.setState({ dialog: 'prompt' });
 				break;
-			case 'createIssue':
+			case 'createIssue222':
 				// console.log('Cheguei no create issue');
-				if (context.state.entities.length === 0) {
+				if (context.event.postback && context.event.postback.payload === 'talkToUs') {
 					if (context.state.listening === true) {
 						if (!userMessages[context.session.user.id] || userMessages[context.session.user.id] === '') { // aggregating user texts
 							userMessages[context.session.user.id] = context.state.whatWasTyped;
