@@ -425,9 +425,6 @@ const handler = new MessengerHandler()
 				} else {
 					await context.setState({ answer: context.event.message.quick_reply.payload });
 				}
-
-				console.log(context.state.answer);
-				// const poll_question_option_id = context.event.message.quick_reply.payload;
 				await MandatoAbertoAPI.postPollAnswer(context.session.user.id, context.state.answer, 'dialog');
 				await context.setState({ answer: '' });
 			} else if (context.event.isQuickReply && context.event.message.quick_reply.payload && context.event.message.quick_reply.payload.includes('pollAnswerPropagate')) {
@@ -466,12 +463,8 @@ const handler = new MessengerHandler()
 							fb_id: context.session.user.id,
 							email: context.state.email,
 						});
-						if (!context.state.email || !context.state.cellphone) {
-							await context.sendButtonTemplate('Legal, agora quer me informar seu telefone, para lhe manter informado sobre outras perguntas?', opt.recipientData_YesNo);
-							await context.setState({ recipientData: 'cellphonePrompt', dialog: 'recipientData', dataPrompt: '' });
-						} else {
-							await context.setState({ dialog: 'mainMenu' });
-						}
+						await context.sendButtonTemplate('Legal, agora quer me informar seu telefone, para lhe manter informado sobre outras perguntas?', opt.recipientData_YesNo);
+						await context.setState({ recipientData: 'cellphonePrompt', dialog: 'recipientData', dataPrompt: '' });
 						break;
 					case 'cellphone':
 						await context.setState({ cellphone: `+55${context.state.cellphone.replace(/[- .)(]/g, '')}` });
@@ -760,8 +753,12 @@ const handler = new MessengerHandler()
 				break;
 			}
 			case 'pollAnswer':
-				await context.sendButtonTemplate('Muito obrigado por sua resposta. Você gostaria de deixar seu e-mail e telefone para nossa equipe?', opt.recipientData_LetsGo);
-				await context.setState({ dialog: 'prompt', dataPrompt: 'email' });
+				if (!context.state.email || !context.state.cellphone) {
+					await context.sendButtonTemplate('Muito obrigado por sua resposta. Você gostaria de deixar seu e-mail e telefone para nossa equipe?', opt.recipientData_LetsGo);
+					await context.setState({ dialog: 'prompt', dataPrompt: 'email' });
+				} else {
+					await context.setState({ dialog: 'dialog' });
+				}
 				break;
 			case 'recipientData':
 				if (context.event.postback && (context.event.postback.title === 'Agora não' || context.event.postback.title === 'Não')) {
