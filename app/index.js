@@ -421,7 +421,7 @@ const handler = new MessengerHandler()
 			// Resposta de enquete
 			if (context.event.isQuickReply && context.state.dialog === 'pollAnswer') {
 				if (context.event.message.quick_reply.payload.slice(0, 4) === 'poll') {
-					await context.setState({ answer: context.event.message.quick_reply.payload.slice(4, -1) });
+					await context.setState({ answer: context.event.message.quick_reply.payload.replace('poll', '') });
 				} else {
 					await context.setState({ answer: context.event.message.quick_reply.payload });
 				}
