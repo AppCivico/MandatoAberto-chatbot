@@ -19,10 +19,10 @@ module.exports = {
 		title: 'Trajetória',
 		payload: 'trajectory',
 	},
-	doarOption: {
+	participate: {
 		type: 'postback',
 		title: 'Participar',
-		payload: 'votoLegal',
+		payload: 'participate',
 	},
 	goBackMainMenu: {
 		type: 'postback',
