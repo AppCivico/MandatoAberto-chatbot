@@ -770,8 +770,8 @@ const handler = new MessengerHandler()
 					switch (context.state.dataPrompt) {
 					case 'email':
 						try {
-							// await context.sendText('Qual o seu e-mail?');
-							await context.sendText('Qual o seu e-mail? Pode digita-lo e nos mandar.', { quick_replies: [{ content_type: 'user_email' }] });
+							await context.sendText('Qual o seu e-mail?');
+							// await context.sendText('Qual o seu e-mail? Pode digita-lo e nos mandar.', { quick_replies: [{ content_type: 'user_email' }] });
 						} catch (err) {
 							console.log('E-mail button catch error =>', err);
 							await context.sendText('Qual o seu e-mail?');
