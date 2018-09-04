@@ -1,4 +1,4 @@
-console.log('Teste, isso tem que aparecer');
+console.log('Teste, isso tem que aparecer!');
 
 require('dotenv').config();
 
