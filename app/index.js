@@ -563,17 +563,23 @@ const handler = new MessengerHandler()
 				await context.setState({ participateText: 'Estamos em campanha e contamos com você.' }); // getting the first part of the text
 
 				if (context.state.politicianData.votolegal_integration.votolegal_url) { // check if politician is on votoLegal so we can info and option
-					await context.setState({ valueLegal: await VotoLegalAPI.getVotoLegalValues(context.state.politicianData.votolegal_integration.votolegal_username) });
-					await context.setState({
-						participateText: `${context.state.participateText} Já consegui R$${formatReal(context.state.valueLegal.candidate.total_donated)} da minha meta de `
+					// if referral.source(CUSTOMER_CHAT_PLUGIN) doesn't exist we are on facebook and should send votolegal's url
+					if (!context.event.rawEvent.postback.referral) {
+						await context.setState({ valueLegal: await VotoLegalAPI.getVotoLegalValues(context.state.politicianData.votolegal_integration.votolegal_username) });
+						await context.setState({
+							participateText: `${context.state.participateText} Já consegui R$${formatReal(context.state.valueLegal.candidate.total_donated)} da minha meta de `
 							+ `R$${formatReal(getMoney(context.state.valueLegal.candidate.raising_goal))}. `,
-					});
-					await context.sendButtonTemplate(`${context.state.participateText} Apoie nossa campanha de arrecadação.`, [{
-						type: 'web_url',
-						url: `${context.state.politicianData.votolegal_integration.votolegal_url}/#doar`,
-						title: 'Quero doar!',
-					}]);
-				} else {
+						});
+						await context.sendButtonTemplate(`${context.state.participateText} Apoie nossa campanha de arrecadação.`, [{
+							type: 'web_url',
+							url: `${context.state.politicianData.votolegal_integration.votolegal_url}/#doar`,
+							title: 'Quero doar!',
+						}]);
+					} else {
+						await context.sendText(`${context.state.participateText} Você já está na nossa página para doar. Se quiser, também poderá divulgar seu apoio!`);
+						await context.sendText('Seu apoio é fundamental para nossa campanha! Por isso, cuidamos da segurança de todos os doadores.');
+					}
+				} else { // no votoLegal
 					await context.sendText(context.state.participateText);
 				}
 				if (context.state.politicianData.picframe_url) { // check if there is a picframe_url so we can show the option
