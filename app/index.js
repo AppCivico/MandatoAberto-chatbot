@@ -458,8 +458,12 @@ const handler = new MessengerHandler()
 							fb_id: context.session.user.id,
 							email: context.state.email,
 						});
-						await context.sendButtonTemplate('Legal, agora quer me informar seu telefone, para lhe manter informado sobre outras perguntas?', opt.recipientData_YesNo);
-						await context.setState({ recipientData: 'cellphonePrompt', dialog: 'recipientData', dataPrompt: '' });
+						if (!context.state.email || !context.state.cellphone) {
+							await context.sendButtonTemplate('Legal, agora quer me informar seu telefone, para lhe manter informado sobre outras perguntas?', opt.recipientData_YesNo);
+							await context.setState({ recipientData: 'cellphonePrompt', dialog: 'recipientData', dataPrompt: '' });
+						} else {
+							await context.setState({ dialog: 'mainMenu' });
+						}
 						break;
 					case 'cellphone':
 						await context.setState({ cellphone: `+55${context.state.cellphone.replace(/[- .)(]/g, '')}` });
