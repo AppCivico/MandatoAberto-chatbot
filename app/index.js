@@ -182,7 +182,7 @@ const handler = new MessengerHandler()
 			await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
 			await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 
-			if (context.state.dialog !== 'recipientData') { // handling input that's not from "asking data"
+			if (context.state.dialog !== 'recipientData' && context.state.dialog !== 'pollAnswer') { // handling input that's not from "asking data"
 				if (context.event.isPostback) {
 					if (context.event.postback.payload === 'themeYes') {
 						/* eslint-disable */
