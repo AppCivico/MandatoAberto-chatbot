@@ -727,7 +727,7 @@ const handler = new MessengerHandler()
 				await context.setState({ dialog: 'prompt', politicianCellPhone: undefined });
 				break;
 			case 'poll': {
-				if (await checkPollAnswered(context) === true) {
+				if (await checkPollAnswered(context) !== true) {
 					await context.sendText('Ah, que pena! Você já respondeu essa pergunta.');
 					await context.sendButtonTemplate('Se quiser, eu posso te ajudar com outra coisa.',
 						await checkMenu(context, [opt.trajectory, opt.contacts, opt.doarOption]));
