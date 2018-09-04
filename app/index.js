@@ -225,11 +225,6 @@ const handler = new MessengerHandler()
 					}
 				} else if (context.event.isQuickReply) {
 					const { payload } = context.event.message.quick_reply;
-
-
-					console.log('i am here', context.state.dialog);
-					console.log('payload', payload);
-
 					if (payload.slice(0, 6) === 'option') {
 						await context.setState({ payload: payload.replace('option', '') });
 						await context.setState({
@@ -237,7 +232,7 @@ const handler = new MessengerHandler()
 								{ [context.state.payload]: context.state.apiaiResp.result.parameters[context.state.payload] }),
 						});
 						await showQuestions(context);
-					} else if (payload.slice(0, 4) === 'poll') {
+					} else if (payload.slice(0, 4) === 'poll') { // user answered poll that came from timer
 						await context.setState({ dialog: 'pollAnswer' });
 					} else {
 						await context.setState({ dialog: payload });
@@ -398,18 +393,17 @@ const handler = new MessengerHandler()
 								{
 									content_type: 'text',
 									title: context.state.pollData.questions[0].options[0].content,
-									payload: `poll${context.state.pollData.questions[0].options[0].id}`,
+									payload: `poll${context.state.pollData.questions[0].options[0].id}`, // notice 'poll'
 								},
 								{
 									content_type: 'text',
 									title: context.state.pollData.questions[0].options[1].content,
-									payload: `poll${context.state.pollData.questions[0].options[1].id}`,
+									payload: `poll${context.state.pollData.questions[0].options[1].id}`, // notice 'poll'
 								},
 							],
 						});
 						await context.typingOff();
 						await context.setState({ dialog: 'pollAnswer' }); // don't really work, we will be using the 'poll' text on the options's payloads to react correctly
-						console.log('dialog', context.state.dialog);
 					}
 				}, pollTimerlimit);
 			}
