@@ -420,6 +420,8 @@ const handler = new MessengerHandler()
 			}
 			// Resposta de enquete
 			if (context.event.isQuickReply && context.state.dialog === 'pollAnswer') {
+				console.log('Test');
+
 				const poll_question_option_id = context.event.message.quick_reply.payload;
 				await MandatoAbertoAPI.postPollAnswer(context.session.user.id, poll_question_option_id, 'dialog');
 			} else if (context.event.isQuickReply && context.event.message.quick_reply.payload && context.event.message.quick_reply.payload.includes('pollAnswerPropagate')) {
