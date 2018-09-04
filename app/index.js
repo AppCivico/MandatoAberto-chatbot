@@ -35,7 +35,7 @@ function formatReal(int) {
 
 const IssueTimerlimit = 1000 * 20; // 20 seconds -> listening to user doubts
 const MenuTimerlimit = 1000 * 5; // 60 seconds -> waiting to show the initial menu -> 1000 * 60
-const pollTimerlimit = 1000 * 60 * 60 * 2; // 2 hours -> waiting to send poll -> 1000 * 60 * 60 * 2
+const pollTimerlimit = 1000 * 10; // 2 hours -> waiting to send poll -> 1000 * 60 * 60 * 2
 
 const issueTimers = {};
 const postIssueTimers = {};
@@ -389,7 +389,7 @@ const handler = new MessengerHandler()
 				await context.setState({ dialog: 'greetings' });
 				pollTimers[context.session.user.id] = setTimeout(async () => { // create pollTimer for user
 					// checks if user already answered poll (if he did, there's no reason to send it. In this case should be !== true) (pollData also has to exist)
-					if (await checkPollAnswered(context) === true && context.state.pollData) { // context.state.pollData
+					if (await checkPollAnswered(context) !== true && context.state.pollData) { // context.state.pollData
 						await context.sendText('Quero conhecer você melhor. Deixe sua resposta e participe deste debate.');
 						await context.sendText(`Pergunta: ${context.state.pollData.questions[0].content}`, {
 							quick_replies: [
