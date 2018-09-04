@@ -36,7 +36,7 @@ function formatReal(int) {
 // TODO: remove from blacklist is a different endpoint?
 
 const IssueTimerlimit = 1000 * 20; // 20 seconds -> listening to user doubts
-const MenuTimerlimit = 1000 * 5; // 60 seconds -> waiting to show the initial menu -> 1000 * 60
+const MenuTimerlimit = 1000 * 2; // 60 seconds -> waiting to show the initial menu -> 1000 * 60
 const pollTimerlimit = 1000 * 1000 * 60 * 60 * 2; // 2 hours -> waiting to send poll -> 1000 * 60 * 60 * 2
 
 const issueTimers = {};
@@ -560,7 +560,20 @@ const handler = new MessengerHandler()
 				await context.setState({ dialog: 'prompt' });
 				break;
 			case 'participateMenu':
-				await context.setState({ participateText: 'Estamos em campanha e contamos com você.' });
+				await context.setState({ participateText: 'Estamos em campanha e contamos com você.' }); // getting the first part of the text
+				if (context.state.politicianData.votolegal_integration.votolegal_url) { // check if politician is on votoLegal so we can info and option
+					await context.setState({
+						participateText: `${context.state.participateText} Já consegui R$${formatReal(context.state.valueLegal.candidate.total_donated)} da minha meta de `
+							+ `R$${formatReal(getMoney(context.state.valueLegal.candidate.raising_goal))}. Apoie nossa campanha de arrecadação.`,
+					});
+					await context.sendButtonTemplate(context.state.participateText, [{
+						type: 'web_url',
+						url: context.state.politicianData.picframe_url,
+						title: 'Divulgar',
+					}]);
+				} else {
+					await context.sendText(context.state.participateText);
+				}
 				await context.sendText(context.state.participateText);
 				if (context.state.politicianData.picframe_url) { // check if there is a picframe_url so we can show the option
 					await context.sendButtonTemplate('Para ajudar na divulgação, basta clicar na opção abaixo!', // esse texto será customizável no futuro
@@ -572,32 +585,6 @@ const handler = new MessengerHandler()
 				}
 				await context.sendButtonTemplate('Você também pode deixar seus contatos conosco!', [opt.leaveInfo, opt.backToBeginning]);
 				await context.setState({ dialog: 'prompt' });
-				break;
-			case 'aboutDivulgation':
-				await context.setState({ participateOptions: [opt.leaveInfo] });
-				if (context.state.politicianData.picframe_url) {
-					await context.setState({
-						participateOptions: context.state.participateOptions.concat([{
-							type: 'web_url',
-							url: context.state.politicianData.picframe_url,
-							title: 'Mudar Avatar',
-						}]),
-					});
-				}
-				await context.setState({ participateOptions: context.state.participateOptions.concat([opt.backToKnowMore]) });
-				await context.sendButtonTemplate('Para ajudar na divulgação, você pode deixar seus contatos comigo ou mudar sua imagem de avatar. Você quer participar?',
-					context.state.participateOptions);
-				await context.setState({ dialog: 'prompt', dataPrompt: 'email' });
-				break;
-			case 'WannaHelp':
-				await context.setState({ participateOptions: [opt.wannaDonate] });
-				// checking for picframe_url so we can only show this option when it's available but still show the votoLegal option
-				if (context.state.politicianData.picframe_url) {
-					await context.setState({ participateOptions: context.state.participateOptions.concat([opt.wannaDivulgate]) });
-				}
-				await context.setState({ participateOptions: context.state.participateOptions.concat([opt.goBackMainMenu]) });
-				await context.sendButtonTemplate('Ficamos felizes com seu apoio! Como deseja participar?', context.state.participateOptions);
-				await context.setState({ dialog: 'prompt', participateOptions: undefined });
 				break;
 			case 'WannaDonate':
 				// if referral.source(CUSTOMER_CHAT_PLUGIN) doesn't exist we are on facebook and should send votolegal's url
@@ -645,18 +632,6 @@ const handler = new MessengerHandler()
 				await context.setState({
 					dialog: 'prompt', valueLegal: undefined, participateOptions: undefined, participateMessage: undefined, anotherText: undefined,
 				});
-				break;
-			case 'WannaDivulgate':
-				await context.sendButtonTemplate('Que legal! Seu apoio é muito importante para nós! Você quer mudar foto (avatar) do seu perfil?', [
-					{
-						type: 'web_url',
-						url: context.state.politicianData.picframe_url,
-						title: 'Atualizar foto',
-					},
-					opt.wannaDonate,
-					opt.goBackMainMenu,
-				]);
-				await context.setState({ dialog: 'prompt' });
 				break;
 			case 'createIssue':
 				// console.log('Cheguei no create issue');
