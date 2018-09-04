@@ -32,8 +32,8 @@ function formatReal(int) {
 }
 
 const IssueTimerlimit = 1000 * 20; // 20 seconds -> listening to user doubts
-const MenuTimerlimit = 1000 * 10; // 60 seconds -> waiting to show the initial menu -> 1000 * 60
-const pollTimerlimit = 1000 * 40 * 10000; // 2 hours -> waiting to send poll -> 1000 * 60 * 60 * 2
+const MenuTimerlimit = 1000 * 5; // 60 seconds -> waiting to show the initial menu -> 1000 * 60
+const pollTimerlimit = 1000 * 10; // 2 hours -> waiting to send poll -> 1000 * 60 * 60 * 2
 
 const issueTimers = {};
 const postIssueTimers = {};
