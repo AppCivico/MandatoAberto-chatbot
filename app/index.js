@@ -32,6 +32,8 @@ function formatReal(int) {
 }
 
 // TODO: pollTimer falta enviar o put
+// TODO: add to blacklist should have politician_id and user_id?
+// TODO: remove from blacklist is a different endpoint?
 
 const IssueTimerlimit = 1000 * 20; // 20 seconds -> listening to user doubts
 const MenuTimerlimit = 1000 * 5; // 60 seconds -> waiting to show the initial menu -> 1000 * 60
@@ -223,7 +225,7 @@ const handler = new MessengerHandler()
 						await context.setState({ listening: false });
 						await context.setState({ dialog: 'createIssue' });
 					} else {
-						await context.setState({ dialog: context.event.postback.payload });
+						await context.setState({ dialog: context.event.postback.payload }); // send to dialog equal to the payload
 					}
 				} else if (context.event.isQuickReply) {
 					const { payload } = context.event.message.quick_reply;
@@ -819,6 +821,16 @@ const handler = new MessengerHandler()
 				await context.sendButtonTemplate('Quer saber mais?', await checkMenu(context, [opt.poll_suaOpiniao, opt.contacts, opt.doarOption]));
 				await context.setState({ dialog: 'prompt' });
 				break;
+			case 'add_blacklist': // adding user to the blacklist from the persistent menu
+				await MandatoAbertoAPI.postAddBlacklist(context.session.user.id);
+				await context.sendText('Legal. Estaremos te avisando das novidades.');
+				await context.sendButtonTemplate('Quer saber mais?', await checkMenu(context, [opt.aboutPolitician, opt.trajectory, opt.doarOption]));
+				break;
+			case 'remove_blacklist': // removing user to the blacklist from the persistent menu
+				await MandatoAbertoAPI.postRemoveBlacklist(context.session.user.id);
+				await context.sendText('Tudo bem. Não te enviaremos mais nenhuma notificação.');
+				await context.sendButtonTemplate('Quer saber mais?', await checkMenu(context, [opt.aboutPolitician, opt.trajectory, opt.doarOption]));
+				break;
 			case 'issue':
 				await context.sendText('Escreva sua mensagem para nossa equipe:');
 				await context.setState({ dialog: 'prompt', prompt: 'issue' });
@@ -829,7 +841,7 @@ const handler = new MessengerHandler()
 				await context.setState({ dialog: 'prompt' });
 				break;
 			}
-			}
+			} // end switch de diálogo
 		}
 	})
 	.onError(async (context, err) => {
