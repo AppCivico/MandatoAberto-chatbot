@@ -32,8 +32,8 @@ function formatReal(int) {
 }
 
 const IssueTimerlimit = 1000 * 20; // 20 seconds -> listening to user doubts
-const MenuTimerlimit = 1000 * 60; // 60 seconds -> waiting to show the initial menu
-const pollTimerlimit = 1000 * 60 * 60 * 2; // 2 hours -> waiting to send poll
+const MenuTimerlimit = 1000 * 20; // 60 seconds -> waiting to show the initial menu -> 1000 * 60
+const pollTimerlimit = 1000 * 40; // 2 hours -> waiting to send poll -> 1000 * 60 * 60 * 2
 
 const issueTimers = {};
 const postIssueTimers = {};
@@ -225,7 +225,9 @@ const handler = new MessengerHandler()
 					}
 				} else if (context.event.isQuickReply) {
 					const { payload } = context.event.message.quick_reply;
-					console.log('i am here');
+
+
+					console.log('i am here', context.state.dialog);
 					console.log('payload', payload);
 
 					if (payload.slice(0, 6) === 'option') {
@@ -495,14 +497,11 @@ const handler = new MessengerHandler()
 				await context.setState({ issueMessage: getIssueMessage(await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_acknowledgment')) });
 				await context.setState({ greeting: context.state.politicianData.greeting.replace('${user.office.name}', context.state.politicianData.office.name) }); // eslint-disable-line no-template-curly-in-string
 				await context.setState({ greeting: context.state.greeting.replace('${user.name}', context.state.politicianData.name) }); // eslint-disable-line no-template-curly-in-string
-				await context.sendText('asdfasjfjasdjfasdjfasdjfjasdjfajsdfjasdjfj');
 				await context.sendText(context.state.greeting);
 				await context.sendText(context.state.issueMessage);
 				if (menuTimers[context.session.user.id]) { // clear timer if it already exists
 					clearTimeout(menuTimers[context.session.user.id]);
 				}
-				console.log('asdfasdfasdfasdfasdf');
-
 				menuTimers[context.session.user.id] = setTimeout(async () => { // wait 'MenuTimerlimit' to show options menu
 					await context.setState({ optionPrompt: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'option_prompt') });
 					await context.sendButtonTemplate(context.state.optionPrompt.content, await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
