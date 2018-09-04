@@ -37,7 +37,7 @@ function formatReal(int) {
 
 const IssueTimerlimit = 1000 * 20; // 20 seconds -> listening to user doubts
 const MenuTimerlimit = 1000 * 5; // 60 seconds -> waiting to show the initial menu -> 1000 * 60
-const pollTimerlimit = 1000 * 10; // 2 hours -> waiting to send poll -> 1000 * 60 * 60 * 2
+const pollTimerlimit = 1000 * 1000 * 60 * 60 * 2; // 2 hours -> waiting to send poll -> 1000 * 60 * 60 * 2
 
 const issueTimers = {};
 const postIssueTimers = {};
@@ -170,7 +170,7 @@ async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-dec
 			dialogs.push(opt.talkToUs);
 		}
 	}
-	if (!context.state.politicianData.votolegal_integration) { dialogs = dialogs.filter(obj => obj.payload !== 'votoLegal'); }
+	if (!context.state.politicianData.votolegal_integration) { dialogs = dialogs.filter(obj => obj.payload !== 'participate'); }
 	// if (dialogs[0].payload === 'aboutMe') { dialogs[0].title = getAboutMe(context.state.politicianData); }
 	return dialogs;
 }
