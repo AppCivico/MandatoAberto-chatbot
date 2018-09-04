@@ -161,7 +161,7 @@ async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-dec
 	if (!context.state.pollData) { dialogs = dialogs.filter(obj => obj.payload !== 'poll'); }
 	if (!context.state.politicianData.contact) { dialogs = dialogs.filter(obj => obj.payload !== 'contacts'); }
 	if (dialogs.find(x => x.payload === 'poll')) {
-		if (await checkPollAnswered(context) === true) { // already answered so we remove option
+		if (await checkPollAnswered(context) !== true) { // already answered so we remove option
 			dialogs = dialogs.filter(obj => obj.payload !== 'poll');
 			dialogs.push(opt.talkToUs);
 		}
@@ -386,7 +386,7 @@ const handler = new MessengerHandler()
 				await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
 				await context.setState({ dialog: 'greetings' });
 				pollTimers[context.session.user.id] = setTimeout(async () => { // create pollTimer for user
-					if (await checkPollAnswered(context) === true) { // checks if user already answered poll (if he did, there's no reason to send it)
+					if (await checkPollAnswered(context) !== true) { // checks if user already answered poll (if he did, there's no reason to send it)
 						await context.sendText('Quero conhecer você melhor. Deixe sua resposta e participe deste debate.');
 						await context.sendText(`Pergunta: ${context.state.pollData.questions[0].content}`, {
 							quick_replies: [
@@ -754,8 +754,6 @@ const handler = new MessengerHandler()
 				break;
 			}
 			case 'pollAnswer':
-				console.log(context.state.sentPersonalData);
-
 				if (!context.state.sentPersonalData) {
 					await context.sendButtonTemplate('Muito obrigado por sua resposta. Você gostaria de deixar seu e-mail e telefone para nossa equipe?', opt.recipientData_LetsGo);
 					await context.setState({ dialog: 'prompt', dataPrompt: 'email' });
