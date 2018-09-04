@@ -166,8 +166,8 @@ async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-dec
 	if (!context.state.politicianData.contact) { dialogs = dialogs.filter(obj => obj.payload !== 'contacts'); }
 	if (dialogs.find(x => x.payload === 'poll')) {
 		if (await checkPollAnswered(context) === true) { // already answered so we remove option
-			dialogs = dialogs.filter(obj => obj.payload !== 'poll');
-			dialogs.push(opt.talkToUs);
+			dialogs = await dialogs.filter(obj => obj.payload !== 'poll');
+			await dialogs.push(opt.talkToUs);
 		}
 	}
 	if (!context.state.politicianData.votolegal_integration) { dialogs = dialogs.filter(obj => obj.payload !== 'participateMenu'); }
