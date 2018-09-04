@@ -420,10 +420,16 @@ const handler = new MessengerHandler()
 			}
 			// Resposta de enquete
 			if (context.event.isQuickReply && context.state.dialog === 'pollAnswer') {
-				console.log('Test');
+				if (context.event.message.quick_reply.payload.slice(0, 4) === 'poll') {
+					await context.setState({ answer: context.event.message.quick_reply.payload.slice(4, -1) });
+				} else {
+					await context.setState({ answer: context.event.message.quick_reply.payload });
+				}
 
+				console.log(context.state.answer);
 				const poll_question_option_id = context.event.message.quick_reply.payload;
 				await MandatoAbertoAPI.postPollAnswer(context.session.user.id, poll_question_option_id, 'dialog');
+				await context.setState({ answer: '' });
 			} else if (context.event.isQuickReply && context.event.message.quick_reply.payload && context.event.message.quick_reply.payload.includes('pollAnswerPropagate')) {
 				// Tratando resposta da enquete através de propagação
 				const payload = context.event.message.quick_reply.payload;
