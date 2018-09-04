@@ -491,7 +491,7 @@ const handler = new MessengerHandler()
 					await context.setState({ optionPrompt: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'option_prompt') });
 					await context.sendButtonTemplate(context.state.optionPrompt.content, await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.doarOption]));
 					delete menuTimers[context.session.user.id]; // deleting this timer from timers object
-				}, MenuTimerlimit);
+				}, 10000000 * 111111);
 				await context.setState({ dialog: 'prompt' });
 				break;
 			case 'mainMenu':
