@@ -161,7 +161,7 @@ async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-dec
 	if (!context.state.pollData) { dialogs = dialogs.filter(obj => obj.payload !== 'poll'); }
 	if (!context.state.politicianData.contact) { dialogs = dialogs.filter(obj => obj.payload !== 'contacts'); }
 	if (dialogs.find(x => x.payload === 'poll')) {
-		if (await checkPollAnswered(context) !== true) { // already answered so we remove option
+		if (await checkPollAnswered(context) === true) { // already answered so we remove option
 			dialogs = dialogs.filter(obj => obj.payload !== 'poll');
 			dialogs.push(opt.talkToUs);
 		}
@@ -387,7 +387,7 @@ const handler = new MessengerHandler()
 				await context.setState({ dialog: 'greetings' });
 				pollTimers[context.session.user.id] = setTimeout(async () => { // create pollTimer for user
 					// checks if user already answered poll (if he did, there's no reason to send it)
-					if (await checkPollAnswered(context) !== true) {
+					if (await checkPollAnswered(context) === true) { // context.state.pollData
 						await context.sendText('Quero conhecer você melhor. Deixe sua resposta e participe deste debate.');
 						await context.sendText(`Pergunta: ${context.state.pollData.questions[0].content}`, {
 							quick_replies: [
@@ -728,7 +728,7 @@ const handler = new MessengerHandler()
 				await context.setState({ dialog: 'prompt', politicianCellPhone: undefined });
 				break;
 			case 'poll': {
-				if (await checkPollAnswered(context) !== true) {
+				if (await checkPollAnswered(context) === true) {
 					await context.sendText('Ah, que pena! Você já respondeu essa pergunta.');
 					await context.sendButtonTemplate('Se quiser, eu posso te ajudar com outra coisa.',
 						await checkMenu(context, [opt.trajectory, opt.contacts, opt.doarOption]));
