@@ -403,7 +403,8 @@ const handler = new MessengerHandler()
 							],
 						});
 						await context.typingOff();
-						await context.setState({ dialog: 'pollAnswer' }); // don't really work, we will be using the 'poll' text on the options's payloads to react correctly
+						await context.setState({ dialog: 'pollAnswer' }); // doesn't really work, we will be using the 'poll' text on the options's payloads to react correctly
+						delete pollTimers[context.session.user.id];
 					}
 				}, pollTimerlimit);
 			}
