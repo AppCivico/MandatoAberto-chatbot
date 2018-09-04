@@ -1,11 +1,11 @@
 module.exports = {
-    masculine: {
-        defined: 'o',
-        possessive: 'do',
-    },
+	masculine: {
+		defined: 'o',
+		possessive: 'do',
+	},
 
-    feminine: {
-        defined: 'a',
-        possessive: 'da',
-    },
+	feminine: {
+		defined: 'a',
+		possessive: 'da',
+	},
 };
