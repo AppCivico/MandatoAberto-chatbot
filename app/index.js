@@ -754,13 +754,12 @@ const handler = new MessengerHandler()
 				break;
 			}
 			case 'pollAnswer':
-				console.log(context.state.email);
-				console.log(context.state.cellphone);
+				console.log(context.state.sentPersonalData);
 
-				if (!context.state.email || !context.state.cellphone) {
+				if (!context.state.sentPersonalData) {
 					await context.sendButtonTemplate('Muito obrigado por sua resposta. Você gostaria de deixar seu e-mail e telefone para nossa equipe?', opt.recipientData_LetsGo);
 					await context.setState({ dialog: 'prompt', dataPrompt: 'email' });
-				} else {
+				} else { // if it's true, user already sent his personal data
 					await context.setState({ dialog: 'dialog' });
 				}
 				break;
@@ -803,7 +802,9 @@ const handler = new MessengerHandler()
 						} catch (err) {
 							await context.sendButtonTemplate('Como posso te ajudar?', await checkMenu(context, [opt.aboutPolitician, opt.trajectory, opt.doarOption]));
 						}
-						await context.setState({ dialog: 'prompt', recipientData: '', dataPrompt: '' });
+						await context.setState({
+							dialog: 'prompt', recipientData: '', dataPrompt: '', sentPersonalData: true,
+						});
 						break;
 					}
 				}
