@@ -382,7 +382,7 @@ const handler = new MessengerHandler()
 
 			// Tratando botão GET_STARTED
 			if (context.event.postback && context.event.postback.payload === 'greetings') {
-				await context.resetState();
+				// await context.resetState();
 				await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
 				await context.setState({ dialog: 'greetings' });
 				pollTimers[context.session.user.id] = setTimeout(async () => { // create pollTimer for user
@@ -754,6 +754,7 @@ const handler = new MessengerHandler()
 				break;
 			}
 			case 'pollAnswer':
+
 				if (context.state.sentPersonalData !== true) {
 					await context.sendButtonTemplate('Muito obrigado por sua resposta. Você gostaria de deixar seu e-mail e telefone para nossa equipe?', opt.recipientData_LetsGo);
 					await context.setState({ dialog: 'prompt', dataPrompt: 'email' });
