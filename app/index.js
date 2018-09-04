@@ -754,6 +754,10 @@ const handler = new MessengerHandler()
 				break;
 			}
 			case 'pollAnswer':
+				console.log(context.state);
+				console.log(context.state.sentPersonalData);
+
+
 				if (!context.state.sentPersonalData) {
 					await context.sendButtonTemplate('Muito obrigado por sua resposta. Você gostaria de deixar seu e-mail e telefone para nossa equipe?', opt.recipientData_LetsGo);
 					await context.setState({ dialog: 'prompt', dataPrompt: 'email' });
