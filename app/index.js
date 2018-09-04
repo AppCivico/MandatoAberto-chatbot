@@ -570,7 +570,7 @@ const handler = new MessengerHandler()
 							title: 'Divulgar',
 						}]);
 				}
-				await context.sendButtonTemplate('Você também pode deixar seus contatos conosco!', [opt.backToBeginning]);
+				await context.sendButtonTemplate('Você também pode deixar seus contatos conosco!', [opt.leaveInfo, opt.backToBeginning]);
 				await context.setState({ dialog: 'prompt' });
 				break;
 			case 'aboutDivulgation':
