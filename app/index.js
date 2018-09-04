@@ -170,7 +170,7 @@ async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-dec
 			await dialogs.push(opt.talkToUs);
 		}
 	}
-	if (!context.state.politicianData.votolegal_integration) { dialogs = dialogs.filter(obj => obj.payload !== 'participateMenu'); }
+	// if (!context.state.politicianData.votolegal_integration) { dialogs = dialogs.filter(obj => obj.payload !== 'participateMenu'); }
 	// if (dialogs[0].payload === 'aboutMe') { dialogs[0].title = getAboutMe(context.state.politicianData); }
 	return dialogs;
 }
@@ -560,21 +560,17 @@ const handler = new MessengerHandler()
 				await context.setState({ dialog: 'prompt' });
 				break;
 			case 'participateMenu':
-				await context.sendText('Estamos em campanha e contamos com você.');
-				await context.sendButtonTemplate('Quer fazer parte?', opt.votoLegal_participateOptions);
-				await context.setState({ dialog: 'prompt' });
-				break;
-			case 'knowMore': {
-				await context.sendButtonTemplate('Existem diversas formas de participar da construção de uma candidatura. '
-						+ 'Posso ajudá-lo a realizar uma doação ou divulgar a campanha. Quer entender melhor?', [opt.AboutDonation, opt.AboutDivulgation, opt.goBackMainMenu]);
-				await context.setState({ dialog: 'prompt' });
-				break;
-			}
-			case 'aboutDonation':
-				await context.sendText('Doar é importante para campanhas mais justas.');
-				await context.sendText('Aqui no site, você pode doar por meio do cartão de crédito ou boleto bancário.');
-				await context.sendButtonTemplate('Com o pagamento aprovado, enviaremos um recibo provisório por e-mail. Cada pessoa pode doar até 10% da renda declarada '
-						+ 'referente ao ano anterior. O limite de doação diária é de R$ 1.064,10.', [opt.wannaDonate, opt.backToKnowMore]);
+				await context.setState({ participateText: 'Estamos em campanha e contamos com você.' });
+				await context.sendText(context.state.participateText);
+				if (context.state.politicianData.picframe_url) { // check if there is a picframe_url so we can show the option
+					await context.sendButtonTemplate('Para ajudar na divulgação, basta clicar na opção abaixo!', // esse texto será customizável no futuro
+						[{
+							type: 'web_url',
+							url: context.state.politicianData.picframe_url,
+							title: 'Divulgar',
+						}]);
+				}
+				await context.sendButtonTemplate('Você também pode deixar seus contatos conosco!', [opt.backToBeginning]);
 				await context.setState({ dialog: 'prompt' });
 				break;
 			case 'aboutDivulgation':
