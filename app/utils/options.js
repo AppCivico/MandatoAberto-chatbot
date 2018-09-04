@@ -22,7 +22,7 @@ module.exports = {
 	participate: {
 		type: 'postback',
 		title: 'Participar',
-		payload: 'participate',
+		payload: 'participateMenu',
 	},
 	goBackMainMenu: {
 		type: 'postback',

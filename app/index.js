@@ -170,7 +170,7 @@ async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-dec
 			dialogs.push(opt.talkToUs);
 		}
 	}
-	if (!context.state.politicianData.votolegal_integration) { dialogs = dialogs.filter(obj => obj.payload !== 'participate'); }
+	if (!context.state.politicianData.votolegal_integration) { dialogs = dialogs.filter(obj => obj.payload !== 'participateMenu'); }
 	// if (dialogs[0].payload === 'aboutMe') { dialogs[0].title = getAboutMe(context.state.politicianData); }
 	return dialogs;
 }
@@ -559,7 +559,7 @@ const handler = new MessengerHandler()
 				await context.sendButtonTemplate('Selecione a opção desejada em um dos botões abaixo:', [opt.writeMessage, opt.seeAssistent]);
 				await context.setState({ dialog: 'prompt' });
 				break;
-			case 'participate':
+			case 'participateMenu':
 				await context.sendText('Estamos em campanha e contamos com você.');
 				await context.sendButtonTemplate('Quer fazer parte?', opt.votoLegal_participateOptions);
 				await context.setState({ dialog: 'prompt' });
