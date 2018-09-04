@@ -174,6 +174,8 @@ async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-dec
 
 const handler = new MessengerHandler()
 	.onEvent(async (context) => { // eslint-disable-line
+		console.log('teste');
+
 		if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead && context.event.rawEvent.field !== 'feed') {
 			await context.typingOn();
 
