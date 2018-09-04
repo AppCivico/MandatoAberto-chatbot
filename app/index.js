@@ -1,4 +1,4 @@
-console.log('adfkgmadfkgmsdfgklsmdfglsdfkgmsdflgk');
+console.log('Teste, isso tem que aparecer');
 
 require('dotenv').config();
 
