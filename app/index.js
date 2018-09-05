@@ -609,8 +609,8 @@ const handler = new MessengerHandler()
 				// create new (or reset) timer for confirmation timer (will only be shown if user doesn't change dialog
 				postIssueTimers[context.session.user.id] = setTimeout(async () => {
 					if (!userMessages[context.session.user.id] || userMessages[context.session.user.id] === '') {
-						await context.sendButtonTemplate('Não tem nenhuma mensagem para nossa equipe?',
-							await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));
+						await context.sendButtonTemplate('Não tem nenhuma mensagem para nossa equipe? Se tiver, clique em "Fale Conosco" e escreva sua mensagem.',
+							await checkMenu(context, [opt.contacts, opt.participate, opt.talkToUs]));
 					} else {
 						delete userMessages[context.session.user.id]; // deleting last sent message (it was sent already)
 						await context.setState({ issueCreatedMessage: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_created') });
