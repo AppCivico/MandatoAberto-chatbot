@@ -159,7 +159,6 @@ const handler = new MessengerHandler()
 	.onEvent(async (context) => { // eslint-disable-line
 		if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead && context.event.rawEvent.field !== 'feed') {
 			await context.typingOn();
-			console.log(context.event.rawEvent);
 
 			// we reload politicianData on every useful event
 			// we update context data at every interaction that's not a comment or a post
@@ -167,10 +166,7 @@ const handler = new MessengerHandler()
 			await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 
 			if (context.state.dialog !== 'recipientData' && context.state.dialog !== 'pollAnswer') { // handling input that's not from "asking data" or answering poll (obs: 'pollAnswer' from timer will bypass this)
-				console.log('ssssssssssssssssssssssss');
 				if (context.event.isPostback) {
-					console.log('asjdjsdjsjasjdjaSDJAsdjas');
-
 					if (context.event.postback.payload === 'themeYes') { // user confirms that theme(s) is/are correct
 						/* eslint-disable */
 						for (const [element] of Object.entries(context.state.apiaiResp.result.parameters)) { // eslint-disable-line no-restricted-syntax
