@@ -36,7 +36,7 @@ function formatReal(int) {
 
 const IssueTimerlimit = 1000 * 20; // 20 seconds -> listening to user doubts -> 1000 * 20
 const MenuTimerlimit = 1000 * 60; // 60 seconds -> waiting to show the initial menu -> 1000 * 60
-const pollTimerlimit = 1000 * 1000 * 60 * 60 * 2; // 2 hours -> waiting to send poll -> 1000 * 60 * 60 * 2
+const pollTimerlimit = 1000 * 5; // 2 hours -> waiting to send poll -> 1000 * 60 * 60 * 2
 
 const issueTimers = {};
 const postIssueTimers = {};
@@ -349,8 +349,10 @@ const handler = new MessengerHandler()
 				await context.setState({ dialog: 'greetings' });
 				pollTimers[context.session.user.id] = setTimeout(async () => { // create pollTimer for user
 					// checks if user already answered poll (if he did, there's no reason to send it. In this case should be !== true)
-					if (await checkPollAnswered(context) !== true
+					if (await checkPollAnswered(context) === true
 					&& (context.state.pollData && context.state.pollData.questions && context.state.pollData.questions.length > 0)) { // check if there's at least one question
+						// send update to api (user already received this poll)
+						await MandatoAbertoAPI.postRecipientReceivedPollTrigger(context.state.politicianData.user_id, { poll_notification_sent: true });
 						await context.sendText('Quero conhecer você melhor. Deixe sua resposta e participe deste debate.');
 						await context.sendText(`Pergunta: ${context.state.pollData.questions[0].content}`, {
 							quick_replies: [
@@ -533,13 +535,9 @@ const handler = new MessengerHandler()
 				} else { // no votoLegal
 					await context.sendText(context.state.participateText);
 				}
-				console.log(context.state.politicianData.share.url);
-				console.log(context.state.politicianData.share.text);
-				console.log(context.state.politicianData.share);
-
 				if (context.state.politicianData.share.url) { // check if there is a share obj so we can show the option
 					await context.sendButtonTemplate(context.state.politicianData.share.text ? context.state.politicianData.share.text
-						: 'Você pode compartilhar seu apoio clicando abaixo', [{
+						: 'Você pode compartilhar seu apoio clicando abaixo.', [{
 						type: 'web_url',
 						url: context.state.politicianData.share.url,
 						title: 'Divulgar',

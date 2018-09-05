@@ -24,6 +24,15 @@ module.exports = {
 		return recipientData;
 	},
 
+	async postRecipientReceivedPollTrigger(user_id, recipient) {
+		const recipientData_qs = queryString.stringify(recipient);
+		const res = await request.post(`${apiUri}/api/chatbot/recipient?${recipientData_qs}&security_token=${security_token}&`).query({ politician_id: user_id });
+		const recipientData = await res.json();
+		console.log(recipientData);
+
+		return recipientData;
+	},
+
 	async postPollAnswer(fb_id, poll_question_option_id, origin) {
 		const res = await request.post(`${apiUri}/api/chatbot/poll-result?fb_id=${fb_id}&poll_question_option_id=${poll_question_option_id}&origin=${origin}&security_token=${security_token}`);
 		const pollAnswer = await res.json();
