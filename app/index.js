@@ -36,7 +36,7 @@ function formatReal(int) {
 // TODO: remove from blacklist is a different endpoint?
 
 const IssueTimerlimit = 1000 * 20; // 20 seconds -> listening to user doubts
-const MenuTimerlimit = 1000 * 2; // 60 seconds -> waiting to show the initial menu -> 1000 * 60
+const MenuTimerlimit = 1000 * 60; // 60 seconds -> waiting to show the initial menu -> 1000 * 60
 const pollTimerlimit = 1000 * 1000 * 60 * 60 * 2; // 2 hours -> waiting to send poll -> 1000 * 60 * 60 * 2
 
 const issueTimers = {};
@@ -520,7 +520,7 @@ const handler = new MessengerHandler()
 				if (menuTimers[context.session.user.id]) { delete menuTimers[context.session.user.id]; } // for safety reasons
 				await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
 					context.state.whatWasTyped, context.state.apiaiResp.result.parameters);
-				await context.sendText('Parece que eu errei. Que pena! Mas recebi sua dúvida e estaremos te respondendo logo mais! Quer fazer outra pergunta?');
+				await context.sendText('Que pena! Parece que eu errei. Mas recebi sua dúvida e estaremos te respondendo logo mais! Quer fazer outra pergunta?');
 				menuTimers[context.session.user.id] = setTimeout(async () => { // wait 'MenuTimerlimit' to show options menu
 					await context.sendButtonTemplate(context.state.optionPrompt.content,
 						await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
