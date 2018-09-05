@@ -195,7 +195,7 @@ const handler = new MessengerHandler()
 						await context.setState({ dialog: 'showAnswer' });
 					} else if (context.event.postback.payload === 'talkToUs') { // user wants to enter in contact
 						console.log('ccc');
-						
+
 						delete userMessages[context.session.user.id]; // deleting last sent message (it was sent already)
 						await context.setState({ dialog: 'createIssue' });
 					} else {
