@@ -157,6 +157,8 @@ const handler = new MessengerHandler()
 
 					// user confirms that theme(s) is/are correct
 					if (context.event.postback.payload === 'themeYes') {
+						console.log('aaa');
+
 						/* eslint-disable */
 						for (const [element] of Object.entries(context.state.apiaiResp.result.parameters)) { // eslint-disable-line no-restricted-syntax
 							const currentTheme = await context.state.knowledge.knowledge_base.find(x => x.entities[0].tag === element);
@@ -187,12 +189,17 @@ const handler = new MessengerHandler()
 							apiaiResp: '', knowledge: '', themes: '', whatWasTyped: '',
 						});
 					} else if (context.event.postback.payload.slice(0, 6) === 'answer') {
+						console.log('bbb');
+
 						await context.setState({ question: context.state.knowledge.knowledge_base.find(x => x.id === parseInt(context.event.postback.payload.replace('answer', ''), 10)) });
 						await context.setState({ dialog: 'showAnswer' });
 					} else if (context.event.postback.payload === 'talkToUs') { // user wants to enter in contact
+						console.log('ccc');
+						
 						delete userMessages[context.session.user.id]; // deleting last sent message (it was sent already)
 						await context.setState({ dialog: 'createIssue' });
 					} else {
+						console.log('ddd');
 						await context.setState({ dialog: context.event.postback.payload }); // send to dialog equal to the payload
 					}
 				} else if (context.event.isQuickReply) {
