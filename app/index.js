@@ -101,22 +101,6 @@ async function listThemes(obj) {
 	return themes.length > 0 ? themes : 'esses assuntos';
 }
 
-async function showQuestions(context) {
-	await context.typingOn();
-	await attach.sendQuestions(context, context.state.knowledge.knowledge_base);
-	await context.sendText('Ok! Por favor, escolha sua pergunta acima ⤴️\nSe não achou é só clicar abaixo ⤵️', {
-		quick_replies: [
-			{
-				content_type: 'text',
-				title: 'Não achei',
-				payload: 'NotOneOfThese',
-			},
-		],
-	});
-	await context.typingOff();
-	await context.setState({ dialog: 'prompt' });
-}
-
 async function checkPollAnswered(context) {
 	const recipientAnswer = await MandatoAbertoAPI.getPollAnswer(context.session.user.id, context.state.pollData.id);
 	if (recipientAnswer.recipient_answered >= 1) {
@@ -212,14 +196,7 @@ const handler = new MessengerHandler()
 					}
 				} else if (context.event.isQuickReply) {
 					const { payload } = context.event.message.quick_reply;
-					if (payload.slice(0, 6) === 'option') {
-						await context.setState({ payload: payload.replace('option', '') });
-						await context.setState({
-							knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id,
-								{ [context.state.payload]: context.state.apiaiResp.result.parameters[context.state.payload] }),
-						});
-						await showQuestions(context);
-					} else if (payload.slice(0, 4) === 'poll') { // user answered poll that came from timer
+					if (payload.slice(0, 4) === 'poll') { // user answered poll that came from timer
 						await context.setState({ dialog: 'pollAnswer' });
 					} else {
 						await context.setState({ dialog: payload });
@@ -512,27 +489,16 @@ const handler = new MessengerHandler()
 				await context.sendButtonTemplate(context.state.optionPrompt.content, await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
 				await context.setState({ dialog: 'prompt' });
 				break;
-			case 'chooseTheme':
-				await context.sendText('Essa é uma pergunta bastante complexa! Me ajude a entender sobre o que você quer saber, escolha uma opção abaixo ⤵️',
-					await attach.getQR(Object.keys(context.state.apiaiResp.result.parameters), 'option'));
-				await context.setState({ dialog: 'prompt' });
-				break;
-			case 'showAnswer':
-				await context.sendText(context.state.question.answer);
-				await context.sendButtonTemplate('E aí, o que achou? Se tiver mais alguma pergunta é só mandar!',
-					await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
-				await context.setState({ dialog: 'prompt', whatWasTyped: '' });
-				break;
 			case 'NotOneOfThese': // user said "no" on theme confirmation
 				if (menuTimers[context.session.user.id]) { delete menuTimers[context.session.user.id]; } // for safety reasons
 				await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
 					context.state.whatWasTyped, context.state.apiaiResp.result.parameters);
 				await context.sendText('Que pena! Parece que eu errei. Mas recebi sua dúvida e estaremos te respondendo logo mais! Quer fazer outra pergunta?');
-				// menuTimers[context.session.user.id] = setTimeout(async () => { // wait 'MenuTimerlimit' to show options menu
-				// 	await context.sendButtonTemplate(context.state.optionPrompt.content,
-				// 		await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
-				// 	delete menuTimers[context.session.user.id]; // deleting this timer from timers object
-				// }, (MenuTimerlimit / 2));
+				menuTimers[context.session.user.id] = setTimeout(async () => { // wait 'MenuTimerlimit' to show options menu
+					await context.sendButtonTemplate(context.state.optionPrompt.content,
+						await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
+					delete menuTimers[context.session.user.id]; // deleting this timer from timers object
+				}, (MenuTimerlimit / 2));
 				await context.setState({ whatWasTyped: '', dialog: 'prompt' });
 				break;
 			case 'intermediate':
