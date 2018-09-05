@@ -247,19 +247,20 @@ const handler = new MessengerHandler()
 							await context.setState({ // getting knowledge base
 								knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.apiaiResp.result.parameters),
 							});
-							// console.log('knowledge:', context.state.knowledge);
-							// check if there's at least one answer in knowledge_base
+							// before sending the themes we check if there is anything on them, if there isn't we send 'esses assuntos'
 							await context.setState({ currentThemes: await listThemes(context.state.entities) }); // format themes
 							// console.log('currentThemes', context.state.currentThemes);
 
+							// console.log('knowledge:', context.state.knowledge);
+							// check if there's at least one answer in knowledge_base
 							if (context.state.knowledge && context.state.knowledge.knowledge_base && context.state.knowledge.knowledge_base.length >= 100) {
 								await context.sendButtonTemplate('Você está perguntando meu posicionamento sobre ' // confirm themes with user
 										+ `${context.state.currentThemes}?`, opt.themeConfirmation);
 							} else { // no answers in knowledge_base (We know the entity but politician doesn't have a position)
-								// before sending the themes we check if there is anything on them, if there isn't we send 'esses assuntos'
-								await context.sendButtonTemplate(`Parece que ${getArtigoCargoNome(context)} `
-								+ `ainda não se posicionou sobre ${context.state.currentThemes}. `
-								+ 'Estarei avisando a nossa equipe. Se tiver mais alguma dúvida, por favor, digite.',
+								await context.sendText(`Parece que ${getArtigoCargoNome(context)} `
+									+ `ainda não se posicionou sobre ${context.state.currentThemes}. `
+									+ 'Estarei avisando a nossa equipe.');
+								await context.sendButtonTemplate(context.state.optionPrompt.content,
 								await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
 
 								await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
