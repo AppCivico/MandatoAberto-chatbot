@@ -564,53 +564,6 @@ const handler = new MessengerHandler()
 				await context.sendButtonTemplate('Deixe seus contatos conosco para não perder as novidades.', [opt.leaveInfo, opt.backToBeginning]);
 				await context.setState({ dialog: 'prompt' });
 				break;
-			case 'WannaDonate':
-				// if referral.source(CUSTOMER_CHAT_PLUGIN) doesn't exist we are on facebook and should send votolegal's url
-				if (!context.event.rawEvent.postback.referral) {
-					await context.setState({ wantToDonate: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'want_to_donate') });
-
-					await context.setState({
-						participateOptions: [
-							{
-								type: 'web_url',
-								url: `${context.state.politicianData.votolegal_integration.votolegal_url}/#doar`,
-								title: 'Quero doar!',
-							}],
-						participateMessage: '',
-						anotherText: context.state.wantToDonate.content,
-					});
-				} else {
-					await context.setState({
-						participateOptions: [],
-						participateMessage: 'Você já está na nossa página para doar. Se quiser, também poderá divulgar seu apoio!',
-						anotherText: 'Seu apoio é fundamental para nossa campanha! Por isso, cuidamos da segurança de todos os doadores. ',
-					});
-				}
-				// checking for picframe_url so we can only show this option when it's available but still show the votoLegal option
-				if (context.state.politicianData.picframe_url) {
-					await context.setState({ participateOptions: context.state.participateOptions.concat([opt.wannaDivulgate]) });
-				} else {
-					await context.setState({ participateOptions: context.state.participateOptions.concat([opt.leaveInfo]) });
-					await context.setState({ dataPrompt: 'email' });
-				}
-				await context.setState({ participateOptions: context.state.participateOptions.concat([opt.goBackMainMenu]) });
-				// await participateOptions.push(opt.goBackMainMenu);
-				await context.sendText(context.state.anotherText);
-				await context.setState({ valueLegal: await VotoLegalAPI.getVotoLegalValues(context.state.politicianData.votolegal_integration.votolegal_username) });
-				if (context.state.participateMessage === '') {
-					await context.setState({
-						participateMessage: `Já consegui R$${formatReal(context.state.valueLegal.candidate.total_donated)} da minha meta de `
-								+ `R$${formatReal(getMoney(context.state.valueLegal.candidate.raising_goal))}.`,
-					});
-				} else {
-					await context.sendText(`Já consegui R$${formatReal(context.state.valueLegal.candidate.total_donated)} da minha meta de `
-							+ `R$${formatReal(getMoney(context.state.valueLegal.candidate.raising_goal))}.`);
-				}
-				await context.sendButtonTemplate(context.state.participateMessage, context.state.participateOptions);
-				await context.setState({
-					dialog: 'prompt', valueLegal: undefined, participateOptions: undefined, participateMessage: undefined, anotherText: undefined,
-				});
-				break;
 			case 'createIssue':
 				// console.log('Cheguei no create issue');
 				if (context.event.postback && context.event.postback.payload === 'talkToUs') {

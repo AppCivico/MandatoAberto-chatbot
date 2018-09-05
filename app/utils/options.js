@@ -34,31 +34,6 @@ module.exports = {
 		title: 'Voltar ao início',
 		payload: 'mainMenu',
 	},
-	backToKnowMore: {
-		type: 'postback',
-		title: 'Voltar',
-		payload: 'knowMore',
-	},
-	wannaDivulgate: {
-		type: 'postback',
-		title: 'Quero Divulgar',
-		payload: 'WannaDivulgate',
-	},
-	wannaDonate: {
-		type: 'postback',
-		title: 'Quero Doar',
-		payload: 'WannaDonate',
-	},
-	AboutDonation: {
-		type: 'postback',
-		title: 'Sobre doações',
-		payload: 'aboutDonation',
-	},
-	AboutDivulgation: {
-		type: 'postback',
-		title: 'Sobre divulgar',
-		payload: 'aboutDivulgation',
-	},
 	writeMessage: {
 		type: 'postback',
 		title: 'Escrever Mensagem',
