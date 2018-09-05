@@ -575,7 +575,7 @@ const handler = new MessengerHandler()
 				break;
 			case 'createIssue': // will only happen if user clicks on 'Fale Conosco'
 				if (context.state.listening === true) { // if we are 'listening' we need to aggregate every message the user sends
-					userMessages[context.session.user.id] = `${userMessages[context.session.user.id]} ${context.state.whatWasTyped}`;
+					userMessages[context.session.user.id] = `${userMessages[context.session.user.id]}${context.state.whatWasTyped} `;
 					console.log(userMessages[context.session.user.id]);
 				} else { // we are not 'listening' -> it's the first time the user gets here
 					await context.setState({ issueStartedListening: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_started_listening') });
