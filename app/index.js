@@ -202,8 +202,7 @@ const handler = new MessengerHandler()
 						await context.setState({ question: context.state.knowledge.knowledge_base.find(x => x.id === parseInt(context.event.postback.payload.replace('answer', ''), 10)) });
 						await context.setState({ dialog: 'showAnswer' });
 					} else if (context.event.postback.payload === 'talkToUs') { // user wants to enter in contact
-						await context.setState({ sendIntro: false });
-						await context.setState({ listening: false });
+						await context.setState({ sendIntro: false, listening: false });
 						await context.setState({ dialog: 'createIssue' });
 					} else {
 						await context.setState({ dialog: context.event.postback.payload }); // send to dialog equal to the payload
@@ -286,9 +285,12 @@ const handler = new MessengerHandler()
 					case 'Fallback': // didn't understand what was typed
 						// falls throught
 					default: // any new intent that gets added to dialogflow but it's not added here will also act like 'Fallback'
-						await context.sendText(getRandom(opt.frases_fallback));
-						await context.sendButtonTemplate(context.state.optionPrompt.content,
-								await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
+						await context.setState({ sendIntro: false, listening: false });
+						await context.setState({ dialog: 'createIssue' });
+						// await context.sendText(getRandom(opt.frases_fallback));
+						// await context.sendButtonTemplate(context.state.optionPrompt.content,
+						// 		await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
+
 						break;
 					}
 				}
