@@ -601,6 +601,7 @@ const handler = new MessengerHandler()
 						await context.typingOff();
 						delete issueTimers[context.session.user.id]; // deleting this timer from timers object
 					}
+					delete listening[context.session.user.id];
 				}, IssueTimerlimit);
 
 				if (postIssueTimers[context.session.user.id]) { // check if timer already exists, and delete it if it does
