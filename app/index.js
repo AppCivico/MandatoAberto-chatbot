@@ -143,7 +143,7 @@ const handler = new MessengerHandler()
 		if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead && context.event.rawEvent.field !== 'feed') {
 			await context.typingOn();
 			console.log('I am here');
-			
+
 			// we reload politicianData on every useful event
 			// we update context data at every interaction that's not a comment or a post
 			await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
