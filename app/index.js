@@ -777,11 +777,13 @@ const handler = new MessengerHandler()
 		console.log(`Usuário => ${context.session.user.first_name} ${context.session.user.last_name}`);
 		console.log(`Administrador => ${context.state.politicianData.office.name} ${context.state.politicianData.name}`);
 
-		await context.setState({ articles: getArticles(context.state.politicianData.gender) });
-		await context.sendText('Olá. Você gostaria de enviar uma mensagem para nossa equipe ou conhecer mais sobre '
-			+ `${context.state.articles.defined} ${context.state.politicianData.office.name} ${context.state.politicianData.name}?`);
-		await context.sendButtonTemplate('Selecione a opção desejada em um dos botões abaixo:', [opt.writeMessage, opt.seeAssistent]);
+		await context.sendButtonTemplate(context.state.optionPrompt.content, await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
 		await context.setState({ dialog: 'prompt' });
+		// await context.setState({ articles: getArticles(context.state.politicianData.gender) });
+		// await context.sendText('Olá. Você gostaria de enviar uma mensagem para nossa equipe ou conhecer mais sobre '
+		// 	+ `${context.state.articles.defined} ${context.state.politicianData.office.name} ${context.state.politicianData.name}?`);
+		// await context.sendButtonTemplate('Selecione a opção desejada em um dos botões abaixo:', [opt.writeMessage, opt.seeAssistent]);
+		// await context.setState({ dialog: 'prompt' });
 	});
 
 
