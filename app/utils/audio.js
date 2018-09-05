@@ -87,7 +87,7 @@ async function voiceRequest(urlMessenger, sessionID, context) {
 							await checkAndDelete(fileOut);
 
 							const detected = responses[0].queryResult;
-							if (detected) {
+							if (detected || detected.queryText === '') {
 								console.log('What was said:', detected.queryText);
 								console.log('Parameters:', detected.parameters.fields);
 								// console.log('ListValue:', Object.keys(detected.parameters.fields));
@@ -139,6 +139,6 @@ async function voiceRequest(urlMessenger, sessionID, context) {
 module.exports.voiceRequest = voiceRequest;
 
 // const url = `
-// https://cdn.fbsbx.com/v/t59.3654-21/39962059_1855136381260716_969037238652370944_n.mp4/audioclip-1535383065000-2879.mp4?_nc_cat=0&oh=74f235bf4babd6545fd91cd6737e7da4&oe=5B870862
+// https://cdn.fbsbx.com/v/t59.3654-21/40542369_232946370706016_7613474430089428992_n.mp4/audioclip-1536185219000-2717.mp4?_nc_cat=0&oh=af50fdad672516117a9533097c896147&oe=5B92B58B
 // `;
 // voiceRequest(url, '123123');
