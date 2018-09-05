@@ -14,8 +14,6 @@ const opt = require('./utils/options');
 const dictionary = require('./utils/dictionary');
 const audio = require('./utils/audio');
 
-console.log(process.env.GOOGLE_APPLICATION_CREDENTIALS);
-
 const apiai = dialogFlow(process.env.DIALOGFLOW_TOKEN);
 
 const phoneRegex = new RegExp(/^\+55\d{2}(\d{1})?\d{8}$/);
