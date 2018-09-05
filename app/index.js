@@ -229,7 +229,9 @@ const handler = new MessengerHandler()
 					}
 				} else if (context.event.isText) {
 					await context.setState({ whatWasTyped: context.event.message.text }); // will be used in case the bot doesn't find the question or for the createIssue flow
-					if (context.state.listening !== true) {
+					if (context.state.whatWasTyped === 'restart') { // just for test
+						await context.setState({ dialog: 'greetings' });
+					} else if (context.state.listening !== true) { // if we are listening we don't try to interpret the text
 					// optionPrompt will be sent at the end of each case if it's a text message, so we guarantee we have it before trying to send it
 						if (!context.state.optionPrompt || (context.state.optionPrompt && context.state.optionPrompt.content === '')) {
 							await context.setState({ optionPrompt: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'option_prompt') });
