@@ -457,10 +457,13 @@ const handler = new MessengerHandler()
 					console.log('executed');
 
 					// checks if user already answered poll (if he did, there's no reason to send it. In this case should be !== true)
-					if (await checkPollAnswered(context) === true
-							&& (context.state.pollData && context.state.pollData.questions && context.state.pollData.questions.length > 0)) { // check if there's at least one question
+					if (await checkPollAnswered(context) === true // also check if there's at least one question
+						&& (context.state.pollData && context.state.pollData.questions && context.state.pollData.questions.length > 0)) {
 						// send update to api (user already received this poll)
-						await MandatoAbertoAPI.postRecipientReceivedPollTrigger(context.state.politicianData.user_id, { poll_notification_sent: true });
+						await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
+							fb_id: context.session.user.id,
+							poll_notification_sent: true,
+						});
 						await context.sendText('Quero conhecer você melhor. Deixe sua resposta e participe deste debate.');
 						await context.sendText(`Pergunta: ${context.state.pollData.questions[0].content}`, {
 							quick_replies: [
