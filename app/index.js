@@ -600,7 +600,6 @@ const handler = new MessengerHandler()
 						console.log('Enviei', userMessages[context.session.user.id]);
 						await context.typingOff();
 						delete issueTimers[context.session.user.id]; // deleting this timer from timers object
-						delete userMessages[context.session.user.id]; // deleting last sent message
 					}
 				}, IssueTimerlimit);
 
@@ -609,9 +608,15 @@ const handler = new MessengerHandler()
 				}
 				// create new (or reset) timer for confirmation timer (will only be shown if user doesn't change dialog
 				postIssueTimers[context.session.user.id] = setTimeout(async () => {
-					await context.setState({ issueCreatedMessage: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_created') });
-					await context.sendButtonTemplate(context.state.issueCreatedMessage.content,
-						await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));
+					if (!userMessages[context.session.user.id] || userMessages[context.session.user.id] === '') {
+						await context.sendButtonTemplate('Não tem nenhuma mensagem para nossa equipe?',
+							await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));
+					} else {
+						delete userMessages[context.session.user.id]; // deleting last sent message (it was sent already)
+						await context.setState({ issueCreatedMessage: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_created') });
+						await context.sendButtonTemplate(context.state.issueCreatedMessage.content,
+							await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));
+					}
 				}, IssueTimerlimit + 2);
 				break;
 			case 'aboutMe': {
