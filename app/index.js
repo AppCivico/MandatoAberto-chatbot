@@ -196,7 +196,8 @@ const handler = new MessengerHandler()
 						}
 						/* eslint-enable */
 
-						await context.sendButtonTemplate('Que tal?', await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
+						await context.sendButtonTemplate(context.state.optionPrompt.content,
+							await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
 						await context.setState({ // cleaning up
 							apiaiResp: '', knowledge: '', themes: '', whatWasTyped: '',
 						});
