@@ -230,7 +230,7 @@ const handler = new MessengerHandler()
 					}
 				} else if (context.event.isText) {
 					// optionPrompt will be sent at the end of each case if it's a text message, so we guarantee we have it before trying to send it
-					if (!context.state.optionPrompt || context.state.optionPrompt === '') {
+					if (!context.state.optionPrompt || (context.state.optionPrompt && context.state.optionPrompt.content === '')) {
 						await context.setState({ optionPrompt: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'option_prompt') });
 					}
 
@@ -268,7 +268,7 @@ const handler = new MessengerHandler()
 						} else { // dialogFlow knows it's a question but has no entities
 							await context.sendText(`Parece que ${getArtigoCargoNome(context)} ainda não se posicionou sobre esse assunto.`
 								+ 'Estarei avisando a nossa equipe e te responderemos em breve.');
-							await context.sendButtonTemplate(context.state.optionPrompt,
+							await context.sendButtonTemplate(context.state.optionPrompt.content,
 								await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
 
 							await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
@@ -288,7 +288,7 @@ const handler = new MessengerHandler()
 						// falls throught
 					default: // any new intent that gets added to dialogflow but it's not added here will also act like 'Fallback'
 						await context.sendText(getRandom(opt.frases_fallback));
-						await context.sendButtonTemplate(context.state.optionPrompt,
+						await context.sendButtonTemplate(context.state.optionPrompt.content,
 								await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
 						break;
 					}
