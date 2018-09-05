@@ -151,6 +151,8 @@ const handler = new MessengerHandler()
 
 			if (context.state.dialog !== 'recipientData' && context.state.dialog !== 'pollAnswer') { // handling input that's not from "asking data" or answering poll (obs: 'pollAnswer' from timer will bypass this)
 				if (context.event.isPostback) {
+					console.log('sssss');
+
 					// we are not listening anymore if user clicks on persistent menu during the listening
 					if (listening[context.session.user.id]) { delete listening[context.session.user.id]; }
 
