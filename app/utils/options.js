@@ -54,6 +54,11 @@ module.exports = {
 		title: 'Fale conosco',
 		payload: 'talkToUs',
 	},
+	keepWriting: {
+		type: 'postback',
+		title: 'Continuar Escrevendo',
+		payload: 'talkToUs',
+	},
 	themeConfirmation: [ // array with two options
 		{
 			type: 'postback',

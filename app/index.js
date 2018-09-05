@@ -616,7 +616,7 @@ const handler = new MessengerHandler()
 						delete userMessages[context.session.user.id]; // deleting last sent message (it was sent already)
 						await context.setState({ issueCreatedMessage: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_created') });
 						await context.sendButtonTemplate(context.state.issueCreatedMessage.content,
-							await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));
+							await checkMenu(context, [opt.keepWriting, opt.backToBeginning]));
 					}
 				}, IssueTimerlimit + 2);
 				break;
