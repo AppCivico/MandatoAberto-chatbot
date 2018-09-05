@@ -572,6 +572,8 @@ const handler = new MessengerHandler()
 			case 'createIssue': // will only happen if user clicks on 'Fale Conosco'
 				if (context.event.postback && context.event.postback.payload === 'talkToUs') {
 					await context.setState({ issueStartedListening: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_started_listening') });
+					console.log(context.state.issueStartedListening);
+
 					await context.sendText(context.state.issueStartedListening.content);
 					await context.typingOn();
 					// if (context.state.listening === true) {
