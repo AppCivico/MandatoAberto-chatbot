@@ -11,7 +11,6 @@ const MandatoAbertoAPI = require('./mandatoaberto_api.js');
 const VotoLegalAPI = require('./votolegal_api.js');
 const Articles = require('./utils/articles.js');
 const opt = require('./utils/options');
-const attach = require('./attach');
 const dictionary = require('./utils/dictionary');
 // const audio = require('./utils/audio');
 
