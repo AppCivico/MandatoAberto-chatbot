@@ -228,72 +228,74 @@ const handler = new MessengerHandler()
 						// audio.voiceRequest(context.event.audio.url, context.session.user.id);
 					}
 				} else if (context.event.isText) {
+					await context.setState({ whatWasTyped: context.event.message.text }); // will be used in case the bot doesn't find the question or for the createIssue flow
+					if (context.state.listening !== true) {
 					// optionPrompt will be sent at the end of each case if it's a text message, so we guarantee we have it before trying to send it
-					if (!context.state.optionPrompt || (context.state.optionPrompt && context.state.optionPrompt.content === '')) {
-						await context.setState({ optionPrompt: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'option_prompt') });
-					}
+						if (!context.state.optionPrompt || (context.state.optionPrompt && context.state.optionPrompt.content === '')) {
+							await context.setState({ optionPrompt: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'option_prompt') });
+						}
 
-					await context.setState({ whatWasTyped: context.event.message.text }); // will be used in case the bot doesn't find the question
-					await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
-					// console.log('recebi um texto');
-					// console.log('IntentNme ', context.state.apiaiResp.result.metadata.intentName);
+						await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
+						// console.log('recebi um texto');
+						// console.log('IntentNme ', context.state.apiaiResp.result.metadata.intentName);
 
-					switch (context.state.apiaiResp.result.metadata.intentName) {
-					case 'Pergunta':
-						await context.setState({ entities: await removeEmptyKeys(context.state.apiaiResp.result.parameters) });
-						// console.log(context.state.entities);
-						if (context.state.entities.length >= 1) { // at least one entity
-							await context.setState({ // getting knowledge base
-								knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.apiaiResp.result.parameters),
-							});
-							// before sending the themes we check if there is anything on them, if there isn't we send 'esses assuntos'
-							await context.setState({ currentThemes: await listThemes(context.state.entities) }); // format themes
-							// console.log('currentThemes', context.state.currentThemes);
+						switch (context.state.apiaiResp.result.metadata.intentName) {
+						case 'Pergunta':
+							await context.setState({ entities: await removeEmptyKeys(context.state.apiaiResp.result.parameters) });
+							// console.log(context.state.entities);
+							if (context.state.entities.length >= 1) { // at least one entity
+								await context.setState({ // getting knowledge base
+									knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.apiaiResp.result.parameters),
+								});
+								// before sending the themes we check if there is anything on them, if there isn't we send 'esses assuntos'
+								await context.setState({ currentThemes: await listThemes(context.state.entities) }); // format themes
+								// console.log('currentThemes', context.state.currentThemes);
 
-							// console.log('knowledge:', context.state.knowledge);
-							// check if there's at least one answer in knowledge_base
-							if (context.state.knowledge && context.state.knowledge.knowledge_base && context.state.knowledge.knowledge_base.length >= 1) {
-								await context.sendButtonTemplate('Você está perguntando meu posicionamento sobre ' // confirm themes with user
+								// console.log('knowledge:', context.state.knowledge);
+								// check if there's at least one answer in knowledge_base
+								if (context.state.knowledge && context.state.knowledge.knowledge_base && context.state.knowledge.knowledge_base.length >= 1) {
+									await context.sendButtonTemplate('Você está perguntando meu posicionamento sobre ' // confirm themes with user
 									+ `${context.state.currentThemes}?`, opt.themeConfirmation);
-							} else { // no answers in knowledge_base (We know the entity but politician doesn't have a position)
-								await context.sendText(`Parece que ${getArtigoCargoNome(context)} ainda não se posicionou sobre `
+								} else { // no answers in knowledge_base (We know the entity but politician doesn't have a position)
+									await context.sendText(`Parece que ${getArtigoCargoNome(context)} ainda não se posicionou sobre `
 									+ `${context.state.currentThemes}. Estarei avisando a nossa equipe e te respondendo.`);
+									await context.sendButtonTemplate(context.state.optionPrompt.content,
+								await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
+									await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
+										context.state.whatWasTyped, context.state.apiaiResp.result.parameters);
+								}
+							} else { // dialogFlow knows it's a question but has no entities //  o você acha do blablabla?
+								await context.sendText(`Parece que ${getArtigoCargoNome(context)} ainda não se posicionou sobre esse assunto. `
+								+ 'Estarei avisando a nossa equipe e te responderemos em breve.');
 								await context.sendButtonTemplate(context.state.optionPrompt.content,
 								await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
+
 								await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
 									context.state.whatWasTyped, context.state.apiaiResp.result.parameters);
 							}
-						} else { // dialogFlow knows it's a question but has no entities //  o você acha do blablabla?
-							await context.sendText(`Parece que ${getArtigoCargoNome(context)} ainda não se posicionou sobre esse assunto. `
-								+ 'Estarei avisando a nossa equipe e te responderemos em breve.');
-							await context.sendButtonTemplate(context.state.optionPrompt.content,
-								await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
-
-							await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
-								context.state.whatWasTyped, context.state.apiaiResp.result.parameters);
-						}
-						break;
-					case 'Saudação':
-						await context.setState({ dialog: 'greetings' });
-						break;
-					case 'Trajetoria':
-						await context.setState({ dialog: 'trajectory' });
-						break;
-					case 'Voluntário':
-						await context.setState({ dialog: 'participateMenu' });
-						break;
-					case 'Fallback': // didn't understand what was typed
+							break;
+						case 'Saudação':
+							await context.setState({ dialog: 'greetings' });
+							break;
+						case 'Trajetoria':
+							await context.setState({ dialog: 'trajectory' });
+							break;
+						case 'Voluntário':
+							await context.setState({ dialog: 'participateMenu' });
+							break;
+						case 'Fallback': // didn't understand what was typed
 						// falls throught
-					default: // any new intent that gets added to dialogflow but it's not added here will also act like 'Fallback'
-						await context.setState({ sendIntro: false, listening: false });
-						await context.setState({ dialog: 'createIssue' });
-						// await context.sendText(getRandom(opt.frases_fallback));
-						// await context.sendButtonTemplate(context.state.optionPrompt.content,
-						// 		await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
+						default: // any new intent that gets added to dialogflow but it's not added here will also act like 'Fallback'
+							await context.setState({ sendIntro: false, listening: false });
+							await context.setState({ dialog: 'createIssue' });
+							// await context.sendText(getRandom(opt.frases_fallback));
+							// await context.sendButtonTemplate(context.state.optionPrompt.content,
+							// 		await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
 
-						break;
-					}
-				}
+							break;
+						}
+					} // end if listening
+				} // end if isText
 			}
 		}
 
@@ -573,16 +575,16 @@ const handler = new MessengerHandler()
 				break;
 			case 'createIssue': // will only happen if user clicks on 'Fale Conosco'
 				if (context.event.postback && context.event.postback.payload === 'talkToUs') {
-					await context.setState({ issueStartedListening: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_started_listening') });
-					await context.sendText(context.state.issueStartedListening.content);
-					await context.typingOn();
-					// if (context.state.listening === true) {
-					// 	if (!userMessages[context.session.user.id] || userMessages[context.session.user.id] === '') { // aggregating user texts
-					// 		userMessages[context.session.user.id] = context.state.whatWasTyped;
-					// 	} else {
-					// 		userMessages[context.session.user.id] = `${userMessages[context.session.user.id]} ${context.state.whatWasTyped}`;
-					// 	}
-					// }
+					if (context.state.listening === true) { // if we are 'listening' we need to aggregate every message the user sends
+						userMessages[context.session.user.id] = `${userMessages[context.session.user.id]} ${context.state.whatWasTyped}`;
+						console.log(userMessages[context.session.user.id]);
+					} else { // we are not 'listening' -> it's the first time the user gets here
+						await context.setState({ issueStartedListening: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_started_listening') });
+						await context.sendText(context.state.issueStartedListening.content);
+						await context.setState({ listening: true });
+						await context.typingOn();
+						userMessages[context.session.user.id] = ''; // starting the userMessage
+					}
 
 					// if (issueTimers[context.session.user.id]) { // clear timer if it already exists
 					// 	clearTimeout(issueTimers[context.session.user.id]);
