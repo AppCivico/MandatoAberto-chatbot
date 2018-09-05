@@ -64,7 +64,6 @@ function getArtigoCargoNome(context) {
 	return `${context.state.articles.defined} ${context.state.politicianData.office.name} ${context.state.politicianData.name}`;
 }
 
-
 // removes every empty intent object and returns the intents as an array
 function removeEmptyKeys(obj) { Object.keys(obj).forEach((key) => { if (obj[key].length === 0) { delete obj[key]; } }); return Object.keys(obj); }
 
@@ -91,16 +90,6 @@ function getArticles(gender) {
 	return Articles.masculine;
 }
 
-// function getAboutMe(politicianData) {
-// 	const articles = getArticles(politicianData.gender);
-
-// 	if (politicianData.office.name === 'Outros' || politicianData.office.name === 'Candidato' || politicianData.office.name === 'Candidata') {
-// 		return `Sobre ${articles.defined} líder`;
-// 	} if (politicianData.office.name === 'candidato' || politicianData.office.name === 'candidata') {
-// 		return `${articles.defined.toUpperCase()} ${politicianData.office.name}`;
-// 	}
-// 	return `Sobre ${articles.defined} ${politicianData.office.name}`;
-// }
 async function listThemes(obj) {
 	let themes = [];
 	await Object.keys(obj).forEach(async (element) => {
@@ -164,7 +153,6 @@ async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-dec
 		}
 	}
 	// if (!context.state.politicianData.votolegal_integration) { dialogs = dialogs.filter(obj => obj.payload !== 'participateMenu'); }
-	// if (dialogs[0].payload === 'aboutMe') { dialogs[0].title = getAboutMe(context.state.politicianData); }
 	return dialogs;
 }
 
