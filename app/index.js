@@ -282,24 +282,14 @@ const handler = new MessengerHandler()
 						await context.setState({ dialog: 'trajectory' });
 						break;
 					case 'Voluntário':
-						// check if politician is integrated with votoLegal
-						if (context.state.politicianData.votolegal_integration && context.state.politicianData.votolegal_integration.votolegal_url2) {
-							await context.setState({ dialog: 'WannaHelp' });
-						} else {
-							await context.sendButtonTemplate(`Parece que ${getArtigoCargoNome(context)} `
-								+ `ainda não se posicionou sobre ${context.state.currentThemes}. `
-								+ 'Estarei avisando a nossa equipe. Se tiver mais alguma dúvida, por favor, digite.',
-								await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
-
-							await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
-								context.state.whatWasTyped, context.state.apiaiResp.result.parameters);
-						}
+						await context.setState({ dialog: 'participateMenu' });
 						break;
 					case 'Fallback': // didn't understand what was typed
 						// falls throught
 					default: // any new intent that gets added to dialogflow but it's not added here will also act like 'Fallback'
-						await context.sendButtonTemplate(getRandom(opt.frases_fallback),
-							await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));
+						await context.sendText(getRandom(opt.frases_fallback));
+						await context.sendButtonTemplate(context.state.optionPrompt,
+								await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
 						break;
 					}
 				}
@@ -540,7 +530,7 @@ const handler = new MessengerHandler()
 				await context.sendButtonTemplate('Selecione a opção desejada em um dos botões abaixo:', [opt.writeMessage, opt.seeAssistent]);
 				await context.setState({ dialog: 'prompt' });
 				break;
-			case 'participateMenu':
+			case 'participateMenu': // participar
 				await context.setState({ participateText: 'Estamos em campanha e contamos com você.\n' }); // getting the first part of the text
 
 				if (context.state.politicianData.votolegal_integration && context.state.politicianData.votolegal_integration.votolegal_url) {
