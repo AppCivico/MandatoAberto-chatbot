@@ -35,7 +35,7 @@ function formatReal(int) {
 // TODO: add to blacklist should have politician_id and user_id?
 // TODO: remove from blacklist is a different endpoint?
 
-const IssueTimerlimit = 1000 * 20; // 20 seconds -> listening to user doubts
+const IssueTimerlimit = 1000 * 2; // 20 seconds -> listening to user doubts -> 1000 * 20
 const MenuTimerlimit = 1000 * 2; // 60 seconds -> waiting to show the initial menu -> 1000 * 60
 const pollTimerlimit = 1000 * 1000 * 60 * 60 * 2; // 2 hours -> waiting to send poll -> 1000 * 60 * 60 * 2
 
@@ -168,6 +168,8 @@ const handler = new MessengerHandler()
 
 			if (context.state.dialog !== 'recipientData' && context.state.dialog !== 'pollAnswer') { // handling input that's not from "asking data" or answering poll (obs: 'pollAnswer' from timer will bypass this)
 				if (context.event.isPostback) {
+					// we are not listening anymore if user clicks on persistent menu during the listening
+					if (listening[context.session.user.id]) { delete listening[context.session.user.id]; }
 					if (context.event.postback.payload === 'themeYes') { // user confirms that theme(s) is/are correct
 						/* eslint-disable */
 						for (const [element] of Object.entries(context.state.apiaiResp.result.parameters)) { // eslint-disable-line no-restricted-syntax
@@ -586,6 +588,7 @@ const handler = new MessengerHandler()
 				}
 
 				if (issueTimers[context.session.user.id]) { // check if timer already exists, and delete it if it does
+					console.log('apaguei o ultimo');
 					clearTimeout(issueTimers[context.session.user.id]);
 					await context.typingOn(); // show user that we are listening
 				}
