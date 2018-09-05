@@ -537,8 +537,9 @@ const handler = new MessengerHandler()
 				console.log(context.state.politicianData.share.text);
 				console.log(context.state.politicianData.share);
 
-				if (context.state.politicianData.share.url && context.state.politicianData.share.text) { // check if there is a share obj so we can show the option
-					await context.sendButtonTemplate(context.state.politicianData.share.text, [{
+				if (context.state.politicianData.share.url) { // check if there is a share obj so we can show the option
+					await context.sendButtonTemplate(context.state.politicianData.share.text ? context.state.politicianData.share.text
+						: 'Você pode compartilhar seu apoio clicando abaixo', [{
 						type: 'web_url',
 						url: context.state.politicianData.share.url,
 						title: 'Divulgar',
