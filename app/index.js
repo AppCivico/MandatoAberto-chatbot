@@ -348,6 +348,8 @@ const handler = new MessengerHandler()
 				await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
 				await context.setState({ dialog: 'greetings' });
 				pollTimers[context.session.user.id] = setTimeout(async () => { // create pollTimer for user
+					console.log('executed');
+
 					// checks if user already answered poll (if he did, there's no reason to send it. In this case should be !== true)
 					if (await checkPollAnswered(context) === true
 					&& (context.state.pollData && context.state.pollData.questions && context.state.pollData.questions.length > 0)) { // check if there's at least one question
