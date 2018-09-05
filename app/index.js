@@ -205,6 +205,7 @@ const handler = new MessengerHandler()
 					await context.sendButtonTemplate('Ainda não entendo áudio. Por favor, mande somente mensagens de texto', await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
 					if (context.event.audio.url) {
 						console.log(context.event.audio.url);
+
 						audio.voiceRequest(context.event.audio.url, context.session.user.id);
 					}
 				} else if (context.event.isText) {
