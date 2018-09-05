@@ -51,7 +51,6 @@ const pollTimers = {};
 
 const userMessages = {};
 // userMessages -> stores user messages from issues. We can't use a regular state for this because the timer can't save state "after session has been written"
-// sendIntro = true -> context.state.sendIntro -> verifies if we should send the "coudln't understand" or the "talkToUs" text for issue creation.
 const listening = {};
 // listening = true -> verifies if we should aggregate text on userMessages
 let areWeListening = true; // eslint-disable-line
@@ -170,7 +169,9 @@ const handler = new MessengerHandler()
 				if (context.event.isPostback) {
 					// we are not listening anymore if user clicks on persistent menu during the listening
 					if (listening[context.session.user.id]) { delete listening[context.session.user.id]; }
-					if (context.event.postback.payload === 'themeYes') { // user confirms that theme(s) is/are correct
+
+					// user confirms that theme(s) is/are correct
+					if (context.event.postback.payload === 'themeYes') {
 						/* eslint-disable */
 						for (const [element] of Object.entries(context.state.apiaiResp.result.parameters)) { // eslint-disable-line no-restricted-syntax
 							const currentTheme = await context.state.knowledge.knowledge_base.find(x => x.entities[0].tag === element);
@@ -203,8 +204,7 @@ const handler = new MessengerHandler()
 						await context.setState({ question: context.state.knowledge.knowledge_base.find(x => x.id === parseInt(context.event.postback.payload.replace('answer', ''), 10)) });
 						await context.setState({ dialog: 'showAnswer' });
 					} else if (context.event.postback.payload === 'talkToUs') { // user wants to enter in contact
-						await context.setState({ sendIntro: false });
-						delete listening[context.session.user.id];
+						delete userMessages[context.session.user.id]; // deleting last sent message (it was sent already)
 						await context.setState({ dialog: 'createIssue' });
 					} else {
 						await context.setState({ dialog: context.event.postback.payload }); // send to dialog equal to the payload
@@ -613,7 +613,6 @@ const handler = new MessengerHandler()
 						await context.sendButtonTemplate('Não tem nenhuma mensagem para nossa equipe? Se tiver, clique em "Fale Conosco" e escreva sua mensagem.',
 							await checkMenu(context, [opt.contacts, opt.participate, opt.talkToUs]));
 					} else {
-						delete userMessages[context.session.user.id]; // deleting last sent message (it was sent already)
 						await context.setState({ issueCreatedMessage: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_created') });
 						await context.sendButtonTemplate(context.state.issueCreatedMessage.content,
 							await checkMenu(context, [opt.keepWriting, opt.backToBeginning]));
