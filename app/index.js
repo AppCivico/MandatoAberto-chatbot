@@ -253,7 +253,7 @@ const handler = new MessengerHandler()
 
 							// console.log('knowledge:', context.state.knowledge);
 							// check if there's at least one answer in knowledge_base
-							if (context.state.knowledge && context.state.knowledge.knowledge_base && context.state.knowledge.knowledge_base.length >= 100) {
+							if (context.state.knowledge && context.state.knowledge.knowledge_base && context.state.knowledge.knowledge_base.length >= 1) {
 								await context.sendButtonTemplate('Você está perguntando meu posicionamento sobre ' // confirm themes with user
 										+ `${context.state.currentThemes}?`, opt.themeConfirmation);
 							} else { // no answers in knowledge_base (We know the entity but politician doesn't have a position)
@@ -266,8 +266,8 @@ const handler = new MessengerHandler()
 								await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
 									context.state.whatWasTyped, context.state.apiaiResp.result.parameters);
 							}
-						} else { // dialogFlow knows it's a question but has no entities
-							await context.sendText(`Parece que ${getArtigoCargoNome(context)} ainda não se posicionou sobre esse assunto.`
+						} else { // dialogFlow knows it's a question but has no entities //  o você acha do blablabla?
+							await context.sendText(`Parece que ${getArtigoCargoNome(context)} ainda não se posicionou sobre esse assunto. `
 								+ 'Estarei avisando a nossa equipe e te responderemos em breve.');
 							await context.sendButtonTemplate(context.state.optionPrompt.content,
 								await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
