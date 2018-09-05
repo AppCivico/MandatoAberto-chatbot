@@ -562,7 +562,8 @@ const handler = new MessengerHandler()
 			case 'participateMenu':
 				await context.setState({ participateText: 'Estamos em campanha e contamos com você.\n' }); // getting the first part of the text
 
-				if (context.state.politicianData.votolegal_integration.votolegal_url) { // check if politician is on votoLegal so we can info and option
+				if (context.state.politicianData.votolegal_integration && context.state.politicianData.votolegal_integration.votolegal_url) {
+					// check if politician is on votoLegal so we can info and option
 					// if referral.source(CUSTOMER_CHAT_PLUGIN) doesn't exist we are on facebook and should send votolegal's url
 					if (!context.event.rawEvent.postback.referral) {
 						await context.setState({ valueLegal: await VotoLegalAPI.getVotoLegalValues(context.state.politicianData.votolegal_integration.votolegal_username) });
