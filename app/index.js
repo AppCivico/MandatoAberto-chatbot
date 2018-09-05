@@ -169,7 +169,7 @@ const handler = new MessengerHandler()
 
 			if (context.state.dialog !== 'recipientData' && context.state.dialog !== 'pollAnswer') { // handling input that's not from "asking data" or answering poll (obs: 'pollAnswer' from timer will bypass this)
 				if (context.event.isPostback) {
-					if (context.event.postback.payload === 'themeYes') {
+					if (context.event.postback.payload === 'themeYes') { // user confirms that theme(s) is/are correct
 						/* eslint-disable */
 						for (const [element] of Object.entries(context.state.apiaiResp.result.parameters)) { // eslint-disable-line no-restricted-syntax
 							const currentTheme = await context.state.knowledge.knowledge_base.find(x => x.entities[0].tag === element);
@@ -229,6 +229,11 @@ const handler = new MessengerHandler()
 						// audio.voiceRequest(context.event.audio.url, context.session.user.id);
 					}
 				} else if (context.event.isText) {
+					// optionPrompt will be sent at the end of each case if it's a text message, so we guarantee we have it before trying to send it
+					if (!context.state.optionPrompt || context.state.optionPrompt === '') {
+						await context.setState({ optionPrompt: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'option_prompt') });
+					}
+
 					await context.setState({ whatWasTyped: context.event.message.text }); // will be used in case the bot doesn't find the question
 					await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
 					// console.log('recebi um texto');
@@ -247,7 +252,7 @@ const handler = new MessengerHandler()
 							await context.setState({ currentThemes: await listThemes(context.state.entities) }); // format themes
 							// console.log('currentThemes', context.state.currentThemes);
 
-							if (context.state.knowledge && context.state.knowledge.knowledge_base && context.state.knowledge.knowledge_base.length >= 1) {
+							if (context.state.knowledge && context.state.knowledge.knowledge_base && context.state.knowledge.knowledge_base.length >= 100) {
 								await context.sendButtonTemplate('Você está perguntando meu posicionamento sobre ' // confirm themes with user
 										+ `${context.state.currentThemes}?`, opt.themeConfirmation);
 							} else { // no answers in knowledge_base (We know the entity but politician doesn't have a position)
@@ -261,15 +266,13 @@ const handler = new MessengerHandler()
 									context.state.whatWasTyped, context.state.apiaiResp.result.parameters);
 							}
 						} else { // dialogFlow knows it's a question but has no entities
-							console.log('Cai aqui');
-
-							await context.sendButtonTemplate(`Parece que ${getArtigoCargoNome(context)} `
-								+ 'Estarei avisando a nossa equipe. Se tiver mais alguma dúvida, por favor, digite.',
+							await context.sendText(`Parece que ${getArtigoCargoNome(context)} ainda não se posicionou sobre esse assunto.`
+								+ 'Estarei avisando a nossa equipe e te responderemos em breve.');
+							await context.sendButtonTemplate(context.state.optionPrompt,
 								await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
 
 							await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
 								context.state.whatWasTyped, context.state.apiaiResp.result.parameters);
-							// await context.setState({ dialog: 'createIssue' });
 						}
 						break;
 					case 'Saudação':
@@ -290,7 +293,6 @@ const handler = new MessengerHandler()
 
 							await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
 								context.state.whatWasTyped, context.state.apiaiResp.result.parameters);
-							// await context.setState({ dialog: 'createIssue' });
 						}
 						break;
 					case 'Fallback': // didn't understand what was typed
@@ -298,7 +300,6 @@ const handler = new MessengerHandler()
 					default: // any new intent that gets added to dialogflow but it's not added here will also act like 'Fallback'
 						await context.sendButtonTemplate(getRandom(opt.frases_fallback),
 							await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));
-						// await context.setState({ dialog: 'createIssue' });
 						break;
 					}
 				}
@@ -488,6 +489,7 @@ const handler = new MessengerHandler()
 				await context.setState({ introduction: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'introduction') });
 				await context.setState({ greeting: context.state.politicianData.greeting.replace('${user.office.name}', context.state.politicianData.office.name) }); // eslint-disable-line no-template-curly-in-string
 				await context.setState({ greeting: context.state.greeting.replace('${user.name}', context.state.politicianData.name) }); // eslint-disable-line no-template-curly-in-string
+				// optionPrompt is the standard message that will be sent with the mainMenu(on timer) and at the end of the "text flow"
 				await context.setState({ optionPrompt: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'option_prompt') });
 				await context.sendText(context.state.greeting);
 				if (menuTimers[context.session.user.id]) { // clear timer if it already exists
