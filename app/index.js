@@ -166,6 +166,8 @@ const handler = new MessengerHandler()
 			// we reload politicianData on every useful event
 			// we update context data at every interaction that's not a comment or a post
 			await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
+			console.log('I am here');
+
 			await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 
 			if (context.state.dialog !== 'recipientData' && context.state.dialog !== 'pollAnswer') { // handling input that's not from "asking data" or answering poll (obs: 'pollAnswer' from timer will bypass this)
