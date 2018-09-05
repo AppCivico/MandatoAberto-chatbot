@@ -492,6 +492,9 @@ const handler = new MessengerHandler()
 				await context.setState({ dialog: 'prompt' });
 				break;
 			case 'mainMenu':
+				if (!context.state.optionPrompt || (context.state.optionPrompt && context.state.optionPrompt.content === '')) {
+					await context.setState({ optionPrompt: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'option_prompt') });
+				}
 				await context.typingOff();
 				areWeListening = true;
 				await context.setState({ sendIntro: true, listening: true });
@@ -499,7 +502,7 @@ const handler = new MessengerHandler()
 				await context.setState({ trajectory: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'trajectory') });
 				await context.setState({ articles: getArticles(context.state.politicianData.gender) });
 				await context.setState({ introduction: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'introduction') });
-				await context.sendButtonTemplate('E agora, como posso te ajudar?', await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
+				await context.sendButtonTemplate(context.state.optionPrompt.content, await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
 				await context.setState({ dialog: 'prompt' });
 				break;
 			case 'chooseTheme':
@@ -511,17 +514,19 @@ const handler = new MessengerHandler()
 				await context.sendText(context.state.question.answer);
 				await context.sendButtonTemplate('E aí, o que achou? Se tiver mais alguma pergunta é só mandar!',
 					await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
-				await context.setState({ whatWasTyped: '' });
-				await context.setState({ dialog: 'prompt' });
+				await context.setState({ dialog: 'prompt', whatWasTyped: '' });
 				break;
 			case 'NotOneOfThese':
+				if (menuTimers[context.session.user.id]) { delete menuTimers[context.session.user.id]; } // for safety reasons
 				await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
 					context.state.whatWasTyped, context.state.apiaiResp.result.parameters);
-				await context.sendText('Que pena! Mas recebi sua dúvida e estarei te respondendo logo mais!');
-				await context.sendButtonTemplate('E agora, como posso te ajudar?',
-					await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
-				await context.setState({ whatWasTyped: '' });
-				await context.setState({ dialog: 'prompt' });
+				await context.sendText('Parece que eu errei. Que pena! Mas recebi sua dúvida e estaremos te respondendo logo mais! Quer fazer outra pergunta?');
+				menuTimers[context.session.user.id] = setTimeout(async () => { // wait 'MenuTimerlimit' to show options menu
+					await context.sendButtonTemplate(context.state.optionPrompt.content,
+						await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
+					delete menuTimers[context.session.user.id]; // deleting this timer from timers object
+				}, (MenuTimerlimit / 2));
+				await context.setState({ whatWasTyped: '', dialog: 'prompt' });
 				break;
 			case 'intermediate':
 				await context.sendText('Você gostaria de enviar uma mensagem para nossa equipe ou conhecer mais sobre '
