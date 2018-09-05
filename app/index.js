@@ -167,7 +167,7 @@ const handler = new MessengerHandler()
 			await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 
 			if (context.state.dialog !== 'recipientData' && context.state.dialog !== 'pollAnswer') { // handling input that's not from "asking data" or answering poll (obs: 'pollAnswer' from timer will bypass this)
-			console.log('ssssssssssssssssssssssss');
+				console.log('ssssssssssssssssssssssss');
 				if (context.event.isPostback) {
 					console.log('asjdjsdjsjasjdjaSDJAsdjas');
 
