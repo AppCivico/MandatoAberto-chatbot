@@ -536,8 +536,6 @@ const handler = new MessengerHandler()
 				if (context.state.politicianData.votolegal_integration && context.state.politicianData.votolegal_integration.votolegal_url) {
 					// check if politician is on votoLegal so we can info and option
 					// if referral.source(CUSTOMER_CHAT_PLUGIN) exists we are outside facebook and shouldn't send votolegal's url
-					console.log(context.event.rawEvent);
-
 					if ((context.event.rawEvent.postback && context.event.rawEvent.postback.referral) || (context.event.rawEvent.message && context.event.rawEvent.message.tags
 						&& context.event.rawEvent.message.tags.source && context.event.rawEvent.message.tags.source === 'customer_chat_plugin')) {
 						await context.sendText(`${context.state.participateText}Você já está na nossa página para doar. Se quiser, também poderá divulgar seu apoio!`);
