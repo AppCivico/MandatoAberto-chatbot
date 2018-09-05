@@ -130,13 +130,6 @@ async function showQuestions(context) {
 	await context.setState({ dialog: 'prompt' });
 }
 
-function getIssueMessage(issueMessage) {
-	if (Object.keys(issueMessage).length === 0) {
-		return 'A qualquer momento você pode digitar uma mensagem que enviarei para nosso time.';
-	}
-	return issueMessage.content;
-}
-
 async function checkPollAnswered(context) {
 	const recipientAnswer = await MandatoAbertoAPI.getPollAnswer(context.session.user.id, context.state.pollData.id);
 	if (recipientAnswer.recipient_answered >= 1) {
@@ -505,11 +498,9 @@ const handler = new MessengerHandler()
 				await context.setState({ trajectory: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'trajectory') });
 				await context.setState({ articles: getArticles(context.state.politicianData.gender) });
 				await context.setState({ introduction: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'introduction') });
-				await context.setState({ issueMessage: getIssueMessage(await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_acknowledgment')) });
 				await context.setState({ greeting: context.state.politicianData.greeting.replace('${user.office.name}', context.state.politicianData.office.name) }); // eslint-disable-line no-template-curly-in-string
 				await context.setState({ greeting: context.state.greeting.replace('${user.name}', context.state.politicianData.name) }); // eslint-disable-line no-template-curly-in-string
 				await context.sendText(context.state.greeting);
-				await context.sendText(context.state.issueMessage);
 				if (menuTimers[context.session.user.id]) { // clear timer if it already exists
 					clearTimeout(menuTimers[context.session.user.id]);
 				}
@@ -529,7 +520,7 @@ const handler = new MessengerHandler()
 				await context.setState({ trajectory: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'trajectory') });
 				await context.setState({ articles: getArticles(context.state.politicianData.gender) });
 				await context.setState({ introduction: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'introduction') });
-				await context.sendButtonTemplate(context.state.issueMessage, await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
+				await context.sendButtonTemplate('E agora, como posso te ajudar?', await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
 				await context.setState({ dialog: 'prompt' });
 				break;
 			case 'chooseTheme':
