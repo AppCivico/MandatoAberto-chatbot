@@ -36,7 +36,7 @@ function formatReal(int) {
 // TODO: remove from blacklist is a different endpoint?
 
 const IssueTimerlimit = 1000 * 20; // 20 seconds -> listening to user doubts
-const MenuTimerlimit = 1000 * 60; // 60 seconds -> waiting to show the initial menu -> 1000 * 60
+const MenuTimerlimit = 1000 * 2; // 60 seconds -> waiting to show the initial menu -> 1000 * 60
 const pollTimerlimit = 1000 * 1000 * 60 * 60 * 2; // 2 hours -> waiting to send poll -> 1000 * 60 * 60 * 2
 
 const issueTimers = {};
@@ -471,7 +471,7 @@ const handler = new MessengerHandler()
 			case 'greetings':
 				await context.typingOff();
 				areWeListening = true;
-				await context.setState({ sendIntro: true, listening: true });
+				// await context.setState({ sendIntro: true, listening: true });
 				await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 				await context.setState({ trajectory: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'trajectory') });
 				await context.setState({ articles: getArticles(context.state.politicianData.gender) });
@@ -497,7 +497,7 @@ const handler = new MessengerHandler()
 				}
 				await context.typingOff();
 				areWeListening = true;
-				await context.setState({ sendIntro: true, listening: true });
+				// await context.setState({ sendIntro: true, listening: true });
 				await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 				await context.setState({ trajectory: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'trajectory') });
 				await context.setState({ articles: getArticles(context.state.politicianData.gender) });
@@ -516,7 +516,7 @@ const handler = new MessengerHandler()
 					await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
 				await context.setState({ dialog: 'prompt', whatWasTyped: '' });
 				break;
-			case 'NotOneOfThese':
+			case 'NotOneOfThese': // user said "no" on theme confirmation
 				if (menuTimers[context.session.user.id]) { delete menuTimers[context.session.user.id]; } // for safety reasons
 				await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
 					context.state.whatWasTyped, context.state.apiaiResp.result.parameters);
@@ -569,47 +569,49 @@ const handler = new MessengerHandler()
 				await context.sendButtonTemplate('Deixe seus contatos conosco para não perder as novidades.', [opt.leaveInfo, opt.backToBeginning]);
 				await context.setState({ dialog: 'prompt' });
 				break;
-			case 'createIssue':
-				// console.log('Cheguei no create issue');
+			case 'createIssue': // will only happen if user clicks on 'Fale Conosco'
 				if (context.event.postback && context.event.postback.payload === 'talkToUs') {
-					if (context.state.listening === true) {
-						if (!userMessages[context.session.user.id] || userMessages[context.session.user.id] === '') { // aggregating user texts
-							userMessages[context.session.user.id] = context.state.whatWasTyped;
-						} else {
-							userMessages[context.session.user.id] = `${userMessages[context.session.user.id]} ${context.state.whatWasTyped}`;
-						}
-					}
+					await context.setState({ issueStartedListening: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_started_listening') });
+					await context.sendText(context.state.issueStartedListening);
+					await context.typingOn();
+					// if (context.state.listening === true) {
+					// 	if (!userMessages[context.session.user.id] || userMessages[context.session.user.id] === '') { // aggregating user texts
+					// 		userMessages[context.session.user.id] = context.state.whatWasTyped;
+					// 	} else {
+					// 		userMessages[context.session.user.id] = `${userMessages[context.session.user.id]} ${context.state.whatWasTyped}`;
+					// 	}
+					// }
 
-					if (issueTimers[context.session.user.id]) { // clear timer if it already exists
-						clearTimeout(issueTimers[context.session.user.id]);
-						await context.typingOn(); // show user that we are listening
-					} else if (context.state.sendIntro === true) { // -> we didn't understand the message
-						await context.setState({ issueStartedListening: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_started_listening') });
-						await context.sendText(context.state.issueStartedListening.content);
-					} else { // -> user wants to contact us
-						await context.sendText('Que legal! Para entrar em contato conosco, digite e mande sua mensagem!');
-						userMessages[context.session.user.id] = '';
-						await context.setState({ sendIntro: true, listening: true });
-					}
-					issueTimers[context.session.user.id] = setTimeout(async () => {
-						if (userMessages[context.session.user.id] !== '') {
-							await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id, userMessages[context.session.user.id],
-								context.state.apiaiResp.result.parameters);
-							console.log('Enviei', userMessages[context.session.user.id]);
-							await context.setState({ sendIntro: true, listening: true });
-							await context.setState({ apiaiResp: '', knowledge: '', themes: '' }); // cleaning up
-							await context.typingOff();
-							delete issueTimers[context.session.user.id]; // deleting this timer from timers object
-							delete userMessages[context.session.user.id]; // deleting last sent message
+					// if (issueTimers[context.session.user.id]) { // clear timer if it already exists
+					// 	clearTimeout(issueTimers[context.session.user.id]);
+					// 	await context.typingOn(); // show user that we are listening
+					// } else if (context.state.sendIntro === true) { // -> we didn't understand the message
+					// 	await context.setState({ issueStartedListening: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_started_listening') });
+					// 	await context.sendText(context.state.issueStartedListening.content);
+					// } else { // -> user wants to contact us
+					// 	await context.sendText('Que legal! Para entrar em contato conosco, digite e mande sua mensagem!');
+					// 	userMessages[context.session.user.id] = '';
+					// 	await context.setState({ sendIntro: true, listening: true });
+					// }
+					// issueTimers[context.session.user.id] = setTimeout(async () => {
+					// 	if (userMessages[context.session.user.id] !== '') {
+					// 		await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id, userMessages[context.session.user.id],
+					// 			context.state.apiaiResp.result.parameters);
+					// 		console.log('Enviei', userMessages[context.session.user.id]);
+					// 		await context.setState({ sendIntro: true, listening: true });
+					// 		await context.setState({ apiaiResp: '', knowledge: '', themes: '' }); // cleaning up
+					// 		await context.typingOff();
+					// 		delete issueTimers[context.session.user.id]; // deleting this timer from timers object
+					// 		delete userMessages[context.session.user.id]; // deleting last sent message
 
-							postIssueTimers[context.session.user.id] = setTimeout(async () => {
-								// creating confirmation timer (will only be shown if user doesn't change dialog
-								await context.setState({ issueCreatedMessage: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_created') });
-								await context.sendButtonTemplate(context.state.issueCreatedMessage.content,
-									await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));
-							}, 5);
-						}
-					}, IssueTimerlimit);
+					// 		postIssueTimers[context.session.user.id] = setTimeout(async () => {
+					// 			// creating confirmation timer (will only be shown if user doesn't change dialog
+					// 			await context.setState({ issueCreatedMessage: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_created') });
+					// 			await context.sendButtonTemplate(context.state.issueCreatedMessage.content,
+					// 				await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));
+					// 		}, 5);
+					// 	}
+					// }, IssueTimerlimit);
 				}
 				break;
 			case 'aboutMe': {
