@@ -149,8 +149,6 @@ const handler = new MessengerHandler()
 			await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
 			await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 
-			console.log(context.state.politicianData);
-
 			if (context.state.dialog !== 'recipientData' && context.state.dialog !== 'pollAnswer') { // handling input that's not from "asking data" or answering poll (obs: 'pollAnswer' from timer will bypass this)
 				if (context.event.isPostback) {
 					// we are not listening anymore if user clicks on persistent menu during the listening
@@ -212,7 +210,8 @@ const handler = new MessengerHandler()
 				} else if (context.event.isText) {
 					await context.setState({ whatWasTyped: context.event.message.text }); // will be used in case the bot doesn't find the question or for the createIssue flow
 					if (context.state.whatWasTyped === 'aaa') { // for testing only
-						await context.setState({ dialog: 'createIssue' });
+						await context.setState({ dialog: 'participateMenu' });
+						// await context.setState({ dialog: 'createIssue' });
 						delete listening[context.session.user.id];
 						delete userMessages[context.session.user.id];
 					} else if (!listening[context.session.user.id]) { // if we are listening we don't try to interpret the text
@@ -534,10 +533,10 @@ const handler = new MessengerHandler()
 				} else { // no votoLegal
 					await context.sendText(context.state.participateText);
 				}
-				if (context.state.politicianData.picframe_url) { // check if there is a picframe_url so we can show the option
-					await context.sendButtonTemplate('Para ajudar na divulgação, basta clicar na opção abaixo!', [{ // esse texto será customizável no futuro
+				if (context.state.politicianData.share.url && context.state.politicianData.share.text) { // check if there is a share obj so we can show the option
+					await context.sendButtonTemplate(context.state.politicianData.share.text, [{
 						type: 'web_url',
-						url: context.state.politicianData.picframe_url,
+						url: context.state.politicianData.share.url,
 						title: 'Divulgar',
 					}]);
 				}
