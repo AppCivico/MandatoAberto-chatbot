@@ -305,10 +305,10 @@ const handler = new MessengerHandler()
 
 		if (context.session) {
 			// if the user interacts while this timer is running we don't need to show the menu anymore
-			if (menuTimers[context.session.user.id]) { clearTimeout(menuTimers[context.session.user.id]); }
+			if (menuTimers[context.session.user.id]) { clearTimeout(menuTimers[context.session.user.id]); delete menuTimers[context.session.user.id]; }
 
 			// if the user interacts while this timer is running we don't need to run confirm that the issue was sent anymore
-			if (postIssueTimers[context.session.user.id]) { clearTimeout(menuTimers[context.session.user.id]); }
+			if (postIssueTimers[context.session.user.id]) { clearTimeout(menuTimers[context.session.user.id]); delete postIssueTimers[context.session.user.id]; }
 		}
 		if (context.event.rawEvent.postback) {
 			if (context.event.rawEvent.postback.referral) { // if this exists we are on external site
@@ -527,11 +527,11 @@ const handler = new MessengerHandler()
 				await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
 					context.state.whatWasTyped, context.state.apiaiResp.result.parameters);
 				await context.sendText('Que pena! Parece que eu errei. Mas recebi sua dúvida e estaremos te respondendo logo mais! Quer fazer outra pergunta?');
-				menuTimers[context.session.user.id] = setTimeout(async () => { // wait 'MenuTimerlimit' to show options menu
-					await context.sendButtonTemplate(context.state.optionPrompt.content,
-						await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
-					delete menuTimers[context.session.user.id]; // deleting this timer from timers object
-				}, (MenuTimerlimit / 2));
+				// menuTimers[context.session.user.id] = setTimeout(async () => { // wait 'MenuTimerlimit' to show options menu
+				// 	await context.sendButtonTemplate(context.state.optionPrompt.content,
+				// 		await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
+				// 	delete menuTimers[context.session.user.id]; // deleting this timer from timers object
+				// }, (MenuTimerlimit / 2));
 				await context.setState({ whatWasTyped: '', dialog: 'prompt' });
 				break;
 			case 'intermediate':
