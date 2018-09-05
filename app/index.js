@@ -12,7 +12,7 @@ const VotoLegalAPI = require('./votolegal_api.js');
 const Articles = require('./utils/articles.js');
 const opt = require('./utils/options');
 const dictionary = require('./utils/dictionary');
-// const audio = require('./utils/audio');
+const audio = require('./utils/audio');
 
 const apiai = dialogFlow(process.env.DIALOGFLOW_TOKEN);
 
@@ -36,7 +36,7 @@ function formatReal(int) {
 
 const IssueTimerlimit = 1000 * 20; // 20 seconds -> listening to user doubts -> 1000 * 20
 const MenuTimerlimit = 1000 * 60; // 60 seconds -> waiting to show the initial menu -> 1000 * 60
-const pollTimerlimit = 1000 * 5; // 2 hours -> waiting to send poll -> 1000 * 60 * 60 * 2
+const pollTimerlimit = 1000 * 60 * 60 * 2; // 2 hours -> waiting to send poll -> 1000 * 60 * 60 * 2
 
 const issueTimers = {};
 const postIssueTimers = {};
