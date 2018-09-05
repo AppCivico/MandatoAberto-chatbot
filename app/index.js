@@ -233,7 +233,7 @@ const handler = new MessengerHandler()
 						await context.setState({ dialog: 'createIssue' });
 						delete listening[context.session.user.id];
 						delete userMessages[context.session.user.id];
-					} else if (listening[context.session.user.id] === true) { // if we are listening we don't try to interpret the text
+					} else if (!listening[context.session.user.id]) { // if we are listening we don't try to interpret the text
 					// optionPrompt will be sent at the end of each case if it's a text message, so we guarantee we have it before trying to send it
 						if (!context.state.optionPrompt || (context.state.optionPrompt && context.state.optionPrompt.content === '')) {
 							await context.setState({ optionPrompt: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'option_prompt') });
