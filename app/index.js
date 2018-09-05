@@ -535,10 +535,14 @@ const handler = new MessengerHandler()
 
 				if (context.state.politicianData.votolegal_integration && context.state.politicianData.votolegal_integration.votolegal_url) {
 					// check if politician is on votoLegal so we can info and option
-					// if referral.source(CUSTOMER_CHAT_PLUGIN) doesn't exist we are on facebook and should send votolegal's url
+					// if referral.source(CUSTOMER_CHAT_PLUGIN) exists we are outside facebook and shouldn't send votolegal's url
 					console.log(context.event.rawEvent);
 
-					if (!context.event.rawEvent.postback.referral) {
+					if ((context.event.rawEvent.postback && context.event.rawEvent.postback.referral) || (context.event.rawEvent.message && context.event.rawEvent.message.tags
+						&& context.event.rawEvent.message.tags.source && context.event.rawEvent.message.tags.source === 'customer_chat_plugin')) {
+						await context.sendText(`${context.state.participateText}Você já está na nossa página para doar. Se quiser, também poderá divulgar seu apoio!`);
+						await context.sendText('Seu apoio é fundamental para nossa campanha! Por isso, cuidamos da segurança de todos os doadores.');
+					} else {
 						await context.setState({ valueLegal: await VotoLegalAPI.getVotoLegalValues(context.state.politicianData.votolegal_integration.votolegal_username) });
 						await context.setState({
 							participateText: `${context.state.participateText}Já consegui R$${formatReal(context.state.valueLegal.candidate.total_donated)} da minha meta de `
@@ -549,9 +553,6 @@ const handler = new MessengerHandler()
 							url: `${context.state.politicianData.votolegal_integration.votolegal_url}/#doar`,
 							title: 'Quero doar!',
 						}]);
-					} else {
-						await context.sendText(`${context.state.participateText}Você já está na nossa página para doar. Se quiser, também poderá divulgar seu apoio!`);
-						await context.sendText('Seu apoio é fundamental para nossa campanha! Por isso, cuidamos da segurança de todos os doadores.');
 					}
 				} else { // no votoLegal
 					await context.sendText(context.state.participateText);
