@@ -87,7 +87,7 @@ async function voiceRequest(urlMessenger, sessionID, context) {
 							await checkAndDelete(fileOut);
 
 							const detected = responses[0].queryResult;
-							if (detected || detected.queryText === '') {
+							if (detected && detected.queryText !== '') { // if there's no text we simlpy dindn't get
 								console.log('What was said:', detected.queryText);
 								console.log('Parameters:', detected.parameters.fields);
 								// console.log('ListValue:', Object.keys(detected.parameters.fields));
