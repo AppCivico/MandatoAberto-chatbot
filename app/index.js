@@ -578,7 +578,6 @@ const handler = new MessengerHandler()
 			case 'createIssue': // will only happen if user clicks on 'Fale Conosco'
 				if (listening[context.session.user.id] === true) { // if we are 'listening' we need to aggregate every message the user sends
 					userMessages[context.session.user.id] = `${userMessages[context.session.user.id]}${context.state.whatWasTyped} `;
-					console.log(userMessages[context.session.user.id]);
 				} else { // we are not 'listening' -> it's the first time the user gets here
 					await context.setState({ issueStartedListening: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_started_listening') });
 					await context.sendText(context.state.issueStartedListening.content);
@@ -597,7 +596,7 @@ const handler = new MessengerHandler()
 					if (userMessages[context.session.user.id] !== '') { // check if there's a message to send
 						await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id, userMessages[context.session.user.id],
 							context.state.apiaiResp.result.parameters);
-						console.log('Enviei', userMessages[context.session.user.id]);
+						console.log('Enviei ', userMessages[context.session.user.id]);
 						await context.typingOff();
 						delete issueTimers[context.session.user.id]; // deleting this timer from timers object
 					}
@@ -615,7 +614,7 @@ const handler = new MessengerHandler()
 					} else {
 						await context.setState({ issueCreatedMessage: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_created') });
 						await context.sendButtonTemplate(context.state.issueCreatedMessage.content,
-							await checkMenu(context, [opt.keepWriting, opt.backToBeginning]));
+							await checkMenu(context, [opt.keepWriting, opt.leaveInfo, opt.backToBeginning]));
 					}
 				}, IssueTimerlimit + 2);
 				break;
