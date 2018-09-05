@@ -56,9 +56,7 @@ const userMessages = {};
 let areWeListening = true; // eslint-disable-line
 // areWeListening -> user.state.areWeListening(doesn't work) -> diferenciates messages that come from the standard flow and messages from comment/post
 
-function getRandom(myArray) {
-	return myArray[Math.floor(Math.random() * myArray.length)];
-}
+function getRandom(myArray) { return myArray[Math.floor(Math.random() * myArray.length)]; }
 
 function getArtigoCargoNome(context) {
 	return `${context.state.articles.defined} ${context.state.politicianData.office.name} ${context.state.politicianData.name}`;
@@ -166,12 +164,13 @@ const handler = new MessengerHandler()
 			// we reload politicianData on every useful event
 			// we update context data at every interaction that's not a comment or a post
 			await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
-			console.log('I am here');
-
 			await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 
 			if (context.state.dialog !== 'recipientData' && context.state.dialog !== 'pollAnswer') { // handling input that's not from "asking data" or answering poll (obs: 'pollAnswer' from timer will bypass this)
+			console.log('ssssssssssssssssssssssss');
 				if (context.event.isPostback) {
+					console.log('asjdjsdjsjasjdjaSDJAsdjas');
+
 					if (context.event.postback.payload === 'themeYes') { // user confirms that theme(s) is/are correct
 						/* eslint-disable */
 						for (const [element] of Object.entries(context.state.apiaiResp.result.parameters)) { // eslint-disable-line no-restricted-syntax
@@ -232,9 +231,7 @@ const handler = new MessengerHandler()
 					}
 				} else if (context.event.isText) {
 					await context.setState({ whatWasTyped: context.event.message.text }); // will be used in case the bot doesn't find the question or for the createIssue flow
-					if (context.state.whatWasTyped === 'restart') { // just for test
-						await context.setState({ dialog: 'greetings' });
-					} else if (context.state.listening !== true) { // if we are listening we don't try to interpret the text
+					if (context.state.listening !== true) { // if we are listening we don't try to interpret the text
 					// optionPrompt will be sent at the end of each case if it's a text message, so we guarantee we have it before trying to send it
 						if (!context.state.optionPrompt || (context.state.optionPrompt && context.state.optionPrompt.content === '')) {
 							await context.setState({ optionPrompt: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'option_prompt') });
