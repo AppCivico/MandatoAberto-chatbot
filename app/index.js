@@ -533,6 +533,10 @@ const handler = new MessengerHandler()
 				} else { // no votoLegal
 					await context.sendText(context.state.participateText);
 				}
+				console.log(context.state.politicianData.share.url);
+				console.log(context.state.politicianData.share.text);
+				console.log(context.state.politicianData.share);
+
 				if (context.state.politicianData.share.url && context.state.politicianData.share.text) { // check if there is a share obj so we can show the option
 					await context.sendButtonTemplate(context.state.politicianData.share.text, [{
 						type: 'web_url',
