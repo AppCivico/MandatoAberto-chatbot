@@ -111,12 +111,11 @@ async function voiceRequest(urlMessenger, sessionID, testeAudio) {
 				return result;
 			} // audio has 60+ seconds
 			await checkAndDelete(fileIn);
+
 			await checkAndDelete(fileOut);
 			return { textMsg: 'Áudio muito longo! Por favor, mande áudio com menos de 1 minuto!' };
 		});
 		return result2;
-	}).then((result) => {
-		console.log('resultado', result);
 	}); // file.on('finish')
 }
 

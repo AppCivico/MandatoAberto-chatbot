@@ -71,8 +71,6 @@ async function voiceRequest(urlMessenger, sessionID, testeAudio) {
 			if (code === 0) { // mp4 converted to flac successfully
 				// checking flac duration, it can't be bigger than 60s
 				const result2 = await getDuration(fileOut).then(async (duration) => {
-					console.log(duration);
-
 					if (duration < 60) {
 						// Read the content of the audio file and send it as part of the request
 						const readFile = await util.promisify(fs.readFile, { singular: true });
@@ -121,13 +119,13 @@ async function voiceRequest(urlMessenger, sessionID, testeAudio) {
 					await checkAndDelete(fileOut);
 					return { textMsg: 'Áudio muito longo! Por favor, mande áudio com menos de 1 minuto!' };
 				});
-				returnResult(result2);
+				testeAudio(result2);
 				// return result2;
 			} else { // code not 0
 				console.log('Não foi possível converter os arquivos');
 				await checkAndDelete(fileIn);
 				await checkAndDelete(fileOut);
-				return { textMsg: 'Não entendi o que você disse. Por favor, tente novamente.' };
+				testeAudio({ textMsg: 'Não entendi o que você disse. Por favor, tente novamente.' });
 			}
 		}); // dir.onExit
 	});
