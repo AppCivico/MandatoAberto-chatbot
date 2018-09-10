@@ -21,8 +21,6 @@ module.exports = {
 		const recipientData_qs = queryString.stringify(recipient);
 		const res = await request.post(`${apiUri}/api/chatbot/recipient?${recipientData_qs}&security_token=${security_token}&`).query({ politician_id: user_id });
 		const recipientData = await res.json();
-		console.log(recipientData);
-
 		return recipientData;
 	},
 
@@ -74,7 +72,6 @@ module.exports = {
 	async updateBlacklist(fb_id, active) { // mising the 0,1 flag
 		const res = await request.post(`${apiUri}/api/chatbot/blacklist?fb_id=${fb_id}&active=${active}&security_token=${security_token}`);
 		const Blacklist = await res.json();
-		console.log(Blacklist);
 		return Blacklist;
 	},
 };
