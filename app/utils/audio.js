@@ -103,7 +103,7 @@ async function voiceRequest(urlMessenger, sessionID, testeAudio) {
 									}
 
 									return {
-										success: true, whatWasSaid: detected.queryText, intentName: detected.displayName, parameters,
+										success: true, whatWasSaid: detected.queryText, intentName: detected.intent.displayName, parameters,
 									};
 								} // no text, user didn't say anything/no speech was detected
 								return { success: false, textMsg: 'Não consegui ouvir o que você disse. Por favor, tente novamente.' };
