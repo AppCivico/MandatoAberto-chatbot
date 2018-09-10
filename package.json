@@ -9,6 +9,7 @@
   "dependencies": {
     "apiai-promise": "^1.0.0",
     "async-child-process": "^1.1.1",
+    "async-file-dl": "^0.2.5",
     "bottender": "^0.14.22",
     "child_process": "^1.0.2",
     "dialogflow": "^0.6.0",
