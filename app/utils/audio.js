@@ -91,20 +91,20 @@ async function voiceRequest(urlMessenger, sessionID, testeAudio) {
 									// format parameters the same way dialogFlow does with text
 									console.log(detected);
 
-									const parameters = [];
+									const detectedParameters = [];
 									for (const element of Object.keys(detected.parameters.fields)) { // eslint-disable-line no-restricted-syntax
 										// removes empty parameters
 										if (detected.parameters.fields[element].listValue && detected.parameters.fields[element].listValue.values.length !== 0) {
 											// get multiple words that are attached to one single entity
-											parameters.push({
+											detectedParameters.push({
 												[element]: detected.parameters.fields[element].listValue.values.map(obj => obj.stringValue),
 											});
 										}
 									}
-									console.log(parameters);
+									console.log('detectedParameters', detectedParameters);
 
 									return {
-										success: true, intentName: detected.intent.displayName, whatWasSaid: detected.queryText, parameters,
+										success: true, intentName: detected.intent.displayName, whatWasSaid: detected.queryText, parameters: detectedParameters,
 									};
 								} // no text, user didn't say anything/no speech was detected
 								return { success: false, textMsg: 'Não consegui ouvir o que você disse. Por favor, tente novamente.' };
