@@ -9,7 +9,6 @@
   "dependencies": {
     "apiai-promise": "^1.0.0",
     "async-child-process": "^1.1.1",
-    "async-file-dl": "^0.2.5",
     "bottender": "^0.14.22",
     "child_process": "^1.0.2",
     "dialogflow": "^0.6.0",
@@ -18,6 +17,7 @@
     "get-audio-duration": "0.0.1",
     "grpc": "^1.14.1",
     "nodemon": "1.12.7",
+    "promisepipe": "^3.0.0",
     "query-string": "^5.1.0",
     "request": "^2.83.0",
     "request-promise": "^4.2.2",

@@ -9,7 +9,6 @@ const exec = require('child_process').exec; // eslint-disable-line
 const getDuration = require('get-audio-duration');
 const fse = require('fs-extra');
 const { execAsync } = require('async-child-process');
-const { download } = require('async-file-dl');
 
 const util = require('util');
 require('util.promisify').shim();
@@ -50,12 +49,15 @@ async function voiceRequest(urlMessenger, sessionID) {
 	await checkAndDelete(fileIn);
 	await checkAndDelete(fileOut);
 
+	return new Promise(async (resolve, reject) => {
+		const file = fs.createWriteStream(fileIn, { flags: 'a' });
+		const answer = await request(urlMessenger);
+		await answer.pipe(file);
 
-	const result3 = await download(urlMessenger, '.', fileIn)
-		.then(async (file) => {
+		file.on('finish', async () => {
 			console.log('dentro');
 			// converting the mp4 file to a mono channel flac (we have to convert before checking for duration because of 'moov atom' issues)
-			const result2 = await getDuration(file).then(async (duration) => {
+			const result2 = await getDuration(fileIn).then(async (duration) => {
 				// checking flac duration, it can't be bigger than 60s
 				console.log(duration);
 
@@ -71,28 +73,28 @@ async function voiceRequest(urlMessenger, sessionID) {
 					const readFile = await util.promisify(fs.readFile, { singular: true });
 					const result = await readFile(`${fileOut}`)
 						.then((inputAudio) => {
-						// The audio query request
+							// The audio query request
 							const requestOptions = {
 								session: sessionPath,
 								queryInput,
 								inputAudio,
 							};
-							// Recognizes the speech in the audio and detects its intent
+								// Recognizes the speech in the audio and detects its intent
 							return sessionClient.detectIntent(requestOptions);
 						}).then(async (responses) => {
-						// console.log('Detected intent => ', responses);
+							// console.log('Detected intent => ', responses);
 
 							await checkAndDelete(fileIn);
 							await checkAndDelete(fileOut);
 
 							const detected = responses[0].queryResult;
 							if (detected && detected.queryText !== '') { // if there's no text we simlpy didn't get what the user said
-							// format parameters the same way dialogFlow does with text
+								// format parameters the same way dialogFlow does with text
 								const detectedParameters = {};
 								for (const element of Object.keys(detected.parameters.fields)) { // eslint-disable-line no-restricted-syntax
-								// removes empty parameters
+									// removes empty parameters
 									if (detected.parameters.fields[element].listValue && detected.parameters.fields[element].listValue.values.length !== 0) {
-									// get multiple words that are attached to one single entity
+										// get multiple words that are attached to one single entity
 										detectedParameters[element] = detected.parameters.fields[element].listValue.values.map(obj => obj.stringValue);
 									}
 								}
@@ -114,17 +116,18 @@ async function voiceRequest(urlMessenger, sessionID) {
 				await checkAndDelete(fileOut);
 				return { textMsg: 'Áudio muito longo! Por favor, mande áudio com menos de 1 minuto!' };
 			});
-			return result2;
-		})
-		.catch(async (err) => {
-			console.log('error creating file => ', err);
-			await checkAndDelete(fileIn);
-			await checkAndDelete(fileOut);
-			return { textMsg: 'Não entendi o que você disse. Por favor, tente novamente. Ou mande mensagem de texto.' };
-		});
+			console.log(result2);
 
-	console.log('result3', result3);
-	return result3;
+			resolve(result2);
+		}); // file.on finish
+
+		file.on('error', async (err) => {
+			console.log('erro ao salvar arquivo => ', err);
+			await checkAndDelete(fileOut);
+			await checkAndDelete(fileIn);
+			reject(new Error({ text: 'Não entendi o que você disse.Por favor, tente novamente.' }));
+		});
+	});
 }
 
 
@@ -132,4 +135,6 @@ module.exports.voiceRequest = voiceRequest;
 
 // const url = 'https://cdn.fbsbx.com/v/t59.3654-21/41422332_1965526987077956_6964334129533943808_n.mp4/audioclip-1536591135000-2694.mp4?_nc_cat=0&oh=4eed936c79d2011ca51995370fe1b718&oe=5B998567';
 
-// voiceRequest(url, '123123');
+// voiceRequest(url, '123123').then((aaa) => {
+// 	console.log('fora', aaa);
+// });
