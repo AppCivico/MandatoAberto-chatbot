@@ -142,7 +142,7 @@ async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-dec
 // }
 
 async function testeAudio(context, result) {
-	if (result.success && result.success === true) {
+	if (result.intentName && result.intentName !== '') {
 		// await context.sendText(`Você disse: ${result.whatWasSaid}`);
 		await context.setState({ whatWasTyped: result.whatWasSaid }); // will be used in case the bot doesn't find the question or for the createIssue flow
 		await context.setState({ resultParameters: result.parameters });

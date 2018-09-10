@@ -64,7 +64,7 @@ async function voiceRequest(urlMessenger, sessionID, testeAudio) {
 		await dir.on('exit', async (code) => { // eslint-disable-line 
 			if (code === 0) { // mp4 converted to flac successfully
 				// checking flac duration, it can't be bigger than 60s
-				await getDuration(fileOut).then(async (duration) => {
+				const result2 = await getDuration(fileOut).then(async (duration) => {
 					console.log(duration);
 
 					if (duration < 60) {
@@ -99,28 +99,28 @@ async function voiceRequest(urlMessenger, sessionID, testeAudio) {
 									}
 
 									return {
-										success: true, intentName: detected.intent.displayName, whatWasSaid: `[Áudio] ${detected.queryText}`, parameters: detectedParameters,
+										intentName: detected.intent.displayName, whatWasSaid: `[Áudio] ${detected.queryText}`, parameters: detectedParameters,
 									};
 								} // no text, user didn't say anything/no speech was detected
-								return { success: false, textMsg: 'Não consegui ouvir o que você disse. Por favor, tente novamente.' };
+								return { textMsg: 'Não consegui ouvir o que você disse. Por favor, tente novamente.' };
 							}).catch(async (err) => {
 								console.error('ERROR:', err);
 								await checkAndDelete(fileIn);
 								await checkAndDelete(fileOut);
-								return { success: false, textMsg: 'Não entendi o que você disse. Por favor, tente novamente.' };
+								return { textMsg: 'Não entendi o que você disse. Por favor, tente novamente.' };
 							});
-						testeAudio(result);
-					} else { // audio has 60+ seconds
-						await checkAndDelete(fileIn);
-						await checkAndDelete(fileOut);
-						testeAudio({ success: false, textMsg: 'Áudio muito longo! Por favor, mande áudio com menos de 1 minuto!' });
-					}
+						return result;
+					} // audio has 60+ seconds
+					await checkAndDelete(fileIn);
+					await checkAndDelete(fileOut);
+					return { textMsg: 'Áudio muito longo! Por favor, mande áudio com menos de 1 minuto!' };
 				});
+				console.log('Result2', result2);
 			} else { // code not 0
 				console.log('Não foi possível converter os arquivos');
 				await checkAndDelete(fileIn);
 				await checkAndDelete(fileOut);
-				testeAudio({ success: false, textMsg: 'Não entendi o que você disse. Por favor, tente novamente.' });
+				testeAudio({ textMsg: 'Não entendi o que você disse. Por favor, tente novamente.' });
 			}
 		}); // dir.onExit
 	});
