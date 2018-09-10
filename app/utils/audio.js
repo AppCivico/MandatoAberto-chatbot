@@ -67,7 +67,7 @@ async function voiceRequest(urlMessenger, sessionID, testeAudio) {
 			}
 		});
 
-		const result3 = dir.on('exit', async (code) => { // eslint-disable-line 
+		dir.on('exit', async (code) => { // eslint-disable-line 
 			if (code === 0) { // mp4 converted to flac successfully
 				// checking flac duration, it can't be bigger than 60s
 				const result2 = await getDuration(fileOut).then(async (duration) => {
@@ -130,7 +130,6 @@ async function voiceRequest(urlMessenger, sessionID, testeAudio) {
 				return { textMsg: 'Não entendi o que você disse. Por favor, tente novamente.' };
 			}
 		}); // dir.onExit
-		console.log('result3', result3);
 	});
 }
 
