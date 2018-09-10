@@ -6,6 +6,42 @@ const {
 const { createServer } = require('bottender/restify');
 const dialogFlow = require('apiai-promise');
 
+// audio
+
+const projectId = process.env.PROJECT_ID;
+
+
+const dialogflow2 = require('dialogflow');
+const request = require('requisition');
+const fs = require('fs');
+const exec = require('child_process').exec; // eslint-disable-line 
+const getDuration = require('get-audio-duration');
+const fse = require('fs-extra');
+const util = require('util');
+require('util.promisify').shim();
+
+// Ops: dialogflow needs a GOOGLE_APPLICATION_CREDENTIALS env with the path to the json key
+// Instantiates a sessison client
+const sessionClient = new dialogflow2.SessionsClient();
+const queryInput = {
+	audioConfig: {
+		audioEncoding: 'flac',
+		sampleRateHertz: 44100,
+		languageCode: 'pt-br',
+	},
+};
+async function checkAndDelete(name) {
+	if (await fse.pathExists(name) === true) {
+		// await fs.closeSync(name);
+		await fse.remove(name, (err) => {
+			if (err) {
+				console.log(`Couldn't delete file ${name} => `, err);
+			}
+		});
+	}
+}
+// -------- audio
+
 const config = require('./bottender.config.js').messenger;
 const MandatoAbertoAPI = require('./mandatoaberto_api.js');
 const VotoLegalAPI = require('./votolegal_api.js');
@@ -13,6 +49,7 @@ const Articles = require('./utils/articles.js');
 const opt = require('./utils/options');
 const dictionary = require('./utils/dictionary');
 const audio = require('./utils/audio');
+
 
 const apiai = dialogFlow(process.env.DIALOGFLOW_TOKEN);
 
@@ -148,59 +185,8 @@ async function testeAudio(context, result) {
 		await context.setState({ resultParameters: result.parameters });
 		await context.setState({ intentName: result.intentName });
 		await context.setState({ dialog: 'checkPosition' });
-		switch (context.state.intentName) {
-		case 'Pergunta':
-			await context.setState({ entities: await removeEmptyKeys(context.state.resultParameters) });
-			// console.log(context.state.entities);
-			if (context.state.entities.length >= 1) { // at least one entity
-				await context.setState({ // getting knowledge base
-					knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.resultParameters),
-				});
-				// before sending the themes we check if there is anything on them, if there isn't we send 'esses assuntos'
-				await context.setState({ currentThemes: await listThemes(context.state.entities) }); // format themes
-				// console.log('currentThemes', context.state.currentThemes);
 
-				// console.log('knowledge:', context.state.knowledge);
-				// check if there's at least one answer in knowledge_base
-				if (context.state.knowledge && context.state.knowledge.knowledge_base && context.state.knowledge.knowledge_base.length >= 1) {
-					await context.sendButtonTemplate('Você está perguntando meu posicionamento sobre ' // confirm themes with user
-							+ `${context.state.currentThemes}?`, opt.themeConfirmation);
-				} else { // no answers in knowledge_base (We know the entity but politician doesn't have a position)
-					await context.sendText(`Parece que ${getArtigoCargoNome(context)} ainda não se posicionou sobre `
-							+ `${context.state.currentThemes}. Estarei avisando a nossa equipe e te respondendo.`);
-					await context.sendButtonTemplate(context.state.optionPrompt.content,
-							await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
-					await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
-						context.state.whatWasTyped, context.state.resultParameters);
-				}
-			} else { // dialogFlow knows it's a question but has no entities //  o você acha do blablabla?
-				await context.sendText(`Parece que ${getArtigoCargoNome(context)} ainda não se posicionou sobre esse assunto. `
-						+ 'Estarei avisando a nossa equipe e te responderemos em breve.');
-				await context.sendButtonTemplate(context.state.optionPrompt.content,
-						await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
-
-				await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
-					context.state.whatWasTyped, context.state.resultParameters);
-			}
-			break;
-		case 'Saudação':
-			await context.setState({ dialog: 'greetings' });
-			break;
-		case 'Trajetoria':
-			await context.setState({ dialog: 'trajectory' });
-			break;
-		case 'Voluntário':
-			await context.setState({ dialog: 'participateMenu' });
-			break;
-		case 'Fallback': // didn't understand what was typed
-			// falls throught
-		default: // any new intent that gets added to dialogflow but it's not added here will also act like 'Fallback'
-			await context.sendText(getRandom(opt.frases_fallback));
-			await context.sendButtonTemplate(context.state.optionPrompt.content,
-					await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
-
-			break;
-		} // end switch
+		// await textDialogFlow(context, result.intentName, result.parameters, result.whatWasSaid);
 	} else {
 		await context.sendButtonTemplate(result.textMsg,
 			await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
@@ -275,10 +261,99 @@ const handler = new MessengerHandler()
 					// mande somente mensagens de texto', await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
 					await context.sendText('Áudio? Me dê um instante para processar.');
 					if (context.event.audio.url) {
-						console.log(context.event.audio.url);
-
 						// await audio.voiceRequest(context.event.audio.url, context.session.user.id, (result) => { testeAudio(context, result); });
 						await audio.voiceRequest('https://cdn.fbsbx.com/v/t59.3654-21/41422332_1965526987077956_6964334129533943808_n.mp4/audioclip-1536591135000-2694.mp4?_nc_cat=0&oh=4eed936c79d2011ca51995370fe1b718&oe=5B998567', context.session.user.id, (result) => { testeAudio(context, result); });
+
+
+						// The path to identify the agent that owns the created intent
+						const sessionPath = sessionClient.sessionPath(projectId, context.session.user.id);
+
+						const fileIn = `${context.session.user.id}.mp4`;
+						const fileOut = `${context.session.user.id}.flac`;
+
+						// if any of the two files alreay existes, delete them (just to be safe)
+						await checkAndDelete(fileIn);
+						await checkAndDelete(fileOut);
+
+						// downloading file from messenger URL and saving it to a mp4 file
+						const file = fs.createWriteStream(fileIn, { flags: 'a' });
+						const answer = await request(context.event.audio.url);
+						await answer.pipe(file);
+
+						file.on('finish', async () => {
+							// converting the mp4 file to a mono channel flac (we have to convert before checking for duration because of 'moov atom' issues)
+							const dir = await exec(`ffmpeg -i ${fileIn} -ac 1 -movflags +faststart ${fileOut} -y`, async (err) => {
+								if (err) {
+									await checkAndDelete(fileIn);
+									await checkAndDelete(fileOut);
+									console.log('Error at conversion => ', err);
+								}
+							});
+
+							dir.on('exit', async (code) => { // eslint-disable-line 
+								if (code === 0) { // mp4 converted to flac successfully
+									// checking flac duration, it can't be bigger than 60s
+									const result2 = await getDuration(fileOut).then(async (duration) => {
+										if (duration < 60) {
+											// Read the content of the audio file and send it as part of the request
+											const readFile = await util.promisify(fs.readFile, { singular: true });
+											const result = await readFile(`${fileOut}`)
+												.then((inputAudio) => {
+													// The audio query request
+													const requestOptions = {
+														session: sessionPath,
+														queryInput,
+														inputAudio,
+													};
+													// Recognizes the speech in the audio and detects its intent
+													return sessionClient.detectIntent(requestOptions);
+												}).then(async (responses) => {
+													// console.log('Detected intent => ', responses);
+
+													await checkAndDelete(fileIn);
+													await checkAndDelete(fileOut);
+
+													const detected = responses[0].queryResult;
+													if (detected && detected.queryText !== '') { // if there's no text we simlpy didn't get what the user said
+														// format parameters the same way dialogFlow does with text
+														const detectedParameters = {};
+														for (const element of Object.keys(detected.parameters.fields)) { // eslint-disable-line no-restricted-syntax
+															// removes empty parameters
+															if (detected.parameters.fields[element].listValue
+																&& detected.parameters.fields[element].listValue.values.length !== 0) {
+																// get multiple words that are attached to one single entity
+																detectedParameters[element] = detected.parameters.fields[element].listValue.values.map(obj => obj.stringValue);
+															}
+														}
+
+														await context.setState({ dialog: 'checkPosition' });
+														// return {
+														// 	intentName: detected.intent.displayName, whatWasSaid: `[Áudio] ${detected.queryText}`, parameters: detectedParameters,
+														// };
+													} // no text, user didn't say anything/no speech was detected
+													// return { textMsg: 'Não consegui ouvir o que você disse. Por favor, tente novamente.' };
+												}).catch(async (err) => {
+													console.error('ERROR:', err);
+													await checkAndDelete(fileIn);
+													await checkAndDelete(fileOut);
+													return { textMsg: 'Não entendi o que você disse. Por favor, tente novamente.' };
+												});
+											// return result;
+										} // audio has 60+ seconds
+										await checkAndDelete(fileIn);
+										await checkAndDelete(fileOut);
+										// return { textMsg: 'Áudio muito longo! Por favor, mande áudio com menos de 1 minuto!' };
+									});
+									await testeAudio(result2);
+									// return result2;
+								} else { // code not 0
+									console.log('Não foi possível converter os arquivos');
+									await checkAndDelete(fileIn);
+									await checkAndDelete(fileOut);
+									await testeAudio({ textMsg: 'Não entendi o que você disse. Por favor, tente novamente.' });
+								}
+							}); // dir.onExit
+						});
 					}
 				} else if (context.event.isText) {
 					if (!listening[context.session.user.id]) { // if we are listening we don't try to interpret the text
