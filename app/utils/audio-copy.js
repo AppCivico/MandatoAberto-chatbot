@@ -130,6 +130,6 @@ async function voiceRequest(urlMessenger, sessionID) {
 
 module.exports.voiceRequest = voiceRequest;
 
-const url = 'https://cdn.fbsbx.com/v/t59.3654-21/41422332_1965526987077956_6964334129533943808_n.mp4/audioclip-1536591135000-2694.mp4?_nc_cat=0&oh=4eed936c79d2011ca51995370fe1b718&oe=5B998567';
+// const url = 'https://cdn.fbsbx.com/v/t59.3654-21/41422332_1965526987077956_6964334129533943808_n.mp4/audioclip-1536591135000-2694.mp4?_nc_cat=0&oh=4eed936c79d2011ca51995370fe1b718&oe=5B998567';
 
-voiceRequest(url, '123123');
+// voiceRequest(url, '123123');
