@@ -200,9 +200,7 @@ async function textDialogFlow(context, intentName, resultParameters, text) {
 async function testeAudio(context, result) {
 	if (result.success && result.success === true) {
 		// await context.sendText(`Você disse: ${result.whatWasSaid}`);
-		console.log('Object.keys(result.parameters)', Object.keys(result.parameters));
-
-		await textDialogFlow(context, result.intentName, Object.keys(result.parameters), result.whatWasSaid);
+		await textDialogFlow(context, result.intentName, result.parameters, result.whatWasSaid);
 	} else {
 		await context.sendButtonTemplate(result.textMsg,
 			await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
