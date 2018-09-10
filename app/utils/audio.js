@@ -61,7 +61,7 @@ async function voiceRequest(urlMessenger, sessionID, testeAudio) {
 			}
 		});
 
-		await dir.on('exit', async (code) => { // eslint-disable-line 
+		const result3 = await dir.on('exit', async (code) => { // eslint-disable-line 
 			if (code === 0) { // mp4 converted to flac successfully
 				// checking flac duration, it can't be bigger than 60s
 				const result2 = await getDuration(fileOut).then(async (duration) => {
@@ -115,14 +115,16 @@ async function voiceRequest(urlMessenger, sessionID, testeAudio) {
 					await checkAndDelete(fileOut);
 					return { textMsg: 'Áudio muito longo! Por favor, mande áudio com menos de 1 minuto!' };
 				});
-				console.log('Result2', result2);
-			} else { // code not 0
-				console.log('Não foi possível converter os arquivos');
-				await checkAndDelete(fileIn);
-				await checkAndDelete(fileOut);
-				testeAudio({ textMsg: 'Não entendi o que você disse. Por favor, tente novamente.' });
-			}
+				return result2;
+			} // code not 0
+			console.log('Não foi possível converter os arquivos');
+			await checkAndDelete(fileIn);
+			await checkAndDelete(fileOut);
+			return { textMsg: 'Não entendi o que você disse. Por favor, tente novamente.' };
 		}); // dir.onExit
+		console.log('result3', result3);
+
+		return result3;
 	});
 }
 
