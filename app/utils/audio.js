@@ -11,6 +11,10 @@ const fse = require('fs-extra');
 const util = require('util');
 require('util.promisify').shim();
 
+async function returnResult(result) {
+	return result;
+}
+
 const projectId = process.env.PROJECT_ID;
 
 // Ops: dialogflow needs a GOOGLE_APPLICATION_CREDENTIALS env with the path to the json key
@@ -61,7 +65,7 @@ async function voiceRequest(urlMessenger, sessionID, testeAudio) {
 			}
 		});
 
-		const result3 = await dir.on('exit', async (code) => { // eslint-disable-line 
+		await dir.on('exit', async (code) => { // eslint-disable-line 
 			if (code === 0) { // mp4 converted to flac successfully
 				// checking flac duration, it can't be bigger than 60s
 				const result2 = await getDuration(fileOut).then(async (duration) => {
@@ -115,18 +119,17 @@ async function voiceRequest(urlMessenger, sessionID, testeAudio) {
 					await checkAndDelete(fileOut);
 					return { textMsg: 'Áudio muito longo! Por favor, mande áudio com menos de 1 minuto!' };
 				});
-				return result2;
+				returnResult(result2);
+				// return result2;
 			} // code not 0
 			console.log('Não foi possível converter os arquivos');
 			await checkAndDelete(fileIn);
 			await checkAndDelete(fileOut);
 			return { textMsg: 'Não entendi o que você disse. Por favor, tente novamente.' };
 		}); // dir.onExit
-		console.log('dir', dir);
-
-		return dir;
 	});
 }
+
 
 module.exports.voiceRequest = voiceRequest;
 
