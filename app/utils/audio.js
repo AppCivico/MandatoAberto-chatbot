@@ -99,10 +99,9 @@ async function voiceRequest(urlMessenger, sessionID, testeAudio) {
 											detectedParameters[element] = detected.parameters.fields[element].listValue.values.map(obj => obj.stringValue);
 										}
 									}
-									console.log('detectedParameters', detectedParameters);
 
 									return {
-										success: true, intentName: detected.intent.displayName, whatWasSaid: detected.queryText, parameters: detectedParameters,
+										success: true, intentName: detected.intent.displayName, whatWasSaid: `[Áudio] ${detected.queryText}`, parameters: detectedParameters,
 									};
 								} // no text, user didn't say anything/no speech was detected
 								return { success: false, textMsg: 'Não consegui ouvir o que você disse. Por favor, tente novamente.' };
