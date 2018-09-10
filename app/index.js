@@ -271,7 +271,7 @@ const handler = new MessengerHandler()
 				} else if (context.event.isAudio) {
 					// await context.sendButtonTemplate('Ainda não entendo áudio. Por favor,
 					// mande somente mensagens de texto', await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
-					await context.sendButtonTemplate('Áudio? Me dê um instante para processar.', await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
+					await context.sendText('Áudio? Me dê um instante para processar.');
 					if (context.event.audio.url) {
 						console.log(context.event.audio.url);
 

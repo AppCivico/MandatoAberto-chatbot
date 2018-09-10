@@ -89,6 +89,8 @@ async function voiceRequest(urlMessenger, sessionID, testeAudio) {
 								const detected = responses[0].queryResult;
 								if (detected && detected.queryText !== '') { // if there's no text we simlpy didn't get what the user said
 									// format parameters the same way dialogFlow does with text
+									console.log(detected);
+
 									const parameters = [];
 									for (const element of Object.keys(detected.parameters.fields)) { // eslint-disable-line no-restricted-syntax
 										// removes empty parameters
