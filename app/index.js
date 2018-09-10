@@ -36,7 +36,7 @@ function formatReal(int) {
 
 const IssueTimerlimit = 1000 * 20; // 20 seconds -> listening to user doubts -> 1000 * 20
 const MenuTimerlimit = 1000 * 60; // 60 seconds -> waiting to show the initial menu -> 1000 * 60
-const pollTimerlimit = 1000 * 60 * 60 * 2; // 2 hours -> waiting to send poll -> 1000 * 60 * 60 * 2
+// const pollTimerlimit = 1000 * 60 * 60 * 2; // 2 hours -> waiting to send poll -> 1000 * 60 * 60 * 2
 
 const issueTimers = {};
 const postIssueTimers = {};
@@ -139,6 +139,7 @@ async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-dec
 
 async function textDialogFlow(context, intentName, resultParameters, text) {
 	await context.setState({ whatWasTyped: text }); // will be used in case the bot doesn't find the question or for the createIssue flow
+	await context.setState({ resultParameters }); // passing resultParameters to state because we will use it outside of here
 	switch (intentName) {
 	case 'Pergunta':
 		await context.setState({ entities: await removeEmptyKeys(resultParameters) });
@@ -222,7 +223,7 @@ const handler = new MessengerHandler()
 					// user confirms that theme(s) is/are correct
 					if (context.event.postback.payload === 'themeYes') {
 						/* eslint-disable */
-						for (const [element] of Object.entries(context.state.apiaiResp.result.parameters)) { // eslint-disable-line no-restricted-syntax
+						for (const [element] of Object.entries(context.state.resultParameters)) { // eslint-disable-line no-restricted-syntax
 							const currentTheme = await context.state.knowledge.knowledge_base.find(x => x.entities[0].tag === element);
 							// check if there's either a text answer or a media attachment linked to current theme
 							if (currentTheme && (currentTheme.answer || (currentTheme.saved_attachment_type !== null && currentTheme.saved_attachment_id !== null))) {
@@ -240,7 +241,7 @@ const handler = new MessengerHandler()
 								await context.sendText(`Sobre ${dictionary[element].toLowerCase()} fico te devendo uma resposta. `
 									+ 'Mas já entou enviando para nossas equipe e estaremos te respondendo em breve.');
 								await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
-									context.state.whatWasTyped, context.state.apiaiResp.result.parameters);
+									context.state.whatWasTyped, context.state.resultParameters);
 							}
 						}
 						/* eslint-enable */
@@ -289,7 +290,7 @@ const handler = new MessengerHandler()
 						// console.log('IntentNme ', context.state.apiaiResp.result.metadata.intentName);
 
 						await textDialogFlow(context, context.state.apiaiResp.result.metadata.intentName,
-							context.state.apiaiResp.result.parameters, context.event.message.text);
+							context.state.resultParameters, context.event.message.text);
 					} // end if listening
 				} // end if isText
 			}
@@ -360,35 +361,35 @@ const handler = new MessengerHandler()
 				// await context.resetState();
 				await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
 				await context.setState({ dialog: 'greetings' });
-				pollTimers[context.session.user.id] = setTimeout(async () => { // create pollTimer for user
-					// checks if user already answered poll (if he did, there's no reason to send it. In this case should be !== true)
-					if (await checkPollAnswered(context) !== true // also check if there's at least one question
-						&& (context.state.pollData && context.state.pollData.questions && context.state.pollData.questions.length > 0)) {
-						// send update to api (user already received this poll)
-						await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
-							fb_id: context.session.user.id,
-							poll_notification_sent: true,
-						});
-						await context.sendText('Quero conhecer você melhor. Deixe sua resposta e participe deste debate.');
-						await context.sendText(`Pergunta: ${context.state.pollData.questions[0].content}`, {
-							quick_replies: [
-								{
-									content_type: 'text',
-									title: context.state.pollData.questions[0].options[0].content,
-									payload: `poll${context.state.pollData.questions[0].options[0].id}`, // notice 'poll'
-								},
-								{
-									content_type: 'text',
-									title: context.state.pollData.questions[0].options[1].content,
-									payload: `poll${context.state.pollData.questions[0].options[1].id}`, // notice 'poll'
-								},
-							],
-						});
-						await context.typingOff();
-						await context.setState({ dialog: 'pollAnswer' }); // doesn't really work, we will be using the 'poll' text on the options's payloads to react correctly
-					}
-					delete pollTimers[context.session.user.id];
-				}, pollTimerlimit);
+				// pollTimers[context.session.user.id] = setTimeout(async () => { // create pollTimer for user
+				// 	// checks if user already answered poll (if he did, there's no reason to send it. In this case should be !== true)
+				// 	if (await checkPollAnswered(context) !== true // also check if there's at least one question
+				// 		&& (context.state.pollData && context.state.pollData.questions && context.state.pollData.questions.length > 0)) {
+				// 		// send update to api (user already received this poll)
+				// 		await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
+				// 			fb_id: context.session.user.id,
+				// 			poll_notification_sent: true,
+				// 		});
+				// 		await context.sendText('Quero conhecer você melhor. Deixe sua resposta e participe deste debate.');
+				// 		await context.sendText(`Pergunta: ${context.state.pollData.questions[0].content}`, {
+				// 			quick_replies: [
+				// 				{
+				// 					content_type: 'text',
+				// 					title: context.state.pollData.questions[0].options[0].content,
+				// 					payload: `poll${context.state.pollData.questions[0].options[0].id}`, // notice 'poll'
+				// 				},
+				// 				{
+				// 					content_type: 'text',
+				// 					title: context.state.pollData.questions[0].options[1].content,
+				// 					payload: `poll${context.state.pollData.questions[0].options[1].id}`, // notice 'poll'
+				// 				},
+				// 			],
+				// 		});
+				// 		await context.typingOff();
+				// 		await context.setState({ dialog: 'pollAnswer' }); // doesn't really work, we will be using the 'poll' text on the options's payloads to react correctly
+				// 	}
+				// 	delete pollTimers[context.session.user.id];
+				// }, pollTimerlimit);
 			}
 
 			// Switch de dialogos
@@ -511,7 +512,7 @@ const handler = new MessengerHandler()
 			case 'NotOneOfThese': // user said "no" on theme confirmation
 				if (menuTimers[context.session.user.id]) { delete menuTimers[context.session.user.id]; } // for safety reasons
 				await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
-					context.state.whatWasTyped, context.state.apiaiResp.result.parameters);
+					context.state.whatWasTyped, context.state.resultParameters);
 				await context.sendText('Que pena! Parece que eu errei. Mas recebi sua dúvida e estaremos te respondendo logo mais! Quer fazer outra pergunta?');
 				menuTimers[context.session.user.id] = setTimeout(async () => { // wait 'MenuTimerlimit' to show options menu
 					await context.sendButtonTemplate(context.state.optionPrompt.content,
@@ -582,7 +583,7 @@ const handler = new MessengerHandler()
 				issueTimers[context.session.user.id] = setTimeout(async () => {
 					if (userMessages[context.session.user.id] !== '') { // check if there's a message to send
 						await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id, userMessages[context.session.user.id],
-							context.state.apiaiResp.result.parameters);
+							context.state.resultParameters);
 						console.log('Enviei ', userMessages[context.session.user.id]);
 						await context.typingOff();
 						delete issueTimers[context.session.user.id]; // deleting this timer from timers object
