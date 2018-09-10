@@ -1,5 +1,3 @@
-
-
 require('dotenv').config();
 
 const dialogflow = require('dialogflow');
@@ -49,18 +47,15 @@ async function voiceRequest(urlMessenger, sessionID) {
 	await checkAndDelete(fileIn);
 	await checkAndDelete(fileOut);
 
-	return new Promise(async (resolve, reject) => {
+	return new Promise(async (resolve, reject) => { // eslint-disable-line no-unused-vars
 		const file = fs.createWriteStream(fileIn, { flags: 'a' });
 		const answer = await request(urlMessenger);
 		await answer.pipe(file);
 
 		file.on('finish', async () => {
-			console.log('dentro');
 			// converting the mp4 file to a mono channel flac (we have to convert before checking for duration because of 'moov atom' issues)
 			const result2 = await getDuration(fileIn).then(async (duration) => {
 				// checking flac duration, it can't be bigger than 60s
-				console.log(duration);
-
 				if (duration < 60) {
 					const results = await execAsync(`ffmpeg -i ${fileIn} -ac 1 -movflags +faststart ${fileOut} -y`);
 					if (results.error && results.error.code) {
@@ -79,7 +74,7 @@ async function voiceRequest(urlMessenger, sessionID) {
 								queryInput,
 								inputAudio,
 							};
-								// Recognizes the speech in the audio and detects its intent
+							// Recognizes the speech in the audio and detects its intent
 							return sessionClient.detectIntent(requestOptions);
 						}).then(async (responses) => {
 							// console.log('Detected intent => ', responses);
@@ -116,25 +111,17 @@ async function voiceRequest(urlMessenger, sessionID) {
 				await checkAndDelete(fileOut);
 				return { textMsg: 'Áudio muito longo! Por favor, mande áudio com menos de 1 minuto!' };
 			});
-			console.log(result2);
-
 			resolve(result2);
 		}); // file.on finish
 
 		file.on('error', async (err) => {
-			console.log('erro ao salvar arquivo => ', err);
+			console.log('Erro ao salvar arquivo => ', err);
 			await checkAndDelete(fileOut);
 			await checkAndDelete(fileIn);
-			reject(new Error({ text: 'Não entendi o que você disse.Por favor, tente novamente.' }));
+			resolve({ textMsg: 'Não entendi o que você disse.Por favor, tente novamente.' });
 		});
 	});
 }
 
 
 module.exports.voiceRequest = voiceRequest;
-
-// const url = 'https://cdn.fbsbx.com/v/t59.3654-21/41422332_1965526987077956_6964334129533943808_n.mp4/audioclip-1536591135000-2694.mp4?_nc_cat=0&oh=4eed936c79d2011ca51995370fe1b718&oe=5B998567';
-
-// voiceRequest(url, '123123').then((aaa) => {
-// 	console.log('fora', aaa);
-// });

@@ -1,4 +1,3 @@
-
 require('dotenv').config();
 
 const dialogflow = require('dialogflow');
@@ -7,6 +6,7 @@ const fs = require('fs');
 const exec = require('child_process').exec; // eslint-disable-line 
 const getDuration = require('get-audio-duration');
 const fse = require('fs-extra');
+const { execAsync } = require('async-child-process');
 
 const util = require('util');
 require('util.promisify').shim();
@@ -35,7 +35,7 @@ async function checkAndDelete(name) {
 	}
 }
 
-async function voiceRequest(urlMessenger, sessionID, testeAudio) {
+async function voiceRequest(urlMessenger, sessionID) {
 	// The path to identify the agent that owns the created intent
 	const sessionPath = sessionClient.sessionPath(projectId, sessionID);
 
@@ -46,88 +46,80 @@ async function voiceRequest(urlMessenger, sessionID, testeAudio) {
 	await checkAndDelete(fileIn);
 	await checkAndDelete(fileOut);
 
-	// downloading file from messenger URL and saving it to a mp4 file
-	const file = fs.createWriteStream(fileIn, { flags: 'a' });
-	const answer = await request(urlMessenger);
-	await answer.pipe(file);
+	return new Promise(async (resolve, reject) => { // eslint-disable-line no-unused-vars
+		const file = fs.createWriteStream(fileIn, { flags: 'a' });
+		const answer = await request(urlMessenger);
+		await answer.pipe(file);
 
-	file.on('finish', async () => {
-		// converting the mp4 file to a mono channel flac (we have to convert before checking for duration because of 'moov atom' issues)
-		const dir = await exec(`ffmpeg -i ${fileIn} -ac 1 -movflags +faststart ${fileOut} -y`, async (err) => {
-			if (err) {
-				await checkAndDelete(fileIn);
-				await checkAndDelete(fileOut);
-				console.log('Error at conversion => ', err);
-			}
-		});
-
-		dir.on('exit', async (code) => { // eslint-disable-line 
-			if (code === 0) { // mp4 converted to flac successfully
+		file.on('finish', async () => {
+			// converting the mp4 file to a mono channel flac (we have to convert before checking for duration because of 'moov atom' issues)
+			const result2 = await getDuration(fileIn).then(async (duration) => {
 				// checking flac duration, it can't be bigger than 60s
-				const result2 = await getDuration(fileOut).then(async (duration) => {
-					if (duration < 60) {
-						// Read the content of the audio file and send it as part of the request
-						const readFile = await util.promisify(fs.readFile, { singular: true });
-						const result = await readFile(`${fileOut}`)
-							.then((inputAudio) => {
-								// The audio query request
-								const requestOptions = {
-									session: sessionPath,
-									queryInput,
-									inputAudio,
-								};
-								// Recognizes the speech in the audio and detects its intent
-								return sessionClient.detectIntent(requestOptions);
-							}).then(async (responses) => {
-								// console.log('Detected intent => ', responses);
+				if (duration < 60) {
+					const results = await execAsync(`ffmpeg -i ${fileIn} -ac 1 -movflags +faststart ${fileOut} -y`);
+					if (results.error && results.error.code) {
+						await checkAndDelete(fileIn);
+						await checkAndDelete(fileOut);
+						console.log('Error at conversion => ', results.error);
+						return { textMsg: 'Não entendi o que você disse. Por favor, tente novamente.' };
+					} // no error
+					// Read the content of the audio file and send it as part of the request
+					const readFile = await util.promisify(fs.readFile, { singular: true });
+					const result = await readFile(`${fileOut}`)
+						.then((inputAudio) => {
+							// The audio query request
+							const requestOptions = {
+								session: sessionPath,
+								queryInput,
+								inputAudio,
+							};
+							// Recognizes the speech in the audio and detects its intent
+							return sessionClient.detectIntent(requestOptions);
+						}).then(async (responses) => {
+							// console.log('Detected intent => ', responses);
 
-								await checkAndDelete(fileIn);
-								await checkAndDelete(fileOut);
+							await checkAndDelete(fileIn);
+							await checkAndDelete(fileOut);
 
-								const detected = responses[0].queryResult;
-								if (detected && detected.queryText !== '') { // if there's no text we simlpy didn't get what the user said
-									// format parameters the same way dialogFlow does with text
-									const detectedParameters = {};
-									for (const element of Object.keys(detected.parameters.fields)) { // eslint-disable-line no-restricted-syntax
-										// removes empty parameters
-										if (detected.parameters.fields[element].listValue && detected.parameters.fields[element].listValue.values.length !== 0) {
-											// get multiple words that are attached to one single entity
-											detectedParameters[element] = detected.parameters.fields[element].listValue.values.map(obj => obj.stringValue);
-										}
+							const detected = responses[0].queryResult;
+							if (detected && detected.queryText !== '') { // if there's no text we simlpy didn't get what the user said
+								// format parameters the same way dialogFlow does with text
+								const detectedParameters = {};
+								for (const element of Object.keys(detected.parameters.fields)) { // eslint-disable-line no-restricted-syntax
+									// removes empty parameters
+									if (detected.parameters.fields[element].listValue && detected.parameters.fields[element].listValue.values.length !== 0) {
+										// get multiple words that are attached to one single entity
+										detectedParameters[element] = detected.parameters.fields[element].listValue.values.map(obj => obj.stringValue);
 									}
+								}
 
-									return {
-										intentName: detected.intent.displayName, whatWasSaid: `[Áudio] ${detected.queryText}`, parameters: detectedParameters,
-									};
-								} // no text, user didn't say anything/no speech was detected
-								return { textMsg: 'Não consegui ouvir o que você disse. Por favor, tente novamente.' };
-							}).catch(async (err) => {
-								console.error('ERROR:', err);
-								await checkAndDelete(fileIn);
-								await checkAndDelete(fileOut);
-								return { textMsg: 'Não entendi o que você disse. Por favor, tente novamente.' };
-							});
-						return result;
-					} // audio has 60+ seconds
-					await checkAndDelete(fileIn);
-					await checkAndDelete(fileOut);
-					return { textMsg: 'Áudio muito longo! Por favor, mande áudio com menos de 1 minuto!' };
-				});
-				await testeAudio(result2);
-				// return result2;
-			} else { // code not 0
-				console.log('Não foi possível converter os arquivos');
+								return {
+									intentName: detected.intent.displayName, whatWasSaid: `[Áudio] ${detected.queryText}`, parameters: detectedParameters,
+								};
+							} // no text, user didn't say anything/no speech was detected
+							return { textMsg: 'Não consegui ouvir o que você disse. Por favor, tente novamente.' };
+						}).catch(async (err) => {
+							console.error('ERROR:', err);
+							await checkAndDelete(fileIn);
+							await checkAndDelete(fileOut);
+							return { textMsg: 'Não entendi o que você disse. Por favor, tente novamente.' };
+						});
+					return result;
+				} // audio has 60+ seconds
 				await checkAndDelete(fileIn);
 				await checkAndDelete(fileOut);
-				await testeAudio({ textMsg: 'Não entendi o que você disse. Por favor, tente novamente.' });
-			}
-		}); // dir.onExit
+				return { textMsg: 'Áudio muito longo! Por favor, mande áudio com menos de 1 minuto!' };
+			});
+			resolve(result2);
+		}); // file.on finish
+
+		file.on('error', async (err) => {
+			console.log('Erro ao salvar arquivo => ', err);
+			await checkAndDelete(fileOut);
+			await checkAndDelete(fileIn);
+			resolve({ textMsg: 'Não entendi o que você disse.Por favor, tente novamente.' });
+		});
 	});
 }
 
-
 module.exports.voiceRequest = voiceRequest;
-
-// const url = 'https://cdn.fbsbx.com/v/t59.3654-21/40458034_2311624535532596_1690151012016324608_n.mp4/audioclip-1536260400000-2392.mp4?_nc_cat=0&oh=521ecefd5c3b24c537b025685aec27de&oe=5B945708';
-
-// voiceRequest(url, '123123');

@@ -12,7 +12,7 @@ const VotoLegalAPI = require('./votolegal_api.js');
 const Articles = require('./utils/articles.js');
 const opt = require('./utils/options');
 const dictionary = require('./utils/dictionary');
-const audio = require('./utils/audio-copy');
+const audio = require('./utils/audio');
 
 const apiai = dialogFlow(process.env.DIALOGFLOW_TOKEN);
 
@@ -214,15 +214,19 @@ const handler = new MessengerHandler()
 						await context.setState({ dialog: payload });
 					}
 				} else if (context.event.isAudio) {
-					// await context.sendButtonTemplate('Ainda não entendo áudio. Por favor, mande somente mensagens de texto',
-					// 	await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
 					await context.sendText('Áudio? Me dê um instante para processar.');
 					if (context.event.audio.url) {
-						await context.setState({ audio: await audio.voiceRequest('https://cdn.fbsbx.com/v/t59.3654-21/41422332_1965526987077956_6964334129533943808_n.mp4/audioclip-1536591135000-2694.mp4?_nc_cat=0&oh=4eed936c79d2011ca51995370fe1b718&oe=5B998567', context.session.user.id) });
-						await context.setState({ whatWasTyped: context.state.audio.whatWasSaid });
-						await context.setState({ resultParameters: context.state.audio.parameters });
-						await context.setState({ intentName: context.state.audio.intentName });
-						await context.setState({ dialog: 'checkPosition' });
+						// await context.setState({ audio: await audio.voiceRequest('https://cdn.fbsbx.com/v/t59.3654-21/41422332_1965526987077956_6964334129533943808_n.mp4/audioclip-1536591135000-2694.mp4?_nc_cat=0&oh=4eed936c79d2011ca51995370fe1b718&oe=5B998567', context.session.user.id) });
+						await context.setState({ audio: await audio.voiceRequest(context.event.audio.url, context.session.user.id) });
+						if (context.state.audio.txtMag && context.state.audio.txtMag !== '') { // there was an error (or the user just didn't say anything)
+							await context.sendButtonTemplate(context.state.audio.txtMag,
+								await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
+						} else {
+							await context.setState({ whatWasTyped: context.state.audio.whatWasSaid });
+							await context.setState({ resultParameters: context.state.audio.parameters });
+							await context.setState({ intentName: context.state.audio.intentName });
+							await context.setState({ dialog: 'checkPosition' });
+						}
 					}
 				} else if (context.event.isText) {
 					if (!listening[context.session.user.id]) { // if we are listening we don't try to interpret the text
