@@ -137,14 +137,16 @@ async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-dec
 	return dialogs;
 }
 
-async function textDialogFlow(context) {
-	switch (context.state.apiaiResp.result.metadata.intentName) {
+async function textDialogFlow(context, intentName, resultParameters, text) {
+	await context.setState({ whatWasTyped: text }); // will be used in case the bot doesn't find the question or for the createIssue flow
+
+	switch (intentName) {
 	case 'Pergunta':
-		await context.setState({ entities: await removeEmptyKeys(context.state.apiaiResp.result.parameters) });
+		await context.setState({ entities: await removeEmptyKeys(resultParameters) });
 		// console.log(context.state.entities);
 		if (context.state.entities.length >= 1) { // at least one entity
 			await context.setState({ // getting knowledge base
-				knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.apiaiResp.result.parameters),
+				knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, resultParameters),
 			});
 			// before sending the themes we check if there is anything on them, if there isn't we send 'esses assuntos'
 			await context.setState({ currentThemes: await listThemes(context.state.entities) }); // format themes
@@ -161,7 +163,7 @@ async function textDialogFlow(context) {
 				await context.sendButtonTemplate(context.state.optionPrompt.content,
 						await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
 				await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
-					context.state.whatWasTyped, context.state.apiaiResp.result.parameters);
+					context.state.whatWasTyped, resultParameters);
 			}
 		} else { // dialogFlow knows it's a question but has no entities //  o você acha do blablabla?
 			await context.sendText(`Parece que ${getArtigoCargoNome(context)} ainda não se posicionou sobre esse assunto. `
@@ -170,7 +172,7 @@ async function textDialogFlow(context) {
 					await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
 
 			await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
-				context.state.whatWasTyped, context.state.apiaiResp.result.parameters);
+				context.state.whatWasTyped, resultParameters);
 		}
 		break;
 	case 'Saudação':
@@ -266,8 +268,6 @@ const handler = new MessengerHandler()
 						audio.voiceRequest(context.event.audio.url, context.session.user.id, context);
 					}
 				} else if (context.event.isText) {
-					await context.setState({ whatWasTyped: context.event.message.text }); // will be used in case the bot doesn't find the question or for the createIssue flow
-
 					if (!listening[context.session.user.id]) { // if we are listening we don't try to interpret the text
 					// optionPrompt will be sent at the end of each case if it's a text message, so we guarantee we have it before trying to send it
 						if (!context.state.optionPrompt || (context.state.optionPrompt && context.state.optionPrompt.content === '')) {
@@ -278,7 +278,8 @@ const handler = new MessengerHandler()
 						// console.log('recebi um texto');
 						// console.log('IntentNme ', context.state.apiaiResp.result.metadata.intentName);
 
-						await textDialogFlow(context);
+						await textDialogFlow(context, context.state.apiaiResp.result.metadata.intentName,
+							context.state.apiaiResp.result.parameters, context.event.message.text);
 					} // end if listening
 				} // end if isText
 			}
