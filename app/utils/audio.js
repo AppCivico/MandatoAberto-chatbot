@@ -122,9 +122,9 @@ async function voiceRequest(urlMessenger, sessionID, testeAudio) {
 			await checkAndDelete(fileOut);
 			return { textMsg: 'Não entendi o que você disse. Por favor, tente novamente.' };
 		}); // dir.onExit
-		console.log('result3', result3);
+		console.log('dir', dir);
 
-		return result3;
+		return dir;
 	});
 }
 
