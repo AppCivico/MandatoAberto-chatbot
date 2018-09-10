@@ -102,17 +102,19 @@ async function voiceRequest(urlMessenger, sessionID, testeAudio) {
 										}
 									}
 
-									return { success: true, whatWasSaid: detected.queryText, parameters };
-								} // no text, user didn't say anything
-								return { success: false, textMsg: 'Não consegui ouvir o que você disse.' };
+									return {
+										success: true, whatWasSaid: detected.queryText, intentName: detected.displayName, parameters,
+									};
+								} // no text, user didn't say anything/no speech was detected
+								return { success: false, textMsg: 'Não consegui ouvir o que você disse. Por favor, tente novamente.' };
 							}).catch(async (err) => {
 								console.error('ERROR:', err);
 								await checkAndDelete(fileIn);
 								await checkAndDelete(fileOut);
-								return { success: false, textMsg: 'Não entendi o que você disse.' };
+								return { success: false, textMsg: 'Não entendi o que você disse. Por favor, tente novamente.' };
 							});
 						testeAudio(result);
-					} else {
+					} else { // audio has 60+ seconds
 						await checkAndDelete(fileIn);
 						await checkAndDelete(fileOut);
 						testeAudio({ success: false, textMsg: 'Áudio muito longo! Por favor, mande áudio com menos de 1 minuto!' });
@@ -122,7 +124,7 @@ async function voiceRequest(urlMessenger, sessionID, testeAudio) {
 				console.log('Não foi possível converter os arquivos');
 				await checkAndDelete(fileIn);
 				await checkAndDelete(fileOut);
-				testeAudio({ success: false, textMsg: 'Áudio muito longo! Por favor, mande áudio com menos de 1 minuto!' });
+				testeAudio({ success: false, textMsg: 'Não entendi o que você disse. Por favor, tente novamente.' });
 			}
 		}); // dir.onExit
 	});

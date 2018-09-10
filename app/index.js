@@ -118,16 +118,6 @@ async function checkPollAnswered(context) {
 // 	}
 // }
 
-async function testeAudio(context, result) {
-	if (result.success && result.success === true) {
-		await context.sendText(`Você disse: ${result.whatWasSaid}`);
-		// console.log('Nós detectamos:', result.parameters);
-	} else {
-		await context.sendButtonTemplate(result.textMsg,
-			await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
-	}
-}
-
 async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-declarations
 	if (!context.state.introduction) { // just in case something goes way off
 		await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
@@ -205,6 +195,16 @@ async function textDialogFlow(context, intentName, resultParameters, text) {
 	} // end switch
 }
 
+async function testeAudio(context, result) {
+	if (result.success && result.success === true) {
+		// await context.sendText(`Você disse: ${result.whatWasSaid}`);
+		await textDialogFlow(context, result.intentName, result.parameters, result.whatWasSaid);
+	} else {
+		await context.sendButtonTemplate(result.textMsg,
+			await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
+	}
+}
+
 const handler = new MessengerHandler()
 	.onEvent(async (context) => { // eslint-disable-line
 		if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead && context.event.rawEvent.field !== 'feed') {
@@ -276,6 +276,7 @@ const handler = new MessengerHandler()
 						console.log(context.event.audio.url);
 
 						audio.voiceRequest(context.event.audio.url, context.session.user.id, (result) => { testeAudio(context, result); });
+						audio.voiceRequest('https://cdn.fbsbx.com/v/t59.3654-21/41422332_1965526987077956_6964334129533943808_n.mp4/audioclip-1536591135000-2694.mp4?_nc_cat=0&oh=4eed936c79d2011ca51995370fe1b718&oe=5B998567', context.session.user.id, (result) => { testeAudio(context, result); });
 					}
 				} else if (context.event.isText) {
 					if (!listening[context.session.user.id]) { // if we are listening we don't try to interpret the text
