@@ -11,12 +11,6 @@ const fse = require('fs-extra');
 const util = require('util');
 require('util.promisify').shim();
 
-async function returnResult(result) {
-	console.log('result', result);
-
-	return result;
-}
-
 const projectId = process.env.PROJECT_ID;
 
 // Ops: dialogflow needs a GOOGLE_APPLICATION_CREDENTIALS env with the path to the json key
