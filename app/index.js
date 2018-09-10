@@ -148,7 +148,59 @@ async function testeAudio(context, result) {
 		await context.setState({ resultParameters: result.parameters });
 		await context.setState({ intentName: result.intentName });
 		await context.setState({ dialog: 'checkPosition' });
-		// await textDialogFlow(context, result.intentName, result.parameters, result.whatWasSaid);
+		switch (context.state.intentName) {
+		case 'Pergunta':
+			await context.setState({ entities: await removeEmptyKeys(context.state.resultParameters) });
+			// console.log(context.state.entities);
+			if (context.state.entities.length >= 1) { // at least one entity
+				await context.setState({ // getting knowledge base
+					knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.resultParameters),
+				});
+				// before sending the themes we check if there is anything on them, if there isn't we send 'esses assuntos'
+				await context.setState({ currentThemes: await listThemes(context.state.entities) }); // format themes
+				// console.log('currentThemes', context.state.currentThemes);
+
+				// console.log('knowledge:', context.state.knowledge);
+				// check if there's at least one answer in knowledge_base
+				if (context.state.knowledge && context.state.knowledge.knowledge_base && context.state.knowledge.knowledge_base.length >= 1) {
+					await context.sendButtonTemplate('Você está perguntando meu posicionamento sobre ' // confirm themes with user
+							+ `${context.state.currentThemes}?`, opt.themeConfirmation);
+				} else { // no answers in knowledge_base (We know the entity but politician doesn't have a position)
+					await context.sendText(`Parece que ${getArtigoCargoNome(context)} ainda não se posicionou sobre `
+							+ `${context.state.currentThemes}. Estarei avisando a nossa equipe e te respondendo.`);
+					await context.sendButtonTemplate(context.state.optionPrompt.content,
+							await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
+					await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
+						context.state.whatWasTyped, context.state.resultParameters);
+				}
+			} else { // dialogFlow knows it's a question but has no entities //  o você acha do blablabla?
+				await context.sendText(`Parece que ${getArtigoCargoNome(context)} ainda não se posicionou sobre esse assunto. `
+						+ 'Estarei avisando a nossa equipe e te responderemos em breve.');
+				await context.sendButtonTemplate(context.state.optionPrompt.content,
+						await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
+
+				await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
+					context.state.whatWasTyped, context.state.resultParameters);
+			}
+			break;
+		case 'Saudação':
+			await context.setState({ dialog: 'greetings' });
+			break;
+		case 'Trajetoria':
+			await context.setState({ dialog: 'trajectory' });
+			break;
+		case 'Voluntário':
+			await context.setState({ dialog: 'participateMenu' });
+			break;
+		case 'Fallback': // didn't understand what was typed
+			// falls throught
+		default: // any new intent that gets added to dialogflow but it's not added here will also act like 'Fallback'
+			await context.sendText(getRandom(opt.frases_fallback));
+			await context.sendButtonTemplate(context.state.optionPrompt.content,
+					await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
+
+			break;
+		} // end switch
 	} else {
 		await context.sendButtonTemplate(result.textMsg,
 			await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
