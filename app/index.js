@@ -201,8 +201,8 @@ const handler = new MessengerHandler()
 				} else if (context.event.isAudio) {
 					await context.sendText('Áudio? Me dê um instante para processar.');
 					if (context.event.audio.url) {
-						await context.setState({ audio: await audio.voiceRequest('https://cdn.fbsbx.com/v/t59.3654-21/41422332_1965526987077956_6964334129533943808_n.mp4/audioclip-1536591135000-2694.mp4?_nc_cat=0&oh=4eed936c79d2011ca51995370fe1b718&oe=5B998567', context.session.user.id) });
-						// await context.setState({ audio: await audio.voiceRequest(context.event.audio.url, context.session.user.id) });
+						// await context.setState({ audio: await audio.voiceRequest('https://cdn.fbsbx.com/v/t59.3654-21/41422332_1965526987077956_6964334129533943808_n.mp4/audioclip-1536591135000-2694.mp4?_nc_cat=0&oh=4eed936c79d2011ca51995370fe1b718&oe=5B998567', context.session.user.id) });
+						await context.setState({ audio: await audio.voiceRequest(context.event.audio.url, context.session.user.id) });
 						if (context.state.audio.txtMag && context.state.audio.txtMag !== '') { // there was an error (or the user just didn't say anything)
 							await context.sendButtonTemplate(context.state.audio.txtMag,
 								await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
