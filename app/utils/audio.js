@@ -91,14 +91,12 @@ async function voiceRequest(urlMessenger, sessionID, testeAudio) {
 									// format parameters the same way dialogFlow does with text
 									console.log(detected);
 
-									const detectedParameters = [];
+									const detectedParameters = {};
 									for (const element of Object.keys(detected.parameters.fields)) { // eslint-disable-line no-restricted-syntax
 										// removes empty parameters
 										if (detected.parameters.fields[element].listValue && detected.parameters.fields[element].listValue.values.length !== 0) {
 											// get multiple words that are attached to one single entity
-											detectedParameters.push({
-												[element]: detected.parameters.fields[element].listValue.values.map(obj => obj.stringValue),
-											});
+											detectedParameters[element] = detected.parameters.fields[element].listValue.values.map(obj => obj.stringValue);
 										}
 									}
 									console.log('detectedParameters', detectedParameters);
