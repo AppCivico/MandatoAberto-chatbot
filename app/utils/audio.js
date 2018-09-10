@@ -35,7 +35,7 @@ async function checkAndDelete(name) {
 	}
 }
 
-async function voiceRequest(context, urlMessenger, sessionID, testeAudio) {
+async function voiceRequest(urlMessenger, sessionID, testeAudio) {
 	// The path to identify the agent that owns the created intent
 	const sessionPath = sessionClient.sessionPath(projectId, sessionID);
 
@@ -113,8 +113,7 @@ async function voiceRequest(context, urlMessenger, sessionID, testeAudio) {
 					await checkAndDelete(fileOut);
 					return { textMsg: 'Áudio muito longo! Por favor, mande áudio com menos de 1 minuto!' };
 				});
-				await context.setState({ dialog: 'checkPosition' });
-				// await testeAudio(result2);
+				await testeAudio(result2);
 				// return result2;
 			} else { // code not 0
 				console.log('Não foi possível converter os arquivos');
