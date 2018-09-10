@@ -113,14 +113,14 @@ async function voiceRequest(urlMessenger, sessionID, testeAudio) {
 					} else {
 						await checkAndDelete(fileIn);
 						await checkAndDelete(fileOut);
-						testeAudio({ success: false, textMsg: 'Áudio muito longo! Tem que ter menos de 1 minuto!' });
+						testeAudio({ success: false, textMsg: 'Áudio muito longo! Por favor, mande áudio com menos de 1 minuto!' });
 					}
 				});
 			} else { // code not 0
 				console.log('Não foi possível converter os arquivos');
 				await checkAndDelete(fileIn);
 				await checkAndDelete(fileOut);
-				testeAudio({ success: false, textMsg: 'Não entendi o que você disse.' });
+				testeAudio({ success: false, textMsg: 'Áudio muito longo! Por favor, mande áudio com menos de 1 minuto!' });
 			}
 		}); // dir.onExit
 	});
