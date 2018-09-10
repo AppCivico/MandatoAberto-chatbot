@@ -139,7 +139,8 @@ async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-dec
 
 async function textDialogFlow(context, intentName, resultParameters, text) {
 	await context.setState({ whatWasTyped: text }); // will be used in case the bot doesn't find the question or for the createIssue flow
-	console.log('intentName', intentName);
+	console.log('text', text);
+	console.log('resultParameters', resultParameters);
 
 	switch (intentName) {
 	case 'Pergunta':
