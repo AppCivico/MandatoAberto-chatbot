@@ -137,20 +137,6 @@ async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-dec
 	return dialogs;
 }
 
-// async function testeAudio(context, result) {
-// 	if (result.intentName && result.intentName !== '') {
-// 		// await context.sendText(`Você disse: ${result.whatWasSaid}`);
-// 		await context.setState({ whatWasTyped: result.whatWasSaid }); // will be used in case the bot doesn't find the question or for the createIssue flow
-// 		await context.setState({ resultParameters: result.parameters });
-// 		await context.setState({ intentName: result.intentName });
-// 		await context.setState({ dialog: 'checkPosition' });
-// 		// await textDialogFlow(context, result.intentName, result.parameters, result.whatWasSaid);
-// 	} else {
-// 		await context.sendButtonTemplate(result.textMsg,
-// 			await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
-// 	}
-// }
-
 const handler = new MessengerHandler()
 	.onEvent(async (context) => { // eslint-disable-line
 		if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead && context.event.rawEvent.field !== 'feed') {
@@ -203,7 +189,6 @@ const handler = new MessengerHandler()
 						delete userMessages[context.session.user.id]; // deleting last sent message (it was sent already)
 						await context.setState({ dialog: 'createIssue' });
 					} else {
-						console.log('Im printing the payload', context.event.postback.payload); // in case of postbase issues
 						await context.setState({ dialog: context.event.postback.payload }); // send to dialog equal to the payload
 					}
 				} else if (context.event.isQuickReply) {
@@ -216,8 +201,8 @@ const handler = new MessengerHandler()
 				} else if (context.event.isAudio) {
 					await context.sendText('Áudio? Me dê um instante para processar.');
 					if (context.event.audio.url) {
-						// await context.setState({ audio: await audio.voiceRequest('https://cdn.fbsbx.com/v/t59.3654-21/41422332_1965526987077956_6964334129533943808_n.mp4/audioclip-1536591135000-2694.mp4?_nc_cat=0&oh=4eed936c79d2011ca51995370fe1b718&oe=5B998567', context.session.user.id) });
-						await context.setState({ audio: await audio.voiceRequest(context.event.audio.url, context.session.user.id) });
+						await context.setState({ audio: await audio.voiceRequest('https://cdn.fbsbx.com/v/t59.3654-21/41422332_1965526987077956_6964334129533943808_n.mp4/audioclip-1536591135000-2694.mp4?_nc_cat=0&oh=4eed936c79d2011ca51995370fe1b718&oe=5B998567', context.session.user.id) });
+						// await context.setState({ audio: await audio.voiceRequest(context.event.audio.url, context.session.user.id) });
 						if (context.state.audio.txtMag && context.state.audio.txtMag !== '') { // there was an error (or the user just didn't say anything)
 							await context.sendButtonTemplate(context.state.audio.txtMag,
 								await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line

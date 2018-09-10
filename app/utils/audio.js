@@ -68,11 +68,7 @@ async function voiceRequest(urlMessenger, sessionID) {
 					const result = await readFile(`${fileOut}`)
 						.then((inputAudio) => {
 							// The audio query request
-							const requestOptions = {
-								session: sessionPath,
-								queryInput,
-								inputAudio,
-							};
+							const requestOptions = { session: sessionPath, queryInput, inputAudio };
 							// Recognizes the speech in the audio and detects its intent
 							return sessionClient.detectIntent(requestOptions);
 						}).then(async (responses) => {
@@ -92,14 +88,14 @@ async function voiceRequest(urlMessenger, sessionID) {
 										detectedParameters[element] = detected.parameters.fields[element].listValue.values.map(obj => obj.stringValue);
 									}
 								}
-
+								// successful return
 								return {
 									intentName: detected.intent.displayName, whatWasSaid: `[Áudio] ${detected.queryText}`, parameters: detectedParameters,
 								};
 							} // no text, user didn't say anything/no speech was detected
 							return { textMsg: 'Não consegui ouvir o que você disse. Por favor, tente novamente.' };
 						}).catch(async (err) => {
-							console.error('ERROR:', err);
+							console.error('error at dialogFlow:', err);
 							await checkAndDelete(fileIn);
 							await checkAndDelete(fileOut);
 							return { textMsg: 'Não entendi o que você disse. Por favor, tente novamente.' };
