@@ -53,7 +53,7 @@ async function voiceRequest(urlMessenger, sessionID, testeAudio) {
 	const answer = await request(urlMessenger);
 	await answer.pipe(file);
 
-	const result3 = await file.on('finish', async () => {
+	await file.on('finish', async () => {
 		// converting the mp4 file to a mono channel flac (we have to convert before checking for duration because of 'moov atom' issues)
 		const results = await execAsync(`ffmpeg -i ${fileIn} -ac 1 -movflags +faststart ${fileOut} -y`);
 		if (results.error && results.error.code) {
@@ -116,7 +116,6 @@ async function voiceRequest(urlMessenger, sessionID, testeAudio) {
 		});
 		return result2;
 	}); // file.on('finish')
-	console.log('result3', result3);
 }
 
 
