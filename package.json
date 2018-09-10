@@ -12,6 +12,7 @@
     "child_process": "^1.0.2",
     "dialogflow": "^0.6.0",
     "dotenv": "^4.0.0",
+    "fs-extra": "^7.0.0",
     "get-audio-duration": "0.0.1",
     "grpc": "^1.14.1",
     "nodemon": "1.12.7",

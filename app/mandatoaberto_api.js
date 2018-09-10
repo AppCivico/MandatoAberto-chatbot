@@ -71,12 +71,7 @@ module.exports = {
 		return privateReply;
 	},
 
-	async postAddBlacklist(fb_id) {
-		const res = await request.post(`${apiUri}/api/chatbot/blacklist?fb_id=${fb_id}&security_token=${security_token}`);
-		const privateReply = await res.json();
-		return privateReply;
-	},
-	async postRemoveBlacklist(fb_id) {
+	async updateBlacklist(fb_id) { // mising the 0,1 flag
 		const res = await request.post(`${apiUri}/api/chatbot/blacklist?fb_id=${fb_id}&security_token=${security_token}`);
 		const privateReply = await res.json();
 		return privateReply;
