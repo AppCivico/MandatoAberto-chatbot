@@ -115,6 +115,8 @@ async function voiceRequest(urlMessenger, sessionID, testeAudio) {
 			return { textMsg: 'Áudio muito longo! Por favor, mande áudio com menos de 1 minuto!' };
 		});
 		return result2;
+	}).then((result) => {
+		console.log('resultado', result);
 	}); // file.on('finish')
 }
 
