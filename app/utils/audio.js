@@ -12,6 +12,8 @@ const util = require('util');
 require('util.promisify').shim();
 
 async function returnResult(result) {
+	console.log('result', result);
+
 	return result;
 }
 
@@ -121,11 +123,12 @@ async function voiceRequest(urlMessenger, sessionID, testeAudio) {
 				});
 				returnResult(result2);
 				// return result2;
-			} // code not 0
-			console.log('Não foi possível converter os arquivos');
-			await checkAndDelete(fileIn);
-			await checkAndDelete(fileOut);
-			return { textMsg: 'Não entendi o que você disse. Por favor, tente novamente.' };
+			} else { // code not 0
+				console.log('Não foi possível converter os arquivos');
+				await checkAndDelete(fileIn);
+				await checkAndDelete(fileOut);
+				return { textMsg: 'Não entendi o que você disse. Por favor, tente novamente.' };
+			}
 		}); // dir.onExit
 	});
 }
