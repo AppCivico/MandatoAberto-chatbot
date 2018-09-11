@@ -239,6 +239,7 @@ const handler = new MessengerHandler()
 			}
 		}
 
+
 		if (context.session) {
 			// if the user interacts while this timer is running we don't need to show the menu anymore
 			if (menuTimers[context.session.user.id]) { clearTimeout(menuTimers[context.session.user.id]); delete menuTimers[context.session.user.id]; }
@@ -562,7 +563,7 @@ const handler = new MessengerHandler()
 					}]);
 				}
 				await context.sendButtonTemplate('Deixe seus contatos conosco para não perder as novidades.', [opt.leaveInfo, opt.backToBeginning]);
-				await context.setState({ dialog: 'prompt' });
+				await context.setState({ dialog: 'prompt', dataPrompt: 'email' });
 				break;
 			case 'createIssue': // will only happen if user clicks on 'Fale Conosco'
 				if (listening[context.session.user.id] === true) { // if we are 'listening' we need to aggregate every message the user sends
@@ -603,7 +604,7 @@ const handler = new MessengerHandler()
 					} else {
 						await context.setState({ issueCreatedMessage: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_created') });
 						await context.sendButtonTemplate(context.state.issueCreatedMessage.content,
-							await checkMenu(context, [opt.keepWriting, opt.leaveInfo, opt.backToBeginning]));
+							await checkMenu(context, [opt.keepWriting, opt.backToBeginning]));
 					}
 				}, IssueTimerlimit + 2);
 				break;
@@ -666,7 +667,6 @@ const handler = new MessengerHandler()
 				break;
 			}
 			case 'pollAnswer':
-
 				if (context.state.sentPersonalData !== true) {
 					await context.sendButtonTemplate('Muito obrigado por sua resposta. Você gostaria de deixar seu e-mail e telefone para nossa equipe?', opt.recipientData_LetsGo);
 					await context.setState({ dialog: 'prompt', dataPrompt: 'email' });
