@@ -725,13 +725,13 @@ const handler = new MessengerHandler()
 				await context.setState({ dialog: 'prompt' });
 				break;
 			case 'add_blacklist': // adding user to the blacklist from the persistent menu
-				await MandatoAbertoAPI.updateBlacklist(context.session.user.id, 1);
-				await context.sendText('Legal. Estaremos te avisando das novidades.');
+				await MandatoAbertoAPI.updateBlacklist(context.session.user.id, 0);
+				await context.sendText('Tudo bem. Não te enviaremos mais nenhuma notificação.');
 				await context.sendButtonTemplate('Quer saber mais?', await checkMenu(context, [opt.aboutPolitician, opt.trajectory, opt.participate]));
 				break;
 			case 'remove_blacklist': // removing user to the blacklist from the persistent menu
-				await MandatoAbertoAPI.updateBlacklist(context.session.user.id, 0);
-				await context.sendText('Tudo bem. Não te enviaremos mais nenhuma notificação.');
+				await MandatoAbertoAPI.updateBlacklist(context.session.user.id, 1);
+				await context.sendText('Legal. Estaremos te avisando das novidades.');
 				await context.sendButtonTemplate('Quer saber mais?', await checkMenu(context, [opt.aboutPolitician, opt.trajectory, opt.participate]));
 				break;
 			case 'issue':
