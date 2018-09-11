@@ -214,7 +214,7 @@ const handler = new MessengerHandler()
 							}
 						}
 						/* eslint-enable */
-
+						await context.setState({ optionPrompt: '' });
 						await context.sendButtonTemplate(await loadOptionPrompt(context),
 							await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
 						await context.setState({ // cleaning up
