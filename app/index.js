@@ -91,12 +91,18 @@ bot.setInitialState({});
 bot.use(withTyping({ delay: 1000 }));
 
 async function loadOptionPrompt(context) {
-	const answer = await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'option_prompt');
-	if (!answer || (answer || !answer.content) || (answer || answer.content || answer.content === '')) {
-		return 'Precisa de ajuda? Escolha uma das opções abaixo ou digite sua pergunta:';
+	console.log('passei aqui, ', context.state.optionPrompt);
+
+	if (!context.state.optionPrompt || context.state.optionPrompt === '') {
+		const answer = await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'option_prompt');
+		if (!answer || (answer || !answer.content) || (answer || answer.content || answer.content === '')) {
+			return 'Precisa de ajuda? Escolha uma das opções abaixo ou digite sua pergunta:';
+		}
+		return answer.content;
 	}
-	return answer.content;
+	return context.state.optionPrompt;
 }
+
 
 async function loadIssueStarted(context) {
 	const answer = await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_started_listening');
@@ -209,7 +215,7 @@ const handler = new MessengerHandler()
 						}
 						/* eslint-enable */
 
-						await context.sendButtonTemplate(context.state.optionPrompt,
+						await context.sendButtonTemplate(await loadOptionPrompt(context),
 							await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
 						await context.setState({ // cleaning up
 							apiaiResp: '', knowledge: '', themes: '', whatWasTyped: '', trigger: '',
@@ -249,9 +255,9 @@ const handler = new MessengerHandler()
 				} else if (context.event.isText) {
 					if (!listening[context.session.user.id]) { // if we are listening we don't try to interpret the text
 					// optionPrompt will be sent at the end of each case if it's a text message, so we guarantee we have it before trying to send it
-						if (!context.state.optionPrompt || context.state.optionPrompt === '') {
-							await context.setState({ optionPrompt: await loadOptionPrompt(context) });
-						}
+						// if (!context.state.optionPrompt || context.state.optionPrompt === '') {
+						// 	await context.setState({ optionPrompt: await loadOptionPrompt(context) });
+						// }
 
 						// will be used in case the bot doesn't find the question
 						await context.setState({ whatWasTyped: context.event.message.text });
