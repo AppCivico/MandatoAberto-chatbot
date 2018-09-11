@@ -170,7 +170,7 @@ async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-dec
 }
 
 async function checkPosition(context) {
-	await context.setState({ dialog: 'prompt' });
+	// await context.setState({ dialog: 'prompt' });
 	switch (context.state.intentName) {
 	case 'Pergunta':
 		await context.setState({ entities: await removeEmptyKeys(context.state.resultParameters) });
