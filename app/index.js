@@ -91,8 +91,6 @@ bot.setInitialState({});
 bot.use(withTyping({ delay: 1000 }));
 
 async function loadOptionPrompt(context) {
-	console.log('passei aqui, ', context.state.optionPrompt);
-
 	if (!context.state.optionPrompt || context.state.optionPrompt === '') {
 		const answer = await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'option_prompt');
 		if (!answer || (answer || !answer.content) || (answer || answer.content || answer.content === '')) {
@@ -214,7 +212,6 @@ const handler = new MessengerHandler()
 							}
 						}
 						/* eslint-enable */
-						await context.setState({ optionPrompt: '' });
 						await context.sendButtonTemplate(await loadOptionPrompt(context),
 							await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
 						await context.setState({ // cleaning up
@@ -254,11 +251,6 @@ const handler = new MessengerHandler()
 					}
 				} else if (context.event.isText) {
 					if (!listening[context.session.user.id]) { // if we are listening we don't try to interpret the text
-					// optionPrompt will be sent at the end of each case if it's a text message, so we guarantee we have it before trying to send it
-						// if (!context.state.optionPrompt || context.state.optionPrompt === '') {
-						// 	await context.setState({ optionPrompt: await loadOptionPrompt(context) });
-						// }
-
 						// will be used in case the bot doesn't find the question
 						await context.setState({ whatWasTyped: context.event.message.text });
 						await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
@@ -462,30 +454,26 @@ const handler = new MessengerHandler()
 				await context.setState({ introduction: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'introduction') });
 				await context.setState({ greeting: context.state.politicianData.greeting.replace('${user.office.name}', context.state.politicianData.office.name) }); // eslint-disable-line no-template-curly-in-string
 				await context.setState({ greeting: context.state.greeting.replace('${user.name}', context.state.politicianData.name) }); // eslint-disable-line no-template-curly-in-string
-				// optionPrompt is the standard message that will be sent with the mainMenu(on timer) and at the end of the "text flow"
-				await context.setState({ optionPrompt: await loadOptionPrompt(context) });
 				await context.sendText(context.state.greeting);
 				if (menuTimers[context.session.user.id]) { // clear timer if it already exists
 					clearTimeout(menuTimers[context.session.user.id]);
 				}
 				menuTimers[context.session.user.id] = setTimeout(async () => { // wait 'MenuTimerlimit' to show options menu
-					await context.sendButtonTemplate(context.state.optionPrompt,
+					await context.sendButtonTemplate(await loadOptionPrompt(context),
 						await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
 					delete menuTimers[context.session.user.id]; // deleting this timer from timers object
 				}, MenuTimerlimit);
 				await context.setState({ dialog: 'prompt' });
 				break;
 			case 'mainMenu':
-				if (!context.state.optionPrompt || context.state.optionPrompt === '') {
-					await context.setState({ optionPrompt: await loadOptionPrompt(context) });
-				}
+
 				await context.typingOff();
 				areWeListening = true;
 				await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 				await context.setState({ trajectory: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'trajectory') });
 				await context.setState({ articles: getArticles(context.state.politicianData.gender) });
 				await context.setState({ introduction: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'introduction') });
-				await context.sendButtonTemplate(context.state.optionPrompt, await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
+				await context.sendButtonTemplate(await loadOptionPrompt(context), await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
 				await context.setState({ dialog: 'prompt' });
 				break;
 			case 'NotOneOfThese': // user said "no" on theme confirmation
@@ -494,7 +482,7 @@ const handler = new MessengerHandler()
 					context.state.whatWasTyped, context.state.resultParameters);
 				await context.sendText('Que pena! Parece que eu errei. Mas recebi sua dúvida e estaremos te respondendo logo mais! Quer fazer outra pergunta?');
 				menuTimers[context.session.user.id] = setTimeout(async () => { // wait 'MenuTimerlimit' to show options menu
-					await context.sendButtonTemplate(context.state.optionPrompt,
+					await context.sendButtonTemplate(await loadOptionPrompt(context),
 						await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
 					delete menuTimers[context.session.user.id]; // deleting this timer from timers object
 				}, (MenuTimerlimit / 2));
@@ -522,7 +510,7 @@ const handler = new MessengerHandler()
 						} else { // no answers in knowledge_base (We know the entity but politician doesn't have a position)
 							await context.sendText(`Parece que ${getArtigoCargoNome(context)} ainda não se posicionou sobre `
 										+ `${context.state.currentThemes}. Estarei avisando a nossa equipe e te respondendo.`);
-							await context.sendButtonTemplate(context.state.optionPrompt,
+							await context.sendButtonTemplate(await loadOptionPrompt(context),
 										await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
 							await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
 								context.state.whatWasTyped, context.state.resultParameters);
@@ -530,7 +518,7 @@ const handler = new MessengerHandler()
 					} else { // dialogFlow knows it's a question but has no entities //  o você acha do blablabla?
 						await context.sendText(`Parece que ${getArtigoCargoNome(context)} ainda não se posicionou sobre esse assunto. `
 									+ 'Estarei avisando a nossa equipe e te responderemos em breve.');
-						await context.sendButtonTemplate(context.state.optionPrompt,
+						await context.sendButtonTemplate(await loadOptionPrompt(context),
 									await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
 
 						await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
@@ -550,7 +538,7 @@ const handler = new MessengerHandler()
 					// falls throught
 				default: // any new intent that gets added to dialogflow but it's not added here will also act like 'Fallback'
 					await context.sendText(getRandom(opt.frases_fallback));
-					await context.sendButtonTemplate(context.state.optionPrompt,
+					await context.sendButtonTemplate(await loadOptionPrompt(context),
 								await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
 
 					break;
@@ -797,7 +785,7 @@ const handler = new MessengerHandler()
 		console.log(`Usuário => ${context.session.user.first_name} ${context.session.user.last_name}`);
 		console.log(`Administrador => ${context.state.politicianData.office.name} ${context.state.politicianData.name}`);
 
-		await context.sendButtonTemplate(context.state.optionPrompt, await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
+		await context.sendButtonTemplate(await loadOptionPrompt(context), await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
 		await context.setState({ dialog: 'prompt' });
 		// await context.setState({ articles: getArticles(context.state.politicianData.gender) });
 		// await context.sendText('Olá. Você gostaria de enviar uma mensagem para nossa equipe ou conhecer mais sobre '
