@@ -35,7 +35,7 @@ function formatReal(int) {
 // TODO: remove from blacklist is a different endpoint?
 
 const IssueTimerlimit = 1000 * 20; // 20 seconds -> listening to user doubts -> 1000 * 20
-const MenuTimerlimit = 1000 * 60; // 60 seconds -> waiting to show the initial menu -> 1000 * 60
+const MenuTimerlimit = 1000 * 0.5; // 60 seconds -> waiting to show the initial menu -> 1000 * 60
 // const pollTimerlimit = 1000 * 60 * 60 * 2; // 2 hours -> waiting to send poll -> 1000 * 60 * 60 * 2
 
 const issueTimers = {};
@@ -225,7 +225,7 @@ const handler = new MessengerHandler()
 						await context.setState({ dialog: 'createIssue' });
 					} else {
 						// console.log('payload => ', context.event.postback.payload);
-						await context.setState({ dialog: context.event.postback.payload }); // send to dialog equal to the payload
+						await context.setState({ dialog: context.event.postback.payload });
 					}
 				} else if (context.event.isQuickReply) {
 					const { payload } = context.event.message.quick_reply;
