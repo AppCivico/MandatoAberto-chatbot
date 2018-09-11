@@ -113,9 +113,7 @@ function getArticles(gender) {
 }
 
 async function getArtigoCargoNome(context) {
-	if (!context.state.articles2) {
-		console.log('atualizei os artigos');
-
+	if (!context.state.articles) { // check if we are missing the articles and reload them
 		await context.setState({ articles: await getArticles(context.state.politicianData.gender) });
 	}
 	return `${context.state.articles.defined} ${context.state.politicianData.office.name} ${context.state.politicianData.name}`;
