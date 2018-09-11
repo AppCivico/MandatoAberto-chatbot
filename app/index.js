@@ -169,6 +169,45 @@ async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-dec
 	return dialogs;
 }
 
+async function checkPosition(context) {
+	await context.setState({ dialog: 'prompt' });
+	switch (context.state.intentName) {
+	case 'Pergunta':
+		await context.setState({ entities: await removeEmptyKeys(context.state.resultParameters) });
+		// console.log(context.state.entities);
+		if (context.state.entities.length >= 1) { // at least one entity
+			await context.setState({ // getting knowledge base
+				knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.resultParameters),
+			});
+			// before sending the themes we check if there is anything on them, if there isn't we send 'esses assuntos'
+			await context.setState({ currentThemes: await listThemes(context.state.entities) }); // format themes
+			// console.log('currentThemes', context.state.currentThemes);
+
+			// console.log('knowledge:', context.state.knowledge);
+			// check if there's at least one answer in knowledge_base
+			if (context.state.knowledge && context.state.knowledge.knowledge_base && context.state.knowledge.knowledge_base.length >= 1) {
+				await context.sendButtonTemplate('Você está perguntando meu posicionamento sobre ' // confirm themes with user
+						+ `${context.state.currentThemes}?`, opt.themeConfirmation);
+			} else { // no answers in knowledge_base (We know the entity but politician doesn't have a position)
+				await context.sendText(`Parece que ${getArtigoCargoNome(context)} ainda não se posicionou sobre `
+						+ `${context.state.currentThemes}. Estarei avisando a nossa equipe e te respondendo.`);
+				await context.sendButtonTemplate(await loadOptionPrompt(context),
+						await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
+				await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
+					context.state.whatWasTyped, context.state.resultParameters);
+			}
+		} else { // dialogFlow knows it's a question but has no entities //  o você acha do blablabla?
+			await context.sendText(`Parece que ${getArtigoCargoNome(context)} ainda não se posicionou sobre esse assunto. `
+					+ 'Estarei avisando a nossa equipe e te responderemos em breve.');
+			await context.sendButtonTemplate(await loadOptionPrompt(context),
+					await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
+
+			await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
+				context.state.whatWasTyped, context.state.resultParameters);
+		}
+	}
+}
+
 const handler = new MessengerHandler()
 	.onEvent(async (context) => { // eslint-disable-line
 		if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead && context.event.rawEvent.field !== 'feed') {
@@ -246,7 +285,8 @@ const handler = new MessengerHandler()
 							await context.setState({ whatWasTyped: context.state.audio.whatWasSaid });
 							await context.setState({ resultParameters: context.state.audio.parameters });
 							await context.setState({ intentName: context.state.audio.intentName });
-							await context.setState({ dialog: 'checkPosition' });
+							await checkPosition(context);
+							// await context.setState({ dialog: 'checkPosition' });
 						}
 					}
 				} else if (context.event.isText) {
@@ -259,7 +299,8 @@ const handler = new MessengerHandler()
 
 						await context.setState({ resultParameters: context.state.apiaiResp.result.parameters });
 						await context.setState({ intentName: context.state.apiaiResp.result.metadata.intentName });
-						await context.setState({ dialog: 'checkPosition' });
+						await checkPosition(context);
+						// await context.setState({ dialog: 'checkPosition' });
 					} // end if listening
 				} // end if isText
 			}
