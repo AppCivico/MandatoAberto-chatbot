@@ -35,7 +35,7 @@ function formatReal(int) {
 // TODO: remove from blacklist is a different endpoint?
 
 const IssueTimerlimit = 1000 * 20; // 20 seconds -> listening to user doubts -> 1000 * 20
-const MenuTimerlimit = 1000 * 0.5; // 60 seconds -> waiting to show the initial menu -> 1000 * 60
+const MenuTimerlimit = 1000 * 60; // 60 seconds -> waiting to show the initial menu -> 1000 * 60
 // const pollTimerlimit = 1000 * 60 * 60 * 2; // 2 hours -> waiting to send poll -> 1000 * 60 * 60 * 2
 
 const issueTimers = {};
@@ -79,7 +79,6 @@ const mapPageToAccessToken = async (pageId) => {
 	return politicianData2.fb_access_token;
 };
 
-
 const bot = new MessengerBot({
 	mapPageToAccessToken,
 	appSecret: config.appSecret,
@@ -101,7 +100,6 @@ async function loadOptionPrompt(context) {
 	return context.state.optionPrompt;
 }
 
-
 async function loadIssueStarted(context) {
 	const answer = await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_started_listening');
 	if (!answer || (answer || !answer.content) || (answer || answer.content || answer.content === '')) {
@@ -109,7 +107,6 @@ async function loadIssueStarted(context) {
 	}
 	return answer.content;
 }
-
 
 // Deve-se indentificar o sexo do representante público e selecionar os artigos (definido e possesivo) adequados
 function getArticles(gender) {
@@ -199,8 +196,7 @@ async function checkPosition(context) {
 					context.state.whatWasTyped, context.state.resultParameters);
 			}
 		} else { // dialogFlow knows it's a question but has no entities //  o você acha do blablabla?
-			await context.sendText(`Parece que ${getArtigoCargoNome(context)} ainda não se posicionou sobre esse assunto. `
-							+ 'Estarei avisando a nossa equipe e te responderemos em breve.');
+			await context.sendText(`🤔 Essa pergunta eu não fiz para ${getArtigoCargoNome(context)}. Irei encaminhar para nossa equipe, está bem?`);
 			await context.sendButtonTemplate(await loadOptionPrompt(context),
 							await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
 
@@ -222,8 +218,7 @@ async function checkPosition(context) {
 	default: // any new intent that gets added to dialogflow but it's not added here will also act like 'Fallback'
 		await context.sendText(getRandom(opt.frases_fallback));
 		await context.sendButtonTemplate(await loadOptionPrompt(context),
-						await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
-
+			await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
 		break;
 	}
 }
@@ -525,7 +520,6 @@ const handler = new MessengerHandler()
 				await context.setState({ dialog: 'prompt' });
 				break;
 			case 'mainMenu':
-
 				await context.typingOff();
 				areWeListening = true;
 				await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
@@ -747,8 +741,6 @@ const handler = new MessengerHandler()
 				}
 				break;
 			case 'trajectory':
-				console.log(context.state.trajectory);
-
 				await context.sendText(context.state.trajectory.content);
 				await context.sendButtonTemplate('Quer saber mais?', await checkMenu(context, [opt.poll_suaOpiniao, opt.contacts, opt.participate]));
 				await context.setState({ dialog: 'prompt' });
