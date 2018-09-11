@@ -191,7 +191,8 @@ const handler = new MessengerHandler()
 					} else {
 						console.log('payload', context.event.postback.payload);
 
-						await context.setState({ dialog: context.event.postback.payload }); // send to dialog equal to the payload
+						await context.setState({ dialog: 'greetings' }); // send to dialog equal to the payload
+						// await context.setState({ dialog: context.event.postback.payload }); // send to dialog equal to the payload
 					}
 				} else if (context.event.isQuickReply) {
 					const { payload } = context.event.message.quick_reply;
