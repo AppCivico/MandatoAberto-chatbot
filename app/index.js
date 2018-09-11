@@ -189,10 +189,8 @@ const handler = new MessengerHandler()
 						delete userMessages[context.session.user.id]; // deleting last sent message (it was sent already)
 						await context.setState({ dialog: 'createIssue' });
 					} else {
-						console.log('payload', typeof context.event.postback.payload);
-
+						// console.log('payload => ', context.event.postback.payload);
 						await context.setState({ dialog: context.event.postback.payload }); // send to dialog equal to the payload
-						// await context.setState({ dialog: context.event.postback.payload }); // send to dialog equal to the payload
 					}
 				} else if (context.event.isQuickReply) {
 					const { payload } = context.event.message.quick_reply;
@@ -740,8 +738,7 @@ const handler = new MessengerHandler()
 				const issue_created_message = await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_created');
 				await context.sendButtonTemplate(issue_created_message.content, [opt.backToBeginning]);
 				await context.setState({ dialog: 'prompt' });
-				break;
-			}
+				break; }
 			} // end switch de diálogo
 		}
 	})
