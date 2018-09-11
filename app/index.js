@@ -196,7 +196,7 @@ async function checkPosition(context) {
 			} else { // no answers in knowledge_base (We know the entity but politician doesn't have a position)
 				// await context.sendText(`Parece que ${getArtigoCargoNome(context)} ainda não se posicionou sobre `
 				// + `${context.state.currentThemes}. Estarei avisando a nossa equipe e te respondendo.`);
-				await context.sendText(`🤔 Eu ainda não perguntei para ${getArtigoCargoNome(context)} sobre `
+				await context.sendText(`🤔 Eu ainda não perguntei para ${await getArtigoCargoNome(context)} sobre `
 						+ `${context.state.currentThemes}. Irei encaminhar para nossa equipe, está bem?`);
 				await context.sendButtonTemplate(await loadOptionPrompt(context),
 						await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
@@ -204,7 +204,7 @@ async function checkPosition(context) {
 					context.state.whatWasTyped, context.state.resultParameters);
 			}
 		} else { // dialogFlow knows it's a question but has no entities //  o você acha do blablabla?
-			await context.sendText(`Parece que ${getArtigoCargoNome(context)} ainda não se posicionou sobre esse assunto. `
+			await context.sendText(`Parece que ${await getArtigoCargoNome(context)} ainda não se posicionou sobre esse assunto. `
 					+ 'Estarei avisando a nossa equipe e te responderemos em breve.');
 			await context.sendButtonTemplate(await loadOptionPrompt(context),
 					await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
