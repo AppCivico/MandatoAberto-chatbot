@@ -299,6 +299,8 @@ const handler = new MessengerHandler()
 			// Tratando botão GET_STARTED
 			if (context.event.postback && context.event.postback.payload === 'greetings') {
 				// await context.resetState();
+				console.log('cheguei no greetings');
+
 				await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
 				await context.setState({ dialog: 'greetings' });
 				// pollTimers[context.session.user.id] = setTimeout(async () => { // create pollTimer for user
