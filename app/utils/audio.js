@@ -83,7 +83,7 @@ async function voiceRequest(urlMessenger, sessionID) {
 								const detectedParameters = {};
 								for (const element of Object.keys(detected.parameters.fields)) { // eslint-disable-line no-restricted-syntax
 									// removes empty parameters
-									if (detected.parameters.fields[element].listValue && detected.parameters.fields[element].listValue.values.length !== 0) {
+									if (detected.parameters.fields[element].listValue && detected.parameters.fields[element].listValue.values.length !== 0 && element !== 'Falso') {
 										// get multiple words that are attached to one single entity
 										detectedParameters[element] = detected.parameters.fields[element].listValue.values.map(obj => obj.stringValue);
 									}

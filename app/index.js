@@ -62,7 +62,17 @@ function getArtigoCargoNome(context) {
 }
 
 // removes every empty intent object and returns the intents as an array
-function removeEmptyKeys(obj) { Object.keys(obj).forEach((key) => { if (obj[key].length === 0) { delete obj[key]; } }); return Object.keys(obj); }
+function removeEmptyKeys(obj) {
+	Object.keys(obj).forEach((key) => {
+		if (obj[key].length === 0) {
+			delete obj[key];
+		}
+		if (obj === 'Falso') {
+			delete obj[key];
+		}
+	});
+	return Object.keys(obj);
+}
 
 const mapPageToAccessToken = async (pageId) => {
 	const politicianData2 = await MandatoAbertoAPI.getPoliticianData(pageId);
