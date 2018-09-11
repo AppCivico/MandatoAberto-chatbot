@@ -89,7 +89,7 @@ async function loadOptionPrompt(context) {
 	if (!context.state.optionPrompt || context.state.optionPrompt === '') {
 		const answer = await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'option_prompt');
 		if (!answer || (answer || !answer.content) || (answer || answer.content || answer.content === '')) {
-			return 'Precisa de ajuda? Escolha uma das opções abaixo ou digite sua pergunta:';
+			return 'Que tal escolher uma das opções abaixo? Ou digite sua pergunta e nos mande!';
 		}
 		return answer.content;
 	}
@@ -511,7 +511,7 @@ const handler = new MessengerHandler()
 				areWeListening = true;
 				await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 				await context.setState({ trajectory: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'trajectory') });
-				await context.setState({ articles: getArticles(context.state.politicianData.gender) });
+				await context.setState({ articles: await getArticles(context.state.politicianData.gender) });
 				await context.setState({ introduction: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'introduction') });
 				await context.setState({ greeting: context.state.politicianData.greeting.replace('${user.office.name}', context.state.politicianData.office.name) }); // eslint-disable-line no-template-curly-in-string
 				await context.setState({ greeting: context.state.greeting.replace('${user.name}', context.state.politicianData.name) }); // eslint-disable-line no-template-curly-in-string
@@ -531,7 +531,7 @@ const handler = new MessengerHandler()
 				areWeListening = true;
 				await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 				await context.setState({ trajectory: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'trajectory') });
-				await context.setState({ articles: getArticles(context.state.politicianData.gender) });
+				await context.setState({ articles: await getArticles(context.state.politicianData.gender) });
 				await context.setState({ introduction: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'introduction') });
 				await context.sendButtonTemplate(await loadOptionPrompt(context), await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
 				await context.setState({ dialog: 'prompt' });
@@ -673,7 +673,7 @@ const handler = new MessengerHandler()
 					await context.sendButtonTemplate('Se quiser, eu posso te ajudar com outra coisa.',
 						await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));
 					await context.setState({ dialog: 'prompt' });
-				} else {
+				} else if (context.state.pollData && context.state.pollData.questions && context.state.pollData.questions[0] && context.state.pollData.questions[0].content) {
 					await context.sendText('Quero conhecer você melhor. Deixe sua resposta e participe deste debate.');
 					await context.sendText(`Pergunta: ${context.state.pollData.questions[0].content}`, {
 						quick_replies: [
@@ -691,6 +691,10 @@ const handler = new MessengerHandler()
 					});
 					await context.typingOff();
 					await context.setState({ dialog: 'pollAnswer' });
+				} else {
+					await context.sendText('Não temos nenhuma pergunta ativa no momento.');
+					await context.sendButtonTemplate('Se quiser, eu posso te ajudar com outra coisa.',
+						await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));
 				}
 				break;
 			}
