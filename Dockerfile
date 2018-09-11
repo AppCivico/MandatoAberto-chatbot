@@ -4,19 +4,18 @@ ENV NPM_CONFIG_LOGLEVEL warn
 EXPOSE 8080
 
 USER root
-RUN useradd -ms /bin/bash app
-
+RUN mkdir src
+RUN chown -R node:node /src
 RUN apt-get update
 RUN apt-get install -y runit
 
-COPY . /src
-RUN chown -R app:app /src
-
+USER node
+ADD package.json /src/
 WORKDIR /src
 
-USER app
+RUN npm install bottender dotenv
 RUN npm install
-RUN npm install dotenv
+ADD . /src
 
 USER root
 COPY services/ /etc/service/

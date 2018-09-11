@@ -48,16 +48,30 @@ module.exports = {
 		return question;
 	},
 
-	async postIssue(politician_id, fb_id, message) {
+	async postIssue(politician_id, fb_id, message, entities) {
 		message = encodeURI(message);
-		const res = await request.post(`${apiUri}/api/chatbot/issue?politician_id=${politician_id}&fb_id=${fb_id}&message=${message}&security_token=${security_token}`);
+		entities = JSON.stringify(entities);
+		const res = await request.post(`${apiUri}/api/chatbot/issue?politician_id=${politician_id}&fb_id=${fb_id}&message=${message}&entities=${entities}&security_token=${security_token}`);
 		const issue = await res.json();
 		return issue;
+	},
+
+	async getknowledgeBase(politician_id, entities) {
+		entities = JSON.stringify(entities);
+		const res = await request(`${apiUri}/api/chatbot/knowledge-base?politician_id=${politician_id}&entities=${entities}&security_token=${security_token}`);
+		const knowledgeBase = await res.json();
+		return knowledgeBase;
 	},
 
 	async postPrivateReply(item, page_id, post_id, comment_id, permalink, user_id) {
 		const res = await request.post(`${apiUri}/api/chatbot/private-reply?page_id=${page_id}&item=${item}&post_id=${post_id}&comment_id=${comment_id}&permalink=${permalink}&user_id=${user_id}&security_token=${security_token}`);
 		const privateReply = await res.json();
 		return privateReply;
+	},
+
+	async updateBlacklist(fb_id, active) { // mising the 0,1 flag
+		const res = await request.post(`${apiUri}/api/chatbot/blacklist?fb_id=${fb_id}&active=${active}&security_token=${security_token}`);
+		const Blacklist = await res.json();
+		return Blacklist;
 	},
 };
