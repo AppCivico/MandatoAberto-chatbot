@@ -189,7 +189,7 @@ const handler = new MessengerHandler()
 						delete userMessages[context.session.user.id]; // deleting last sent message (it was sent already)
 						await context.setState({ dialog: 'createIssue' });
 					} else {
-						console.log('payload', context.event.postback.payload);
+						console.log('payload', typeof context.event.postback.payload);
 
 						await context.setState({ dialog: 'greetings' }); // send to dialog equal to the payload
 						// await context.setState({ dialog: context.event.postback.payload }); // send to dialog equal to the payload
