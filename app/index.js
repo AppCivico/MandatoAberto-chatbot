@@ -741,6 +741,8 @@ const handler = new MessengerHandler()
 				}
 				break;
 			case 'trajectory':
+				console.log(context.state.trajectory);
+
 				await context.sendText(context.state.trajectory.content);
 				await context.sendButtonTemplate('Quer saber mais?', await checkMenu(context, [opt.poll_suaOpiniao, opt.contacts, opt.participate]));
 				await context.setState({ dialog: 'prompt' });
