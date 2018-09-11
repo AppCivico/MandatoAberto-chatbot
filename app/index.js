@@ -222,10 +222,7 @@ const handler = new MessengerHandler()
 						await context.setState({ dialog: 'createIssue' });
 					} else {
 						// console.log('payload => ', context.event.postback.payload);
-						// await context.setState({ dialog: context.event.postback.payload }); // send to dialog equal to the payload
-						console.log('asdfadf');
-
-						await context.setState({ dialog: 'createIssue' }); // send to dialog equal to the payload
+						await context.setState({ dialog: context.event.postback.payload }); // send to dialog equal to the payload
 					}
 				} else if (context.event.isQuickReply) {
 					const { payload } = context.event.message.quick_reply;
