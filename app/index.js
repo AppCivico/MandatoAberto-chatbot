@@ -57,10 +57,6 @@ let areWeListening = true; // eslint-disable-line
 
 function getRandom(myArray) { return myArray[Math.floor(Math.random() * myArray.length)]; }
 
-function getArtigoCargoNome(context) {
-	return `${context.state.articles.defined} ${context.state.politicianData.office.name} ${context.state.politicianData.name}`;
-}
-
 // removes every empty intent object and returns the intents as an array
 function removeEmptyKeys(obj) {
 	Object.keys(obj).forEach((key) => {
@@ -115,6 +111,14 @@ function getArticles(gender) {
 	}
 	return Articles.masculine;
 }
+
+async function getArtigoCargoNome(context) {
+	if (!context.state.articles) { // check if we are missing the articles and reload them
+		await context.setState({ articles: await getArticles(context.state.politicianData.gender) });
+	}
+	return `${context.state.articles.defined} ${context.state.politicianData.office.name} ${context.state.politicianData.name}`;
+}
+
 
 async function listThemes(obj) {
 	let themes = [];
@@ -186,22 +190,22 @@ async function checkPosition(context) {
 			// check if there's at least one answer in knowledge_base
 			if (context.state.knowledge && context.state.knowledge.knowledge_base && context.state.knowledge.knowledge_base.length >= 1) {
 				await context.sendButtonTemplate('Você está perguntando meu posicionamento sobre ' // confirm themes with user
-								+ `${context.state.currentThemes}?`, opt.themeConfirmation);
+						+ `${context.state.currentThemes}?`, opt.themeConfirmation);
 			} else { // no answers in knowledge_base (We know the entity but politician doesn't have a position)
 				// await context.sendText(`Parece que ${getArtigoCargoNome(context)} ainda não se posicionou sobre `
 				// + `${context.state.currentThemes}. Estarei avisando a nossa equipe e te respondendo.`);
-				await context.sendText(`🤔 Eu ainda não perguntei para ${getArtigoCargoNome(context)} sobre `
-				+ `${context.state.currentThemes}. Irei encaminhar para nossa equipe, está bem?`);
+				await context.sendText(`🤔 Eu ainda não perguntei para ${await getArtigoCargoNome(context)} sobre `
+						+ `${context.state.currentThemes}. Irei encaminhar para nossa equipe, está bem?`);
 				await context.sendButtonTemplate(await loadOptionPrompt(context),
-								await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
+						await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
 				await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
 					context.state.whatWasTyped, context.state.resultParameters);
 			}
 		} else { // dialogFlow knows it's a question but has no entities //  o você acha do blablabla?
-			await context.sendText(`Parece que ${getArtigoCargoNome(context)} ainda não se posicionou sobre esse assunto. `
-							+ 'Estarei avisando a nossa equipe e te responderemos em breve.');
+			await context.sendText(`Parece que ${await getArtigoCargoNome(context)} ainda não se posicionou sobre esse assunto. `
+					+ 'Estarei avisando a nossa equipe e te responderemos em breve.');
 			await context.sendButtonTemplate(await loadOptionPrompt(context),
-							await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
+					await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
 
 			await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
 				context.state.whatWasTyped, context.state.resultParameters);
@@ -221,7 +225,7 @@ async function checkPosition(context) {
 	default: // any new intent that gets added to dialogflow but it's not added here will also act like 'Fallback'
 		await context.sendText(getRandom(opt.frases_fallback));
 		await context.sendButtonTemplate(await loadOptionPrompt(context),
-			await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
+				await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
 		break;
 	}
 }
@@ -262,9 +266,9 @@ const handler = new MessengerHandler()
 								await context.sendText(`Sobre ${dictionary[element].toLowerCase()} fico te devendo uma resposta. `
 									+ 'Mas já entou enviando para nossas equipe e estaremos te respondendo em breve.');
 								if (context.state.trigger === false) {
-								await context.setState({ trigger: true });
-								await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
-									context.state.whatWasTyped, context.state.resultParameters);
+									await context.setState({ trigger: true });
+									await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
+										context.state.whatWasTyped, context.state.resultParameters);
 								}
 							}
 						}
@@ -545,7 +549,7 @@ const handler = new MessengerHandler()
 				await context.setState({ whatWasTyped: '', dialog: 'prompt' });
 				break;
 			case 'checkPosition':
-			// replaced by a function.
+				// replaced by a function.
 				break;
 			case 'intermediate':
 				await context.sendText('Você gostaria de enviar uma mensagem para nossa equipe ou conhecer mais sobre '
@@ -560,14 +564,14 @@ const handler = new MessengerHandler()
 					// check if politician is on votoLegal so we can info and option
 					// if referral.source(CUSTOMER_CHAT_PLUGIN) exists we are outside facebook and shouldn't send votolegal's url
 					if ((context.event.rawEvent.postback && context.event.rawEvent.postback.referral) || (context.event.rawEvent.message && context.event.rawEvent.message.tags
-						&& context.event.rawEvent.message.tags.source && context.event.rawEvent.message.tags.source === 'customer_chat_plugin')) {
+							&& context.event.rawEvent.message.tags.source && context.event.rawEvent.message.tags.source === 'customer_chat_plugin')) {
 						await context.sendText(`${context.state.participateText}Você já está na nossa página para doar. Se quiser, também poderá divulgar seu apoio!`);
 						await context.sendText('Seu apoio é fundamental para nossa campanha! Por isso, cuidamos da segurança de todos os doadores.');
 					} else {
 						await context.setState({ valueLegal: await VotoLegalAPI.getVotoLegalValues(context.state.politicianData.votolegal_integration.votolegal_username) });
 						await context.setState({
 							participateText: `${context.state.participateText}Já consegui R$${formatReal(context.state.valueLegal.candidate.total_donated)} da minha meta de `
-							+ `R$${formatReal(getMoney(context.state.valueLegal.candidate.raising_goal))}.`,
+									+ `R$${formatReal(getMoney(context.state.valueLegal.candidate.raising_goal))}.`,
 						});
 						await context.sendButtonTemplate(`${context.state.participateText}Apoie nossa campanha de arrecadação.`, [{
 							type: 'web_url',
@@ -766,7 +770,8 @@ const handler = new MessengerHandler()
 				const issue_created_message = await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_created');
 				await context.sendButtonTemplate(issue_created_message.content, [opt.backToBeginning]);
 				await context.setState({ dialog: 'prompt' });
-				break; }
+				break;
+			}
 			} // end switch de diálogo
 		}
 	})
