@@ -153,6 +153,7 @@ const handler = new MessengerHandler()
 					if (listening[context.session.user.id]) { delete listening[context.session.user.id]; }
 					// user confirms that theme(s) is/are correct
 					if (context.event.postback.payload === 'themeYes') {
+						await context.setState({ trigger: false });
 						/* eslint-disable */
 						for (const [element] of Object.entries(context.state.resultParameters)) { // eslint-disable-line no-restricted-syntax
 							const currentTheme = await context.state.knowledge.knowledge_base.find(x => x.entities[0].tag === element);
@@ -171,8 +172,11 @@ const handler = new MessengerHandler()
 							} else { // we couldn't find neither text answer nor attachment
 								await context.sendText(`Sobre ${dictionary[element].toLowerCase()} fico te devendo uma resposta. `
 									+ 'Mas já entou enviando para nossas equipe e estaremos te respondendo em breve.');
+								if (context.state.trigger === false) {
+								await context.setState({ trigger: true });
 								await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
 									context.state.whatWasTyped, context.state.resultParameters);
+								}
 							}
 						}
 						/* eslint-enable */
@@ -180,7 +184,7 @@ const handler = new MessengerHandler()
 						await context.sendButtonTemplate(context.state.optionPrompt.content,
 							await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
 						await context.setState({ // cleaning up
-							apiaiResp: '', knowledge: '', themes: '', whatWasTyped: '',
+							apiaiResp: '', knowledge: '', themes: '', whatWasTyped: '', trigger: '',
 						});
 					} else if (context.event.postback.payload.slice(0, 6) === 'answer') {
 						await context.setState({ question: context.state.knowledge.knowledge_base.find(x => x.id === parseInt(context.event.postback.payload.replace('answer', ''), 10)) });
