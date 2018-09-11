@@ -91,14 +91,21 @@ bot.setInitialState({});
 bot.use(withTyping({ delay: 1000 }));
 
 async function loadOptionPrompt(context) {
-	console.log('passei aqui');
-
 	const answer = await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'option_prompt');
 	if (!answer || (answer || !answer.content) || (answer || answer.content || answer.content === '')) {
 		return 'Precisa de ajuda? Escolha uma das opções abaixo ou digite sua pergunta:';
 	}
 	return answer.content;
 }
+
+async function loadIssueStarted(context) {
+	const answer = await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_started_listening');
+	if (!answer || (answer || !answer.content) || (answer || answer.content || answer.content === '')) {
+		return 'Legal! Digite o que quer dizer abaixo!';
+	}
+	return answer.content;
+}
+
 
 // Deve-se indentificar o sexo do representante público e selecionar os artigos (definido e possesivo) adequados
 function getArticles(gender) {
@@ -589,8 +596,8 @@ const handler = new MessengerHandler()
 				if (listening[context.session.user.id] === true) { // if we are 'listening' we need to aggregate every message the user sends
 					userMessages[context.session.user.id] = `${userMessages[context.session.user.id]}${context.state.whatWasTyped} `;
 				} else { // we are not 'listening' -> it's the first time the user gets here
-					await context.setState({ issueStartedListening: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_started_listening') });
-					await context.sendText(context.state.issueStartedListening.content);
+					await context.setState({ issueStartedListening: await loadIssueStarted(context) });
+					await context.sendText(context.state.issueStartedListening);
 					listening[context.session.user.id] = true;
 					await context.typingOn();
 					userMessages[context.session.user.id] = ''; // starting the userMessage
