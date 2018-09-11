@@ -579,7 +579,7 @@ const handler = new MessengerHandler()
 					await context.sendText(context.state.participateText);
 				}
 				// check if there is a share obj so we can show the option
-				if (context.state.politicianData.share2 && context.state.politicianData.share.url && context.state.politicianData.share.text) {
+				if (context.state.politicianData.share && context.state.politicianData.share.url && context.state.politicianData.share.text2) {
 					await context.sendButtonTemplate(context.state.politicianData.share.text, [{
 						type: 'web_url',
 						url: context.state.politicianData.share.url,
