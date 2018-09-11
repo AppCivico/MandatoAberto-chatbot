@@ -91,6 +91,8 @@ bot.setInitialState({});
 bot.use(withTyping({ delay: 1000 }));
 
 async function loadOptionPrompt(context) {
+	console.log('passei aqui');
+
 	const answer = await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'option_prompt');
 	if (!answer || (answer || !answer.content) || (answer || answer.content || answer.content === '')) {
 		return 'Precisa de ajuda? Escolha uma das opções abaixo ou digite sua pergunta:';
