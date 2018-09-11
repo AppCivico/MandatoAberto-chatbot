@@ -101,7 +101,7 @@ async function loadOptionPrompt(context) {
 async function loadIssueStarted(context) {
 	const answer = await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_started_listening');
 	if (!answer || (answer || !answer.content) || (answer || answer.content || answer.content === '')) {
-		return 'Legal! Digite o que quer dizer abaixo!';
+		return 'Que legal! Digite o que quer dizer abaixo!';
 	}
 	return answer.content;
 }
