@@ -87,7 +87,7 @@ const bot = new MessengerBot({
 
 bot.setInitialState({});
 
-bot.use(withTyping({ delay: 1000 }));
+bot.use(withTyping({ delay: 1000 * 2 }));
 
 async function loadOptionPrompt(context) {
 	if (!context.state.optionPrompt || context.state.optionPrompt === '') {
