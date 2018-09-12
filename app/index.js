@@ -797,7 +797,7 @@ const handler = new MessengerHandler()
 			await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 		}
 
-		console.log('politicianData no catch', context.state.politicianData);
+		console.log('\n\npoliticianData no catch', context.state.politicianData);
 
 		if (context.session.user && context.session.user.first_name && context.session.user.last_name) {
 			console.log(`Usuário => ${context.session.user.first_name} ${context.session.user.last_name}`);
