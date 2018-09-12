@@ -248,8 +248,11 @@ const handler = new MessengerHandler()
 				picture: context.session.user.profile_pic,
 				session: JSON.stringify(context.state),
 			});
+
 			if (context.state.dialog !== 'recipientData' && context.state.dialog !== 'pollAnswer') { // handling input that's not from "asking data" or answering poll (obs: 'pollAnswer' from timer will bypass this)
 				if (context.event.isPostback) {
+					console.log('recebemos um payload', context.event.postback);
+
 					// we are not listening anymore if user clicks on persistent menu during the listening
 					if (listening[context.session.user.id]) { delete listening[context.session.user.id]; }
 					// user confirms that theme(s) is/are correct
