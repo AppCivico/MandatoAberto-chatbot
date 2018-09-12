@@ -334,7 +334,6 @@ const handler = new MessengerHandler()
 				} // end if isText
 			} else {
 				await context.sendText('sdkasdkaskdasdkasd');
-
 			}
 		}
 
