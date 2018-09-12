@@ -237,7 +237,7 @@ const handler = new MessengerHandler()
 			await context.sendText('Evento');
 			// we reload politicianData on every useful event
 			// we update context data at every interaction that's not a comment or a post
-			await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
+			// await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
 			// await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 
 			await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
