@@ -826,15 +826,20 @@ bot.onEvent(handler);
 
 const server = createServer(bot, { verifyToken: config.verifyToken });
 
-console.log(server);
 
 server.pre((request, response, next) => {
-	request.log.info({ req: request }, 'REQUEST');
+	console.log(request);
+	console.log(response);
+	console.log('-pre---------------------------');
+
+
 	next();
 });
 
 server.get('/', (request, response, next) => {
-	response.send('It worked!');
+	console.log(request);
+	console.log(response);
+	console.log('-get---------------------------');
 	next();
 });
 
