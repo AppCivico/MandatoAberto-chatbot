@@ -232,9 +232,8 @@ async function checkPosition(context) {
 const handler = new MessengerHandler()
 	.onEvent(async (context) => { // eslint-disable-line
 		if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead && context.event.rawEvent.field !== 'feed') {
-			// await context.typingOn();
-			console.log('recebemos um event', context.event);
-			await context.sendText('Evento');
+			await context.typingOn();
+
 			// we reload politicianData on every useful event
 			// we update context data at every interaction that's not a comment or a post
 			await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
