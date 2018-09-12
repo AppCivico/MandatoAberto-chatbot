@@ -230,11 +230,9 @@ async function checkPosition(context) {
 }
 
 const handler = new MessengerHandler()
-	.onEvent(async (context, aaa) => { // eslint-disable-line
+	.onEvent(async (context) => { // eslint-disable-line
 		if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead && context.event.rawEvent.field !== 'feed') {
 			await context.typingOn();
-			console.log(aaa);
-
 			console.log('recebemos um event', context.event);
 
 			// we reload politicianData on every useful event
@@ -827,6 +825,8 @@ const handler = new MessengerHandler()
 bot.onEvent(handler);
 
 const server = createServer(bot, { verifyToken: config.verifyToken });
+
+console.log(server);
 
 server.listen(process.env.API_PORT, () => {
 	console.log(`Server is running on ${process.env.API_PORT} port...`);
