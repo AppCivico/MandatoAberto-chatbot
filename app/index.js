@@ -794,8 +794,18 @@ const handler = new MessengerHandler()
 			await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
 			await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 		}
-		console.log(`Usuário => ${context.session.user.first_name} ${context.session.user.last_name}`);
-		console.log(`Administrador => ${context.state.politicianData.office.name} ${context.state.politicianData.name}`);
+		if (context.session.user && context.session.user.first_name && context.session.user.last_name) {
+			console.log(`Usuário => ${context.session.user.first_name} ${context.session.user.last_name}`);
+		} else {
+			console.log('Usuário => Não conseguimos descobrir o nome do cidadão');
+		}
+		if (context.state && context.state.politicianData && context.state.politicianData.name
+			&& context.state.politicianData.office && context.state.politicianData.office.name) {
+			console.log(`Administrador => ${context.state.politicianData.office.name} ${context.state.politicianData.name}`);
+		} else {
+			console.log('Administrador => Não conseguimos descobrir o nome do político');
+		}
+
 
 		await context.sendButtonTemplate('Escreva uma mensagem para nós!', await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
 		await context.setState({ dialog: 'prompt' });
