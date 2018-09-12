@@ -234,6 +234,7 @@ const handler = new MessengerHandler()
 		if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead && context.event.rawEvent.field !== 'feed') {
 			await context.typingOn();
 
+			console.log('recebemos um event', context.event);
 
 			// we reload politicianData on every useful event
 			// we update context data at every interaction that's not a comment or a post
@@ -251,8 +252,6 @@ const handler = new MessengerHandler()
 
 			if (context.state.dialog !== 'recipientData' && context.state.dialog !== 'pollAnswer') { // handling input that's not from "asking data" or answering poll (obs: 'pollAnswer' from timer will bypass this)
 				if (context.event.isPostback) {
-					console.log('recebemos um payload', context.event.postback);
-
 					// we are not listening anymore if user clicks on persistent menu during the listening
 					if (listening[context.session.user.id]) { delete listening[context.session.user.id]; }
 					// user confirms that theme(s) is/are correct
