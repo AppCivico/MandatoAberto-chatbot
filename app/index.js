@@ -832,6 +832,13 @@ server.get('/', (req, res, next) => {
 	next();
 });
 
+server.pre((req, res, next) => {
+	console.log('--------------------------------------------------------------------------------------------------------------------------------------------');
+	console.log(res);
+
+	return next();
+});
+
 server.listen(process.env.API_PORT, () => {
 	console.log(`Server is running on ${process.env.API_PORT} port...`);
 });
