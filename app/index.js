@@ -234,7 +234,7 @@ const handler = new MessengerHandler()
 		if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead && context.event.rawEvent.field !== 'feed') {
 			await context.typingOn();
 
-			console.log('Event', context.event);
+			console.log('context', context);
 
 
 			// we reload politicianData on every useful event
