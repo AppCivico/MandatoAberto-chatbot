@@ -72,3 +72,4 @@ typings/
 *.mp4
 *.flac
 audio2.js
+*.vscode
