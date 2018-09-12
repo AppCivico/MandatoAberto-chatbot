@@ -8,8 +8,6 @@ module.exports = {
 	async getPoliticianData(pageId) {
 		const res = await request(`${apiUri}/api/chatbot/politician?fb_page_id=${pageId}&security_token=${security_token}`);
 		const politicianData = await res.json();
-		console.log('politicianData', politicianData);
-
 		return politicianData;
 	},
 
@@ -20,12 +18,9 @@ module.exports = {
 	},
 
 	async postRecipient(user_id, recipient) {
-		console.log('recipientData', recipient);
 		const recipientData_qs = queryString.stringify(recipient);
 		const res = await request.post(`${apiUri}/api/chatbot/recipient?${recipientData_qs}&security_token=${security_token}&`).query({ politician_id: user_id });
 		const recipientData = await res.json();
-		console.log('recipientData', recipientData);
-
 		return recipientData;
 	},
 
