@@ -833,7 +833,7 @@ server.get('/', (req, res, next) => {
 });
 
 server.pre((req, res, next) => {
-	console.log(typeof res);
+	console.log(res);
 
 	return next();
 });
