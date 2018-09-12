@@ -828,6 +828,16 @@ const server = createServer(bot, { verifyToken: config.verifyToken });
 
 console.log(server);
 
+server.pre((request, response, next) => {
+	request.log.info({ req: request }, 'REQUEST');
+	next();
+});
+
+server.get('/', (request, response, next) => {
+	response.send('It worked!');
+	next();
+});
+
 server.listen(process.env.API_PORT, () => {
 	console.log(`Server is running on ${process.env.API_PORT} port...`);
 });
