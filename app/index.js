@@ -250,8 +250,6 @@ const handler = new MessengerHandler()
 			});
 
 			if (context.state.dialog !== 'recipientData' && context.state.dialog !== 'pollAnswer') { // handling input that's not from "asking data" or answering poll (obs: 'pollAnswer' from timer will bypass this)
-				await context.sendText('sdkasdkaskdasdkasd');
-
 				if (context.event.isPostback) {
 					// we are not listening anymore if user clicks on persistent menu during the listening
 					if (listening[context.session.user.id]) { delete listening[context.session.user.id]; }
@@ -334,6 +332,9 @@ const handler = new MessengerHandler()
 						await checkPosition(context);
 					} // end if listening
 				} // end if isText
+			} else {
+				await context.sendText('sdkasdkaskdasdkasd');
+
 			}
 		}
 
