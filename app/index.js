@@ -230,9 +230,10 @@ async function checkPosition(context) {
 }
 
 const handler = new MessengerHandler()
-	.onEvent(async (context) => { // eslint-disable-line
+	.onEvent(async (context, aaa) => { // eslint-disable-line
 		if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead && context.event.rawEvent.field !== 'feed') {
 			await context.typingOn();
+			console.log(aaa);
 
 			console.log('recebemos um event', context.event);
 
