@@ -41,7 +41,7 @@ const MenuTimerlimit = 1000 * 60; // 60 seconds -> waiting to show the initial m
 const issueTimers = {};
 const postIssueTimers = {};
 const menuTimers = {};
-const pollTimers = {};
+// const pollTimers = {};
 // timers -> object that stores timers. Each user_id stores it's respective timer.
 // issueTimers -> stores timers that creates issues
 // postIssueTimers -> stores timers that confirm to the user that we have sent his "issue"
@@ -166,7 +166,6 @@ async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-dec
 			await dialogs.push(opt.talkToUs);
 		}
 	}
-	// if (!context.state.politicianData.votolegal_integration) { dialogs = dialogs.filter(obj => obj.payload !== 'participateMenu'); }
 	return dialogs;
 }
 
@@ -436,9 +435,9 @@ const handler = new MessengerHandler()
 			}
 			// Resposta de enquete
 			if (context.event.isQuickReply && context.state.dialog === 'pollAnswer') {
-				if (pollTimers[context.session.user.id]) {
-					delete pollTimers[context.session.user.id];
-				}
+				// if (pollTimers[context.session.user.id]) {
+				// 	delete pollTimers[context.session.user.id];
+				// }
 				if (context.event.message.quick_reply.payload.slice(0, 4) === 'poll') {
 					await context.setState({ answer: context.event.message.quick_reply.payload.replace('poll', '') });
 				} else {
@@ -797,7 +796,7 @@ const handler = new MessengerHandler()
 		console.log(`Usuário => ${context.session.user.first_name} ${context.session.user.last_name}`);
 		console.log(`Administrador => ${context.state.politicianData.office.name} ${context.state.politicianData.name}`);
 
-		await context.sendButtonTemplate(await loadOptionPrompt(context), await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
+		await context.sendButtonTemplate('Escreva uma mensagem para nós!', await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
 		await context.setState({ dialog: 'prompt' });
 		// await context.setState({ articles: getArticles(context.state.politicianData.gender) });
 		// await context.sendText('Olá. Você gostaria de enviar uma mensagem para nossa equipe ou conhecer mais sobre '
