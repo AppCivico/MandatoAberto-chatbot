@@ -339,16 +339,15 @@ const handler = new MessengerHandler()
 			} else { // if it doesn't exists we are on an facebook/messenger
 				await context.setState({ facebookPlataform: 'MESSENGER' });
 			}
-
-			await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
-				fb_id: context.session.user.id,
-				name: `${context.session.user.first_name} ${context.session.user.last_name}`,
-				gender: context.session.user.gender === 'male' ? 'M' : 'F',
-				origin_dialog: 'greetings',
-				picture: context.session.user.profile_pic,
-				session: JSON.stringify(context.state),
-			});
 		}
+		await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
+			fb_id: context.session.user.id,
+			name: `${context.session.user.first_name} ${context.session.user.last_name}`,
+			gender: context.session.user.gender === 'male' ? 'M' : 'F',
+			origin_dialog: 'greetings',
+			picture: context.session.user.profile_pic,
+			session: JSON.stringify(context.state),
+		});
 
 		// Abrindo bot através de comentários e posts
 		// ** no context here **
