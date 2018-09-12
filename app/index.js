@@ -834,7 +834,7 @@ server.get('/', (req, res, next) => {
 
 server.pre((req, res, next) => {
 	console.log('--------------------------------------------------------------------------------------------------------------------------------------------');
-	console.log(req);
+	console.log(res.body);
 
 	return next();
 });
