@@ -285,6 +285,7 @@ const handler = new MessengerHandler()
 						await context.setState({ dialog: 'createIssue' });
 					} else {
 						// console.log('payload => ', context.event.postback.payload);
+
 						await context.setState({ dialog: context.event.postback.payload });
 					}
 				} else if (context.event.isQuickReply) {
