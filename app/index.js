@@ -246,7 +246,7 @@ const handler = new MessengerHandler()
 				gender: context.session.user.gender === 'male' ? 'M' : 'F',
 				origin_dialog: 'greetings',
 				picture: context.session.user.profile_pic,
-				session: context.state,
+				// session: JSON.stringify(context.state),
 			});
 
 			if (context.state.dialog !== 'recipientData' && context.state.dialog !== 'pollAnswer') { // handling input that's not from "asking data" or answering poll (obs: 'pollAnswer' from timer will bypass this)
