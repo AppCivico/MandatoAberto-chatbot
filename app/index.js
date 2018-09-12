@@ -827,14 +827,14 @@ bot.onEvent(handler);
 const server = createServer(bot, { verifyToken: config.verifyToken });
 
 
-server.pre((request, response, next) => {
-	console.log(request);
-	console.log(response);
-	console.log('-pre---------------------------');
+// server.pre((request, response, next) => {
+// 	console.log(request);
+// 	console.log(response);
+// 	console.log('-pre---------------------------');
 
 
-	next();
-});
+// 	next();
+// });
 
 server.get('/', (request, response, next) => {
 	console.log(request);
