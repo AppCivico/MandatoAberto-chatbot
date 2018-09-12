@@ -833,10 +833,7 @@ server.get('/', (req, res, next) => {
 });
 
 server.pre((req, res, next) => {
-	const aaa = JSON.parse(res);
-	console.log(aaa);
-	console.log('--------------------------------------------------------------------------------------------------------------------------------------------');
-	console.log(aaa.body);
+	console.log(typeof res);
 
 	return next();
 });
