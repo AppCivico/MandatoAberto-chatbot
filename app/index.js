@@ -41,7 +41,7 @@ const MenuTimerlimit = 1000 * 60; // 60 seconds -> waiting to show the initial m
 const issueTimers = {};
 const postIssueTimers = {};
 const menuTimers = {};
-const pollTimers = {};
+// const pollTimers = {};
 // timers -> object that stores timers. Each user_id stores it's respective timer.
 // issueTimers -> stores timers that creates issues
 // postIssueTimers -> stores timers that confirm to the user that we have sent his "issue"
@@ -166,7 +166,6 @@ async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-dec
 			await dialogs.push(opt.talkToUs);
 		}
 	}
-	// if (!context.state.politicianData.votolegal_integration) { dialogs = dialogs.filter(obj => obj.payload !== 'participateMenu'); }
 	return dialogs;
 }
 
@@ -240,6 +239,15 @@ const handler = new MessengerHandler()
 			await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
 			await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 
+			await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
+				fb_id: context.session.user.id,
+				name: `${context.session.user.first_name} ${context.session.user.last_name}`,
+				gender: context.session.user.gender === 'male' ? 'M' : 'F',
+				origin_dialog: 'greetings',
+				picture: context.session.user.profile_pic,
+				// session: JSON.stringify(context.state),
+			});
+
 			if (context.state.dialog !== 'recipientData' && context.state.dialog !== 'pollAnswer') { // handling input that's not from "asking data" or answering poll (obs: 'pollAnswer' from timer will bypass this)
 				if (context.event.isPostback) {
 					// we are not listening anymore if user clicks on persistent menu during the listening
@@ -285,7 +293,7 @@ const handler = new MessengerHandler()
 						delete userMessages[context.session.user.id]; // deleting last sent message (it was sent already)
 						await context.setState({ dialog: 'createIssue' });
 					} else {
-						// console.log('payload => ', context.event.postback.payload);
+						console.log('payload => ', context.event.postback.payload);
 						await context.setState({ dialog: context.event.postback.payload });
 					}
 				} else if (context.event.isQuickReply) {
@@ -340,16 +348,8 @@ const handler = new MessengerHandler()
 			} else { // if it doesn't exists we are on an facebook/messenger
 				await context.setState({ facebookPlataform: 'MESSENGER' });
 			}
-
-			await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
-				fb_id: context.session.user.id,
-				name: `${context.session.user.first_name} ${context.session.user.last_name}`,
-				gender: context.session.user.gender === 'male' ? 'M' : 'F',
-				origin_dialog: 'greetings',
-				picture: context.session.user.profile_pic,
-				session: JSON.stringify(context.state),
-			});
 		}
+
 
 		// Abrindo bot através de comentários e posts
 		// ** no context here **
@@ -436,9 +436,9 @@ const handler = new MessengerHandler()
 			}
 			// Resposta de enquete
 			if (context.event.isQuickReply && context.state.dialog === 'pollAnswer') {
-				if (pollTimers[context.session.user.id]) {
-					delete pollTimers[context.session.user.id];
-				}
+				// if (pollTimers[context.session.user.id]) {
+				// 	delete pollTimers[context.session.user.id];
+				// }
 				if (context.event.message.quick_reply.payload.slice(0, 4) === 'poll') {
 					await context.setState({ answer: context.event.message.quick_reply.payload.replace('poll', '') });
 				} else {
@@ -794,10 +794,24 @@ const handler = new MessengerHandler()
 			await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
 			await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 		}
-		console.log(`Usuário => ${context.session.user.first_name} ${context.session.user.last_name}`);
-		console.log(`Administrador => ${context.state.politicianData.office.name} ${context.state.politicianData.name}`);
 
-		await context.sendButtonTemplate(await loadOptionPrompt(context), await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
+		console.log('\n\n\n\nrawEvent.recipient.id no catch', context.event.rawEvent.recipient.id);
+		console.log('politicianData no catch', context.state.politicianData);
+
+		if (context.session.user && context.session.user.first_name && context.session.user.last_name) {
+			console.log(`Usuário => ${context.session.user.first_name} ${context.session.user.last_name}`);
+		} else {
+			console.log('Usuário => Não conseguimos descobrir o nome do cidadão');
+		}
+		if (context.state && context.state.politicianData && context.state.politicianData.name
+			&& context.state.politicianData.office && context.state.politicianData.office.name) {
+			console.log(`Administrador => ${context.state.politicianData.office.name} ${context.state.politicianData.name}`);
+		} else {
+			console.log('Administrador => Não conseguimos descobrir o nome do político');
+		}
+
+
+		await context.sendButtonTemplate('Escreva uma mensagem para nós!', await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
 		await context.setState({ dialog: 'prompt' });
 		// await context.setState({ articles: getArticles(context.state.politicianData.gender) });
 		// await context.sendText('Olá. Você gostaria de enviar uma mensagem para nossa equipe ou conhecer mais sobre '
@@ -810,6 +824,7 @@ const handler = new MessengerHandler()
 bot.onEvent(handler);
 
 const server = createServer(bot, { verifyToken: config.verifyToken });
+
 
 server.listen(process.env.API_PORT, () => {
 	console.log(`Server is running on ${process.env.API_PORT} port...`);
