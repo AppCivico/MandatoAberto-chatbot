@@ -509,6 +509,7 @@ const handler = new MessengerHandler()
 			case 'greetings':
 				await context.typingOff();
 				areWeListening = true;
+				await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
 				await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 				await context.setState({ trajectory: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'trajectory') });
 				await context.setState({ articles: await getArticles(context.state.politicianData.gender) });
