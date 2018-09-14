@@ -343,7 +343,7 @@ const handler = new MessengerHandler()
 			if (menuTimers[context.session.user.id]) { clearTimeout(menuTimers[context.session.user.id]); delete menuTimers[context.session.user.id]; }
 
 			// if the user interacts while this timer is running we don't need to run confirm that the issue was sent anymore
-			if (postIssueTimers[context.session.user.id]) { clearTimeout(menuTimers[context.session.user.id]); delete postIssueTimers[context.session.user.id]; }
+			if (postIssueTimers[context.session.user.id]) { clearTimeout(postIssueTimers[context.session.user.id]); delete postIssueTimers[context.session.user.id]; }
 		}
 		if (context.event.rawEvent.postback) {
 			if (context.event.rawEvent.postback.referral) { // if this exists we are on external site
@@ -616,11 +616,8 @@ const handler = new MessengerHandler()
 					await context.typingOn(); // show user that we are listening
 				}
 
-				console.log('status do posttimerissues', postIssueTimers[context.session.user.id]);
-
 				if (postIssueTimers[context.session.user.id]) { // check if timer already exists, and delete it if it does
 					clearTimeout(postIssueTimers[context.session.user.id]);
-					console.log('limpei o timer2 ');
 				}
 
 				// create new (or reset) timer for sending message
