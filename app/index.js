@@ -455,7 +455,6 @@ const handler = new MessengerHandler()
 			}
 			// Tratando dados adicionais do recipient
 			if (context.state.dialog === 'recipientData' && context.state.recipientData) {
-				console.log('test');
 				if (context.event.isQuickReply) {
 					if (context.state.dataPrompt === 'email') {
 						await context.setState({ email: context.event.message.quick_reply.payload });
@@ -480,10 +479,10 @@ const handler = new MessengerHandler()
 				if (context.state.recipientData) {
 					switch (context.state.recipientData) {
 					case 'email':
-						console.log('resultado:', await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
+						await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
 							fb_id: context.session.user.id,
 							email: context.state.email,
-						}));
+						});
 						await context.sendButtonTemplate('Legal, agora quer me informar seu telefone, para lhe manter informado sobre outras perguntas?', opt.recipientData_YesNo);
 						await context.setState({ recipientData: 'cellphonePrompt', dialog: 'recipientData', dataPrompt: '' });
 						break;
