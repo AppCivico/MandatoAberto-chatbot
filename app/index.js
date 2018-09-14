@@ -198,7 +198,7 @@ async function checkPosition(context) {
 						+ `${context.state.currentThemes}. Irei encaminhar para nossa equipe, está bem?`);
 				await context.sendButtonTemplate(await loadOptionPrompt(context),
 						await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
-				await context.setState({ entities: '' });
+				await context.setState({ currentThemes: '', entities: '' });
 			}
 		} else { // dialogFlow knows it's a question but has no entities //  o você acha do blablabla?
 			await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
@@ -207,7 +207,7 @@ async function checkPosition(context) {
 				+ `${context.state.currentThemes}. Irei encaminhar para nossa equipe, está bem?`);
 			await context.sendButtonTemplate(await loadOptionPrompt(context),
 					await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
-			await context.setState({ entities: '' });
+			await context.setState({ currentThemes: '', entities: '' });
 		}
 		break;
 	case 'Saudação':
