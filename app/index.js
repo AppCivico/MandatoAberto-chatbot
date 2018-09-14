@@ -36,7 +36,7 @@ function formatReal(int) {
 // TODO: remove from blacklist is a different endpoint?
 
 const IssueTimerlimit = 1000 * 20; // 20 seconds -> listening to user doubts -> 1000 * 20
-const MenuTimerlimit = 1000 * 60; // 60 seconds -> waiting to show the initial menu -> 1000 * 60
+const MenuTimerlimit = 1000 * 1; // 60 seconds -> waiting to show the initial menu -> 1000 * 60
 // const pollTimerlimit = 1000 * 60 * 60 * 2; // 2 hours -> waiting to send poll -> 1000 * 60 * 60 * 2
 
 const issueTimers = {};
@@ -87,8 +87,12 @@ bot.setInitialState({});
 bot.use(withTyping({ delay: 1000 * 2 }));
 
 async function loadOptionPrompt(context) {
+	console.log('context.state.optionPrompt', context.state.optionPrompt);
+
 	if (!context.state.optionPrompt || context.state.optionPrompt === '') {
 		const answer = await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'option_prompt');
+		console.log('answer', answer);
+
 		if (!answer || (answer || !answer.content) || answer.content === '') {
 			return 'Que tal escolher uma das opções abaixo? Ou digite sua pergunta e nos mande!';
 		}
