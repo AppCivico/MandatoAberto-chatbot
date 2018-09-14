@@ -780,7 +780,7 @@ const handler = new MessengerHandler()
 			// 	await context.sendButtonTemplate(issue_created_message.content, [opt.backToBeginning]);
 			// 	await context.setState({ dialog: 'prompt' });
 			// 	break;
-			}
+			// }
 			} // end switch de diálogo
 		}
 	})
