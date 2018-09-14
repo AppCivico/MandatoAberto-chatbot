@@ -780,16 +780,16 @@ const handler = new MessengerHandler()
 		console.log('\n');
 		console.log(`Parece que aconteceu um erro as ${date.toLocaleTimeString('pt-BR')} de ${date.getDate()}/${date.getMonth() + 1} =>`);
 		console.log(err);
-		if (context.event.rawEvent.field === 'feed') {
-			if (context.event.rawEvent.value.item === 'comment' || context.event.rawEvent.value.item === 'post') {
-				// we update user data at every interaction that's not a comment or a post
-				await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
-				await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
-			}
-		} else {
-			await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
-			await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
-		}
+		// if (context.event.rawEvent.field === 'feed') {
+		// 	if (context.event.rawEvent.value.item === 'comment' || context.event.rawEvent.value.item === 'post') {
+		// 		// we update user data at every interaction that's not a comment or a post
+		// 		await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
+		// 		await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
+		// 	}
+		// } else {
+		console.log(await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) }));
+		console.log(await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) }));
+		// }
 
 		console.log('\n\n\n\nrawEvent.recipient.id no catch', context.event.rawEvent.recipient.id);
 		console.log('politicianData no catch', context.state.politicianData);
