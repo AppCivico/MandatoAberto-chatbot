@@ -622,8 +622,8 @@ const handler = new MessengerHandler()
 							context.state.resultParameters);
 						console.log('Enviei ', userMessages[context.session.user.id]);
 						await context.typingOff();
-						delete issueTimers[context.session.user.id]; // deleting this timer from timers object
 					}
+					delete issueTimers[context.session.user.id]; // deleting this timer from timers object
 					delete listening[context.session.user.id];
 				}, IssueTimerlimit);
 
