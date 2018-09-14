@@ -480,19 +480,19 @@ const handler = new MessengerHandler()
 				if (context.state.recipientData) {
 					switch (context.state.recipientData) {
 					case 'email':
-						await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
+						console.log('resultado:', await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
 							fb_id: context.session.user.id,
 							email: context.state.email,
-						});
+						}));
 						await context.sendButtonTemplate('Legal, agora quer me informar seu telefone, para lhe manter informado sobre outras perguntas?', opt.recipientData_YesNo);
 						await context.setState({ recipientData: 'cellphonePrompt', dialog: 'recipientData', dataPrompt: '' });
 						break;
 					case 'cellphone':
 						if (phoneRegex.test(context.state.cellphone)) {
-							console.log('Resultado: \n\n', await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
+							await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
 								fb_id: context.session.user.id,
 								cellphone: context.state.cellphone,
-							}));
+							});
 						} else {
 							await context.setState({ dataPrompt: '', recipientData: 'cellphonePrompt' });
 							await context.sendText('Desculpe-me, mas seu telefone não parece estar correto. Não esqueça de incluir o DDD. Por exemplo: 1199999-8888');
@@ -717,8 +717,8 @@ const handler = new MessengerHandler()
 					switch (context.state.dataPrompt) {
 					case 'email':
 						try {
-							await context.sendText('Qual o seu e-mail?');
-							// await context.sendText('Qual o seu e-mail? Pode digita-lo e nos mandar.', { quick_replies: [{ content_type: 'user_email' }] });
+							// await context.sendText('Qual o seu e-mail?');
+							await context.sendText('Qual o seu e-mail? Pode digita-lo e nos mandar.', { quick_replies: [{ content_type: 'user_email' }] });
 						} catch (err) {
 							console.log('E-mail button catch error =>', err);
 							await context.sendText('Qual o seu e-mail?');
