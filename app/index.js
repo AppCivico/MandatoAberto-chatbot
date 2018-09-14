@@ -192,21 +192,20 @@ async function checkPosition(context) {
 				await context.sendButtonTemplate('Você está perguntando meu posicionamento sobre ' // confirm themes with user
 						+ `${context.state.currentThemes}?`, opt.themeConfirmation);
 			} else { // no answers in knowledge_base (We know the entity but politician doesn't have a position)
+				await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
+					context.state.whatWasTyped, context.state.resultParameters);
 				await context.sendText(`🤔 Eu ainda não perguntei para ${await getArtigoCargoNome(context)} sobre `
 						+ `${context.state.currentThemes}. Irei encaminhar para nossa equipe, está bem?`);
 				await context.sendButtonTemplate(await loadOptionPrompt(context),
 						await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
-				await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
-					context.state.whatWasTyped, context.state.resultParameters);
 			}
 		} else { // dialogFlow knows it's a question but has no entities //  o você acha do blablabla?
+			await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
+				context.state.whatWasTyped, context.state.resultParameters);
 			await context.sendText(`🤔 Eu ainda não perguntei para ${await getArtigoCargoNome(context)} sobre `
 				+ `${context.state.currentThemes}. Irei encaminhar para nossa equipe, está bem?`);
 			await context.sendButtonTemplate(await loadOptionPrompt(context),
 					await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
-
-			await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
-				context.state.whatWasTyped, context.state.resultParameters);
 		}
 		break;
 	case 'Saudação':
@@ -220,7 +219,9 @@ async function checkPosition(context) {
 		break;
 	case 'Fallback': // didn't understand what was typed
 		// falls throught
-	default: // any new intent that gets added to dialogflow but it's not added here will also act like 'Fallback'
+	default: // any new intent that gets added to dialogflow but it's not added here will also act like 'Fallback'.
+		await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
+			context.state.whatWasTyped, context.state.resultParameters);
 		await context.sendText(getRandom(opt.frases_fallback));
 		await context.sendButtonTemplate(await loadOptionPrompt(context),
 				await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
