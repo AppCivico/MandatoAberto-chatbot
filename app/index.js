@@ -453,10 +453,13 @@ const handler = new MessengerHandler()
 			}
 			// Tratando dados adicionais do recipient
 			if (context.state.dialog === 'recipientData' && context.state.recipientData) {
+				console.log('test');
 				if (context.event.isQuickReply) {
 					if (context.state.dataPrompt === 'email') {
 						await context.setState({ email: context.event.message.quick_reply.payload });
 					} else if (context.state.dataPrompt === 'end') {
+						console.log('test2');
+
 						await context.setState({ cellphone: context.event.message.quick_reply.payload });
 					}
 				} else if (context.event.isText) {
