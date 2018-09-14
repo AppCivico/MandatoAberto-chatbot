@@ -429,9 +429,8 @@ const handler = new MessengerHandler()
 			}
 			// quick_replies que vem de propagação que não são resposta de enquete
 			// because of the issue response
-			if (context.event.isQuickReply && (context.state.dialog !== 'pollAnswer') && !(context.event.message.quick_reply.payload.includes('pollAnswerPropagate'))) {
-				console.log('i am here');
-
+			if (context.event.isQuickReply && (context.state.dialog !== 'pollAnswer') && !(context.event.message.quick_reply.payload.includes('pollAnswerPropagate'))
+				&& (context.state.dialog !== 'recipientData')) {
 				await context.setState({ dialog: context.event.message.quick_reply.payload });
 			}
 			// Resposta de enquete
@@ -575,7 +574,7 @@ const handler = new MessengerHandler()
 							participateText: `${context.state.participateText}Já consegui R$${formatReal(context.state.valueLegal.candidate.total_donated)} da minha meta de `
 									+ `R$${formatReal(getMoney(context.state.valueLegal.candidate.raising_goal))}.`,
 						});
-						await context.sendButtonTemplate(`${context.state.participateText}Apoie nossa campanha de arrecadação.`, [{
+						await context.sendButtonTemplate(`${context.state.participateText} Apoie nossa campanha de arrecadação.`, [{
 							type: 'web_url',
 							url: `${context.state.politicianData.votolegal_integration.votolegal_url}/#doar`,
 							title: 'Quero doar!',
@@ -593,7 +592,7 @@ const handler = new MessengerHandler()
 					}]);
 				}
 				await context.sendButtonTemplate('Deixe seus contatos para nossa equipe.', [opt.leaveInfo, opt.backToBeginning]);
-				await context.setState({ dialog: 'prompt', dataPrompt: 'email' });
+				await context.setState({ dialog: 'prompt', dataPrompt: 'email', recipientData: '' });
 				break;
 			case 'createIssue': // will only happen if user clicks on 'Fale Conosco'
 				if (listening[context.session.user.id] === true) { // if we are 'listening' we need to aggregate every message the user sends
