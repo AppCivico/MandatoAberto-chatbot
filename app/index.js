@@ -430,6 +430,8 @@ const handler = new MessengerHandler()
 			// quick_replies que vem de propagação que não são resposta de enquete
 			// because of the issue response
 			if (context.event.isQuickReply && (context.state.dialog !== 'pollAnswer') && !(context.event.message.quick_reply.payload.includes('pollAnswerPropagate'))) {
+				console.log('i am here');
+
 				await context.setState({ dialog: context.event.message.quick_reply.payload });
 			}
 			// Resposta de enquete
@@ -457,10 +459,7 @@ const handler = new MessengerHandler()
 				if (context.event.isQuickReply) {
 					if (context.state.dataPrompt === 'email') {
 						await context.setState({ email: context.event.message.quick_reply.payload });
-					// } else if (context.state.dataPrompt === 'end') {
-					} else {
-						console.log('test2');
-
+					} else if (context.state.dataPrompt === 'end') {
 						await context.setState({ cellphone: context.event.message.quick_reply.payload });
 					}
 				} else if (context.event.isText) {
