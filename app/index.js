@@ -324,8 +324,6 @@ const handler = new MessengerHandler()
 				} else if (context.event.isText) {
 					await context.setState({ whatWasTyped: context.event.message.text }); // has to be set here because of talkToUs
 					if (!listening[context.session.user.id] || listening[context.session.user.id] === false) { // if we are listening we don't try to interpret the text
-						console.log('não posso passar aqui');
-
 						// will be used in case the bot doesn't find the question
 						await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
 						// console.log('recebi um texto');
@@ -603,14 +601,9 @@ const handler = new MessengerHandler()
 			case 'createIssue': // aka "talkToUs" // will only happen if user clicks on 'Fale Conosco'
 				await context.setState({ issueCreatedMessage: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_created') }); // loading the confirmation message here
 
-				console.log('state do listening', listening[context.session.user.id]);
-
 				if (await listening[context.session.user.id] === true) { // if we are 'listening' we need to aggregate every message the user sends
 					userMessages[context.session.user.id] = `${userMessages[context.session.user.id]}${context.state.whatWasTyped} `;
-					console.log(userMessages[context.session.user.id]);
 				} else { // we are not 'listening' -> it's the first time the user gets here
-					console.log('I am here');
-
 					await context.setState({ issueStartedListening: await loadIssueStarted(context) });
 					await context.sendText(context.state.issueStartedListening);
 					listening[context.session.user.id] = true;
@@ -620,9 +613,10 @@ const handler = new MessengerHandler()
 
 				if (issueTimers[context.session.user.id]) { // check if timer already exists, and delete it if it does
 					clearTimeout(issueTimers[context.session.user.id]);
-					console.log('limpei o timer ');
 					await context.typingOn(); // show user that we are listening
 				}
+
+				console.log('status do posttimerissues', postIssueTimers[context.session.user.id]);
 
 				if (postIssueTimers[context.session.user.id]) { // check if timer already exists, and delete it if it does
 					clearTimeout(postIssueTimers[context.session.user.id]);
@@ -634,7 +628,7 @@ const handler = new MessengerHandler()
 					if (userMessages[context.session.user.id] !== '') { // check if there's a message to send
 						await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id, userMessages[context.session.user.id],
 							context.state.resultParameters);
-						console.log('Enviei ', userMessages[context.session.user.id]);
+						// console.log('Enviei ', userMessages[context.session.user.id]);
 						await context.typingOff();
 					}
 					delete issueTimers[context.session.user.id]; // deleting this timer from timers object
