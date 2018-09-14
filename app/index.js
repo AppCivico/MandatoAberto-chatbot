@@ -31,12 +31,8 @@ function formatReal(int) {
 	return tmp;
 }
 
-// TODO: pollTimer falta enviar o put
-// TODO: add to blacklist should have politician_id and user_id?
-// TODO: remove from blacklist is a different endpoint?
-
 const IssueTimerlimit = 1000 * 20; // 20 seconds -> listening to user doubts -> 1000 * 20
-const MenuTimerlimit = 1000 * 1; // 60 seconds -> waiting to show the initial menu -> 1000 * 60
+const MenuTimerlimit = 1000 * 60; // 60 seconds -> waiting to show the initial menu -> 1000 * 60
 // const pollTimerlimit = 1000 * 60 * 60 * 2; // 2 hours -> waiting to send poll -> 1000 * 60 * 60 * 2
 
 const issueTimers = {};
