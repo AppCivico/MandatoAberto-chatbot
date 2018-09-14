@@ -775,11 +775,11 @@ const handler = new MessengerHandler()
 				await context.sendText('Escreva sua mensagem para nossa equipe:');
 				await context.setState({ dialog: 'prompt', prompt: 'issue' });
 				break;
-			case 'issue_created': {
-				const issue_created_message = await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_created');
-				await context.sendButtonTemplate(issue_created_message.content, [opt.backToBeginning]);
-				await context.setState({ dialog: 'prompt' });
-				break;
+			// case 'issue_created': {
+			// 	const issue_created_message = await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_created');
+			// 	await context.sendButtonTemplate(issue_created_message.content, [opt.backToBeginning]);
+			// 	await context.setState({ dialog: 'prompt' });
+			// 	break;
 			}
 			} // end switch de diálogo
 		}
