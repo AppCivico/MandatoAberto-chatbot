@@ -602,6 +602,7 @@ const handler = new MessengerHandler()
 			case 'createIssue': // aka "talkToUs" // will only happen if user clicks on 'Fale Conosco'
 				if (listening[context.session.user.id] === true) { // if we are 'listening' we need to aggregate every message the user sends
 					userMessages[context.session.user.id] = `${userMessages[context.session.user.id]}${context.state.whatWasTyped} `;
+					console.log(userMessages[context.session.user.id]);
 				} else { // we are not 'listening' -> it's the first time the user gets here
 					await context.setState({ issueStartedListening: await loadIssueStarted(context) });
 					await context.sendText(context.state.issueStartedListening);
