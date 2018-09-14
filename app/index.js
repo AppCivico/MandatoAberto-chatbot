@@ -103,7 +103,7 @@ async function loadIssueStarted(context) {
 
 async function loadIssueSent(context) {
 	const answer = await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_created');
-	if (!answer || (answer && !answer.content) || (answer && answer.content === 'aaa')) {
+	if (!answer || (answer && !answer.content) || (answer && answer.content === '')) {
 		return 'Recebemos sua mensagem. Irei encaminhar para nosso equipe, que irá te responder.';
 	}
 	return answer.content;
