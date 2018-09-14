@@ -322,11 +322,11 @@ const handler = new MessengerHandler()
 						}
 					}
 				} else if (context.event.isText) {
+					await context.setState({ whatWasTyped: context.event.message.text }); // has to be set here because of talkToUs
 					if (!listening[context.session.user.id] || listening[context.session.user.id] === false) { // if we are listening we don't try to interpret the text
 						console.log('não posso passar aqui');
 
 						// will be used in case the bot doesn't find the question
-						await context.setState({ whatWasTyped: context.event.message.text });
 						await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
 						// console.log('recebi um texto');
 						// console.log('IntentNme ', context.state.apiaiResp.result.metadata.intentName);
@@ -624,6 +624,11 @@ const handler = new MessengerHandler()
 					await context.typingOn(); // show user that we are listening
 				}
 
+				if (postIssueTimers[context.session.user.id]) { // check if timer already exists, and delete it if it does
+					clearTimeout(postIssueTimers[context.session.user.id]);
+					console.log('limpei o timer2 ');
+				}
+
 				// create new (or reset) timer for sending message
 				issueTimers[context.session.user.id] = setTimeout(async () => {
 					if (userMessages[context.session.user.id] !== '') { // check if there's a message to send
@@ -636,10 +641,6 @@ const handler = new MessengerHandler()
 					delete listening[context.session.user.id];
 				}, IssueTimerlimit);
 
-				if (postIssueTimers[context.session.user.id]) { // check if timer already exists, and delete it if it does
-					clearTimeout(postIssueTimers[context.session.user.id]);
-					console.log('limpei o timer2 ');
-				}
 				// create new (or reset) timer for confirmation timer (will only be shown if user doesn't change dialog
 				postIssueTimers[context.session.user.id] = setTimeout(async () => {
 					if (!userMessages[context.session.user.id] || userMessages[context.session.user.id] === '') {
