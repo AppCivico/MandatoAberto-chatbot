@@ -216,6 +216,11 @@ async function checkPosition(context) {
 	case 'Voluntário':
 		await context.setState({ dialog: 'participateMenu' });
 		break;
+	case 'FaleConosco':
+		delete userMessages[context.session.user.id]; // deleting last sent message (it was sent already)
+
+		await context.setState({ dialog: 'createIssue' });
+		break;
 	case 'Fallback': // didn't understand what was typed
 		// falls throught
 	default: // any new intent that gets added to dialogflow but it's not added here will also act like 'Fallback'.
@@ -594,7 +599,7 @@ const handler = new MessengerHandler()
 				await context.sendButtonTemplate('Deixe seus contatos para nossa equipe.', [opt.leaveInfo, opt.backToBeginning]);
 				await context.setState({ dialog: 'prompt', dataPrompt: 'email', recipientData: '' });
 				break;
-			case 'createIssue': // will only happen if user clicks on 'Fale Conosco'
+			case 'createIssue': // aka "talkToUs" // will only happen if user clicks on 'Fale Conosco'
 				if (listening[context.session.user.id] === true) { // if we are 'listening' we need to aggregate every message the user sends
 					userMessages[context.session.user.id] = `${userMessages[context.session.user.id]}${context.state.whatWasTyped} `;
 				} else { // we are not 'listening' -> it's the first time the user gets here
