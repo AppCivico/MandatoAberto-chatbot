@@ -93,7 +93,7 @@ async function loadOptionPrompt(context) {
 		const answer = await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'option_prompt');
 		console.log('answer', answer);
 
-		if (!answer || (answer || !answer.content) || answer.content === '') {
+		if (!answer || (answer && !answer.content) || (answer && answer.content === '')) {
 			return 'Que tal escolher uma das opções abaixo? Ou digite sua pergunta e nos mande!';
 		}
 		return answer.content;
