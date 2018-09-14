@@ -591,7 +591,7 @@ const handler = new MessengerHandler()
 						title: 'Divulgar',
 					}]);
 				}
-				await context.sendButtonTemplate('Deixe seus contatos conosco para não perder as novidades.', [opt.leaveInfo, opt.backToBeginning]);
+				await context.sendButtonTemplate('Deixe seus contatos para nossa equipe.', [opt.leaveInfo, opt.backToBeginning]);
 				await context.setState({ dialog: 'prompt', dataPrompt: 'email' });
 				break;
 			case 'createIssue': // will only happen if user clicks on 'Fale Conosco'
