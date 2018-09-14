@@ -323,6 +323,8 @@ const handler = new MessengerHandler()
 					}
 				} else if (context.event.isText) {
 					if (!listening[context.session.user.id] || listening[context.session.user.id] === false) { // if we are listening we don't try to interpret the text
+						console.log('não posso passar aqui');
+
 						// will be used in case the bot doesn't find the question
 						await context.setState({ whatWasTyped: context.event.message.text });
 						await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
