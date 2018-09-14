@@ -103,11 +103,7 @@ async function loadIssueStarted(context) {
 
 async function loadIssueSent(context) {
 	const answer = await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_created');
-	console.log('answer', answer);
-
-	if (!answer || (answer && !answer.content) || (answer && answer.content === 'aaa')) {
-		console.log('in here');
-
+	if (!answer || (answer && !answer.content) || (answer && answer.content === '')) {
 		return 'Recebemos sua mensagem. Irei encaminhar para nosso equipe, que irá te responder.';
 	}
 	return answer.content;
@@ -609,7 +605,6 @@ const handler = new MessengerHandler()
 				break;
 			case 'createIssue': // aka "talkToUs" // will only happen if user clicks on 'Fale Conosco'
 				await context.setState({ issueCreatedMessage: await loadIssueSent(context) }); // loading the confirmation message here
-				console.log('issueCreatedMessage', context.state.issueCreatedMessage);
 
 				if (await listening[context.session.user.id] === true) { // if we are 'listening' we need to aggregate every message the user sends
 					userMessages[context.session.user.id] = `${userMessages[context.session.user.id]}${context.state.whatWasTyped} `;
@@ -648,7 +643,7 @@ const handler = new MessengerHandler()
 						await context.sendButtonTemplate('Não tem nenhuma mensagem para nossa equipe? Se tiver, clique em "Fale Conosco" e escreva sua mensagem.',
 							await checkMenu(context, [opt.contacts, opt.participate, opt.talkToUs]));
 					} else {
-						await context.sendButtonTemplate(context.state.issueCreatedMessage.content,
+						await context.sendButtonTemplate(context.state.issueCreatedMessage,
 							await checkMenu(context, [opt.keepWriting, opt.backToBeginning]));
 					}
 				}, IssueTimerlimit + 2);
