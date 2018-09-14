@@ -605,7 +605,7 @@ const handler = new MessengerHandler()
 
 				console.log('state do listening', listening[context.session.user.id]);
 
-				if (listening[context.session.user.id] === true) { // if we are 'listening' we need to aggregate every message the user sends
+				if (await listening[context.session.user.id] === true) { // if we are 'listening' we need to aggregate every message the user sends
 					userMessages[context.session.user.id] = `${userMessages[context.session.user.id]}${context.state.whatWasTyped} `;
 					console.log(userMessages[context.session.user.id]);
 				} else { // we are not 'listening' -> it's the first time the user gets here
@@ -620,6 +620,7 @@ const handler = new MessengerHandler()
 
 				if (issueTimers[context.session.user.id]) { // check if timer already exists, and delete it if it does
 					clearTimeout(issueTimers[context.session.user.id]);
+					console.log('limpei o timer ');
 					await context.typingOn(); // show user that we are listening
 				}
 
@@ -637,6 +638,7 @@ const handler = new MessengerHandler()
 
 				if (postIssueTimers[context.session.user.id]) { // check if timer already exists, and delete it if it does
 					clearTimeout(postIssueTimers[context.session.user.id]);
+					console.log('limpei o timer2 ');
 				}
 				// create new (or reset) timer for confirmation timer (will only be shown if user doesn't change dialog
 				postIssueTimers[context.session.user.id] = setTimeout(async () => {
