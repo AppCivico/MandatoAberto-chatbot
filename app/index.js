@@ -161,6 +161,9 @@ async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-dec
 	if (!context.state.trajectory) { dialogs = dialogs.filter(obj => obj.payload !== 'trajectory'); }
 	if (!context.state.pollData) { dialogs = dialogs.filter(obj => obj.payload !== 'poll'); }
 	if (!context.state.politicianData.contact) { dialogs = dialogs.filter(obj => obj.payload !== 'contacts'); }
+
+	console.log(context.state.pollData);
+
 	if (dialogs.find(x => x.payload === 'poll')) {
 		if (await checkPollAnswered(context) === true
 		&& (context.state.pollData && context.state.pollData.questions && context.state.pollData.questions.length > 0)) { // already answered so we remove option
