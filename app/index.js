@@ -101,6 +101,13 @@ async function loadIssueStarted(context) {
 	return answer.content;
 }
 
+async function loadIssueSent(context) {
+	const answer = await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_created');
+	if (!answer || (answer && !answer.content) || (answer && answer.content === '')) {
+		return 'Recebemos sua mensagem. Irei encaminhar para nosso equipe, que irá te responder.';
+	}
+	return answer.content;
+}
 // Deve-se indentificar o sexo do representante público e selecionar os artigos (definido e possesivo) adequados
 function getArticles(gender) {
 	if (gender === 'F') {
@@ -597,7 +604,7 @@ const handler = new MessengerHandler()
 				await context.setState({ dialog: 'prompt', dataPrompt: 'email', recipientData: '' });
 				break;
 			case 'createIssue': // aka "talkToUs" // will only happen if user clicks on 'Fale Conosco'
-				await context.setState({ issueCreatedMessage: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_created') }); // loading the confirmation message here
+				await context.setState({ issueCreatedMessage: await loadIssueSent(context) }); // loading the confirmation message here
 
 				if (await listening[context.session.user.id] === true) { // if we are 'listening' we need to aggregate every message the user sends
 					userMessages[context.session.user.id] = `${userMessages[context.session.user.id]}${context.state.whatWasTyped} `;
