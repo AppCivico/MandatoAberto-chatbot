@@ -601,6 +601,8 @@ const handler = new MessengerHandler()
 			case 'createIssue': // aka "talkToUs" // will only happen if user clicks on 'Fale Conosco'
 				await context.setState({ issueCreatedMessage: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_created') }); // loading the confirmation message here
 
+				console.log('state do listening', listening[context.session.user.id]);
+
 				if (listening[context.session.user.id] === true) { // if we are 'listening' we need to aggregate every message the user sends
 					userMessages[context.session.user.id] = `${userMessages[context.session.user.id]}${context.state.whatWasTyped} `;
 					console.log(userMessages[context.session.user.id]);
