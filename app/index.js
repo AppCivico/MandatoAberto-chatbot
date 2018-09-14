@@ -177,7 +177,6 @@ async function checkPosition(context) {
 	case 'Pergunta':
 		await context.setState({ dialog: 'prompt' });
 		await context.setState({ entities: await removeEmptyKeys(context.state.resultParameters) });
-		console.log('as entidades \n\n\n', context.state.entities);
 		if (context.state.entities.length >= 1) { // at least one entity
 			await context.setState({ // getting knowledge base
 				knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.resultParameters),
@@ -185,10 +184,8 @@ async function checkPosition(context) {
 			// before sending the themes we check if there is anything on them, if there isn't we send 'esses assuntos'
 			await context.setState({ currentThemes: await listThemes(context.state.entities) }); // format themes
 			// console.log('currentThemes', context.state.currentThemes);
-			console.log('as themes \n\n\n', context.state.currentThemes);
-			console.log('as knowledge \n\n\n', context.state.knowledge);
-
 			// console.log('knowledge:', context.state.knowledge);
+
 			// check if there's at least one answer in knowledge_base
 			if (context.state.knowledge && context.state.knowledge.knowledge_base && context.state.knowledge.knowledge_base.length >= 1) {
 				await context.sendButtonTemplate('Você está perguntando meu posicionamento sobre ' // confirm themes with user
@@ -200,7 +197,6 @@ async function checkPosition(context) {
 						+ `${context.state.currentThemes}. Irei encaminhar para nossa equipe, está bem?`);
 				await context.sendButtonTemplate(await loadOptionPrompt(context),
 						await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
-				// await context.setState({ currentThemes: '', entities: '' });
 			}
 		} else { // dialogFlow knows it's a question but has no entities //  o você acha do blablabla?
 			await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
@@ -209,7 +205,6 @@ async function checkPosition(context) {
 				+ 'esse tema. Irei encaminhar para nossa equipe, está bem?');
 			await context.sendButtonTemplate(await loadOptionPrompt(context),
 					await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
-			// await context.setState({ currentThemes: '', entities: '' });
 		}
 		break;
 	case 'Saudação':
