@@ -489,10 +489,10 @@ const handler = new MessengerHandler()
 						break;
 					case 'cellphone':
 						if (phoneRegex.test(context.state.cellphone)) {
-							await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
+							console.log('Resultado: \n\n', await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
 								fb_id: context.session.user.id,
 								cellphone: context.state.cellphone,
-							});
+							}));
 						} else {
 							await context.setState({ dataPrompt: '', recipientData: 'cellphonePrompt' });
 							await context.sendText('Desculpe-me, mas seu telefone não parece estar correto. Não esqueça de incluir o DDD. Por exemplo: 1199999-8888');
