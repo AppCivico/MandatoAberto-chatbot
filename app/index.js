@@ -217,8 +217,8 @@ async function checkPosition(context) {
 		await context.setState({ dialog: 'participateMenu' });
 		break;
 	case 'FaleConosco':
-		delete userMessages[context.session.user.id]; // deleting last sent message (it was sent already)
 		await context.setState({ whatWasTyped: '' });
+		delete userMessages[context.session.user.id]; // deleting last sent message (it was sent already)
 		await context.setState({ dialog: 'createIssue' });
 		break;
 	case 'Fallback': // didn't understand what was typed
@@ -297,7 +297,6 @@ const handler = new MessengerHandler()
 						delete userMessages[context.session.user.id]; // deleting last sent message (it was sent already)
 						await context.setState({ dialog: 'createIssue' });
 					} else {
-						console.log('payload => ', context.event.postback.payload);
 						await context.setState({ dialog: context.event.postback.payload });
 					}
 				} else if (context.event.isQuickReply) {
@@ -606,6 +605,8 @@ const handler = new MessengerHandler()
 					userMessages[context.session.user.id] = `${userMessages[context.session.user.id]}${context.state.whatWasTyped} `;
 					console.log(userMessages[context.session.user.id]);
 				} else { // we are not 'listening' -> it's the first time the user gets here
+					console.log('I am here');
+
 					await context.setState({ issueStartedListening: await loadIssueStarted(context) });
 					await context.sendText(context.state.issueStartedListening);
 					listening[context.session.user.id] = true;
