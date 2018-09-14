@@ -457,7 +457,8 @@ const handler = new MessengerHandler()
 				if (context.event.isQuickReply) {
 					if (context.state.dataPrompt === 'email') {
 						await context.setState({ email: context.event.message.quick_reply.payload });
-					} else if (context.state.dataPrompt === 'end') {
+					// } else if (context.state.dataPrompt === 'end') {
+					} else {
 						console.log('test2');
 
 						await context.setState({ cellphone: context.event.message.quick_reply.payload });
