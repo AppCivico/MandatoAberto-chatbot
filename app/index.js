@@ -87,12 +87,8 @@ bot.setInitialState({});
 bot.use(withTyping({ delay: 1000 * 2 }));
 
 async function loadOptionPrompt(context) {
-	console.log('context.state.optionPrompt', context.state.optionPrompt);
-
 	if (!context.state.optionPrompt || context.state.optionPrompt === '') {
 		const answer = await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'option_prompt');
-		console.log('answer', answer);
-
 		if (!answer || (answer && !answer.content) || (answer && answer.content === '')) {
 			return 'Que tal escolher uma das opções abaixo? Ou digite sua pergunta e nos mande!';
 		}
@@ -103,7 +99,7 @@ async function loadOptionPrompt(context) {
 
 async function loadIssueStarted(context) {
 	const answer = await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_started_listening');
-	if (!answer || (answer || !answer.content) || answer.content === '') {
+	if (!answer || (answer && !answer.content) || (answer && answer.content === '')) {
 		return 'Que legal! Digite o que quer dizer abaixo!';
 	}
 	return answer.content;
