@@ -575,7 +575,7 @@ const handler = new MessengerHandler()
 					// if referral.source(CUSTOMER_CHAT_PLUGIN) exists we are outside facebook and shouldn't send votolegal's url
 					if ((context.event.rawEvent.postback && context.event.rawEvent.postback.referral) || (context.event.rawEvent.message && context.event.rawEvent.message.tags
 							&& context.event.rawEvent.message.tags.source && context.event.rawEvent.message.tags.source === 'customer_chat_plugin')) {
-						await context.sendText(`${context.state.participateText}Você já está na nossa página para doar. Se quiser, também poderá divulgar seu apoio!`);
+						await context.sendText(`${context.state.participateText}Você já está na nossa página para doar.`);
 						await context.sendText('Seu apoio é fundamental para nossa campanha! Por isso, cuidamos da segurança de todos os doadores.');
 					} else {
 						await context.setState({ valueLegal: await VotoLegalAPI.getVotoLegalValues(context.state.politicianData.votolegal_integration.votolegal_username) });
