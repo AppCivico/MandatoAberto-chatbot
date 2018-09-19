@@ -196,8 +196,8 @@ async function checkPosition(context) {
 				await context.sendButtonTemplate('Você está perguntando meu posicionamento sobre ' // confirm themes with user
 						+ `${context.state.currentThemes}?`, opt.themeConfirmation);
 			} else { // no answers in knowledge_base (We know the entity but politician doesn't have a position)
-				await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
-					context.state.whatWasTyped, context.state.resultParameters);
+				console.log(await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
+					context.state.whatWasTyped, context.state.resultParameters));
 				await context.sendText(`🤔 Eu ainda não perguntei para ${await getArtigoCargoNome(context)} sobre `
 						+ 'esse assunto. Irei encaminhar para nossa equipe, está bem?');
 				// await context.sendText(`🤔 Eu ainda não perguntei para ${await getArtigoCargoNome(context)} sobre `
