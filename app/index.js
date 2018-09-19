@@ -55,17 +55,17 @@ let areWeListening = true; // eslint-disable-line
 function getRandom(myArray) { return myArray[Math.floor(Math.random() * myArray.length)]; }
 
 // removes every empty intent object and returns the intents as an array
-function removeEmptyKeys(obj) {
-	Object.keys(obj).forEach((key) => {
-		if (obj[key].length === 0) {
-			delete obj[key];
-		}
-		if (obj === 'Falso') {
-			delete obj[key];
-		}
-	});
-	return Object.keys(obj);
-}
+// function removeEmptyKeys(obj) {
+// 	Object.keys(obj).forEach((key) => {
+// 		if (obj[key].length === 0) {
+// 			delete obj[key];
+// 		}
+// 		if (obj === 'Falso') {
+// 			delete obj[key];
+// 		}
+// 	});
+// 	return Object.keys(obj);
+// }
 
 const mapPageToAccessToken = async (pageId) => {
 	const politicianData2 = await MandatoAbertoAPI.getPoliticianData(pageId);
@@ -207,6 +207,8 @@ async function checkPosition(context) {
 		// await context.setState({ entities: context.state.apiaiResp });
 		console.log('apiaiResp', context.state.apiaiResp);
 
+		// todo: send aipiairesp to api, get knowdlege (if there's no intent he will return the main position)
+		// and create an answer model that shows options for the others entities
 		// if (context.state.entities.length >= 1) { // at least one entity
 		await context.setState({ // getting knowledge base
 			knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.apiaiResp),
@@ -348,7 +350,6 @@ const handler = new MessengerHandler()
 			}
 		}
 
-
 		if (context.session) {
 			// if the user interacts while this timer is running we don't need to show the menu anymore
 			if (menuTimers[context.session.user.id]) { clearTimeout(menuTimers[context.session.user.id]); delete menuTimers[context.session.user.id]; }
@@ -363,7 +364,6 @@ const handler = new MessengerHandler()
 				await context.setState({ facebookPlataform: 'MESSENGER' });
 			}
 		}
-
 
 		// Abrindo bot através de comentários e posts
 		// ** no context here **
