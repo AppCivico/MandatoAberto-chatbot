@@ -199,7 +199,9 @@ async function checkPosition(context) {
 				await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
 					context.state.whatWasTyped, context.state.resultParameters);
 				await context.sendText(`🤔 Eu ainda não perguntei para ${await getArtigoCargoNome(context)} sobre `
-						+ `${context.state.currentThemes}. Irei encaminhar para nossa equipe, está bem?`);
+						+ 'esse assunto. Irei encaminhar para nossa equipe, está bem?');
+				// await context.sendText(`🤔 Eu ainda não perguntei para ${await getArtigoCargoNome(context)} sobre `
+				// 		+ `${context.state.currentThemes}. Irei encaminhar para nossa equipe, está bem?`);
 				await context.sendButtonTemplate(await loadOptionPrompt(context),
 						await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
 			}
