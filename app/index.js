@@ -204,44 +204,44 @@ async function checkPosition(context) {
 		console.log('am i am here');
 
 		// await context.setState({ entities: await removeEmptyKeys(context.state.resultParameters) });
-		await context.setState({ entities: context.state.resultParameters });
-		console.log('entities', context.state.entities);
+		// await context.setState({ entities: context.state.apiaiResp });
+		console.log('apiaiResp', context.state.apiaiResp);
 
-		if (context.state.entities.length >= 1) { // at least one entity
-			await context.setState({ // getting knowledge base
-				knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.resultParameters),
-			});
-			console.log('knowledge', context.state.knowledge);
+		// if (context.state.entities.length >= 1) { // at least one entity
+		await context.setState({ // getting knowledge base
+			knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.apiaiResp),
+		});
+		console.log('knowledge', context.state.knowledge);
 
-			// before sending the themes we check if there is anything on them, if there isn't we send 'esses assuntos'
-			await context.setState({ currentThemes: await listThemes(context.state.entities) }); // format themes
-			// console.log('currentThemes', context.state.currentThemes);
-			// console.log('knowledge:', context.state.knowledge);
-			console.log('currentThemes', context.state.currentThemes);
+		// before sending the themes we check if there is anything on them, if there isn't we send 'esses assuntos'
+		await context.setState({ currentThemes: await listThemes(context.state.entities) }); // format themes
+		// console.log('currentThemes', context.state.currentThemes);
+		// console.log('knowledge:', context.state.knowledge);
+		console.log('currentThemes', context.state.currentThemes);
 
 
-			// check if there's at least one answer in knowledge_base
-			if (context.state.knowledge && context.state.knowledge.knowledge_base && context.state.knowledge.knowledge_base.length >= 1) {
-				await context.sendButtonTemplate('Você está perguntando meu posicionamento sobre ' // confirm themes with user
+		// check if there's at least one answer in knowledge_base
+		if (context.state.knowledge && context.state.knowledge.knowledge_base && context.state.knowledge.knowledge_base.length >= 1) {
+			await context.sendButtonTemplate('Você está perguntando meu posicionamento sobre ' // confirm themes with user
 						+ `${context.state.currentThemes}?`, opt.themeConfirmation);
-			} else { // no answers in knowledge_base (We know the entity but politician doesn't have a position)
-				await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
-					context.state.whatWasTyped, context.state.resultParameters);
-				await context.sendText(`🤔 Eu ainda não perguntei para ${await getArtigoCargoNome(context)} sobre `
-						+ 'esse assunto. Irei encaminhar para nossa equipe, está bem?');
-				// await context.sendText(`🤔 Eu ainda não perguntei para ${await getArtigoCargoNome(context)} sobre `
-				// 		+ `${context.state.currentThemes}. Irei encaminhar para nossa equipe, está bem?`);
-				await context.sendButtonTemplate(await loadOptionPrompt(context),
-						await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
-			}
-		} else { // dialogFlow knows it's a question but has no entities //  o você acha do blablabla?
+		} else { // no answers in knowledge_base (We know the entity but politician doesn't have a position)
 			await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
 				context.state.whatWasTyped, context.state.resultParameters);
 			await context.sendText(`🤔 Eu ainda não perguntei para ${await getArtigoCargoNome(context)} sobre `
-					+ 'esse tema. Irei encaminhar para nossa equipe, está bem?');
+						+ 'esse assunto. Irei encaminhar para nossa equipe, está bem?');
+			// await context.sendText(`🤔 Eu ainda não perguntei para ${await getArtigoCargoNome(context)} sobre `
+			// 		+ `${context.state.currentThemes}. Irei encaminhar para nossa equipe, está bem?`);
 			await context.sendButtonTemplate(await loadOptionPrompt(context),
-					await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
+						await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
 		}
+		// } else { // dialogFlow knows it's a question but has no entities //  o você acha do blablabla?
+		// 	await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
+		// 		context.state.whatWasTyped, context.state.resultParameters);
+		// 	await context.sendText(`🤔 Eu ainda não perguntei para ${await getArtigoCargoNome(context)} sobre `
+		// 			+ 'esse tema. Irei encaminhar para nossa equipe, está bem?');
+		// 	await context.sendButtonTemplate(await loadOptionPrompt(context),
+		// 			await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
+		// }
 		break;
 	}
 }
@@ -339,9 +339,8 @@ const handler = new MessengerHandler()
 					if (!listening[context.session.user.id] || listening[context.session.user.id] === false) { // if we are listening we don't try to interpret the text
 						// will be used in case the bot doesn't find the question
 						await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
-						console.log('apiaiResp ', context.state.apiaiResp);
 
-						await context.setState({ resultParameters: context.state.apiaiResp.result.parameters });
+						// await context.setState({ resultParameters: context.state.apiaiResp.result.parameters });
 						await context.setState({ intentName: context.state.apiaiResp.result.metadata.intentName });
 						await checkPosition(context);
 					} // end if listening
