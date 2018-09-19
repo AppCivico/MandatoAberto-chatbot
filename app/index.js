@@ -176,7 +176,7 @@ async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-dec
 }
 
 async function checkPosition(context) {
-	// await context.setState({ dialog: 'prompt' });
+	await context.setState({ dialog: 'prompt' });
 
 	switch (context.state.intentName) {
 	case 'Saudação':
@@ -203,7 +203,6 @@ async function checkPosition(context) {
 	default: // default acts for every intent - position
 		console.log('am i am here');
 
-		await context.setState({ dialog: 'prompt' });
 		await context.setState({ entities: await removeEmptyKeys(context.state.resultParameters) });
 		console.log('entities', context.state.entities);
 
