@@ -339,8 +339,7 @@ const handler = new MessengerHandler()
 					if (!listening[context.session.user.id] || listening[context.session.user.id] === false) { // if we are listening we don't try to interpret the text
 						// will be used in case the bot doesn't find the question
 						await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
-						// console.log('recebi um texto');
-						// console.log('IntentNme ', context.state.apiaiResp.result.metadata.intentName);
+						console.log('apiaiResp ', context.state.apiaiResp);
 
 						await context.setState({ resultParameters: context.state.apiaiResp.result.parameters });
 						await context.setState({ intentName: context.state.apiaiResp.result.metadata.intentName });
