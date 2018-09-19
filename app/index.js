@@ -203,7 +203,8 @@ async function checkPosition(context) {
 	default: // default acts for every intent - position
 		console.log('am i am here');
 
-		await context.setState({ entities: await removeEmptyKeys(context.state.resultParameters) });
+		// await context.setState({ entities: await removeEmptyKeys(context.state.resultParameters) });
+		await context.setState({ entities: context.state.resultParameters });
 		console.log('entities', context.state.entities);
 
 		if (context.state.entities.length >= 1) { // at least one entity
