@@ -313,7 +313,7 @@ const handler = new MessengerHandler()
 
 						if (currentTheme && (currentTheme.answer || (currentTheme.saved_attachment_type !== null && currentTheme.saved_attachment_id !== null))) {
 							if (currentTheme.answer) { // if there's a text asnwer we send it
-								await context.sendText(`${context.state.types[number]}: ${currentTheme.answer}`);
+								await context.sendText(`${capitalize(context.state.types[number])}: ${currentTheme.answer}`);
 							}
 							if (currentTheme.saved_attachment_type === 'image') { // if attachment is image
 								await context.sendImage({ attachment_id: currentTheme.saved_attachment_id });
