@@ -82,6 +82,10 @@ bot.setInitialState({});
 
 bot.use(withTyping({ delay: 1000 * 2 }));
 
+function capitalize(s) {
+	return s && s[0].toUpperCase() + s.slice(1);
+}
+
 async function loadOptionPrompt(context) {
 	if (!context.state.optionPrompt || context.state.optionPrompt === '') {
 		const answer = await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'option_prompt');
@@ -330,7 +334,7 @@ const handler = new MessengerHandler()
 								context.state.types.forEach((element, index) => {
 									options.push({
 										type: 'postback',
-										title: element,
+										title: capitalize(element),
 										payload: `themeYes${index}`,
 									});
 								});
