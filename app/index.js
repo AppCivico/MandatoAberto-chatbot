@@ -306,6 +306,15 @@ const handler = new MessengerHandler()
 						await context.setState({ answer: await context.state.knowledge.knowledge_base.find(x => x.type === context.state.types[0]) });
 						console.log('answer', context.state.answer);
 
+						if (context.state.answer) {
+							await context.sendText(`${context.state.types[0]}: ${context.state.answer.answer}`);
+							context.state.types.shift();
+							console.log(context.state.types);
+						} else {
+							await context.sendButtonTemplate('Deu erro',
+								await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
+						}
+
 
 						// await context.setState({ trigger: false });
 						// /* eslint-disable */
