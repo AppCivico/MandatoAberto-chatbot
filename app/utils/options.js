@@ -63,7 +63,7 @@ module.exports = {
 		{
 			type: 'postback',
 			title: 'Sim',
-			payload: 'themeYes',
+			payload: 'themeYes0',
 		},
 		{
 			type: 'postback',

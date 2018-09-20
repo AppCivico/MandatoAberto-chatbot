@@ -307,6 +307,8 @@ const handler = new MessengerHandler()
 					if (listening[context.session.user.id]) { delete listening[context.session.user.id]; }
 					// user confirms that theme(s) is/are correct
 					if (context.event.postback.payload.slice(0, 8) === 'themeYes') {
+						console.log('Payload', context.event.postback.payload);
+
 						const aaa = context.event.postback.payload.slice(9);
 						console.log('before number', aaa);
 
