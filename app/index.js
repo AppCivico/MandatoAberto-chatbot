@@ -175,6 +175,14 @@ async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-dec
 	return dialogs;
 }
 
+async function getOurTypes(KnowledgeBase) {
+	const result = [];
+	KnowledgeBase.forEach(async (element) => {
+		result.push(element.type);
+	});
+
+	return result;
+}
 // getting the type
 async function checkTypes(entities, knowdlege) {
 	const typesToCheck = ['posicionamento', 'proposta', 'historico'];
@@ -228,7 +236,6 @@ async function checkPosition(context) {
 
 		await context.setState({ entities: await removeEmptyKeys(context.state.resultParameters) });
 		// console.log('apiaiResp', context.state.apiaiResp);
-		console.log('entities', context.state.entities);
 
 
 		// todo: send aipiairesp to api, get knowdlege (if there's no intent he will return the main position)
@@ -246,7 +253,13 @@ async function checkPosition(context) {
 
 		// check if there's at least one answer in knowledge_base
 		if (context.state.knowledge && context.state.knowledge.knowledge_base && context.state.knowledge.knowledge_base.length >= 1) {
-			await context.setState({ types: await checkTypes(context.state.entities) });
+			await context.setState({ typesWeHave: await getOurTypes(context.state.knowledge.knowledge_base) }); // storing the types we have on
+			console.log('entities', context.state.entities);
+			console.log('typesWeHave', context.state.typesWeHave);
+
+			await context.setState({ types: await checkTypes(context.state.entities, context.state.typesWeHave) });
+			console.log('types', context.state.types);
+
 
 			// await context.sendButtonTemplate('Você está perguntando meu posicionamento sobre ' // confirm themes with user
 			// 			+ `${context.state.currentThemes}?`, opt.themeConfirmation);
