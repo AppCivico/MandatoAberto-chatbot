@@ -307,6 +307,8 @@ const handler = new MessengerHandler()
 					if (listening[context.session.user.id]) { delete listening[context.session.user.id]; }
 					// user confirms that theme(s) is/are correct
 					if (context.event.postback.payload.slice(0, 8) === 'themeYes') {
+						console.log('before number', context.event.postback.payload.slice(9, -1));
+
 						const number = context.event.postback.payload.slice(9, -1) ? context.event.postback.payload.slice(9, -1) : 0;
 						const currentTheme = await context.state.knowledge.knowledge_base.find(x => x.type === context.state.types[number]);
 						console.log('currentTheme', currentTheme);
