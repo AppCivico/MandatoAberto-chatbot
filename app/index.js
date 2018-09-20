@@ -11,7 +11,7 @@ const MandatoAbertoAPI = require('./mandatoaberto_api.js');
 const VotoLegalAPI = require('./votolegal_api.js');
 const Articles = require('./utils/articles.js');
 const opt = require('./utils/options');
-const dictionary = require('./utils/dictionary');
+// const dictionary = require('./utils/dictionary');
 const audio = require('./utils/audio');
 
 const apiai = dialogFlow(process.env.DIALOGFLOW_TOKEN);
@@ -303,38 +303,42 @@ const handler = new MessengerHandler()
 					if (listening[context.session.user.id]) { delete listening[context.session.user.id]; }
 					// user confirms that theme(s) is/are correct
 					if (context.event.postback.payload === 'themeYes') {
-						await context.setState({ trigger: false });
-						/* eslint-disable */
-						for (const [element] of Object.entries(context.state.resultParameters)) { // eslint-disable-line no-restricted-syntax
-							const currentTheme = await context.state.knowledge.knowledge_base.find(x => x.entities[0].tag === element);
-							// check if there's either a text answer or a media attachment linked to current theme
-							if (currentTheme && (currentTheme.answer || (currentTheme.saved_attachment_type !== null && currentTheme.saved_attachment_id !== null))) {
-								if (currentTheme.answer) { // if there's a text asnwer we send it
-									await context.sendText(`Sobre ${dictionary[element].toLowerCase()}: ${currentTheme.answer}`);
-								}
-								if (currentTheme.saved_attachment_type === 'image') { // if attachment is image
-									await context.sendImage({ attachment_id: currentTheme.saved_attachment_id });
-								} else if (currentTheme.saved_attachment_type === 'video') { // if attachment is video
-									await context.sendVideo({ attachment_id: currentTheme.saved_attachment_id });
-								} else if (currentTheme.saved_attachment_type === 'audio') { // if attachment is audio
-									await context.sendAudio({ attachment_id: currentTheme.saved_attachment_id });
-								}
-							} else { // we couldn't find neither text answer nor attachment
-								await context.sendText(`Sobre ${dictionary[element].toLowerCase()} fico te devendo uma resposta. `
-									+ 'Mas já entou enviando para nossas equipe e estaremos te respondendo em breve.');
-								if (context.state.trigger === false) {
-									await context.setState({ trigger: true });
-									await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
-										context.state.whatWasTyped, context.state.resultParameters);
-								}
-							}
-						}
-						/* eslint-enable */
-						await context.sendButtonTemplate(await loadOptionPrompt(context),
-							await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
-						await context.setState({ // cleaning up
-							apiaiResp: '', knowledge: '', themes: '', whatWasTyped: '', trigger: '',
-						});
+						await context.setState({ answer: await context.state.knowledge.knowledge_base.find(x => x.types === context.state.types[0]) });
+						console.log('answer', context.state.answer);
+
+
+						// await context.setState({ trigger: false });
+						// /* eslint-disable */
+						// for (const [element] of Object.entries(context.state.resultParameters)) { // eslint-disable-line no-restricted-syntax
+						// 	const currentTheme = await context.state.knowledge.knowledge_base.find(x => x.entities[0].tag === element);
+						// 	// check if there's either a text answer or a media attachment linked to current theme
+						// 	if (currentTheme && (currentTheme.answer || (currentTheme.saved_attachment_type !== null && currentTheme.saved_attachment_id !== null))) {
+						// 		if (currentTheme.answer) { // if there's a text asnwer we send it
+						// 			await context.sendText(`Sobre ${dictionary[element].toLowerCase()}: ${currentTheme.answer}`);
+						// 		}
+						// 		if (currentTheme.saved_attachment_type === 'image') { // if attachment is image
+						// 			await context.sendImage({ attachment_id: currentTheme.saved_attachment_id });
+						// 		} else if (currentTheme.saved_attachment_type === 'video') { // if attachment is video
+						// 			await context.sendVideo({ attachment_id: currentTheme.saved_attachment_id });
+						// 		} else if (currentTheme.saved_attachment_type === 'audio') { // if attachment is audio
+						// 			await context.sendAudio({ attachment_id: currentTheme.saved_attachment_id });
+						// 		}
+						// 	} else { // we couldn't find neither text answer nor attachment
+						// 		await context.sendText(`Sobre ${dictionary[element].toLowerCase()} fico te devendo uma resposta. `
+						// 			+ 'Mas já entou enviando para nossas equipe e estaremos te respondendo em breve.');
+						// 		if (context.state.trigger === false) {
+						// 			await context.setState({ trigger: true });
+						// 			await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
+						// 				context.state.whatWasTyped, context.state.resultParameters);
+						// 		}
+						// 	}
+						// }
+						// /* eslint-enable */
+						// await context.sendButtonTemplate(await loadOptionPrompt(context),
+						// 	await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
+						// await context.setState({ // cleaning up
+						// 	apiaiResp: '', knowledge: '', themes: '', whatWasTyped: '', trigger: '',
+						// });
 					} else if (context.event.postback.payload.slice(0, 6) === 'answer') {
 						await context.setState({ question: context.state.knowledge.knowledge_base.find(x => x.id === parseInt(context.event.postback.payload.replace('answer', ''), 10)) });
 						await context.setState({ dialog: 'showAnswer' });
