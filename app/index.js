@@ -310,7 +310,7 @@ const handler = new MessengerHandler()
 						const number = context.event.postback.payload.replace('themeYes', '');
 
 						const currentTheme = await context.state.knowledge.knowledge_base.find(x => x.type === context.state.types[number]);
-						console.log('currentTheme', currentTheme);
+						// console.log('currentTheme', currentTheme);
 
 						if (currentTheme && (currentTheme.answer || (currentTheme.saved_attachment_type !== null && currentTheme.saved_attachment_id !== null))) {
 							if (currentTheme.answer) { // if there's a text asnwer we send it
@@ -338,6 +338,12 @@ const handler = new MessengerHandler()
 										title: capitalize(element),
 										payload: `themeYes${index}`,
 									});
+								});
+
+								options.push({
+									type: 'postback',
+									title: 'Voltar',
+									payload: 'mainMenu',
 								});
 								await context.sendButtonTemplate(`Deseja saber mais sobre ${context.state.intentName.toLowerCase()}?`, options);
 								console.log('options', options);
