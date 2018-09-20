@@ -55,17 +55,17 @@ let areWeListening = true; // eslint-disable-line
 function getRandom(myArray) { return myArray[Math.floor(Math.random() * myArray.length)]; }
 
 // removes every empty intent object and returns the intents as an array
-// function removeEmptyKeys(obj) {
-// 	Object.keys(obj).forEach((key) => {
-// 		if (obj[key].length === 0) {
-// 			delete obj[key];
-// 		}
-// 		if (obj === 'Falso') {
-// 			delete obj[key];
-// 		}
-// 	});
-// 	return Object.keys(obj);
-// }
+function removeEmptyKeys(obj) {
+	Object.keys(obj).forEach((key) => {
+		if (obj[key].length === 0) {
+			delete obj[key];
+		}
+		if (obj === 'Falso') {
+			delete obj[key];
+		}
+	});
+	return Object.keys(obj);
+}
 
 const mapPageToAccessToken = async (pageId) => {
 	const politicianData2 = await MandatoAbertoAPI.getPoliticianData(pageId);
@@ -124,18 +124,18 @@ async function getArtigoCargoNome(context) {
 }
 
 
-async function listThemes(obj) {
-	let themes = [];
-	await Object.keys(obj).forEach(async (element) => {
-		if (dictionary[obj[element]]) { // checks if there is a dictionary entry for element
-			themes.push(dictionary[obj[element]].toLowerCase());
-		} else {
-			themes.push(obj[element].toLowerCase().replace('_', ' ')); // remove upper case and underscore just to be safe
-		}
-	});
-	themes = themes.sort().join(', ').replace(/,(?=[^,]*$)/, ' e');
-	return themes.length > 0 ? themes : 'esses assuntos';
-}
+// async function listThemes(obj) {
+// 	let themes = [];
+// 	await Object.keys(obj).forEach(async (element) => {
+// 		if (dictionary[obj[element]]) { // checks if there is a dictionary entry for element
+// 			themes.push(dictionary[obj[element]].toLowerCase());
+// 		} else {
+// 			themes.push(obj[element].toLowerCase().replace('_', ' ')); // remove upper case and underscore just to be safe
+// 		}
+// 	});
+// 	themes = themes.sort().join(', ').replace(/,(?=[^,]*$)/, ' e');
+// 	return themes.length > 0 ? themes : 'esses assuntos';
+// }
 
 async function checkPollAnswered(context) {
 	const recipientAnswer = await MandatoAbertoAPI.getPollAnswer(context.session.user.id, context.state.pollData.id);
@@ -175,6 +175,27 @@ async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-dec
 	return dialogs;
 }
 
+// getting the type
+async function checkTypes(entities, knowdlege) {
+	const typesToCheck = ['posicionamento', 'proposta', 'historico'];
+	const result = [];
+	// check if we have the type the user wants to know and add it to result
+	typesToCheck.forEach(((element) => {
+		if (entities.includes(element) && knowdlege.includes(element)) {
+			result.push(element);
+		}
+	}));
+
+	// check if we have a correlated answer that the user didn't ask for
+	typesToCheck.forEach(((element) => {
+		if (knowdlege.includes(element) && !result.includes(element)) {
+			result.push(element);
+		}
+	}));
+
+	return result;
+}
+
 async function checkPosition(context) {
 	await context.setState({ dialog: 'prompt' });
 
@@ -194,6 +215,8 @@ async function checkPosition(context) {
 		await context.setState({ dialog: 'createIssue' });
 		break;
 	case 'Fallback': // didn't understand what was typed
+		console.log('**** caí no fallback *****');
+
 		await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
 			context.state.whatWasTyped, context.state.resultParameters);
 		await context.sendText(getRandom(opt.frases_fallback));
@@ -203,9 +226,10 @@ async function checkPosition(context) {
 	default: // default acts for every intent - position
 		console.log('i am here');
 
-		// await context.setState({ entities: await removeEmptyKeys(context.state.resultParameters) });
-		// await context.setState({ entities: context.state.apiaiResp });
-		console.log('apiaiResp', context.state.apiaiResp);
+		await context.setState({ entities: await removeEmptyKeys(context.state.resultParameters) });
+		// console.log('apiaiResp', context.state.apiaiResp);
+		console.log('entities', context.state.entities);
+
 
 		// todo: send aipiairesp to api, get knowdlege (if there's no intent he will return the main position)
 		// and create an answer model that shows options for the others entities
@@ -216,23 +240,21 @@ async function checkPosition(context) {
 		console.log('knowledge', context.state.knowledge);
 
 		// before sending the themes we check if there is anything on them, if there isn't we send 'esses assuntos'
-		await context.setState({ currentThemes: await listThemes(context.state.entities) }); // format themes
+		// await context.setState({ currentThemes: await listThemes(context.state.entities) }); // format themes
 		// console.log('currentThemes', context.state.currentThemes);
-		// console.log('knowledge:', context.state.knowledge);
-		console.log('currentThemes', context.state.currentThemes);
 
 
 		// check if there's at least one answer in knowledge_base
 		if (context.state.knowledge && context.state.knowledge.knowledge_base && context.state.knowledge.knowledge_base.length >= 1) {
-			await context.sendButtonTemplate('Você está perguntando meu posicionamento sobre ' // confirm themes with user
-						+ `${context.state.currentThemes}?`, opt.themeConfirmation);
+			await context.setState({ types: await checkTypes(context.state.entities) });
+
+			// await context.sendButtonTemplate('Você está perguntando meu posicionamento sobre ' // confirm themes with user
+			// 			+ `${context.state.currentThemes}?`, opt.themeConfirmation);
 		} else { // no answers in knowledge_base (We know the entity but politician doesn't have a position)
 			await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
 				context.state.whatWasTyped, context.state.resultParameters);
 			await context.sendText(`🤔 Eu ainda não perguntei para ${await getArtigoCargoNome(context)} sobre `
 						+ 'esse assunto. Irei encaminhar para nossa equipe, está bem?');
-			// await context.sendText(`🤔 Eu ainda não perguntei para ${await getArtigoCargoNome(context)} sobre `
-			// 		+ `${context.state.currentThemes}. Irei encaminhar para nossa equipe, está bem?`);
 			await context.sendButtonTemplate(await loadOptionPrompt(context),
 						await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
 		}
@@ -341,10 +363,9 @@ const handler = new MessengerHandler()
 					if (!listening[context.session.user.id] || listening[context.session.user.id] === false) { // if we are listening we don't try to interpret the text
 						// will be used in case the bot doesn't find the question
 						await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
-						console.log('apiaiResp', context.state.apiaiResp);
 
-						// await context.setState({ resultParameters: context.state.apiaiResp.result.parameters });
-						await context.setState({ intentName: context.state.apiaiResp.result.metadata.intentName });
+						await context.setState({ resultParameters: context.state.apiaiResp.result.parameters }); // getting the entities
+						await context.setState({ intentName: context.state.apiaiResp.result.metadata.intentName }); // getting the intent
 						await checkPosition(context);
 					} // end if listening
 				} // end if isText
