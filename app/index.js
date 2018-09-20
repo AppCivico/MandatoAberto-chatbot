@@ -303,16 +303,29 @@ const handler = new MessengerHandler()
 					if (listening[context.session.user.id]) { delete listening[context.session.user.id]; }
 					// user confirms that theme(s) is/are correct
 					if (context.event.postback.payload === 'themeYes') {
-						await context.setState({ answer: await context.state.knowledge.knowledge_base.find(x => x.type === context.state.types[0]) });
-						console.log('answer', context.state.answer);
+						const currentTheme = await context.state.knowledge.knowledge_base.find(x => x.type === context.state.types[0]);
+						console.log('currentTheme', context.state.currentTheme);
 
-						if (context.state.answer) {
-							await context.sendText(`${context.state.types[0]}: ${context.state.answer.answer}`);
+						if (currentTheme && (currentTheme.answer || (currentTheme.saved_attachment_type !== null && currentTheme.saved_attachment_id !== null))) {
+							if (currentTheme.answer) { // if there's a text asnwer we send it
+								await context.sendText(`${context.state.types[0]}: ${currentTheme.answer}`);
+							}
+							if (currentTheme.saved_attachment_type === 'image') { // if attachment is image
+								await context.sendImage({ attachment_id: currentTheme.saved_attachment_id });
+							}
+							if (currentTheme.saved_attachment_type === 'video') { // if attachment is video
+								await context.sendVideo({ attachment_id: currentTheme.saved_attachment_id });
+							}
+							if (currentTheme.saved_attachment_type === 'audio') { // if attachment is audio
+								await context.sendAudio({ attachment_id: currentTheme.saved_attachment_id });
+							}
 							context.state.types.shift();
 							console.log(context.state.types);
-						} else {
-							await context.sendButtonTemplate('Deu erro',
-								await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
+						} else { // we couldn't find neither text answer nor attachment (This is an error and it shouldn't happen)
+							await context.sendText('Parece que fico te devendo essa resposta. '
+									+ 'Mas já entou enviando para nossas equipe e estaremos te respondendo em breve.');
+							await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
+								context.state.whatWasTyped, context.state.resultParameters);
 						}
 
 
