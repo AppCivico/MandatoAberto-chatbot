@@ -321,21 +321,22 @@ const handler = new MessengerHandler()
 								await context.sendAudio({ attachment_id: currentTheme.saved_attachment_id });
 							}
 							// building the menu
-							context.state.types.shift();
+							// context.state.types.shift();
 							if (context.state.types.length === 0) { // we don't have anymore type of answer (or the user already clicked throught them all)
 								await context.sendButtonTemplate(await loadOptionPrompt(context),
 									await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
 							} else {
 								const options = [];
-								context.state.types.forEach((element) => {
+								context.state.types.forEach((element, index) => {
 									options.push({
 										type: 'postback',
 										title: element,
-										payload: 'themeYes',
+										payload: `themeYes${index}`,
 									});
 								});
+								console.log('options', options);
 							}
-							console.log(context.state.types);
+							console.log('types', context.state.types);
 						} else { // we couldn't find neither text answer nor attachment (This is an error and it shouldn't happen)
 							await context.sendText('Parece que fico te devendo essa resposta. '
 									+ 'Mas já entou enviando para nossas equipe e estaremos te respondendo em breve.');
