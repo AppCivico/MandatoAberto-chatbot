@@ -319,7 +319,12 @@ const handler = new MessengerHandler()
 							if (currentTheme.saved_attachment_type === 'audio') { // if attachment is audio
 								await context.sendAudio({ attachment_id: currentTheme.saved_attachment_id });
 							}
+							// building the menu
 							context.state.types.shift();
+							if (context.state.types.length === 0) { // we don't have anymore type of answer (or the user already clicked throught them all)
+								await context.sendButtonTemplate(await loadOptionPrompt(context),
+									await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
+							}
 							console.log(context.state.types);
 						} else { // we couldn't find neither text answer nor attachment (This is an error and it shouldn't happen)
 							await context.sendText('Parece que fico te devendo essa resposta. '
