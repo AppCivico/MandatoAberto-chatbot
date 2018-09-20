@@ -334,6 +334,7 @@ const handler = new MessengerHandler()
 										payload: `themeYes${index}`,
 									});
 								});
+								await context.sendButtonTemplate(`Deseja saber mais sobre ${context.state.intentName.toLowerCase()}?`, options);
 								console.log('options', options);
 							}
 							console.log('types', context.state.types);
