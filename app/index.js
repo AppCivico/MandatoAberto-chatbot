@@ -303,7 +303,7 @@ const handler = new MessengerHandler()
 					if (listening[context.session.user.id]) { delete listening[context.session.user.id]; }
 					// user confirms that theme(s) is/are correct
 					if (context.event.postback.payload === 'themeYes') {
-						await context.setState({ answer: await context.state.knowledge.knowledge_base.find(x => x.types === context.state.types[0]) });
+						await context.setState({ answer: await context.state.knowledge.knowledge_base.find(x => x.type === context.state.types[0]) });
 						console.log('answer', context.state.answer);
 
 
