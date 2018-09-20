@@ -310,6 +310,8 @@ const handler = new MessengerHandler()
 						console.log('before number', context.event.postback.payload.slice(9));
 
 						const number = context.event.postback.payload.slice(9) ? context.event.postback.payload.slice(9) : 0;
+						console.log('number', number);
+
 						const currentTheme = await context.state.knowledge.knowledge_base.find(x => x.type === context.state.types[number]);
 						console.log('currentTheme', currentTheme);
 
