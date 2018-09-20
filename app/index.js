@@ -307,11 +307,7 @@ const handler = new MessengerHandler()
 					if (listening[context.session.user.id]) { delete listening[context.session.user.id]; }
 					// user confirms that theme(s) is/are correct
 					if (context.event.postback.payload.slice(0, 8) === 'themeYes') {
-						const aaa = context.event.postback.payload.replace('themeYes', '');
-						console.log('before number', aaa);
-
-						const number = context.event.postback.payload.slice(9) ? context.event.postback.payload.slice(9) : 0;
-						console.log('number', number);
+						const number = context.event.postback.payload.replace('themeYes', '');
 
 						const currentTheme = await context.state.knowledge.knowledge_base.find(x => x.type === context.state.types[number]);
 						console.log('currentTheme', currentTheme);
@@ -330,7 +326,7 @@ const handler = new MessengerHandler()
 								await context.sendAudio({ attachment_id: currentTheme.saved_attachment_id });
 							}
 							// building the menu
-							// context.state.types.shift();
+							context.state.types.splice(number, 1);
 							if (context.state.types.length === 0) { // we don't have anymore type of answer (or the user already clicked throught them all)
 								await context.sendButtonTemplate(await loadOptionPrompt(context),
 									await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
