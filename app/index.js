@@ -201,7 +201,7 @@ async function checkPosition(context) {
 			await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
 		break;
 	default: // default acts for every intent - position
-		console.log('am i am here');
+		console.log('i am here');
 
 		// await context.setState({ entities: await removeEmptyKeys(context.state.resultParameters) });
 		// await context.setState({ entities: context.state.apiaiResp });
@@ -341,6 +341,7 @@ const handler = new MessengerHandler()
 					if (!listening[context.session.user.id] || listening[context.session.user.id] === false) { // if we are listening we don't try to interpret the text
 						// will be used in case the bot doesn't find the question
 						await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
+						console.log('apiaiResp', context.state.apiaiResp);
 
 						// await context.setState({ resultParameters: context.state.apiaiResp.result.parameters });
 						await context.setState({ intentName: context.state.apiaiResp.result.metadata.intentName });
