@@ -344,7 +344,7 @@ const handler = new MessengerHandler()
 								context.state.types.forEach((element, index) => {
 									options.push({
 										type: 'postback',
-										title: `Sobre: ${capitalize(element)}`,
+										title: `${capitalize(element)}`,
 										payload: `themeYes${index}`,
 									});
 								});
