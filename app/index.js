@@ -11,7 +11,7 @@ const MandatoAbertoAPI = require('./mandatoaberto_api.js');
 const VotoLegalAPI = require('./votolegal_api.js');
 const Articles = require('./utils/articles.js');
 const opt = require('./utils/options');
-// const dictionary = require('./utils/dictionary');
+const dictionary = require('./utils/dictionary');
 const audio = require('./utils/audio');
 
 const apiai = dialogFlow(process.env.DIALOGFLOW_TOKEN);
@@ -141,6 +141,10 @@ async function getArtigoCargoNome(context) {
 // 	return themes.length > 0 ? themes : 'esses assuntos';
 // }
 
+async function intent_human_name (name) {
+    return dictionary[name];
+}
+
 async function checkPollAnswered(context) {
 	const recipientAnswer = await MandatoAbertoAPI.getPollAnswer(context.session.user.id, context.state.pollData.id);
 	if (recipientAnswer.recipient_answered >= 1) {
@@ -268,8 +272,10 @@ async function checkPosition(context) {
 			await context.setState({ types: await checkTypes(context.state.entities, context.state.typesWeHave) });
 			console.log('types', context.state.types);
 
+            let humanName = intent_human_name(context.state.intentName.toLowerCase());
+
 			await context.sendButtonTemplate(`Você está perguntando ${await getTypeText(context.state.types[0])} sobre `// confirm themes with user
-				+ `${context.state.intentName.toLowerCase()}?`, opt.themeConfirmation);
+				+ `${humanName}?`, opt.themeConfirmation);
 		} else { // no answers in knowledge_base (We know the entity but politician doesn't have a position)
 			await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
 				context.state.whatWasTyped, context.state.resultParameters);
