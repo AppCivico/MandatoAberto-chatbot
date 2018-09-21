@@ -142,7 +142,6 @@ async function getArtigoCargoNome(context) {
 // }
 
 async function intent_human_name (name) {
-    console.log(dictionary[name]);
     return dictionary[name];
 }
 
@@ -273,7 +272,7 @@ async function checkPosition(context) {
 			await context.setState({ types: await checkTypes(context.state.entities, context.state.typesWeHave) });
 			console.log('types', context.state.types);
 
-            let humanName = intent_human_name(context.state.intentName.toLowerCase());
+            let humanName = await intent_human_name(context.state.intentName.toLowerCase());
 
 			await context.sendButtonTemplate(`Você está perguntando ${await getTypeText(context.state.types[0])} sobre `// confirm themes with user
 				+ `${humanName}?`, opt.themeConfirmation);
