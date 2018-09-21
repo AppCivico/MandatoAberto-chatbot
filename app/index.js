@@ -142,6 +142,7 @@ async function getArtigoCargoNome(context) {
 // }
 
 async function intent_human_name (name) {
+    console.log(dictionary[name]);
     return dictionary[name];
 }
 
