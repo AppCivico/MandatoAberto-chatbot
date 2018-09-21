@@ -690,7 +690,7 @@ const handler = new MessengerHandler()
 						});
 						await context.sendButtonTemplate(`${context.state.participateText} Apoie nossa campanha de arrecadação.`, [{
 							type: 'web_url',
-							url: `${context.state.politicianData.votolegal_integration.votolegal_url}/#doar`,
+							url: `${context.state.politicianData.votolegal_integration.votolegal_url}`,
 							title: 'Quero doar!',
 						}]);
 					}
