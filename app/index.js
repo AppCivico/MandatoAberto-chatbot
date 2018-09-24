@@ -191,7 +191,7 @@ async function getOurTypes(KnowledgeBase) {
 }
 // getting the type
 async function checkTypes(entities, knowdlege) {
-	const typesToCheck = ['posicionamento', 'proposta', 'histórico'];
+	const typesToCheck = ['Posicionamento', 'Proposta', 'Histórico'];
 	const result = [];
 	if (entities) {
 	// check if we have the type the user wants to know and add it to result
