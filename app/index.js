@@ -206,7 +206,7 @@ async function checkTypes(entities, knowdlege) {
 
 	if (entities && entities !== '') { // string exists and isn't empty
 		if (typesToCheck.includes(entities.toLowerCase())) {
-			result.push(entities);
+			result.push(entities.toLowerCase());
 		}
 	}
 	// check if we have a correlated answer that the user didn't ask for
