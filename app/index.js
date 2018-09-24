@@ -11,7 +11,7 @@ const MandatoAbertoAPI = require('./mandatoaberto_api.js');
 const VotoLegalAPI = require('./votolegal_api.js');
 const Articles = require('./utils/articles.js');
 const opt = require('./utils/options');
-// const dictionary = require('./utils/dictionary');
+const dictionary = require('./utils/dictionary');
 const audio = require('./utils/audio');
 
 const apiai = dialogFlow(process.env.DIALOGFLOW_TOKEN);
@@ -166,8 +166,16 @@ async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-dec
 	return dialogs;
 }
 
+function getDictionary(word) {
+	const result = dictionary[word.toLowerCase()];
+	if (result) {
+		return result;
+	}
+	return word.toLowerCase();
+}
+
 // removes every empty intent object and returns the object
-function removeEmptyKeys(obj) {
+async function removeEmptyKeys(obj) {
 	Object.keys(obj).forEach((key) => {
 		if (obj[key].length === 0) {
 			delete obj[key];
@@ -223,7 +231,7 @@ async function checkTypes(entities, knowdlege) {
 	return result;
 }
 
-// preparetes the text to be shown
+// preparets the text to be shown
 async function getTypeText(type) { // eslint-disable-line no-unused-vars
 	if (type === 'proposta') {
 		return 'minha proposta';
@@ -277,7 +285,7 @@ async function checkPosition(context) {
 			console.log('types', context.state.types);
 
 			await context.sendButtonTemplate('Você está perguntando meu posicionamento sobre '// confirm themes with user
-				+ `${context.state.intentName.toLowerCase()}?`, opt.themeConfirmation); // obs: the payload of the Yes/Sim option defaults to 'themeYes0'
+				+ `${getDictionary(context.state.intentName)}?`, opt.themeConfirmation); // obs: the payload of the Yes/Sim option defaults to 'themeYes0'
 			// await context.sendButtonTemplate(`Você está perguntando ${await getTypeText(context.state.types[0])} sobre `// confirm themes with user
 			// 	+ `${context.state.intentName.toLowerCase()}?`, opt.themeConfirmation); // obs: the payload of the Yes/Sim option defaults to 'themeYes0'
 		} else { // no answers in knowledge_base (We know the entity but politician doesn't have a position)
@@ -356,7 +364,7 @@ const handler = new MessengerHandler()
 									title: 'Voltar',
 									payload: 'mainMenu',
 								});
-								await context.sendButtonTemplate(`Deseja saber mais sobre ${context.state.intentName.toLowerCase()}?`, options);
+								await context.sendButtonTemplate(`Deseja saber mais sobre ${getDictionary(context.state.intentName)}?`, options);
 								console.log('options', options);
 							}
 						} else { // we couldn't find neither text answer nor attachment (This is an error and it shouldn't happen)
