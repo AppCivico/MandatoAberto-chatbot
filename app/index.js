@@ -276,7 +276,7 @@ async function checkPosition(context) {
 			await context.setState({ types: await checkTypes(context.state.entities.Tipos_de_pergunta, context.state.typesWeHave) }); // getting common types
 			console.log('types', context.state.types);
 
-			await context.sendButtonTemplate('Você está perguntando sobre '// confirm themes with user
+			await context.sendButtonTemplate('Você está perguntando meu posicionamento sobre '// confirm themes with user
 				+ `${context.state.intentName.toLowerCase()}?`, opt.themeConfirmation); // obs: the payload of the Yes/Sim option defaults to 'themeYes0'
 			// await context.sendButtonTemplate(`Você está perguntando ${await getTypeText(context.state.types[0])} sobre `// confirm themes with user
 			// 	+ `${context.state.intentName.toLowerCase()}?`, opt.themeConfirmation); // obs: the payload of the Yes/Sim option defaults to 'themeYes0'
