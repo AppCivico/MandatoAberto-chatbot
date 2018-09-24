@@ -166,7 +166,7 @@ async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-dec
 	return dialogs;
 }
 
-// removes every empty intent object and returns the intents as an array
+// removes every empty intent object and returns the object
 function removeEmptyKeys(obj) {
 	Object.keys(obj).forEach((key) => {
 		if (obj[key].length === 0) {
@@ -177,7 +177,6 @@ function removeEmptyKeys(obj) {
 		}
 	});
 	return obj;
-	// return Object.keys(obj);
 }
 
 // getting the types we have on our KnowledgeBase
@@ -189,7 +188,12 @@ async function getOurTypes(KnowledgeBase) {
 
 	return result;
 }
-// getting the type
+/*
+	checkTypes: Getting the types we will show to the user.	TypesToCheck are the possible types we can have.
+	The point of checking which type was in the question and we have it out base is to confirm using the correct type.
+	We expect entities to be a string, so we add it at the beginning of the results array, after that we simply add the themes we have the answer for.
+	If we couldn't detect any types on the question we default to 'posicionamento'.
+*/
 async function checkTypes(entities, knowdlege) {
 	console.log('tipos de pergunta:', entities);
 
@@ -204,7 +208,7 @@ async function checkTypes(entities, knowdlege) {
 	// 	}));
 	// }
 
-	if (entities && entities !== '') { // string exists and isn't empty
+	if (entities && entities !== '') { // string exists and isn't empty, this is the type the user asked
 		if (typesToCheck.includes(entities.toLowerCase())) {
 			result.push(entities.toLowerCase());
 		}
@@ -219,6 +223,7 @@ async function checkTypes(entities, knowdlege) {
 	return result;
 }
 
+// preparetes the text to be shown
 async function getTypeText(type) {
 	if (type === 'proposta') {
 		return 'minha proposta';
@@ -247,8 +252,6 @@ async function checkPosition(context) {
 		await context.setState({ dialog: 'createIssue' });
 		break;
 	case 'Fallback': // didn't understand what was typed
-		console.log('**** caí no fallback *****');
-
 		await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
 			context.state.whatWasTyped, context.state.resultParameters);
 		await context.sendText(getRandom(opt.frases_fallback));
@@ -259,29 +262,22 @@ async function checkPosition(context) {
 		console.log('i am here');
 		console.log('apiaiResp', context.state.apiaiResp);
 
-		await context.setState({ // getting knowledge base
+		await context.setState({ // getting knowledge base. We send the complete answer from dialogflow
 			knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.apiaiResp),
 		});
 		console.log('knowledge', context.state.knowledge);
 
-		// before sending the themes we check if there is anything on them, if there isn't we send 'esses assuntos'
-		// await context.setState({ currentThemes: await listThemes(context.state.entities) }); // format themes
-		// console.log('currentThemes', context.state.currentThemes);
-
-
 		// check if there's at least one answer in knowledge_base
 		if (context.state.knowledge && context.state.knowledge.knowledge_base && context.state.knowledge.knowledge_base.length >= 1) {
-			console.log('resultParameters', context.state.resultParameters);
-
-			await context.setState({ entities: await removeEmptyKeys(context.state.resultParameters) });
-			console.log('entities', context.state.entities);
-			await context.setState({ typesWeHave: await getOurTypes(context.state.knowledge.knowledge_base) }); // storing the types we have
-			console.log('typesWeHave', context.state.typesWeHave);
-			await context.setState({ types: await checkTypes(context.state.entities.Tipos_de_pergunta, context.state.typesWeHave) });
-			console.log('types', context.state.types);
+			await context.setState({ entities: await removeEmptyKeys(context.state.resultParameters) }); // saving the entities that were detect by dialogflow
+			// console.log('entities', context.state.entities);
+			await context.setState({ typesWeHave: await getOurTypes(context.state.knowledge.knowledge_base) }); // storing the types we have on our knowledge_base
+			// console.log('typesWeHave', context.state.typesWeHave);
+			await context.setState({ types: await checkTypes(context.state.entities.Tipos_de_pergunta, context.state.typesWeHave) }); // getting common types
+			// console.log('types', context.state.types);
 
 			await context.sendButtonTemplate(`Você está perguntando ${await getTypeText(context.state.types[0])} sobre `// confirm themes with user
-				+ `${context.state.intentName.toLowerCase()}?`, opt.themeConfirmation);
+				+ `${context.state.intentName.toLowerCase()}?`, opt.themeConfirmation); // obs: the payload of the Yes/Sim option defaults to 'themeYes0'
 		} else { // no answers in knowledge_base (We know the entity but politician doesn't have a position)
 			await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
 				context.state.whatWasTyped, context.state.resultParameters);
@@ -290,15 +286,6 @@ async function checkPosition(context) {
 			await context.sendButtonTemplate(await loadOptionPrompt(context),
 						await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
 		}
-		// it seems we don't need this anymore
-		// } else { // dialogFlow knows it's a question but has no entities //  o você acha do blablabla?
-		// 	await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
-		// 		context.state.whatWasTyped, context.state.resultParameters);
-		// 	await context.sendText(`🤔 Eu ainda não perguntei para ${await getArtigoCargoNome(context)} sobre `
-		// 			+ 'esse tema. Irei encaminhar para nossa equipe, está bem?');
-		// 	await context.sendButtonTemplate(await loadOptionPrompt(context),
-		// 			await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
-		// }
 		break;
 	}
 }
@@ -326,10 +313,10 @@ const handler = new MessengerHandler()
 				if (context.event.isPostback) {
 					// we are not listening anymore if user clicks on persistent menu during the listening
 					if (listening[context.session.user.id]) { delete listening[context.session.user.id]; }
-					// user confirms that theme(s) is/are correct
-					if (context.event.postback.payload.slice(0, 8) === 'themeYes') {
-						const number = context.event.postback.payload.replace('themeYes', '');
-
+					// Question/Position flow
+					if (context.event.postback.payload.slice(0, 8) === 'themeYes') { // user confirms that theme(s) is/are correct
+						const number = context.event.postback.payload.replace('themeYes', ''); // getting the index number of the question type
+						// find the correspondent answer using the current type
 						const currentTheme = await context.state.knowledge.knowledge_base.find(x => x.type === context.state.types[number]);
 						// console.log('currentTheme', currentTheme);
 
@@ -347,12 +334,13 @@ const handler = new MessengerHandler()
 								await context.sendAudio({ attachment_id: currentTheme.saved_attachment_id });
 							}
 							// building the menu
-							context.state.types.splice(number, 1);
-							if (context.state.types.length === 0) { // we don't have anymore type of answer (or the user already clicked throught them all)
+							context.state.types.splice(number, 1); // removing the theme we just answered
+							if (context.state.types.length === 0) { // we don't have anymore type of answer (the user already clicked throught them all)
 								await context.sendButtonTemplate(await loadOptionPrompt(context),
 									await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
 							} else {
-								const options = [];
+								const options = []; // building the options menu
+								// for each type we still haven't answered we add an option with each index on the payload
 								context.state.types.forEach((element, index) => {
 									options.push({
 										type: 'postback',
@@ -377,40 +365,6 @@ const handler = new MessengerHandler()
 							await context.sendButtonTemplate(await loadOptionPrompt(context),
 								await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
 						}
-
-
-						// await context.setState({ trigger: false });
-						// /* eslint-disable */
-						// for (const [element] of Object.entries(context.state.resultParameters)) { // eslint-disable-line no-restricted-syntax
-						// 	const currentTheme = await context.state.knowledge.knowledge_base.find(x => x.entities[0].tag === element);
-						// 	// check if there's either a text answer or a media attachment linked to current theme
-						// 	if (currentTheme && (currentTheme.answer || (currentTheme.saved_attachment_type !== null && currentTheme.saved_attachment_id !== null))) {
-						// 		if (currentTheme.answer) { // if there's a text asnwer we send it
-						// 			await context.sendText(`Sobre ${dictionary[element].toLowerCase()}: ${currentTheme.answer}`);
-						// 		}
-						// 		if (currentTheme.saved_attachment_type === 'image') { // if attachment is image
-						// 			await context.sendImage({ attachment_id: currentTheme.saved_attachment_id });
-						// 		} else if (currentTheme.saved_attachment_type === 'video') { // if attachment is video
-						// 			await context.sendVideo({ attachment_id: currentTheme.saved_attachment_id });
-						// 		} else if (currentTheme.saved_attachment_type === 'audio') { // if attachment is audio
-						// 			await context.sendAudio({ attachment_id: currentTheme.saved_attachment_id });
-						// 		}
-						// 	} else { // we couldn't find neither text answer nor attachment
-						// 		await context.sendText(`Sobre ${dictionary[element].toLowerCase()} fico te devendo uma resposta. `
-						// 			+ 'Mas já entou enviando para nossas equipe e estaremos te respondendo em breve.');
-						// 		if (context.state.trigger === false) {
-						// 			await context.setState({ trigger: true });
-						// 			await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
-						// 				context.state.whatWasTyped, context.state.resultParameters);
-						// 		}
-						// 	}
-						// }
-						// /* eslint-enable */
-						// await context.sendButtonTemplate(await loadOptionPrompt(context),
-						// 	await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
-						// await context.setState({ // cleaning up
-						// 	apiaiResp: '', knowledge: '', themes: '', whatWasTyped: '', trigger: '',
-						// });
 					} else if (context.event.postback.payload.slice(0, 6) === 'answer') {
 						await context.setState({ question: context.state.knowledge.knowledge_base.find(x => x.id === parseInt(context.event.postback.payload.replace('answer', ''), 10)) });
 						await context.setState({ dialog: 'showAnswer' });
@@ -430,7 +384,6 @@ const handler = new MessengerHandler()
 				} else if (context.event.isAudio) {
 					await context.sendText('Áudio? Me dê um instante para processar.');
 					if (context.event.audio.url) {
-						// await context.setState({ audio: await audio.voiceRequest('https://cdn.fbsbx.com/v/t59.3654-21/41422332_1965526987077956_6964334129533943808_n.mp4/audioclip-1536591135000-2694.mp4?_nc_cat=0&oh=4eed936c79d2011ca51995370fe1b718&oe=5B998567', context.session.user.id) });
 						await context.setState({ audio: await audio.voiceRequest(context.event.audio.url, context.session.user.id) });
 						if (context.state.audio.txtMag && context.state.audio.txtMag !== '') { // there was an error (or the user just didn't say anything)
 							await context.sendButtonTemplate(context.state.audio.txtMag,
