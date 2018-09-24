@@ -195,13 +195,19 @@ async function checkTypes(entities, knowdlege) {
 
 	const typesToCheck = ['Posicionamento', 'Proposta', 'Histórico'];
 	const result = [];
-	if (entities) {
-	// check if we have the type the user wants to know and add it to result
-		typesToCheck.forEach(((element) => {
-			if (entities.includes(element) && knowdlege.includes(element)) {
-				result.push(element);
-			}
-		}));
+	// if (entities.constructor === Array) { // case entities is an array
+	// // check if we have the type the user wants to know and add it to result
+	// 	typesToCheck.forEach(((element) => {
+	// 		if (entities.includes(element) && knowdlege.includes(element)) {
+	// 			result.push(element);
+	// 		}
+	// 	}));
+	// }
+
+	if (entities && entities !== '') { // string exists and isn't empty
+		if (typesToCheck.includes(entities)) {
+			result.push(entities);
+		}
 	}
 	// check if we have a correlated answer that the user didn't ask for
 	typesToCheck.forEach(((element) => {
