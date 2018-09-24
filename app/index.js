@@ -262,7 +262,7 @@ async function checkPosition(context) {
 
 
 		// check if there's at least one answer in knowledge_base
-		if (context.state.knowledge && context.state.knowledge.knowledge_base && context.state.knowledge.knowledge_base.length >= 0) {
+		if (context.state.knowledge && context.state.knowledge.knowledge_base && context.state.knowledge.knowledge_base.length >= 1) {
 			console.log('resultParameters', context.state.resultParameters);
 
 			await context.setState({ entities: await removeEmptyKeys(context.state.resultParameters) });
