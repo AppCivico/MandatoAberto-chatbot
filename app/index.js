@@ -224,7 +224,7 @@ async function checkTypes(entities, knowdlege) {
 }
 
 // preparetes the text to be shown
-async function getTypeText(type) {
+async function getTypeText(type) { // eslint-disable-line no-unused-vars
 	if (type === 'proposta') {
 		return 'minha proposta';
 	} if (type === 'histórico') {
@@ -276,8 +276,10 @@ async function checkPosition(context) {
 			await context.setState({ types: await checkTypes(context.state.entities.Tipos_de_pergunta, context.state.typesWeHave) }); // getting common types
 			console.log('types', context.state.types);
 
-			await context.sendButtonTemplate(`Você está perguntando ${await getTypeText(context.state.types[0])} sobre `// confirm themes with user
+			await context.sendButtonTemplate('Você está perguntando sobre '// confirm themes with user
 				+ `${context.state.intentName.toLowerCase()}?`, opt.themeConfirmation); // obs: the payload of the Yes/Sim option defaults to 'themeYes0'
+			// await context.sendButtonTemplate(`Você está perguntando ${await getTypeText(context.state.types[0])} sobre `// confirm themes with user
+			// 	+ `${context.state.intentName.toLowerCase()}?`, opt.themeConfirmation); // obs: the payload of the Yes/Sim option defaults to 'themeYes0'
 		} else { // no answers in knowledge_base (We know the entity but politician doesn't have a position)
 			await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
 				context.state.whatWasTyped, context.state.resultParameters);
