@@ -193,7 +193,7 @@ async function getOurTypes(KnowledgeBase) {
 async function checkTypes(entities, knowdlege) {
 	console.log('tipos de pergunta:', entities);
 
-	const typesToCheck = ['Posicionamento', 'Proposta', 'Histórico'];
+	const typesToCheck = ['posicionamento', 'proposta', 'histórico'];
 	const result = [];
 	// if (entities.constructor === Array) { // case entities is an array
 	// // check if we have the type the user wants to know and add it to result
@@ -205,7 +205,7 @@ async function checkTypes(entities, knowdlege) {
 	// }
 
 	if (entities && entities !== '') { // string exists and isn't empty
-		if (typesToCheck.includes(entities)) {
+		if (typesToCheck.includes(entities.toLowerCase())) {
 			result.push(entities);
 		}
 	}
