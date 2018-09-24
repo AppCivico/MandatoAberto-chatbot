@@ -260,7 +260,7 @@ async function checkPosition(context) {
 
 
 		// check if there's at least one answer in knowledge_base
-		if (context.state.knowledge && context.state.knowledge.knowledge_base && context.state.knowledge.knowledge_base.length >= 1) {
+		if (context.state.knowledge && context.state.knowledge.knowledge_base && context.state.knowledge.knowledge_base.length >= 0) {
 			await context.setState({ entities: await removeEmptyKeys(context.state.resultParameters) });
 			console.log('entities', context.state.entities);
 			await context.setState({ typesWeHave: await getOurTypes(context.state.knowledge.knowledge_base) }); // storing the types we have
