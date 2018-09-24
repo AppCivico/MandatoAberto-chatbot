@@ -369,7 +369,6 @@ const handler = new MessengerHandler()
 								await context.sendButtonTemplate(`Deseja saber mais sobre ${context.state.intentName.toLowerCase()}?`, options);
 								console.log('options', options);
 							}
-							// console.log('types', context.state.types);
 						} else { // we couldn't find neither text answer nor attachment (This is an error and it shouldn't happen)
 							await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
 								context.state.whatWasTyped, context.state.resultParameters);
