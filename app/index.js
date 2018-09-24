@@ -270,11 +270,11 @@ async function checkPosition(context) {
 		// check if there's at least one answer in knowledge_base
 		if (context.state.knowledge && context.state.knowledge.knowledge_base && context.state.knowledge.knowledge_base.length >= 1) {
 			await context.setState({ entities: await removeEmptyKeys(context.state.resultParameters) }); // saving the entities that were detect by dialogflow
-			// console.log('entities', context.state.entities);
+			console.log('entities', context.state.entities);
 			await context.setState({ typesWeHave: await getOurTypes(context.state.knowledge.knowledge_base) }); // storing the types we have on our knowledge_base
-			// console.log('typesWeHave', context.state.typesWeHave);
+			console.log('typesWeHave', context.state.typesWeHave);
 			await context.setState({ types: await checkTypes(context.state.entities.Tipos_de_pergunta, context.state.typesWeHave) }); // getting common types
-			// console.log('types', context.state.types);
+			console.log('types', context.state.types);
 
 			await context.sendButtonTemplate(`Você está perguntando ${await getTypeText(context.state.types[0])} sobre `// confirm themes with user
 				+ `${context.state.intentName.toLowerCase()}?`, opt.themeConfirmation); // obs: the payload of the Yes/Sim option defaults to 'themeYes0'
