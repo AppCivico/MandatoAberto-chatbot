@@ -54,19 +54,6 @@ let areWeListening = true; // eslint-disable-line
 
 function getRandom(myArray) { return myArray[Math.floor(Math.random() * myArray.length)]; }
 
-// removes every empty intent object and returns the intents as an array
-function removeEmptyKeys(obj) {
-	Object.keys(obj).forEach((key) => {
-		if (obj[key].length === 0) {
-			delete obj[key];
-		}
-		if (obj === 'Falso') {
-			delete obj[key];
-		}
-	});
-	return Object.keys(obj);
-}
-
 const mapPageToAccessToken = async (pageId) => {
 	const politicianData2 = await MandatoAbertoAPI.getPoliticianData(pageId);
 	return politicianData2.fb_access_token;
@@ -179,6 +166,20 @@ async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-dec
 	return dialogs;
 }
 
+// removes every empty intent object and returns the intents as an array
+function removeEmptyKeys(obj) {
+	Object.keys(obj).forEach((key) => {
+		if (obj[key].length === 0) {
+			delete obj[key];
+		}
+		if (obj === 'Falso') {
+			delete obj[key];
+		}
+	});
+	return obj;
+	// return Object.keys(obj);
+}
+
 // getting the types we have on our KnowledgeBase
 async function getOurTypes(KnowledgeBase) {
 	const result = [];
@@ -267,7 +268,7 @@ async function checkPosition(context) {
 			console.log('entities', context.state.entities);
 			await context.setState({ typesWeHave: await getOurTypes(context.state.knowledge.knowledge_base) }); // storing the types we have
 			console.log('typesWeHave', context.state.typesWeHave);
-			await context.setState({ types: await checkTypes(context.state.entities, context.state.typesWeHave) });
+			await context.setState({ types: await checkTypes(context.state.entities.Tipos_de_pergunta, context.state.typesWeHave) });
 			console.log('types', context.state.types);
 
 			await context.sendButtonTemplate(`Você está perguntando ${await getTypeText(context.state.types[0])} sobre `// confirm themes with user
