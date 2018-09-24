@@ -209,7 +209,7 @@ async function checkTypes(entities, knowdlege) {
 	// }
 
 	if (entities && entities !== '') { // string exists and isn't empty, this is the type the user asked
-		if (typesToCheck.includes(entities.toLowerCase())) {
+		if (typesToCheck.includes(entities.toLowerCase() && knowdlege.includes(entities.toLowerCase()))) {
 			result.push(entities.toLowerCase());
 		}
 	}
