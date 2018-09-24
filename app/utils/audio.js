@@ -52,10 +52,10 @@ async function voiceRequest(urlMessenger, sessionID) {
 		await answer.pipe(file);
 
 		file.on('finish', async () => {
-			// converting the mp4 file to a mono channel flac (we have to convert before checking for duration because of 'moov atom' issues)
+			// checking flac duration, it can't be longer than 60s
 			const result2 = await getDuration(fileIn).then(async (duration) => {
-				// checking flac duration, it can't be bigger than 60s
 				if (duration < 60) {
+					// converting the mp4 to a mono channel flac
 					const results = await execAsync(`ffmpeg -i ${fileIn} -ac 1 -movflags +faststart ${fileOut} -y`);
 					if (results.error && results.error.code) {
 						await checkAndDelete(fileIn);
