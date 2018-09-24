@@ -222,7 +222,7 @@ async function checkTypes(entities, knowdlege) {
 async function getTypeText(type) {
 	if (type === 'proposta') {
 		return 'minha proposta';
-	} if (type === 'historico') {
+	} if (type === 'histórico') {
 		return 'meu histórico';
 	}
 	return 'meu posicionamento';
