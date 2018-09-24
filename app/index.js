@@ -191,6 +191,8 @@ async function getOurTypes(KnowledgeBase) {
 }
 // getting the type
 async function checkTypes(entities, knowdlege) {
+	console.log('tipos de pergunta:', entities);
+
 	const typesToCheck = ['Posicionamento', 'Proposta', 'Histórico'];
 	const result = [];
 	if (entities) {
