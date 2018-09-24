@@ -10,6 +10,7 @@
       "error",
       "tab"
     ],
+    "no-eval": 0,
     "no-await-in-loop": 0,
     "no-tabs": 0,
     "no-param-reassign": 0,
