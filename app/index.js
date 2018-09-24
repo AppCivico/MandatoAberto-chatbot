@@ -371,10 +371,12 @@ const handler = new MessengerHandler()
 							}
 							// console.log('types', context.state.types);
 						} else { // we couldn't find neither text answer nor attachment (This is an error and it shouldn't happen)
-							await context.sendText('Parece que fico te devendo essa resposta. '
-									+ 'Mas já entou enviando para nossas equipe e estaremos te respondendo em breve.');
 							await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
 								context.state.whatWasTyped, context.state.resultParameters);
+							await context.sendText('Parece que fico te devendo essa resposta. '
+									+ 'Mas já entou enviando para nossas equipe e estaremos te respondendo em breve.');
+							await context.sendButtonTemplate(await loadOptionPrompt(context),
+								await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
 						}
 
 
