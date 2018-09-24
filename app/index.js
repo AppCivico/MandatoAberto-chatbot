@@ -193,13 +193,14 @@ async function getOurTypes(KnowledgeBase) {
 async function checkTypes(entities, knowdlege) {
 	const typesToCheck = ['posicionamento', 'proposta', 'histórico'];
 	const result = [];
+	if (entities) {
 	// check if we have the type the user wants to know and add it to result
-	typesToCheck.forEach(((element) => {
-		if (entities.includes(element) && knowdlege.includes(element)) {
-			result.push(element);
-		}
-	}));
-
+		typesToCheck.forEach(((element) => {
+			if (entities.includes(element) && knowdlege.includes(element)) {
+				result.push(element);
+			}
+		}));
+	}
 	// check if we have a correlated answer that the user didn't ask for
 	typesToCheck.forEach(((element) => {
 		if (knowdlege.includes(element) && !result.includes(element)) {
