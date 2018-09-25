@@ -750,13 +750,13 @@ const handler = new MessengerHandler()
 				if (context.state.politicianData.contact.email) {
 					await context.sendText(` - Através do e-mail: ${context.state.politicianData.contact.email}`);
 				}
-				if (context.state.politicianData.contact.cellphone) {
+				if (context.state.politicianData.contact.cellphone && context.state.politicianData.contact.cellphone !== '+55') {
 					await context.sendText(` - Através do WhatsApp: ${context.state.politicianCellPhone}`);
 				}
 				if (context.state.politicianData.contact.twitter) {
 					await context.sendText(` - Através do Twitter: ${context.state.politicianData.contact.twitter}`);
 				}
-				if (context.state.politicianData.contact.url) {
+				if (context.state.politicianData.contact.url && context.state.politicianData.contact.url !== 'http://') {
 					await context.sendText(` - Através do site: ${context.state.politicianData.contact.url}`);
 				}
 				await context.sendButtonTemplate('Quer saber mais?', await checkMenu(context, [opt.trajectory, opt.poll_suaOpiniao, opt.participate]));
