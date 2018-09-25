@@ -154,7 +154,13 @@ async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-dec
 	if (context.state.introduction && !context.state.introduction.content) { dialogs = dialogs.filter(obj => obj.payload !== 'aboutMe'); }
 	if (!context.state.trajectory) { dialogs = dialogs.filter(obj => obj.payload !== 'trajectory'); }
 	if (!context.state.pollData) { dialogs = dialogs.filter(obj => obj.payload !== 'poll'); }
-	if (!context.state.politicianData.contact) { dialogs = dialogs.filter(obj => obj.payload !== 'contacts'); }
+	if (!context.state.politicianData.contact) {
+		console.log('filtrei contatos');
+
+		dialogs = dialogs.filter(obj => obj.payload !== 'contacts');
+	}
+	console.log('contacts', context.state.politicianData.contact);
+
 
 	if (dialogs.find(x => x.payload === 'poll')) {
 		if (await checkPollAnswered(context) === true // already answered so we remove option
