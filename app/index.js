@@ -684,6 +684,7 @@ const handler = new MessengerHandler()
 				}
 				setTimeout(async () => { // adding a timer to wait a little bit between each message
 					await context.sendButtonTemplate('Deixe seus contatos para nossa equipe.', [opt.leaveInfo, opt.backToBeginning]);
+					await context.typingOff();
 				}, context.state.secondTimer);
 
 				await context.setState({ dialog: 'prompt', dataPrompt: 'email', recipientData: '' });
