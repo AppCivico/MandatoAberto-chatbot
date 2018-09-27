@@ -352,7 +352,7 @@ const handler = new MessengerHandler()
 								setTimeout(async () => {
 									await context.sendButtonTemplate(await loadOptionPrompt(context),
 										await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
-								}, 4000);
+								}, 5000);
 							} else {
 								const options = []; // building the options menu
 								// for each type we still haven't answered we add an option with each index on the payload
@@ -363,7 +363,7 @@ const handler = new MessengerHandler()
 								console.log('options', options);
 								setTimeout(async () => {
 									await context.sendButtonTemplate(`Deseja saber mais sobre ${getDictionary(context.state.intentName)}?`, options);
-								}, 4000);
+								}, 5000);
 							}
 						} else { // we couldn't find neither text answer nor attachment (This is an error and it shouldn't happen)
 							await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
