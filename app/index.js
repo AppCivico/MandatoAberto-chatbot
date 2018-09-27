@@ -673,14 +673,14 @@ const handler = new MessengerHandler()
 				// check if there is a share obj so we can show the option
 				await context.setState({ participateTimer: 2500 });
 				if (context.state.politicianData.share && context.state.politicianData.share.url && context.state.politicianData.share.text) {
-					await context.setState({ participateTimer: 4500 });
 					setTimeout(async () => { // adding a timer to wait a little bit between each message
 						await context.sendButtonTemplate(context.state.politicianData.share.text, [{
 							type: 'web_url',
 							url: context.state.politicianData.share.url,
 							title: 'Divulgar',
 						}]);
-					}, 2500);
+					}, context.state.participateTimer);
+					await context.setState({ participateTimer: 4500 });
 				}
 				setTimeout(async () => { // adding a timer to wait a little bit between each message
 					await context.sendButtonTemplate('Deixe seus contatos para nossa equipe.', [opt.leaveInfo, opt.backToBeginning]);
