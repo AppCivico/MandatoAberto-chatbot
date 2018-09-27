@@ -673,16 +673,15 @@ const handler = new MessengerHandler()
 				// check if there is a share obj so we can show the option
 				await context.setState({ participateTimer: 2500 });
 				if (context.state.politicianData.share && context.state.politicianData.share.url && context.state.politicianData.share.text) {
+					console.log(context.state.participateTimer);
 					setTimeout(async () => { // adding a timer to wait a little bit between each message
-						console.log(context.state.participateTimer);
-
 						await context.sendButtonTemplate(context.state.politicianData.share.text, [{
 							type: 'web_url',
 							url: context.state.politicianData.share.url,
 							title: 'Divulgar',
 						}]);
 					}, context.state.participateTimer);
-					await context.setState({ participateTimer: 4500 });
+					await context.setState({ participateTimer: 10000 });
 					console.log(context.state.participateTimer);
 				}
 				setTimeout(async () => { // adding a timer to wait a little bit between each message
