@@ -672,7 +672,7 @@ const handler = new MessengerHandler()
 				}
 				await context.typingOn();
 				// check if there is a share obj so we can show the option
-				if (context.state.politicianData.share && context.state.politicianData.share.url && context.state.politicianData.share.text) {
+				if (context.state.politicianData.share123 && context.state.politicianData.share.url && context.state.politicianData.share.text) {
 					// if it exists, we showed the first option, so we have to wait before sending this one. If not, this will be the first msg, we can show it right away.
 					await context.setState({ participateTimer: context.state.participateTimer ? context.state.participateTimer : 1 });
 					setTimeout(async () => { // adding a timer to wait a little bit between each message
