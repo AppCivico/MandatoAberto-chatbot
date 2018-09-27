@@ -647,7 +647,8 @@ const handler = new MessengerHandler()
 			case 'participateMenu': // Participar
 				await context.setState({ participateText: 'Estamos em campanha e contamos com você.\n' }); // getting the first part of the text
 
-				if (context.state.politicianData.votolegal_integration && context.state.politicianData.votolegal_integration.votolegal_url) {
+				if (context.state.politicianData.votolegal_integration123 && context.state.politicianData.votolegal_integration.votolegal_url) {
+					await context.setState({ participateTimer: 2500 });
 					// check if politician is on votoLegal so we can info and option
 					// if referral.source(CUSTOMER_CHAT_PLUGIN) exists we are outside facebook and shouldn't send votolegal's url
 					if ((context.event.rawEvent.postback && context.event.rawEvent.postback.referral) || (context.event.rawEvent.message && context.event.rawEvent.message.tags
@@ -671,18 +672,15 @@ const handler = new MessengerHandler()
 				}
 				await context.typingOn();
 				// check if there is a share obj so we can show the option
-				await context.setState({ participateTimer: 2500 });
 				if (context.state.politicianData.share && context.state.politicianData.share.url && context.state.politicianData.share.text) {
-					console.log(context.state.participateTimer);
 					setTimeout(async () => { // adding a timer to wait a little bit between each message
 						await context.sendButtonTemplate(context.state.politicianData.share.text, [{
 							type: 'web_url',
 							url: context.state.politicianData.share.url,
 							title: 'Divulgar',
 						}]);
-					}, context.state.participateTimer);
-					await context.setState({ participateTimer: 10000 });
-					console.log(context.state.participateTimer);
+					}, context.state.participateTimer ? context.state.participateTimer : 0);
+					await context.setState({ participateTimer: context.state.participateTimer ? context.state.participateTimer : 2500 });
 				}
 				setTimeout(async () => { // adding a timer to wait a little bit between each message
 					await context.sendButtonTemplate('Deixe seus contatos para nossa equipe.', [opt.leaveInfo, opt.backToBeginning]);
