@@ -345,38 +345,35 @@ const handler = new MessengerHandler()
 							if (currentTheme.saved_attachment_type === 'audio') { // if attachment is audio
 								await context.sendAudio({ attachment_id: currentTheme.saved_attachment_id });
 							}
+							await context.typingOn();
 							// building the menu
 							context.state.types.splice(number, 1); // removing the theme we just answered
 							if (context.state.types.length === 0) { // we don't have anymore type of answer (the user already clicked throught them all)
-								await context.sendButtonTemplate(await loadOptionPrompt(context),
-									await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
+								setTimeout(async () => {
+									await context.sendButtonTemplate(await loadOptionPrompt(context),
+										await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
+								}, 4000);
 							} else {
 								const options = []; // building the options menu
 								// for each type we still haven't answered we add an option with each index on the payload
 								context.state.types.forEach((element, index) => {
-									options.push({
-										type: 'postback',
-										title: `${capitalize(element)}`,
-										payload: `themeYes${index}`,
-									});
+									options.push({ type: 'postback', title: `${capitalize(element)}`, payload: `themeYes${index}` });
 								});
-
-								options.push({
-									type: 'postback',
-									title: 'Voltar',
-									payload: 'mainMenu',
-								});
-								await context.sendButtonTemplate(`Deseja saber mais sobre ${getDictionary(context.state.intentName)}?`, options);
+								options.push({ type: 'postback', title: 'Voltar', payload: 'mainMenu' });
 								console.log('options', options);
+								setTimeout(async () => {
+									await context.sendButtonTemplate(`Deseja saber mais sobre ${getDictionary(context.state.intentName)}?`, options);
+								}, 4000);
 							}
 						} else { // we couldn't find neither text answer nor attachment (This is an error and it shouldn't happen)
 							await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
 								context.state.whatWasTyped, context.state.resultParameters);
 							await context.sendText('Parece que fico te devendo essa resposta. '
-									+ 'Mas já entou enviando para nossas equipe e estaremos te respondendo em breve.');
+								+ 'Mas já entou enviando para nossas equipe e estaremos te respondendo em breve.');
 							await context.sendButtonTemplate(await loadOptionPrompt(context),
 								await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
 						}
+						// end answering theme --------------------------------------------------
 					} else if (context.event.postback.payload.slice(0, 6) === 'answer') {
 						await context.setState({ question: context.state.knowledge.knowledge_base.find(x => x.id === parseInt(context.event.postback.payload.replace('answer', ''), 10)) });
 						await context.setState({ dialog: 'showAnswer' });
