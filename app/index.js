@@ -671,16 +671,16 @@ const handler = new MessengerHandler()
 				}
 				await context.typingOn();
 				// check if there is a share obj so we can show the option
-				await context.setState({ secondTimer: 3000 });
-				if (context.state.politicianData.share123 && context.state.politicianData.share.url && context.state.politicianData.share.text) {
-					await context.setState({ secondTimer: 5000 });
+				await context.setState({ secondTimer: 2500 });
+				if (context.state.politicianData.share && context.state.politicianData.share.url && context.state.politicianData.share.text) {
+					await context.setState({ secondTimer: 4000 });
 					setTimeout(async () => { // adding a timer to wait a little bit between each message
 						await context.sendButtonTemplate(context.state.politicianData.share.text, [{
 							type: 'web_url',
 							url: context.state.politicianData.share.url,
 							title: 'Divulgar',
 						}]);
-					}, 3000);
+					}, 2500);
 				}
 				setTimeout(async () => { // adding a timer to wait a little bit between each message
 					await context.sendButtonTemplate('Deixe seus contatos para nossa equipe.', [opt.leaveInfo, opt.backToBeginning]);
