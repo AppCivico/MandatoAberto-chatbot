@@ -644,7 +644,7 @@ const handler = new MessengerHandler()
 				await context.sendButtonTemplate('Selecione a opção desejada em um dos botões abaixo:', [opt.writeMessage, opt.seeAssistent]);
 				await context.setState({ dialog: 'prompt' });
 				break;
-			case 'participateMenu': // participar
+			case 'participateMenu': // Participar
 				await context.setState({ participateText: 'Estamos em campanha e contamos com você.\n' }); // getting the first part of the text
 
 				if (context.state.politicianData.votolegal_integration && context.state.politicianData.votolegal_integration.votolegal_url) {
@@ -666,16 +666,19 @@ const handler = new MessengerHandler()
 							title: 'Quero doar!',
 						}]);
 					}
-				} else { // no votoLegal
+				} else { // if politician doesn't have votoLegal
 					await context.sendText(context.state.participateText);
 				}
+				await context.typingOn();
 				// check if there is a share obj so we can show the option
 				if (context.state.politicianData.share && context.state.politicianData.share.url && context.state.politicianData.share.text) {
-					await context.sendButtonTemplate(context.state.politicianData.share.text, [{
-						type: 'web_url',
-						url: context.state.politicianData.share.url,
-						title: 'Divulgar',
-					}]);
+					setTimeout(async () => { // adding a timer to wait a little bit between each message
+						await context.sendButtonTemplate(context.state.politicianData.share.text, [{
+							type: 'web_url',
+							url: context.state.politicianData.share.url,
+							title: 'Divulgar',
+						}]);
+					}, 2);
 				}
 				await context.sendButtonTemplate('Deixe seus contatos para nossa equipe.', [opt.leaveInfo, opt.backToBeginning]);
 				await context.setState({ dialog: 'prompt', dataPrompt: 'email', recipientData: '' });
