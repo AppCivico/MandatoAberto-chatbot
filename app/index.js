@@ -671,9 +671,9 @@ const handler = new MessengerHandler()
 				}
 				await context.typingOn();
 				// check if there is a share obj so we can show the option
-				await context.setState({ secondTimer: 2500 });
+				await context.setState({ participateTimer: 2500 });
 				if (context.state.politicianData.share && context.state.politicianData.share.url && context.state.politicianData.share.text) {
-					await context.setState({ secondTimer: 4000 });
+					await context.setState({ participateTimer: 4500 });
 					setTimeout(async () => { // adding a timer to wait a little bit between each message
 						await context.sendButtonTemplate(context.state.politicianData.share.text, [{
 							type: 'web_url',
@@ -685,9 +685,11 @@ const handler = new MessengerHandler()
 				setTimeout(async () => { // adding a timer to wait a little bit between each message
 					await context.sendButtonTemplate('Deixe seus contatos para nossa equipe.', [opt.leaveInfo, opt.backToBeginning]);
 					await context.typingOff();
-				}, context.state.secondTimer);
+				}, context.state.participateTimer);
 
-				await context.setState({ dialog: 'prompt', dataPrompt: 'email', recipientData: '' });
+				await context.setState({
+					dialog: 'prompt', dataPrompt: 'email', recipientData: '', participateTimer: '',
+				});
 				break;
 			case 'createIssue': // aka "talkToUs" // will only happen if user clicks on 'Fale Conosco'
 				await context.setState({ issueCreatedMessage: await loadIssueSent(context) }); // loading the confirmation message here
