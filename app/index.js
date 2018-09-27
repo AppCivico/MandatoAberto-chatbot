@@ -648,7 +648,7 @@ const handler = new MessengerHandler()
 				await context.setState({ participateText: 'Estamos em campanha e contamos com você.\n' }); // getting the first part of the text
 
 				if (context.state.politicianData.votolegal_integration && context.state.politicianData.votolegal_integration.votolegal_url) {
-					await context.setState({ participateTimer: 2500 });
+					await context.setState({ participateTimer: 2500 }); // setting the wait time for the next message
 					// check if politician is on votoLegal so we can info and option
 					// if referral.source(CUSTOMER_CHAT_PLUGIN) exists we are outside facebook and shouldn't send votolegal's url
 					if ((context.event.rawEvent.postback && context.event.rawEvent.postback.referral) || (context.event.rawEvent.message && context.event.rawEvent.message.tags
@@ -673,19 +673,23 @@ const handler = new MessengerHandler()
 				await context.typingOn();
 				// check if there is a share obj so we can show the option
 				if (context.state.politicianData.share && context.state.politicianData.share.url && context.state.politicianData.share.text) {
+					// if it exists, we showed the first option, so we have to wait before sending this one. If not, this will be the first msg, we can show it right away.
+					await context.setState({ participateTimer: context.state.participateTimer ? context.state.participateTimer : 1 });
 					setTimeout(async () => { // adding a timer to wait a little bit between each message
 						await context.sendButtonTemplate(context.state.politicianData.share.text, [{
 							type: 'web_url',
 							url: context.state.politicianData.share.url,
 							title: 'Divulgar',
 						}]);
-					}, context.state.participateTimer ? context.state.participateTimer : 0);
-					await context.setState({ participateTimer: context.state.participateTimer ? context.state.participateTimer : 2500 });
+					}, context.state.participateTimer);
 				}
+				// !timer -> only message (no waiting), timer === 1 -> second message (has to wait a little), timer === 2500 -> third message (waits for both messages)
+				if (!context.state.participateTimer) { await context.setState({ participateTimer: 0 }); }
+
 				setTimeout(async () => { // adding a timer to wait a little bit between each message
 					await context.sendButtonTemplate('Deixe seus contatos para nossa equipe.', [opt.leaveInfo, opt.backToBeginning]);
 					await context.typingOff();
-				}, context.state.participateTimer);
+				}, context.state.participateTimer === 1 ? 2500 : context.state.participateTimer * 2);
 
 				await context.setState({
 					dialog: 'prompt', dataPrompt: 'email', recipientData: '', participateTimer: '',
