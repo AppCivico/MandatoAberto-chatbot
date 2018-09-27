@@ -674,6 +674,8 @@ const handler = new MessengerHandler()
 				await context.setState({ participateTimer: 2500 });
 				if (context.state.politicianData.share && context.state.politicianData.share.url && context.state.politicianData.share.text) {
 					setTimeout(async () => { // adding a timer to wait a little bit between each message
+						console.log(context.state.participateTimer);
+
 						await context.sendButtonTemplate(context.state.politicianData.share.text, [{
 							type: 'web_url',
 							url: context.state.politicianData.share.url,
@@ -681,6 +683,7 @@ const handler = new MessengerHandler()
 						}]);
 					}, context.state.participateTimer);
 					await context.setState({ participateTimer: 4500 });
+					console.log(context.state.participateTimer);
 				}
 				setTimeout(async () => { // adding a timer to wait a little bit between each message
 					await context.sendButtonTemplate('Deixe seus contatos para nossa equipe.', [opt.leaveInfo, opt.backToBeginning]);
