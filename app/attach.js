@@ -70,6 +70,36 @@ async function getIntentQR(intents, next) {
 module.exports.getIntentQR = getIntentQR;
 
 
+// get quick_replies opject with intents array
+async function getOptionsQR(opt, theme) {
+	const elements = [];
+	// build a quick_reply options for each of the politicians available intents
+	getOptionsQR.forEach((element, index) => {
+		elements.push({
+			content_type: 'text',
+			title: element,
+			payload: `answerIntent${theme}${index}`,
+		});
+	});
+
+	elements.push({
+		content_type: 'text',
+		title: 'Temas',
+		payload: 'availableIntents',
+	});
+
+	elements.push({
+		content_type: 'text',
+		title: 'Voltar',
+		payload: 'mainMenu',
+	});
+
+	return { quick_replies: elements };
+}
+
+module.exports.getOptionsQR = getOptionsQR;
+
+
 // get every label
 async function sendButtons(id, text, buttons, accessToken) { // eslint-disable-line no-unused-vars
 	const res = await req.post(`https://graph.facebook.com/v2.6/me/messages?access_token=${accessToken}`).send({

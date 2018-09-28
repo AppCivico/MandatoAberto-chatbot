@@ -436,21 +436,37 @@ const handler = new MessengerHandler()
 								await context.sendAudio({ attachment_id: context.state.currentTheme.saved_attachment_id });
 							}
 							await context.typingOn();
-							// TODO discover what to do after answering
 						} // end currentTheme if --------------------------------------------------
 
 						context.state.types.splice(context.state.number, 1); // removing the theme we just answered
 						console.log(context.state.types);
-
-						await context.setState({ quickReplies: ['fsdfsdf'] });
-
-						// if () {
-
+						if (context.state.types.length === 0) { // we don't have anymore type of answer (the user already clicked throught them all)
+							setTimeout(async () => {
+								await context.sendButtonTemplate(await loadOptionPrompt(context),
+									await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
+							}, 5000);
+						} else {
+							const options = []; // building the options menu
+							// for each type we still haven't answered we add an option with each index on the payload
+							context.state.types.forEach((element, index) => {
+								options.push({ type: 'postback', title: `${capitalize(element)}`, payload: `themeYes${index}` });
+							});
+							options.push({ type: 'postback', title: 'Voltar', payload: 'mainMenu' });
+							console.log('options', options);
+							setTimeout(async () => {
+								await context.sendText(`Deseja saber mais sobre ${getDictionary(context.state.themeName)}?`,
+									attach.getOptionsQR([context.state.types], context.state.themeName));
+							}, 2000);
+						}
 						// }
 					} else if (payload === 'moreThemes') {
 						await context.setState({ paginationNumber: context.state.paginationNumber + 1 });
 						await showThemesQR(context);
 					} else {
+						if (payload === 'availableIntents') {
+							await context.setState({ paginationNumber: 1, availableIntents: '', nextIntents: '' }); // resetting data
+							await showThemesQR(context);
+						}
 						await context.setState({ dialog: payload });
 					}
 				} else if (context.event.isAudio) {
