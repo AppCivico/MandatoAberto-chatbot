@@ -169,6 +169,17 @@ async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-dec
 	return dialogs;
 }
 
+async function showThemesQR(context) {
+	console.log(context.state.paginationNumber);
+	await context.setState({
+		availableIntents: await MandatoAbertoAPI.getAvailableIntents(
+			context.event.rawEvent.recipient.id, context.state.paginationNumber,
+		),
+	});
+	console.log(context.state.availableIntents);
+	await context.sendText('Escolha um tema:', await attach.getIntentQR(context.state.availableIntents.intents));
+}
+
 function getDictionary(word) {
 	const result = dictionary[word.toLowerCase()];
 	if (result) {
@@ -384,6 +395,7 @@ const handler = new MessengerHandler()
 					} else {
 						if (context.event.postback.payload === 'availableIntents') {
 							await context.setState({ paginationNumber: 1 }); // resetting pagination
+							await showThemesQR();
 						}
 						await context.setState({ dialog: context.event.postback.payload });
 					}
@@ -416,17 +428,8 @@ const handler = new MessengerHandler()
 							// TODO discover what to do after answering
 						} // end answerIntent --------------------------------------------------
 					} else if (payload === 'moreThemes') {
-						console.log('i should be here');
-
 						await context.setState({ paginationNumber: context.state.paginationNumber + 1 });
-						console.log(context.state.paginationNumber);
-						await context.setState({
-							availableIntents: await MandatoAbertoAPI.getAvailableIntents(
-								context.event.rawEvent.recipient.id, context.state.paginationNumber,
-							),
-						});
-						console.log(context.state.availableIntents);
-						await context.sendText('Escolha um tema:', await attach.getIntentQR(context.state.availableIntents.intents));
+						await showThemesQR();
 
 						// await context.setState({ dialog: 'availableIntents' }); not working
 					} else {
@@ -911,18 +914,18 @@ const handler = new MessengerHandler()
 				await context.sendButtonTemplate('Quer saber mais?', await checkMenu(context, [opt.aboutPolitician, opt.trajectory, opt.participate]));
 				break;
 
-			case 'availableIntents':
-				console.log('fell here');
+			// case 'availableIntents':
+			// 	console.log('fell here');
 
-				if (!context.state.paginationNumber || context.state.paginationNumber === '' || context.state.paginationNumber === 0) {
-					await context.setState({ paginationNumber: 1 });
-				}
-				await context.setState({ availableIntents: await MandatoAbertoAPI.getAvailableIntents(context.event.rawEvent.recipient.id, context.state.paginationNumber) });
-				console.log(context.state.availableIntents);
-				await context.sendText('Escolha um tema:', await attach.getIntentQR(context.state.availableIntents.intents));
-				// await context.setState({ availableIntents: await MandatoAbertoAPI.getAvailableIntents(context.event.rawEvent.recipient.id, 2) });
-				// console.log(context.state.availableIntents);
-				break;
+			// 	if (!context.state.paginationNumber || context.state.paginationNumber === '' || context.state.paginationNumber === 0) {
+			// 		await context.setState({ paginationNumber: 1 });
+			// 	}
+			// 	await context.setState({ availableIntents: await MandatoAbertoAPI.getAvailableIntents(context.event.rawEvent.recipient.id, context.state.paginationNumber) });
+			// 	console.log(context.state.availableIntents);
+			// 	await context.sendText('Escolha um tema:', await attach.getIntentQR(context.state.availableIntents.intents));
+			// 	// await context.setState({ availableIntents: await MandatoAbertoAPI.getAvailableIntents(context.event.rawEvent.recipient.id, 2) });
+			// 	// console.log(context.state.availableIntents);
+			// 	break;
 			} // end switch de diálogo
 		}
 	})
