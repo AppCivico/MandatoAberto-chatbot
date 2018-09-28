@@ -82,7 +82,7 @@ async function loadOptionPrompt(context) {
 		}
 		return answer.content;
 	}
-	return context.state.optionPrompt;
+	return context.state.optionPrompt.content;
 }
 
 async function sendMainMenu(context) {

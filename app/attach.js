@@ -93,7 +93,7 @@ async function sendButtons(id, text, buttons1, buttons2, accessToken) { // eslin
 					template_type: 'generic',
 					elements: [
 						{
-							title: 'text',
+							title: text,
 							buttons: buttons1,
 						},
 						{
