@@ -430,8 +430,6 @@ const handler = new MessengerHandler()
 					} else if (payload === 'moreThemes') {
 						await context.setState({ paginationNumber: context.state.paginationNumber + 1 });
 						await showThemesQR(context);
-
-						// await context.setState({ dialog: 'availableIntents' }); not working
 					} else {
 						await context.setState({ dialog: payload });
 					}
@@ -913,19 +911,6 @@ const handler = new MessengerHandler()
 				await context.sendText('Legal. Estaremos te avisando das novidades.');
 				await context.sendButtonTemplate('Quer saber mais?', await checkMenu(context, [opt.aboutPolitician, opt.trajectory, opt.participate]));
 				break;
-
-			// case 'availableIntents':
-			// 	console.log('fell here');
-
-			// 	if (!context.state.paginationNumber || context.state.paginationNumber === '' || context.state.paginationNumber === 0) {
-			// 		await context.setState({ paginationNumber: 1 });
-			// 	}
-			// 	await context.setState({ availableIntents: await MandatoAbertoAPI.getAvailableIntents(context.event.rawEvent.recipient.id, context.state.paginationNumber) });
-			// 	console.log(context.state.availableIntents);
-			// 	await context.sendText('Escolha um tema:', await attach.getIntentQR(context.state.availableIntents.intents));
-			// 	// await context.setState({ availableIntents: await MandatoAbertoAPI.getAvailableIntents(context.event.rawEvent.recipient.id, 2) });
-			// 	// console.log(context.state.availableIntents);
-			// 	break;
 			} // end switch de diálogo
 		}
 	})
