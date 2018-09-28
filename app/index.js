@@ -410,7 +410,7 @@ const handler = new MessengerHandler()
 						console.log('context.state.themeName', context.state.themeName);
 
 						await context.setState({ // getting knowledge base. We send the complete answer from dialogflow
-							knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, { name: context.state.themeName }),
+							knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.name),
 						});
 						console.log('knowledge', context.state.knowledge);
 
@@ -433,7 +433,7 @@ const handler = new MessengerHandler()
 							}
 							await context.typingOn();
 							// TODO discover what to do after answering
-						} // end answerIntent --------------------------------------------------
+						} // end currentTheme if --------------------------------------------------
 					} else if (payload === 'moreThemes') {
 						await context.setState({ paginationNumber: context.state.paginationNumber + 1 });
 						await showThemesQR(context);
