@@ -421,7 +421,8 @@ const handler = new MessengerHandler()
 						await context.setState({ paginationNumber: context.state.paginationNumber + 1 });
 						console.log(context.state.paginationNumber);
 
-						// await context.setState({ dialog: 'availableIntents' });
+						await context.setState({ dialog: 'availableIntents' });
+						console.log(context.state.dialog);
 					} else {
 						console.log('Im not here');
 
@@ -907,6 +908,8 @@ const handler = new MessengerHandler()
 				break;
 
 			case 'availableIntents':
+				console.log('fell here');
+
 				if (!context.state.paginationNumber || context.state.paginationNumber === '' || context.state.paginationNumber === 0) {
 					await context.setState({ paginationNumber: 1 });
 				}
