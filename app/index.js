@@ -420,12 +420,16 @@ const handler = new MessengerHandler()
 
 						await context.setState({ paginationNumber: context.state.paginationNumber + 1 });
 						console.log(context.state.paginationNumber);
+						await context.setState({
+							availableIntents: await MandatoAbertoAPI.getAvailableIntents(
+								context.event.rawEvent.recipient.id, context.state.paginationNumber,
+							),
+						});
+						console.log(context.state.availableIntents);
+						await context.sendText('Escolha um tema:', await attach.getIntentQR(context.state.availableIntents.intents));
 
-						await context.setState({ dialog: 'availableIntents' });
-						console.log(context.state.dialog);
+						// await context.setState({ dialog: 'availableIntents' }); not working
 					} else {
-						console.log('Im not here');
-
 						await context.setState({ dialog: payload });
 					}
 				} else if (context.event.isAudio) {
