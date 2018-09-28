@@ -73,9 +73,12 @@ module.exports.getIntentQR = getIntentQR;
 // get quick_replies opject with intents array
 async function getOptionsQR(opt, theme) {
 	const elements = [];
+
+	console.log('opt', opt);
+
 	// build a quick_reply options for each of the politicians available intents
-	opt.forEach((element, index) => {
-		elements.push({
+	opt.forEach(async (element, index) => {
+		await elements.push({
 			content_type: 'text',
 			title: element,
 			payload: `answerIntent${theme}${index}`,
