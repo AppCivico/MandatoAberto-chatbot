@@ -442,9 +442,9 @@ const handler = new MessengerHandler()
 						context.state.types.splice(context.state.number, 1); // removing the theme we just answered
 						await context.setState({ quickReplies: ['fsdfsdf'] });
 
-						if () {
-							
-						}
+						// if () {
+
+						// }
 					} else if (payload === 'moreThemes') {
 						await context.setState({ paginationNumber: context.state.paginationNumber + 1 });
 						await showThemesQR(context);
