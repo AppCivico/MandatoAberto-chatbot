@@ -170,6 +170,7 @@ async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-dec
 }
 
 async function showThemesQR(context) {
+	await context.setState({ firstTime: true }); // flag to check during answer loop that we have to load the types we have
 	await context.setState({ availableIntents: await MandatoAbertoAPI.getAvailableIntents(context.event.rawEvent.recipient.id, context.state.paginationNumber) });
 	await context.setState({ nextIntents: await MandatoAbertoAPI.getAvailableIntents(context.event.rawEvent.recipient.id, context.state.paginationNumber + 1) });
 	// console.log('currentPage', context.state.paginationNumber);
@@ -410,7 +411,10 @@ const handler = new MessengerHandler()
 						await context.setState({ // getting knowledge base. We send the complete answer from dialogflow
 							knowledge: await MandatoAbertoAPI.getknowledgeBaseByName(context.state.politicianData.user_id, context.state.themeName),
 						});
-						await context.setState({ types: await getOurTypes(context.state.knowledge.knowledge_base) });
+						if (context.state.firstTime === true) {
+							await context.setState({ types: await getOurTypes(context.state.knowledge.knowledge_base) });
+							await context.setState({ firstTime: false });
+						}
 
 						console.log('knowledge', context.state.knowledge);
 						console.log('themeName', context.state.themeName);
@@ -452,7 +456,7 @@ const handler = new MessengerHandler()
 								context.state.options.push({
 									content_type: 'text',
 									title: `${capitalize(element)}`,
-									payload: `answerIntent${attach.capitalizeFirstLetter(context.state.themeName)}${index + 1}`,
+									payload: `answerIntent${attach.capitalizeFirstLetter(context.state.themeName)}${index}`,
 								});
 							});
 							context.state.options.push({ content_type: 'text', title: 'Temas', payload: 'availableIntents' });
