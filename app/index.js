@@ -405,17 +405,14 @@ const handler = new MessengerHandler()
 						await context.setState({ dialog: 'pollAnswer' });
 					} else if (payload.slice(0, 12) === 'answerIntent') {
 						await context.setState({ themeName: payload.replace('answerIntent', '') }); // getting the theme name
+						await context.setState({ number: payload.replace(`answerIntent${context.state.themeName}`, '') }); // getting the number type
 						await context.setState({ // getting knowledge base. We send the complete answer from dialogflow
 							knowledge: await MandatoAbertoAPI.getknowledgeBaseByName(context.state.politicianData.user_id, context.state.themeName),
 						});
-						console.log('knowledge', context.state.knowledge);
-						await context.setState({ typesWeHave: await getOurTypes(context.state.knowledge.knowledge_base) }); // storing the types we have on our knowledge_base
-						console.log('typesWeHave', context.state.typesWeHave);
+						await context.setState({ type: await getOurTypes(context.state.knowledge.knowledge_base) });
 
-						console.log('payload', payload);
-
-						const currentTheme = await context.state.knowledge.knowledge_base.find(x => x.type === context.state.types[context.state.themeName]);
-						// console.log('currentTheme', currentTheme);
+						const currentTheme = await context.state.knowledge.knowledge_base.find(x => x.type === context.state.types[context.state.number]);
+						console.log('currentTheme', currentTheme);
 
 						if (currentTheme && (currentTheme.answer || (currentTheme.saved_attachment_type !== null && currentTheme.saved_attachment_id !== null))) {
 							if (currentTheme.answer) { // if there's a text asnwer we send it
