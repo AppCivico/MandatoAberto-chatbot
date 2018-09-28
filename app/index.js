@@ -406,16 +406,21 @@ const handler = new MessengerHandler()
 					} else if (payload.slice(0, 12) === 'answerIntent') {
 						console.log('Você clicou em ', payload);
 
-						const number = context.event.postback.payload.replace('answerIntent', ''); // getting the index number of the question type
-						// await knowgetknowledgeBase
-						// find the correspondent answer using the current type
-						// TODO need to get answer from id
-						const currentTheme = await context.state.knowledge.knowledge_base.find(x => x.type === context.state.types[number]);
+						await context.setState({ themeName: context.event.postback.payload.replace('answerIntent', '') }); // getting the theme name
+						console.log('context.state.themeName', context.state.themeName);
+
+						await context.setState({ // getting knowledge base. We send the complete answer from dialogflow
+							knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, { name: context.state.themeName }),
+						});
+						console.log('knowledge', context.state.knowledge);
+
+
+						const currentTheme = await context.state.knowledge.knowledge_base.find(x => x.type === context.state.types[context.state.themeName]);
 						// console.log('currentTheme', currentTheme);
 
 						if (currentTheme && (currentTheme.answer || (currentTheme.saved_attachment_type !== null && currentTheme.saved_attachment_id !== null))) {
 							if (currentTheme.answer) { // if there's a text asnwer we send it
-								await context.sendText(`${capitalize(context.state.types[number])}: ${currentTheme.answer}`);
+								await context.sendText(`${capitalize(context.state.types[context.state.themeName])}: ${currentTheme.answer}`);
 							}
 							if (currentTheme.saved_attachment_type === 'image') { // if attachment is image
 								await context.sendImage({ attachment_id: currentTheme.saved_attachment_id });

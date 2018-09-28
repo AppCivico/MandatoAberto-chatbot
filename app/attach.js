@@ -53,7 +53,7 @@ async function getIntentQR(intents, next) {
 		elements.push({
 			content_type: 'text',
 			title: element.human_name,
-			payload: `answerIntent${element.id}`,
+			payload: `answerIntent${element.name}`,
 		});
 	});
 
