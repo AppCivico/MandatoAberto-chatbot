@@ -79,6 +79,8 @@ module.exports.capitalizeFirstLetter = capitalizeFirstLetter;
 async function sendButtons(id, text, buttons1, buttons2, accessToken) { // eslint-disable-line no-unused-vars
 	console.log('buttons1', buttons1);
 	console.log('buttons2', buttons2);
+	console.log('text', text);
+
 
 	const res = await req.post(`https://graph.facebook.com/v2.6/me/messages?access_token=${accessToken}`).send({
 		recipient: {
@@ -91,7 +93,7 @@ async function sendButtons(id, text, buttons1, buttons2, accessToken) { // eslin
 					template_type: 'generic',
 					elements: [
 						{
-							title: text,
+							title: 'text',
 							buttons: buttons1,
 						},
 						{
