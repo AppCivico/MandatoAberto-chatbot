@@ -446,20 +446,20 @@ const handler = new MessengerHandler()
 									await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
 							}, 5000);
 						} else {
-							const options = []; // building the options menu
+							await context.setState({ options: [] }); // building the options menu
 							// for each type we still haven't answered we add an option with each index on the payload
 							context.state.types.forEach((element, index) => {
-								options.push({
-									type: 'text',
+								context.state.options.push({
+									content_type: 'text',
 									title: `${capitalize(element)}`,
 									payload: `answerIntent${attach.capitalizeFirstLetter(context.state.themeName)}${index}`,
 								});
 							});
-							options.push({ type: 'text', title: 'Temas', payload: 'availableIntents' });
-							options.push({ type: 'text', title: 'Voltar', payload: 'mainMenu' });
-							console.log('options', options);
+							context.state.options.push({ content_type: 'text', title: 'Temas', payload: 'availableIntents' });
+							context.state.options.push({ content_type: 'text', title: 'Voltar', payload: 'mainMenu' });
+							console.log('options', context.state.options);
 							setTimeout(async () => {
-								await context.sendText(`Deseja saber mais sobre ${getDictionary(context.state.themeName)}?`, { quick_replies: options });
+								await context.sendText(`Deseja saber mais sobre ${getDictionary(context.state.themeName)}?`, { quick_replies: context.state.options });
 							}, 2000);
 						}
 					} else if (payload === 'moreThemes') {
