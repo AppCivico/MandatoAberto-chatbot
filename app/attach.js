@@ -69,6 +69,9 @@ async function getIntentQR(intents, next) {
 
 module.exports.getIntentQR = getIntentQR;
 
+function capitalizeFirstLetter(string) {
+	return string.charAt(0).toUpperCase() + string.slice(1);
+}
 
 // get quick_replies opject with intents array
 async function getOptionsQR(opt, theme) {
@@ -80,7 +83,7 @@ async function getOptionsQR(opt, theme) {
 	await opt[0].forEach(async (element, index) => {
 		await elements.push({
 			content_type: 'text',
-			title: element,
+			title: capitalizeFirstLetter(element),
 			payload: `answerIntent${theme}${index}`,
 		});
 	});
