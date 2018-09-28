@@ -82,18 +82,21 @@ async function sendButtons(id, text, buttons1, buttons2, accessToken) { // eslin
 			id,
 		},
 		message: {
-			payload: {
-				template_type: 'generic',
-				elements: [
-					{
-						title: text,
-						buttons: buttons1,
-					},
-					{
-						title: 'Escolha',
-						buttons: buttons2,
-					},
-				],
+			attachment: {
+				type: 'template',
+				payload: {
+					template_type: 'generic',
+					elements: [
+						{
+							title: text,
+							buttons: buttons1,
+						},
+						{
+							title: 'Escolha',
+							buttons: buttons2,
+						},
+					],
+				},
 			},
 		},
 	});
