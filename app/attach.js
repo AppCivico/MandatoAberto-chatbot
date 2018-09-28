@@ -77,7 +77,7 @@ async function getOptionsQR(opt, theme) {
 	console.log('opt', opt);
 
 	// build a quick_reply options for each of the politicians available intents
-	await opt.forEach(async (element, index) => {
+	await opt[0].forEach(async (element, index) => {
 		await elements.push({
 			content_type: 'text',
 			title: element,
