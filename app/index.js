@@ -663,7 +663,7 @@ const handler = new MessengerHandler()
 					console.log('asdasdasd');
 
 					await attach.sendButtons(context.session.user.id, await loadOptionPrompt(context),
-						[opt.aboutPolitician, opt.poll_suaOpiniao, opt.availableIntents], context.state.politicianData.fb_access_token);
+						[opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate, opt.availableIntents], context.state.politicianData.fb_access_token);
 					delete menuTimers[context.session.user.id]; // deleting this timer from timers object
 				}, MenuTimerlimit);
 				await context.setState({ dialog: 'prompt' });
