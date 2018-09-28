@@ -410,7 +410,7 @@ const handler = new MessengerHandler()
 						console.log('context.state.themeName', context.state.themeName);
 
 						await context.setState({ // getting knowledge base. We send the complete answer from dialogflow
-							knowledge: await MandatoAbertoAPI.getknowledgeBaseByName(context.state.politicianData.user_id, context.state.name),
+							knowledge: await MandatoAbertoAPI.getknowledgeBaseByName(context.state.politicianData.user_id, { entities: context.state.name }),
 						});
 						console.log('knowledge', context.state.knowledge);
 
