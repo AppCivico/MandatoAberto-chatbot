@@ -406,7 +406,7 @@ const handler = new MessengerHandler()
 					} else if (payload.slice(0, 12) === 'answerIntent') {
 						console.log('Você clicou em ', payload);
 
-						await context.setState({ themeName: context.event.postback.payload.replace('answerIntent', '') }); // getting the theme name
+						await context.setState({ themeName: payload.replace('answerIntent', '') }); // getting the theme name
 						console.log('context.state.themeName', context.state.themeName);
 
 						await context.setState({ // getting knowledge base. We send the complete answer from dialogflow
