@@ -89,6 +89,8 @@ async function sendButtons(id, text, buttons, accessToken) { // eslint-disable-l
 		},
 	});
 	const response = await res.json();
+	console.log(response);
+
 	return response;
 }
 module.exports.sendButtons = sendButtons;

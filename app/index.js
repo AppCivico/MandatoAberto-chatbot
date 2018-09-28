@@ -660,6 +660,8 @@ const handler = new MessengerHandler()
 					// 	await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate, opt.availableIntents]));
 					// await context.sendButtonTemplate(await loadOptionPrompt(context),
 					// 	await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.availableIntents]));
+					console.log('asdasdasd');
+
 					await attach.sendButtons(context.session.user.id, await loadOptionPrompt(context),
 						[opt.aboutPolitician, opt.poll_suaOpiniao, opt.availableIntents], context.state.politicianData.fb_access_token);
 					delete menuTimers[context.session.user.id]; // deleting this timer from timers object
