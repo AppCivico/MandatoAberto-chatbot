@@ -412,6 +412,9 @@ const handler = new MessengerHandler()
 						});
 						await context.setState({ type: await getOurTypes(context.state.knowledge.knowledge_base) });
 
+						console.log('themeName', context.state.themeName);
+						console.log('number', context.state.number);
+
 						const currentTheme = await context.state.knowledge.knowledge_base.find(x => x.type === context.state.types[context.state.number]);
 						console.log('currentTheme', currentTheme);
 
