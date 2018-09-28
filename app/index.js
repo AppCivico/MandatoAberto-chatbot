@@ -186,7 +186,7 @@ async function showThemesQR(context) {
 	console.log('current intents', context.state.availableIntents);
 	console.log('nextIntents', context.state.nextIntents);
 
-	await context.sendText('Escolha um tema:', await attach.getIntentQR(context.state.availableIntents.intents, context.state.nextIntents.intents));
+	await context.sendText('Escolha um tema:', await attach.getIntentQR(context.state.availableIntents.intents));
 }
 
 function getDictionary(word) {
