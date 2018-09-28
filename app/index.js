@@ -388,6 +388,8 @@ const handler = new MessengerHandler()
 					const { payload } = context.event.message.quick_reply;
 					if (payload.slice(0, 4) === 'poll') { // user answered poll that came from timer
 						await context.setState({ dialog: 'pollAnswer' });
+					} else if (payload.slice(0, 12) === 'answerIntent') {
+						console.log('Você clicou em ', payload);
 					} else {
 						await context.setState({ dialog: payload });
 					}
