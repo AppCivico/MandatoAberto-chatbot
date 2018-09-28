@@ -77,7 +77,7 @@ async function getOptionsQR(opt, theme) {
 	console.log('opt', opt);
 
 	// build a quick_reply options for each of the politicians available intents
-	opt.forEach(async (element, index) => {
+	await opt.forEach(async (element, index) => {
 		await elements.push({
 			content_type: 'text',
 			title: element,
@@ -85,13 +85,13 @@ async function getOptionsQR(opt, theme) {
 		});
 	});
 
-	elements.push({
+	await elements.push({
 		content_type: 'text',
 		title: 'Temas',
 		payload: 'availableIntents',
 	});
 
-	elements.push({
+	await elements.push({
 		content_type: 'text',
 		title: 'Voltar',
 		payload: 'mainMenu',
