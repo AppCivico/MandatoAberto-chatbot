@@ -73,6 +73,8 @@ function capitalizeFirstLetter(string) {
 	return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
+module.exports.capitalizeFirstLetter = capitalizeFirstLetter;
+
 // get quick_replies opject with intents array
 async function getOptionsQR(opt, theme) {
 	const elements = [];

@@ -366,15 +366,15 @@ const handler = new MessengerHandler()
 										await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
 								}, 5000);
 							} else {
-								const options = []; // building the options menu
+								await context.setState({ options: [] }); // building the options menu
 								// for each type we still haven't answered we add an option with each index on the payload
 								context.state.types.forEach((element, index) => {
-									options.push({ type: 'postback', title: `${capitalize(element)}`, payload: `themeYes${index}` });
+									context.state.options.push({ type: 'postback', title: `${capitalize(element)}`, payload: `themeYes${index}` });
 								});
-								options.push({ type: 'postback', title: 'Voltar', payload: 'mainMenu' });
-								console.log('options', options);
+								context.state.options.push({ type: 'postback', title: 'Voltar', payload: 'mainMenu' });
+								console.log('options', context.state.options);
 								setTimeout(async () => {
-									await context.sendButtonTemplate(`Deseja saber mais sobre ${getDictionary(context.state.intentName)}?`, options);
+									await context.sendButtonTemplate(`Deseja saber mais sobre ${getDictionary(context.state.intentName)}?`, context.state.options);
 								}, 5000);
 							}
 						} else { // we couldn't find neither text answer nor attachment (This is an error and it shouldn't happen)
@@ -449,16 +449,19 @@ const handler = new MessengerHandler()
 							const options = []; // building the options menu
 							// for each type we still haven't answered we add an option with each index on the payload
 							context.state.types.forEach((element, index) => {
-								options.push({ type: 'postback', title: `${capitalize(element)}`, payload: `themeYes${index}` });
+								options.push({
+									type: 'text',
+									title: `${capitalize(element)}`,
+									payload: `answerIntent${attach.capitalizeFirstLetter(context.state.themeName)}${index}`,
+								});
 							});
-							options.push({ type: 'postback', title: 'Voltar', payload: 'mainMenu' });
+							options.push({ type: 'text', title: 'Voltar', payload: 'mainMenu' });
 							console.log('options', options);
 							setTimeout(async () => {
 								await context.sendText(`Deseja saber mais sobre ${getDictionary(context.state.themeName)}?`,
-									await attach.getOptionsQR([context.state.types], context.state.themeName));
+									options);
 							}, 2000);
 						}
-						// }
 					} else if (payload === 'moreThemes') {
 						await context.setState({ paginationNumber: context.state.paginationNumber + 1 });
 						await showThemesQR(context);
