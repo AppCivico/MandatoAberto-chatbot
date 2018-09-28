@@ -415,9 +415,9 @@ const handler = new MessengerHandler()
 						console.log('themeName', context.state.themeName);
 						console.log('number', context.state.number);
 						console.log('type', context.state.type);
+						console.log('context.state.types[context.state.number]', context.state.types[context.state.number]);
 
 						await context.setState({ currentTheme: context.state.knowledge.knowledge_base.find(x => x.type === context.state.types[context.state.number]) });
-
 						console.log('currentTheme', context.state.currentTheme);
 
 						if (context.state.currentTheme && (context.state.currentTheme.answer
