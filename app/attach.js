@@ -46,7 +46,7 @@ async function getQR(opt, payload) {
 module.exports.getQR = getQR;
 
 // get quick_replies opject with intents array
-async function getIntentQR(intents) {
+async function getIntentQR(intents, next) {
 	const elements = [];
 	// build a quick_reply options for each of the politicians available intents
 	intents.forEach((element) => {
@@ -59,7 +59,7 @@ async function getIntentQR(intents) {
 
 	// if we have 7 options we show an option for the user to get more intents
 	// TODO: what happens if we have exactly 7 intents?
-	if (elements.length === 7) {
+	if (elements.length === 7 && next.length !== 0) {
 		elements.push({ content_type: 'text', title: 'Mais temas', payload: 'moreThemes' });
 	} else {
 		elements.push({ content_type: 'text', title: 'Voltar', payload: 'mainMenu' });
