@@ -170,13 +170,11 @@ async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-dec
 }
 
 async function showThemesQR(context) {
-	// TODO cachear um página pra sempre saber se tem mais intents por vir
-
 	await context.setState({ availableIntents: await MandatoAbertoAPI.getAvailableIntents(context.event.rawEvent.recipient.id, context.state.paginationNumber) });
 	await context.setState({ nextIntents: await MandatoAbertoAPI.getAvailableIntents(context.event.rawEvent.recipient.id, context.state.paginationNumber + 1) });
-	console.log('currentPage', context.state.paginationNumber);
-	console.log('current intents', context.state.availableIntents);
-	console.log('nextIntents', context.state.nextIntents);
+	// console.log('currentPage', context.state.paginationNumber);
+	// console.log('current intents', context.state.availableIntents);
+	// console.log('nextIntents', context.state.nextIntents);
 
 	await context.sendText('Escolha um tema:', await attach.getIntentQR(context.state.availableIntents.intents, context.state.nextIntents.intents));
 }
@@ -340,27 +338,28 @@ const handler = new MessengerHandler()
 					if (listening[context.session.user.id]) { delete listening[context.session.user.id]; }
 					// Question/Position flow
 					if (context.event.postback.payload.slice(0, 8) === 'themeYes') { // user confirms that theme(s) is/are correct
-						const number = context.event.postback.payload.replace('themeYes', ''); // getting the index number of the question type
+						await context.setState({ number: context.event.postback.payload.replace('themeYes', '') }); context.event.postback.payload.replace('themeYes', '');
 						// find the correspondent answer using the current type
-						const currentTheme = await context.state.knowledge.knowledge_base.find(x => x.type === context.state.types[number]);
+						await context.setState({ currentTheme: await context.state.knowledge.knowledge_base.find(x => x.type === context.state.types[context.state.number]) });
 						// console.log('currentTheme', currentTheme);
 
-						if (currentTheme && (currentTheme.answer || (currentTheme.saved_attachment_type !== null && currentTheme.saved_attachment_id !== null))) {
-							if (currentTheme.answer) { // if there's a text asnwer we send it
-								await context.sendText(`${capitalize(context.state.types[number])}: ${currentTheme.answer}`);
+						if (context.state.currentTheme && (context.state.currentTheme.answer
+							|| (context.state.currentTheme.saved_attachment_type !== null && context.state.currentTheme.saved_attachment_id !== null))) {
+							if (context.state.currentTheme.answer) { // if there's a text asnwer we send it
+								await context.sendText(`${capitalize(context.state.types[context.state.number])}: ${context.state.currentTheme.answer}`);
 							}
-							if (currentTheme.saved_attachment_type === 'image') { // if attachment is image
-								await context.sendImage({ attachment_id: currentTheme.saved_attachment_id });
+							if (context.state.currentTheme.saved_attachment_type === 'image') { // if attachment is image
+								await context.sendImage({ attachment_id: context.state.currentTheme.saved_attachment_id });
 							}
-							if (currentTheme.saved_attachment_type === 'video') { // if attachment is video
-								await context.sendVideo({ attachment_id: currentTheme.saved_attachment_id });
+							if (context.state.currentTheme.saved_attachment_type === 'video') { // if attachment is video
+								await context.sendVideo({ attachment_id: context.state.currentTheme.saved_attachment_id });
 							}
-							if (currentTheme.saved_attachment_type === 'audio') { // if attachment is audio
-								await context.sendAudio({ attachment_id: currentTheme.saved_attachment_id });
+							if (context.state.currentTheme.saved_attachment_type === 'audio') { // if attachment is audio
+								await context.sendAudio({ attachment_id: context.state.currentTheme.saved_attachment_id });
 							}
 							await context.typingOn();
 							// building the menu
-							context.state.types.splice(number, 1); // removing the theme we just answered
+							context.state.types.splice(context.state.number, 1); // removing the theme we just answered
 							if (context.state.types.length === 0) { // we don't have anymore type of answer (the user already clicked throught them all)
 								setTimeout(async () => {
 									await context.sendButtonTemplate(await loadOptionPrompt(context),
@@ -406,7 +405,9 @@ const handler = new MessengerHandler()
 						await context.setState({ dialog: 'pollAnswer' });
 					} else if (payload.slice(0, 12) === 'answerIntent') {
 						console.log('Você clicou em ', payload);
+
 						const number = context.event.postback.payload.replace('answerIntent', ''); // getting the index number of the question type
+						// await knowgetknowledgeBase
 						// find the correspondent answer using the current type
 						// TODO need to get answer from id
 						const currentTheme = await context.state.knowledge.knowledge_base.find(x => x.type === context.state.types[number]);
