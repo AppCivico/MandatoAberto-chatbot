@@ -382,6 +382,9 @@ const handler = new MessengerHandler()
 						delete userMessages[context.session.user.id]; // deleting last sent message (it was sent already)
 						await context.setState({ dialog: 'createIssue' });
 					} else {
+						if (context.event.postback.payload === 'availableIntents') {
+							await context.setState({ paginationNumber: 1 }); // resetting pagination
+						}
 						await context.setState({ dialog: context.event.postback.payload });
 					}
 				} else if (context.event.isQuickReply) {
