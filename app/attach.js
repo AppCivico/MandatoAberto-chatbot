@@ -58,11 +58,9 @@ async function getIntentQR(intents) {
 	// if we have 7 options we show an option for the user to get more intents
 	// TODO: what happens if we have exactly 7 intents?
 	if (elements.length === 7) {
-		elements.push({
-			content_type: 'text',
-			title: 'Mais temas',
-			payload: 'moreThemes',
-		});
+		elements.push({ content_type: 'text', title: 'Mais temas', payload: 'moreThemes' });
+	} else {
+		elements.push({ content_type: 'text', title: 'Voltar', payload: 'mainMenu' });
 	}
 
 	return { quick_replies: elements };
