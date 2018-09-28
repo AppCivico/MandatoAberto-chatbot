@@ -77,11 +77,6 @@ module.exports.capitalizeFirstLetter = capitalizeFirstLetter;
 
 // get every label
 async function sendButtons(id, text, buttons1, buttons2, accessToken) { // eslint-disable-line no-unused-vars
-	console.log('buttons1', buttons1);
-	console.log('buttons2', buttons2);
-	console.log('text', text);
-
-
 	const res = await req.post(`https://graph.facebook.com/v2.6/me/messages?access_token=${accessToken}`).send({
 		recipient: {
 			id,
