@@ -57,8 +57,7 @@ async function getIntentQR(intents, next) {
 		});
 	});
 
-	// if we have 7 options we show an option for the user to get more intents
-	// TODO: what happens if we have exactly 10 intents?
+	// if we have 10 options we show an option for the user to get more intents. Next is the next pagination page.
 	if (elements.length === 10 && next.length !== 0) {
 		elements.push({ content_type: 'text', title: 'Mais temas', payload: 'moreThemes' });
 	} else {
