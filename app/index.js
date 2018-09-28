@@ -868,6 +868,11 @@ const handler = new MessengerHandler()
 				await context.sendText('Legal. Estaremos te avisando das novidades.');
 				await context.sendButtonTemplate('Quer saber mais?', await checkMenu(context, [opt.aboutPolitician, opt.trajectory, opt.participate]));
 				break;
+
+			case 'availableIntents':
+				await context.setState({ availableIntents: await MandatoAbertoAPI.getAvailableIntents(context.event.rawEvent.recipient.id, 1) });
+				console.log(context.state.availableIntents);
+				break;
 			} // end switch de diálogo
 		}
 	})
