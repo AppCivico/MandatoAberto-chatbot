@@ -658,15 +658,8 @@ const handler = new MessengerHandler()
 				menuTimers[context.session.user.id] = setTimeout(async () => { // wait 'MenuTimerlimit' to show options menu
 					// await context.sendButtonTemplate(await loadOptionPrompt(context), TODO review as 4 opções
 					// 	await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate, opt.availableIntents]));
-					await context.sendTemplate({
-						template_type: 'button',
-						text: await loadOptionPrompt(context),
-						buttons: [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate, opt.availableIntents,
-
-						],
-					});
-					// await context.sendButtonTemplate(await loadOptionPrompt(context),
-					// 	await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.availableIntents]));
+					await context.sendButtonTemplate(await loadOptionPrompt(context),
+						await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.availableIntents]));
 					delete menuTimers[context.session.user.id]; // deleting this timer from timers object
 				}, MenuTimerlimit);
 				await context.setState({ dialog: 'prompt' });
