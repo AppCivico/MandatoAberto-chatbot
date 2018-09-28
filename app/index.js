@@ -412,6 +412,7 @@ const handler = new MessengerHandler()
 						});
 						await context.setState({ type: await getOurTypes(context.state.knowledge.knowledge_base) });
 
+						console.log('knowledge', context.state.knowledge);
 						console.log('themeName', context.state.themeName);
 						console.log('number', context.state.number);
 						console.log('type', context.state.type);
