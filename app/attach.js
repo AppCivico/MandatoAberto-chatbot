@@ -75,53 +75,25 @@ function capitalizeFirstLetter(string) {
 
 module.exports.capitalizeFirstLetter = capitalizeFirstLetter;
 
-// get quick_replies opject with intents array
-async function getOptionsQR(opt, theme) {
-	const elements = [];
-
-	console.log('opt', opt);
-
-	// build a quick_reply options for each of the politicians available intents
-	await opt[0].forEach(async (element, index) => {
-		await elements.push({
-			content_type: 'text',
-			title: capitalizeFirstLetter(element),
-			payload: `answerIntent${theme}${index}`,
-		});
-	});
-
-	await elements.push({
-		content_type: 'text',
-		title: 'Temas',
-		payload: 'availableIntents',
-	});
-
-	await elements.push({
-		content_type: 'text',
-		title: 'Voltar',
-		payload: 'mainMenu',
-	});
-
-	return { quick_replies: elements };
-}
-
-module.exports.getOptionsQR = getOptionsQR;
-
-
 // get every label
-async function sendButtons(id, text, buttons, accessToken) { // eslint-disable-line no-unused-vars
+async function sendButtons(id, text, buttons1, buttons2, accessToken) { // eslint-disable-line no-unused-vars
 	const res = await req.post(`https://graph.facebook.com/v2.6/me/messages?access_token=${accessToken}`).send({
 		recipient: {
 			id,
 		},
 		message: {
-			attachment: {
-				type: 'template',
-				payload: {
-					template_type: 'button',
-					text,
-					buttons,
-				},
+			payload: {
+				template_type: 'generic',
+				elements: [
+					{
+						title: text,
+						buttons: buttons1,
+					},
+					{
+						title: 'Escolha',
+						buttons: buttons2,
+					},
+				],
 			},
 		},
 	});
@@ -131,3 +103,26 @@ async function sendButtons(id, text, buttons, accessToken) { // eslint-disable-l
 	return response;
 }
 module.exports.sendButtons = sendButtons;
+// // get every label
+// async function sendButtons(id, text, buttons, accessToken) { // eslint-disable-line no-unused-vars
+// 	const res = await req.post(`https://graph.facebook.com/v2.6/me/messages?access_token=${accessToken}`).send({
+// 		recipient: {
+// 			id,
+// 		},
+// 		message: {
+// 			attachment: {
+// 				type: 'template',
+// 				payload: {
+// 					template_type: 'button',
+// 					text,
+// 					buttons:,
+// 				},
+// 			},
+// 		},
+// 	});
+// 	const response = await res.json();
+// 	console.log('response', response);
+
+// 	return response;
+// }
+// module.exports.sendButtons = sendButtons;
