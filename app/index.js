@@ -410,12 +410,12 @@ const handler = new MessengerHandler()
 						await context.setState({ // getting knowledge base. We send the complete answer from dialogflow
 							knowledge: await MandatoAbertoAPI.getknowledgeBaseByName(context.state.politicianData.user_id, context.state.themeName),
 						});
-						await context.setState({ type: await getOurTypes(context.state.knowledge.knowledge_base) });
+						await context.setState({ types: await getOurTypes(context.state.knowledge.knowledge_base) });
 
 						console.log('knowledge', context.state.knowledge);
 						console.log('themeName', context.state.themeName);
 						console.log('number', context.state.number);
-						console.log('type', context.state.type);
+						console.log('type', context.state.types);
 						console.log('context.state.types[context.state.number]', context.state.types[context.state.number]);
 
 						await context.setState({ currentTheme: context.state.knowledge.knowledge_base.find(x => x.type === context.state.types[context.state.number]) });
@@ -438,6 +438,13 @@ const handler = new MessengerHandler()
 							await context.typingOn();
 							// TODO discover what to do after answering
 						} // end currentTheme if --------------------------------------------------
+
+						context.state.types.splice(context.state.number, 1); // removing the theme we just answered
+						await context.setState({ quickReplies: ['fsdfsdf'] });
+
+						if () {
+							
+						}
 					} else if (payload === 'moreThemes') {
 						await context.setState({ paginationNumber: context.state.paginationNumber + 1 });
 						await showThemesQR(context);
