@@ -180,7 +180,7 @@ async function showThemesQR(context) {
 	console.log(context.state.paginationNumber);
 	await context.setState({
 		nextIntents: await MandatoAbertoAPI.getAvailableIntents(
-			context.event.rawEvent.recipient.id, context.state.paginationNumber + 1,
+			context.event.rawEvent.recipient.id, context.state.paginationNumber + 2,
 		),
 	});
 	console.log('nextIntents', context.state.nextIntents);
