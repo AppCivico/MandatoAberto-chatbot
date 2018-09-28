@@ -405,7 +405,7 @@ const handler = new MessengerHandler()
 						await context.setState({ dialog: 'pollAnswer' });
 					} else if (payload.slice(0, 12) === 'answerIntent') {
 						await context.setState({ themeName: payload.replace('answerIntent', '') }); // getting the theme name
-						await context.setState({ number: payload.replace(`answerIntent${context.state.themeName}`, '') }); // getting the number type
+						await context.setState({ number: payload[payload.length - 1] });// getting the number type
 						await context.setState({ themeName: context.state.themeName.replace(context.state.number, '') }); // getting the theme name
 						await context.setState({ // getting knowledge base. We send the complete answer from dialogflow
 							knowledge: await MandatoAbertoAPI.getknowledgeBaseByName(context.state.politicianData.user_id, context.state.themeName),
