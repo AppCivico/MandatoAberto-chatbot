@@ -455,11 +455,11 @@ const handler = new MessengerHandler()
 									payload: `answerIntent${attach.capitalizeFirstLetter(context.state.themeName)}${index}`,
 								});
 							});
+							options.push({ type: 'text', title: 'Temas', payload: 'availableIntents' });
 							options.push({ type: 'text', title: 'Voltar', payload: 'mainMenu' });
 							console.log('options', options);
 							setTimeout(async () => {
-								await context.sendText(`Deseja saber mais sobre ${getDictionary(context.state.themeName)}?`,
-									options);
+								await context.sendText(`Deseja saber mais sobre ${getDictionary(context.state.themeName)}?`, options);
 							}, 2000);
 						}
 					} else if (payload === 'moreThemes') {
