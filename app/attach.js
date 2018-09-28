@@ -1,3 +1,5 @@
+const req = require('requisition');
+
 // sends carrousel with related questions
 async function sendQuestions(context, content) {
 	const elements = [];
@@ -67,3 +69,12 @@ async function getIntentQR(intents) {
 }
 
 module.exports.getIntentQR = getIntentQR;
+
+
+// get every label
+async function listAllLabels() { // eslint-disable-line no-unused-vars
+	const res = await req.get('https://graph.facebook.com/v2.6/me/messages?access_token=');
+	const response = await res.json();
+	return response;
+}
+module.exports.listAllLabels = listAllLabels;
