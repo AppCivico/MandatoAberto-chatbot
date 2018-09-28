@@ -76,8 +76,8 @@ module.exports = {
 		const Blacklist = await res.json();
 		return Blacklist;
 	},
-	async getAvailableIntents(fb_id, list) {
-		const res = await request(`${apiUri}/api/chatbot/intents/available?fb_id=${fb_id}&list=${list}&security_token=${security_token}`);
+	async getAvailableIntents(pageId, list) {
+		const res = await request(`${apiUri}/api/chatbot/intents/available?fb_page_id=${pageId}&list=${list}&security_token=${security_token}`);
 		const intents = await res.json();
 		return intents;
 	},
