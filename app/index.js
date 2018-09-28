@@ -390,6 +390,28 @@ const handler = new MessengerHandler()
 						await context.setState({ dialog: 'pollAnswer' });
 					} else if (payload.slice(0, 12) === 'answerIntent') {
 						console.log('Você clicou em ', payload);
+						const number = context.event.postback.payload.replace('answerIntent', ''); // getting the index number of the question type
+						// find the correspondent answer using the current type
+						// TODO need to get answer from id
+						const currentTheme = await context.state.knowledge.knowledge_base.find(x => x.type === context.state.types[number]);
+						// console.log('currentTheme', currentTheme);
+
+						if (currentTheme && (currentTheme.answer || (currentTheme.saved_attachment_type !== null && currentTheme.saved_attachment_id !== null))) {
+							if (currentTheme.answer) { // if there's a text asnwer we send it
+								await context.sendText(`${capitalize(context.state.types[number])}: ${currentTheme.answer}`);
+							}
+							if (currentTheme.saved_attachment_type === 'image') { // if attachment is image
+								await context.sendImage({ attachment_id: currentTheme.saved_attachment_id });
+							}
+							if (currentTheme.saved_attachment_type === 'video') { // if attachment is video
+								await context.sendVideo({ attachment_id: currentTheme.saved_attachment_id });
+							}
+							if (currentTheme.saved_attachment_type === 'audio') { // if attachment is audio
+								await context.sendAudio({ attachment_id: currentTheme.saved_attachment_id });
+							}
+							await context.typingOn();
+							// TODO discover what to do after answering
+						} // end answerIntent --------------------------------------------------
 					} else {
 						await context.setState({ dialog: payload });
 					}
