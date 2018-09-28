@@ -412,8 +412,7 @@ const handler = new MessengerHandler()
 						await context.setState({ typesWeHave: await getOurTypes(context.state.knowledge.knowledge_base) }); // storing the types we have on our knowledge_base
 						console.log('typesWeHave', context.state.typesWeHave);
 
-						await context.setState({ types: await checkTypes(['posicionamento', 'proposta', 'histórico'], context.state.typesWeHave) }); // getting common types
-						console.log('types', context.state.types);
+						console.log('payload', payload);
 
 						const currentTheme = await context.state.knowledge.knowledge_base.find(x => x.type === context.state.types[context.state.themeName]);
 						// console.log('currentTheme', currentTheme);
