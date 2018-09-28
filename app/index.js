@@ -395,7 +395,7 @@ const handler = new MessengerHandler()
 					} else {
 						if (context.event.postback.payload === 'availableIntents') {
 							await context.setState({ paginationNumber: 1 }); // resetting pagination
-							await showThemesQR();
+							await showThemesQR(context);
 						}
 						await context.setState({ dialog: context.event.postback.payload });
 					}
@@ -429,7 +429,7 @@ const handler = new MessengerHandler()
 						} // end answerIntent --------------------------------------------------
 					} else if (payload === 'moreThemes') {
 						await context.setState({ paginationNumber: context.state.paginationNumber + 1 });
-						await showThemesQR();
+						await showThemesQR(context);
 
 						// await context.setState({ dialog: 'availableIntents' }); not working
 					} else {
