@@ -455,7 +455,7 @@ const handler = new MessengerHandler()
 							console.log('options', options);
 							setTimeout(async () => {
 								await context.sendText(`Deseja saber mais sobre ${getDictionary(context.state.themeName)}?`,
-									attach.getOptionsQR([context.state.types], context.state.themeName));
+									await attach.getOptionsQR([context.state.types], context.state.themeName));
 							}, 2000);
 						}
 						// }
