@@ -71,9 +71,14 @@ module.exports = {
 		return privateReply;
 	},
 
-	async updateBlacklist(fb_id, active) { // mising the 0,1 flag
+	async updateBlacklist(fb_id, active) {
 		const res = await request.post(`${apiUri}/api/chatbot/blacklist?fb_id=${fb_id}&active=${active}&security_token=${security_token}`);
 		const Blacklist = await res.json();
 		return Blacklist;
+	},
+	async getAvailableIntents(fb_id, list) {
+		const res = await request(`${apiUri}/api/chatbot/intents/available?fb_id=${fb_id}&list=${list}&security_token=${security_token}`);
+		const intents = await res.json();
+		return intents;
 	},
 };
