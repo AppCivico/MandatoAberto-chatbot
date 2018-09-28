@@ -412,6 +412,9 @@ const handler = new MessengerHandler()
 							await context.typingOn();
 							// TODO discover what to do after answering
 						} // end answerIntent --------------------------------------------------
+					} else if (payload === 'moreThemes') {
+						await context.setState({ paginationNumber: context.state.paginationNumber + 1 });
+						// await context.setState({ dialog: 'availableIntents' });
 					} else {
 						await context.setState({ dialog: payload });
 					}
