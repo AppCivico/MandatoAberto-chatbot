@@ -414,22 +414,25 @@ const handler = new MessengerHandler()
 
 						console.log('themeName', context.state.themeName);
 						console.log('number', context.state.number);
+						console.log('type', context.state.type);
 
-						const currentTheme = await context.state.knowledge.knowledge_base.find(x => x.type === context.state.types[context.state.number]);
-						console.log('currentTheme', currentTheme);
+						await context.setState({ currentTheme: context.state.knowledge.knowledge_base.find(x => x.type === context.state.types[context.state.number]) });
 
-						if (currentTheme && (currentTheme.answer || (currentTheme.saved_attachment_type !== null && currentTheme.saved_attachment_id !== null))) {
-							if (currentTheme.answer) { // if there's a text asnwer we send it
-								await context.sendText(`${capitalize(context.state.types[context.state.themeName])}: ${currentTheme.answer}`);
+						console.log('currentTheme', context.state.currentTheme);
+
+						if (context.state.currentTheme && (context.state.currentTheme.answer
+							|| (context.state.currentTheme.saved_attachment_type !== null && context.state.currentTheme.saved_attachment_id !== null))) {
+							if (context.state.currentTheme.answer) { // if there's a text asnwer we send it
+								await context.sendText(`${capitalize(context.state.types[context.state.number])}: ${context.state.currentTheme.answer}`);
 							}
-							if (currentTheme.saved_attachment_type === 'image') { // if attachment is image
-								await context.sendImage({ attachment_id: currentTheme.saved_attachment_id });
+							if (context.state.currentTheme.saved_attachment_type === 'image') { // if attachment is image
+								await context.sendImage({ attachment_id: context.state.currentTheme.saved_attachment_id });
 							}
-							if (currentTheme.saved_attachment_type === 'video') { // if attachment is video
-								await context.sendVideo({ attachment_id: currentTheme.saved_attachment_id });
+							if (context.state.currentTheme.saved_attachment_type === 'video') { // if attachment is video
+								await context.sendVideo({ attachment_id: context.state.currentTheme.saved_attachment_id });
 							}
-							if (currentTheme.saved_attachment_type === 'audio') { // if attachment is audio
-								await context.sendAudio({ attachment_id: currentTheme.saved_attachment_id });
+							if (context.state.currentTheme.saved_attachment_type === 'audio') { // if attachment is audio
+								await context.sendAudio({ attachment_id: context.state.currentTheme.saved_attachment_id });
 							}
 							await context.typingOn();
 							// TODO discover what to do after answering
