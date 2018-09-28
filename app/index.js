@@ -459,7 +459,7 @@ const handler = new MessengerHandler()
 							options.push({ type: 'text', title: 'Voltar', payload: 'mainMenu' });
 							console.log('options', options);
 							setTimeout(async () => {
-								await context.sendText(`Deseja saber mais sobre ${getDictionary(context.state.themeName)}?`, options);
+								await context.sendText(`Deseja saber mais sobre ${getDictionary(context.state.themeName)}?`, { quick_replies: options });
 							}, 2000);
 						}
 					} else if (payload === 'moreThemes') {
