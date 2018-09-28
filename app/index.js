@@ -404,16 +404,16 @@ const handler = new MessengerHandler()
 					if (payload.slice(0, 4) === 'poll') { // user answered poll that came from timer
 						await context.setState({ dialog: 'pollAnswer' });
 					} else if (payload.slice(0, 12) === 'answerIntent') {
-						console.log('Você clicou em ', payload);
-
 						await context.setState({ themeName: payload.replace('answerIntent', '') }); // getting the theme name
-						console.log('context.state.themeName', context.state.themeName);
-
 						await context.setState({ // getting knowledge base. We send the complete answer from dialogflow
 							knowledge: await MandatoAbertoAPI.getknowledgeBaseByName(context.state.politicianData.user_id, context.state.themeName),
 						});
 						console.log('knowledge', context.state.knowledge);
+						await context.setState({ typesWeHave: await getOurTypes(context.state.knowledge.knowledge_base) }); // storing the types we have on our knowledge_base
+						console.log('typesWeHave', context.state.typesWeHave);
 
+						await context.setState({ types: await checkTypes(['posicionamento', 'proposta', 'histórico'], context.state.typesWeHave) }); // getting common types
+						console.log('types', context.state.types);
 
 						const currentTheme = await context.state.knowledge.knowledge_base.find(x => x.type === context.state.types[context.state.themeName]);
 						// console.log('currentTheme', currentTheme);
