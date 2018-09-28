@@ -73,7 +73,7 @@ module.exports.getIntentQR = getIntentQR;
 
 // get every label
 async function sendButtons(id, text, buttons, accessToken) { // eslint-disable-line no-unused-vars
-	const res = await req.post(`https://graph.facebook.com/v2.6/me/messages?access_token=${accessToken}`).query({
+	const res = await req.post(`https://graph.facebook.com/v2.6/me/messages?access_token=${accessToken}`).json({
 		recipient: {
 			id,
 		},
