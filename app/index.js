@@ -416,6 +416,8 @@ const handler = new MessengerHandler()
 							// TODO discover what to do after answering
 						} // end answerIntent --------------------------------------------------
 					} else if (payload === 'moreThemes') {
+						console.log('i should be here');
+
 						await context.setState({ paginationNumber: context.state.paginationNumber + 1 });
 						await context.setState({ dialog: 'availableIntents' });
 					} else {
