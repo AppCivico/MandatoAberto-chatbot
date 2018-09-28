@@ -414,8 +414,10 @@ const handler = new MessengerHandler()
 						} // end answerIntent --------------------------------------------------
 					} else if (payload === 'moreThemes') {
 						await context.setState({ paginationNumber: context.state.paginationNumber + 1 });
-						// await context.setState({ dialog: 'availableIntents' });
+						await context.setState({ dialog: 'availableIntents' });
 					} else {
+						console.log('Im not here');
+
 						await context.setState({ dialog: payload });
 					}
 				} else if (context.event.isAudio) {
