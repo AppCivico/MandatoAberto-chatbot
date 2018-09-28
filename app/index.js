@@ -172,12 +172,8 @@ async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-dec
 async function showThemesQR(context) {
 	// TODO cachear um página pra sempre saber se tem mais intents por vir
 
-	if (!context.state.nextIntents || context.state.nextIntents === '' || (context.state.nextIntents.length <= 10 && context.state.nextIntents.length > 0)) {
-		await context.setState({ availableIntents: await MandatoAbertoAPI.getAvailableIntents(context.event.rawEvent.recipient.id, context.state.paginationNumber) });
-		await context.setState({ nextIntents: await MandatoAbertoAPI.getAvailableIntents(context.event.rawEvent.recipient.id, context.state.paginationNumber + 1) });
-	} else {
-		await context.setState({ availableIntents: context.state.nextIntents });
-	}
+	await context.setState({ availableIntents: await MandatoAbertoAPI.getAvailableIntents(context.event.rawEvent.recipient.id, context.state.paginationNumber) });
+	await context.setState({ nextIntents: await MandatoAbertoAPI.getAvailableIntents(context.event.rawEvent.recipient.id, context.state.paginationNumber + 1) });
 	console.log('currentPage', context.state.paginationNumber);
 	console.log('current intents', context.state.availableIntents);
 	console.log('nextIntents', context.state.nextIntents);
