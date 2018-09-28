@@ -13,6 +13,7 @@ const Articles = require('./utils/articles.js');
 const opt = require('./utils/options');
 const dictionary = require('./utils/dictionary');
 const audio = require('./utils/audio');
+const attach = require('./attach');
 
 const apiai = dialogFlow(process.env.DIALOGFLOW_TOKEN);
 
@@ -872,8 +873,9 @@ const handler = new MessengerHandler()
 			case 'availableIntents':
 				await context.setState({ availableIntents: await MandatoAbertoAPI.getAvailableIntents(context.event.rawEvent.recipient.id, 1) });
 				console.log(context.state.availableIntents);
-				await context.setState({ availableIntents: await MandatoAbertoAPI.getAvailableIntents(context.event.rawEvent.recipient.id, 2) });
-				console.log(context.state.availableIntents);
+				await context.sendButtonTemplate('Escolha um tema:', await attach.getIntentQR());
+				// await context.setState({ availableIntents: await MandatoAbertoAPI.getAvailableIntents(context.event.rawEvent.recipient.id, 2) });
+				// console.log(context.state.availableIntents);
 				break;
 			} // end switch de diálogo
 		}

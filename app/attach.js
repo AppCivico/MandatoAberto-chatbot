@@ -42,3 +42,22 @@ async function getQR(opt, payload) {
 }
 
 module.exports.getQR = getQR;
+
+// get quick_replies opject with intents array
+async function getIntentQR(intents) {
+	const elements = [];
+
+	intents.forEach((element) => {
+		elements.push({
+			content_type: 'text',
+			title: element.human_name,
+			payload: `answerIntent${element.id}`,
+		});
+	});
+
+	// TODO: build next button
+
+	return { quick_replies: elements };
+}
+
+module.exports.getIntentQR = getIntentQR;
