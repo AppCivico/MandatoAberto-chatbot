@@ -46,7 +46,7 @@ module.exports.getQR = getQR;
 // get quick_replies opject with intents array
 async function getIntentQR(intents) {
 	const elements = [];
-
+	// build a quick_reply options for each of the politicians available intents
 	intents.forEach((element) => {
 		elements.push({
 			content_type: 'text',
@@ -55,7 +55,15 @@ async function getIntentQR(intents) {
 		});
 	});
 
-	// TODO: build next button
+	// if we have 7 options we show an option for the user to get more intents
+	// TODO: what happens if we have exactly 7 intents?
+	if (elements.length === 7) {
+		elements.push({
+			content_type: 'text',
+			title: 'Mais temas',
+			payload: 'moreThemes',
+		});
+	}
 
 	return { quick_replies: elements };
 }
