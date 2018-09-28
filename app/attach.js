@@ -72,9 +72,23 @@ module.exports.getIntentQR = getIntentQR;
 
 
 // get every label
-async function listAllLabels() { // eslint-disable-line no-unused-vars
-	const res = await req.get('https://graph.facebook.com/v2.6/me/messages?access_token=');
+async function sendButtons(id, text, buttons, accessToken) { // eslint-disable-line no-unused-vars
+	const res = await req.post(`https://graph.facebook.com/v2.6/me/messages?access_token=${accessToken}`).query({
+		recipient: {
+			id,
+		},
+		message: {
+			attachment: {
+				type: 'template',
+				payload: {
+					template_type: 'button',
+					text,
+					buttons,
+				},
+			},
+		},
+	});
 	const response = await res.json();
 	return response;
 }
-module.exports.listAllLabels = listAllLabels;
+module.exports.sendButtons = sendButtons;

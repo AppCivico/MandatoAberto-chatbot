@@ -645,8 +645,6 @@ const handler = new MessengerHandler()
 				await context.typingOff();
 				areWeListening = true;
 				await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
-				console.log(context.state.politicianData);
-
 				await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 				await context.setState({ trajectory: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'trajectory') });
 				await context.setState({ articles: await getArticles(context.state.politicianData.gender) });
@@ -660,8 +658,10 @@ const handler = new MessengerHandler()
 				menuTimers[context.session.user.id] = setTimeout(async () => { // wait 'MenuTimerlimit' to show options menu
 					// await context.sendButtonTemplate(await loadOptionPrompt(context), TODO review as 4 opções
 					// 	await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate, opt.availableIntents]));
-					await context.sendButtonTemplate(await loadOptionPrompt(context),
-						await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.availableIntents]));
+					// await context.sendButtonTemplate(await loadOptionPrompt(context),
+					// 	await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.availableIntents]));
+					await attach.sendButtons(context.session.user.id, await loadOptionPrompt(context),
+						[opt.aboutPolitician, opt.poll_suaOpiniao, opt.availableIntents], context.state.politicianData.fb_access_token);
 					delete menuTimers[context.session.user.id]; // deleting this timer from timers object
 				}, MenuTimerlimit);
 				await context.setState({ dialog: 'prompt' });
