@@ -872,6 +872,8 @@ const handler = new MessengerHandler()
 			case 'availableIntents':
 				await context.setState({ availableIntents: await MandatoAbertoAPI.getAvailableIntents(context.event.rawEvent.recipient.id, 1) });
 				console.log(context.state.availableIntents);
+				await context.setState({ availableIntents: await MandatoAbertoAPI.getAvailableIntents(context.event.rawEvent.recipient.id, 2) });
+				console.log(context.state.availableIntents);
 				break;
 			} // end switch de diálogo
 		}
