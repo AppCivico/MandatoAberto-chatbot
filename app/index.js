@@ -440,6 +440,8 @@ const handler = new MessengerHandler()
 						} // end currentTheme if --------------------------------------------------
 
 						context.state.types.splice(context.state.number, 1); // removing the theme we just answered
+						console.log(context.state.types);
+
 						await context.setState({ quickReplies: ['fsdfsdf'] });
 
 						// if () {
