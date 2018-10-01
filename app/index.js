@@ -490,24 +490,29 @@ const handler = new MessengerHandler()
 						await context.setState({ dialog: payload });
 					}
 				} else if (context.event.isAudio) {
-					await context.sendText('Áudio? Me dê um instante para processar.');
-					if (context.event.audio.url) {
-						await context.setState({ audio: await audio.voiceRequest(context.event.audio.url, context.session.user.id) });
-						if (context.state.audio.txtMag && context.state.audio.txtMag !== '') { // there was an error (or the user just didn't say anything)
-							await context.sendButtonTemplate(context.state.audio.txtMag,
+					if (context.state.politicianData.use_dialogflow === 1) { // check if politician is using dialogFlow
+						await context.sendText('Áudio? Me dê um instante para processar.');
+						if (context.event.audio.url) {
+							await context.setState({ audio: await audio.voiceRequest(context.event.audio.url, context.session.user.id) });
+							if (context.state.audio.txtMag && context.state.audio.txtMag !== '') { // there was an error (or the user just didn't say anything)
+								await context.sendButtonTemplate(context.state.audio.txtMag,
 								await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
-						} else {
-							await context.setState({ whatWasTyped: context.state.audio.whatWasSaid });
-							await context.setState({ resultParameters: context.state.audio.parameters });
-							await context.setState({ intentName: context.state.audio.intentName });
-							await checkPosition(context);
+							} else {
+								await context.setState({ whatWasTyped: context.state.audio.whatWasSaid });
+								await context.setState({ resultParameters: context.state.audio.parameters });
+								await context.setState({ intentName: context.state.audio.intentName });
+								await checkPosition(context);
+							}
 						}
+					} else {
+						delete userMessages[context.session.user.id]; // deleting last sent message (it was sent already)
+						await context.setState({ dialog: 'createIssue' });
 					}
 				} else if (context.event.isText) {
-					if (context.state.politicianData.use_dialogflow === 3) { // check if politician is using dialogFlow
-						await context.setState({ whatWasTyped: context.event.message.text }); // has to be set here because of talkToUs
-						if (!listening[context.session.user.id] || listening[context.session.user.id] === false) { // if we are listening we don't try to interpret the text
-						// will be used in case the bot doesn't find the question
+					await context.setState({ whatWasTyped: context.event.message.text }); // has to be set here because of talkToUs
+					if (!listening[context.session.user.id] || listening[context.session.user.id] === false) { // if we are listening we don't try to interpret the text
+					// will be used in case the bot doesn't find the question
+						if (context.state.politicianData.use_dialogflow === 2) { // check if politician is using dialogFlow
 							await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
 
 							await context.setState({ resultParameters: context.state.apiaiResp.result.parameters }); // getting the entities
