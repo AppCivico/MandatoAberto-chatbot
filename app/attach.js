@@ -50,6 +50,9 @@ async function getIntentQR(intents, next) {
 	const elements = [];
 	// build a quick_reply options for each of the politicians available intents
 	intents.forEach((element) => {
+		if (element.human_name.length > 20) { // removing last chars so we don't hit the title.length limit for quick_replies
+			element.human_name = `${element.human_name.slice(0, 17)}...`;
+		}
 		elements.push({
 			content_type: 'text',
 			title: element.human_name,
