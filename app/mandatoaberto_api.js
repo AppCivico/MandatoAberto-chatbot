@@ -56,6 +56,13 @@ module.exports = {
 		return issue;
 	},
 
+	async postIssueWithoutEntities(politician_id, fb_id, message) {
+		message = encodeURI(message);
+		const res = await request.post(`${apiUri}/api/chatbot/issue?politician_id=${politician_id}&fb_id=${fb_id}&message=${message}&security_token=${security_token}`);
+		const issue = await res.json();
+		return issue;
+	},
+
 	async getknowledgeBase(politician_id, entities) {
 		entities = JSON.stringify(entities);
 		const res = await request(`${apiUri}/api/chatbot/knowledge-base?politician_id=${politician_id}&entities=${entities}&security_token=${security_token}`);

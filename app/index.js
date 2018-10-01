@@ -828,8 +828,7 @@ const handler = new MessengerHandler()
 				// create new (or reset) timer for sending message
 				issueTimers[context.session.user.id] = setTimeout(async () => {
 					if (userMessages[context.session.user.id] !== '') { // check if there's a message to send
-						console.log(await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id, userMessages[context.session.user.id],
-							context.state.resultParameters));
+						console.log(await MandatoAbertoAPI.postIssue2(context.state.politicianData.user_id, context.session.user.id, userMessages[context.session.user.id]));
 						// console.log('Enviei ', userMessages[context.session.user.id]);
 						await context.typingOff();
 					}
