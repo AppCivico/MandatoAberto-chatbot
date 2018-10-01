@@ -512,7 +512,7 @@ const handler = new MessengerHandler()
 					await context.setState({ whatWasTyped: context.event.message.text }); // has to be set here because of talkToUs
 					if (!listening[context.session.user.id] || listening[context.session.user.id] === false) { // if we are listening we don't try to interpret the text
 					// will be used in case the bot doesn't find the question
-						if (context.state.politicianData.use_dialogflow === 2) { // check if politician is using dialogFlow
+						if (context.state.politicianData.use_dialogflow === 1) { // check if politician is using dialogFlow
 							await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
 
 							await context.setState({ resultParameters: context.state.apiaiResp.result.parameters }); // getting the entities
@@ -816,8 +816,8 @@ const handler = new MessengerHandler()
 					listening[context.session.user.id] = true;
 					await context.typingOn();
 					userMessages[context.session.user.id] = ''; // starting the userMessage
-					if (context.state.noDialogFlow) {
-						userMessages[context.session.user.id] = context.state.noDialogFlow;
+					if (context.state.noDialogFlow && context.state.noDialogFlow.length > 0) {
+						userMessages[context.session.user.id] = `${context.state.noDialogFlow} `;
 					}
 				}
 
