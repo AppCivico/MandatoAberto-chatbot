@@ -504,15 +504,21 @@ const handler = new MessengerHandler()
 						}
 					}
 				} else if (context.event.isText) {
-					await context.setState({ whatWasTyped: context.event.message.text }); // has to be set here because of talkToUs
-					if (!listening[context.session.user.id] || listening[context.session.user.id] === false) { // if we are listening we don't try to interpret the text
+					if (context.state.politicianData.use_dialogflow === 1) { // check if politician is using dialogFlow
+						await context.setState({ whatWasTyped: context.event.message.text }); // has to be set here because of talkToUs
+						if (!listening[context.session.user.id] || listening[context.session.user.id] === false) { // if we are listening we don't try to interpret the text
 						// will be used in case the bot doesn't find the question
-						await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
+							await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
 
-						await context.setState({ resultParameters: context.state.apiaiResp.result.parameters }); // getting the entities
-						await context.setState({ intentName: context.state.apiaiResp.result.metadata.intentName }); // getting the intent
-						await checkPosition(context);
-					} // end if listening
+							await context.setState({ resultParameters: context.state.apiaiResp.result.parameters }); // getting the entities
+							await context.setState({ intentName: context.state.apiaiResp.result.metadata.intentName }); // getting the intent
+							await checkPosition(context);
+						} // end if dialogFlow
+					} else {
+						await context.setState({ whatWasTyped: '' });
+						delete userMessages[context.session.user.id]; // deleting last sent message (it was sent already)
+						await context.setState({ dialog: 'createIssue' });
+					}
 				} // end if isText
 			}
 		}
