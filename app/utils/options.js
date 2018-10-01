@@ -63,7 +63,7 @@ module.exports = {
 		{
 			type: 'postback',
 			title: 'Sim',
-			payload: 'themeYes',
+			payload: 'themeYes0',
 		},
 		{
 			type: 'postback',
@@ -112,6 +112,11 @@ module.exports = {
 			payload: 'knowMore',
 		},
 	],
+	availableIntents: {
+		type: 'postback',
+		title: 'Temas',
+		payload: 'availableIntents',
+	},
 	frases_fallback: ['Essa resposta eu não tenho 🤔. Muito boa a sua pergunta! irei encaminhar para nosso time e já te respondo.',
 		'Uma pergunta nova 👏👏👏! Irei encaminhar para nossa equipe, que deve responder em breve.',
 		'Ainda não nos fizeram essa pergunta. Vamos descobrir a resposta 🤗 ! Vou encaminhar para nosso time.',
