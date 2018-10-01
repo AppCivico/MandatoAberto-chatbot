@@ -13,6 +13,7 @@ const Articles = require('./utils/articles.js');
 const opt = require('./utils/options');
 const dictionary = require('./utils/dictionary');
 const audio = require('./utils/audio');
+const attach = require('./attach');
 
 const apiai = dialogFlow(process.env.DIALOGFLOW_TOKEN);
 
@@ -31,8 +32,8 @@ function formatReal(int) {
 	return tmp;
 }
 
-const IssueTimerlimit = 1000 * 20; // 20 seconds -> listening to user doubts -> 1000 * 20
-const MenuTimerlimit = 1000 * 60; // 60 seconds -> waiting to show the initial menu -> 1000 * 60
+const IssueTimerlimit = eval(process.env.ISSUE_TIMER_LIMIT); // 20 seconds -> listening to user doubts -> 1000 * 20 // eslint-disable-line
+const MenuTimerlimit = eval(process.env.MENU_TIMER_LIMIT); // 60 seconds -> waiting to show the initial menu -> 1000 * 60
 // const pollTimerlimit = 1000 * 60 * 60 * 2; // 2 hours -> waiting to send poll -> 1000 * 60 * 60 * 2
 
 const issueTimers = {};
@@ -53,19 +54,6 @@ let areWeListening = true; // eslint-disable-line
 // areWeListening -> user.state.areWeListening(doesn't work) -> diferenciates messages that come from the standard flow and messages from comment/post
 
 function getRandom(myArray) { return myArray[Math.floor(Math.random() * myArray.length)]; }
-
-// removes every empty intent object and returns the intents as an array
-function removeEmptyKeys(obj) {
-	Object.keys(obj).forEach((key) => {
-		if (obj[key].length === 0) {
-			delete obj[key];
-		}
-		if (obj === 'Falso') {
-			delete obj[key];
-		}
-	});
-	return Object.keys(obj);
-}
 
 const mapPageToAccessToken = async (pageId) => {
 	const politicianData2 = await MandatoAbertoAPI.getPoliticianData(pageId);
@@ -94,7 +82,13 @@ async function loadOptionPrompt(context) {
 		}
 		return answer.content;
 	}
-	return context.state.optionPrompt;
+	return context.state.optionPrompt.content;
+}
+
+async function sendMainMenu(context) {
+	await attach.sendButtons(context.session.user.id, await loadOptionPrompt(context),
+		[opt.aboutPolitician, opt.poll_suaOpiniao], [opt.participate, opt.availableIntents], context.state.politicianData.fb_access_token);
+	// await context.sendButtonTemplate(await loadOptionPrompt(context), await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
 }
 
 async function loadIssueStarted(context) {
@@ -171,7 +165,9 @@ async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-dec
 	if (context.state.introduction && !context.state.introduction.content) { dialogs = dialogs.filter(obj => obj.payload !== 'aboutMe'); }
 	if (!context.state.trajectory) { dialogs = dialogs.filter(obj => obj.payload !== 'trajectory'); }
 	if (!context.state.pollData) { dialogs = dialogs.filter(obj => obj.payload !== 'poll'); }
-	if (!context.state.politicianData.contact) { dialogs = dialogs.filter(obj => obj.payload !== 'contacts'); }
+	if (!context.state.politicianData.contact || (context.state.politicianData.contact.email === null && context.state.politicianData.contact.twitter === null
+		&& context.state.politicianData.contact.facebook === null && context.state.politicianData.contact.url === 'http://'
+		&& context.state.politicianData.contact.cellphone === '+55')) { dialogs = dialogs.filter(obj => obj.payload !== 'contacts'); }
 
 	if (dialogs.find(x => x.payload === 'poll')) {
 		if (await checkPollAnswered(context) === true // already answered so we remove option
@@ -183,6 +179,38 @@ async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-dec
 	return dialogs;
 }
 
+async function showThemesQR(context) {
+	await context.setState({ firstTime: true }); // flag to check during answer loop that we have to load the types we have
+	await context.setState({ availableIntents: await MandatoAbertoAPI.getAvailableIntents(context.event.rawEvent.recipient.id, context.state.paginationNumber) });
+	await context.setState({ nextIntents: await MandatoAbertoAPI.getAvailableIntents(context.event.rawEvent.recipient.id, context.state.paginationNumber + 1) });
+	// console.log('currentPage', context.state.paginationNumber);
+	// console.log('current intents', context.state.availableIntents);
+	// console.log('nextIntents', context.state.nextIntents);
+
+	await context.sendText('Escolha um tema:', await attach.getIntentQR(context.state.availableIntents.intents, context.state.nextIntents.intents));
+}
+
+function getDictionary(word) {
+	const result = dictionary[word.toLowerCase()];
+	if (result) {
+		return result.toLowerCase();
+	}
+	return word.toLowerCase();
+}
+
+// removes every empty intent object and returns the object
+async function removeEmptyKeys(obj) {
+	Object.keys(obj).forEach((key) => {
+		if (obj[key].length === 0) {
+			delete obj[key];
+		}
+		if (obj === 'Falso') {
+			delete obj[key];
+		}
+	});
+	return obj;
+}
+
 // getting the types we have on our KnowledgeBase
 async function getOurTypes(KnowledgeBase) {
 	const result = [];
@@ -192,17 +220,31 @@ async function getOurTypes(KnowledgeBase) {
 
 	return result;
 }
-// getting the type
+/*
+	checkTypes: Getting the types we will show to the user.	TypesToCheck are the possible types we can have.
+	The point of checking which type was in the question and we have it out base is to confirm using the correct type.
+	We expect entities to be a string, so we add it at the beginning of the results array, after that we simply add the themes we have the answer for.
+	If we couldn't detect any types on the question we default to 'posicionamento'.
+*/
 async function checkTypes(entities, knowdlege) {
+	console.log('tipos de pergunta:', entities);
+
 	const typesToCheck = ['posicionamento', 'proposta', 'histórico'];
 	const result = [];
-	// check if we have the type the user wants to know and add it to result
-	typesToCheck.forEach(((element) => {
-		if (entities.includes(element) && knowdlege.includes(element)) {
-			result.push(element);
-		}
-	}));
+	// if (entities.constructor === Array) { // case entities is an array
+	// // check if we have the type the user wants to know and add it to result
+	// 	typesToCheck.forEach(((element) => {
+	// 		if (entities.includes(element) && knowdlege.includes(element)) {
+	// 			result.push(element);
+	// 		}
+	// 	}));
+	// }
 
+	if (entities && entities !== '') { // string exists and isn't empty, this is the type the user asked
+		if (typesToCheck.includes(entities.toLowerCase() && knowdlege.includes(entities.toLowerCase()))) {
+			result.push(entities.toLowerCase());
+		}
+	}
 	// check if we have a correlated answer that the user didn't ask for
 	typesToCheck.forEach(((element) => {
 		if (knowdlege.includes(element) && !result.includes(element)) {
@@ -213,10 +255,11 @@ async function checkTypes(entities, knowdlege) {
 	return result;
 }
 
-async function getTypeText(type) {
+// preparets the text to be shown
+async function getTypeText(type) { // eslint-disable-line no-unused-vars
 	if (type === 'proposta') {
 		return 'minha proposta';
-	} if (type === 'historico') {
+	} if (type === 'histórico') {
 		return 'meu histórico';
 	}
 	return 'meu posicionamento';
@@ -241,58 +284,44 @@ async function checkPosition(context) {
 		await context.setState({ dialog: 'createIssue' });
 		break;
 	case 'Fallback': // didn't understand what was typed
-		console.log('**** caí no fallback *****');
-
 		await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
 			context.state.whatWasTyped, context.state.resultParameters);
 		await context.sendText(getRandom(opt.frases_fallback));
-		await context.sendButtonTemplate(await loadOptionPrompt(context),
-			await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
+		await sendMainMenu(context);
+		// await context.sendButtonTemplate(await loadOptionPrompt(context),
+		// 	await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
 		break;
 	default: // default acts for every intent - position
 		console.log('i am here');
-		// console.log('apiaiResp', context.state.apiaiResp);
+		console.log('apiaiResp', context.state.apiaiResp);
 
-		await context.setState({ // getting knowledge base
+		await context.setState({ // getting knowledge base. We send the complete answer from dialogflow
 			knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.apiaiResp),
 		});
-		// console.log('knowledge', context.state.knowledge);
-
-		// before sending the themes we check if there is anything on them, if there isn't we send 'esses assuntos'
-		// await context.setState({ currentThemes: await listThemes(context.state.entities) }); // format themes
-		// console.log('currentThemes', context.state.currentThemes);
-
+		console.log('knowledge', context.state.knowledge);
 
 		// check if there's at least one answer in knowledge_base
 		if (context.state.knowledge && context.state.knowledge.knowledge_base && context.state.knowledge.knowledge_base.length >= 1) {
-			await context.setState({ entities: await removeEmptyKeys(context.state.resultParameters) });
+			await context.setState({ entities: await removeEmptyKeys(context.state.resultParameters) }); // saving the entities that were detect by dialogflow
 			console.log('entities', context.state.entities);
-			await context.setState({ typesWeHave: await getOurTypes(context.state.knowledge.knowledge_base) }); // storing the types we have
+			await context.setState({ typesWeHave: await getOurTypes(context.state.knowledge.knowledge_base) }); // storing the types we have on our knowledge_base
 			console.log('typesWeHave', context.state.typesWeHave);
-			await context.setState({ types: await checkTypes(context.state.entities, context.state.typesWeHave) });
+			await context.setState({ types: await checkTypes(context.state.entities.Tipos_de_pergunta, context.state.typesWeHave) }); // getting common types
 			console.log('types', context.state.types);
 
-            let humanName = await intent_human_name(context.state.intentName.toLowerCase());
-
-			await context.sendButtonTemplate(`Você está perguntando ${await getTypeText(context.state.types[0])} sobre `// confirm themes with user
-				+ `${humanName}?`, opt.themeConfirmation);
+			await context.sendButtonTemplate('Você está perguntando sobre '// confirm themes with user
+				+ `${getDictionary(context.state.intentName)}?`, opt.themeConfirmation); // obs: the payload of the Yes/Sim option defaults to 'themeYes0'
+			// await context.sendButtonTemplate(`Você está perguntando ${await getTypeText(context.state.types[0])} sobre `// confirm themes with user
+			// 	+ `${context.state.intentName.toLowerCase()}?`, opt.themeConfirmation); // obs: the payload of the Yes/Sim option defaults to 'themeYes0'
 		} else { // no answers in knowledge_base (We know the entity but politician doesn't have a position)
 			await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
 				context.state.whatWasTyped, context.state.resultParameters);
 			await context.sendText(`🤔 Eu ainda não perguntei para ${await getArtigoCargoNome(context)} sobre `
 						+ 'esse assunto. Irei encaminhar para nossa equipe, está bem?');
-			await context.sendButtonTemplate(await loadOptionPrompt(context),
-						await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
+			await sendMainMenu(context);
+			// await context.sendButtonTemplate(await loadOptionPrompt(context),
+			// 			await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
 		}
-		// it seems we don't need this anymore
-		// } else { // dialogFlow knows it's a question but has no entities //  o você acha do blablabla?
-		// 	await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
-		// 		context.state.whatWasTyped, context.state.resultParameters);
-		// 	await context.sendText(`🤔 Eu ainda não perguntei para ${await getArtigoCargoNome(context)} sobre `
-		// 			+ 'esse tema. Irei encaminhar para nossa equipe, está bem?');
-		// 	await context.sendButtonTemplate(await loadOptionPrompt(context),
-		// 			await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
-		// }
 		break;
 	}
 }
@@ -320,90 +349,58 @@ const handler = new MessengerHandler()
 				if (context.event.isPostback) {
 					// we are not listening anymore if user clicks on persistent menu during the listening
 					if (listening[context.session.user.id]) { delete listening[context.session.user.id]; }
-					// user confirms that theme(s) is/are correct
-					if (context.event.postback.payload.slice(0, 8) === 'themeYes') {
-						const number = context.event.postback.payload.replace('themeYes', '');
-
-						const currentTheme = await context.state.knowledge.knowledge_base.find(x => x.type === context.state.types[number]);
+					// Question/Position flow
+					if (context.event.postback.payload.slice(0, 8) === 'themeYes') { // user confirms that theme(s) is/are correct
+						await context.setState({ number: context.event.postback.payload.replace('themeYes', '') }); context.event.postback.payload.replace('themeYes', '');
+						// find the correspondent answer using the current type
+						await context.setState({ currentTheme: await context.state.knowledge.knowledge_base.find(x => x.type === context.state.types[context.state.number]) });
 						// console.log('currentTheme', currentTheme);
 
-						if (currentTheme && (currentTheme.answer || (currentTheme.saved_attachment_type !== null && currentTheme.saved_attachment_id !== null))) {
-							if (currentTheme.answer) { // if there's a text asnwer we send it
-								await context.sendText(`${capitalize(context.state.types[number])}: ${currentTheme.answer}`);
+						if (context.state.currentTheme && (context.state.currentTheme.answer
+							|| (context.state.currentTheme.saved_attachment_type !== null && context.state.currentTheme.saved_attachment_id !== null))) {
+							if (context.state.currentTheme.answer) { // if there's a text asnwer we send it
+								await context.sendText(`${capitalize(context.state.types[context.state.number])}: ${context.state.currentTheme.answer}`);
 							}
-							if (currentTheme.saved_attachment_type === 'image') { // if attachment is image
-								await context.sendImage({ attachment_id: currentTheme.saved_attachment_id });
+							if (context.state.currentTheme.saved_attachment_type === 'image') { // if attachment is image
+								await context.sendImage({ attachment_id: context.state.currentTheme.saved_attachment_id });
 							}
-							if (currentTheme.saved_attachment_type === 'video') { // if attachment is video
-								await context.sendVideo({ attachment_id: currentTheme.saved_attachment_id });
+							if (context.state.currentTheme.saved_attachment_type === 'video') { // if attachment is video
+								await context.sendVideo({ attachment_id: context.state.currentTheme.saved_attachment_id });
 							}
-							if (currentTheme.saved_attachment_type === 'audio') { // if attachment is audio
-								await context.sendAudio({ attachment_id: currentTheme.saved_attachment_id });
+							if (context.state.currentTheme.saved_attachment_type === 'audio') { // if attachment is audio
+								await context.sendAudio({ attachment_id: context.state.currentTheme.saved_attachment_id });
 							}
+							await context.typingOn();
 							// building the menu
-							context.state.types.splice(number, 1);
-							if (context.state.types.length === 0) { // we don't have anymore type of answer (or the user already clicked throught them all)
-								await context.sendButtonTemplate(await loadOptionPrompt(context),
-									await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
+							context.state.types.splice(context.state.number, 1); // removing the theme we just answered
+							if (context.state.types.length === 0) { // we don't have anymore type of answer (the user already clicked throught them all)
+								setTimeout(async () => {
+									await sendMainMenu(context);
+									// await context.sendButtonTemplate(await loadOptionPrompt(context),
+									// 	await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
+								}, 5000);
 							} else {
-								const options = [];
+								await context.setState({ options: [] }); // building the options menu
+								// for each type we still haven't answered we add an option with each index on the payload
 								context.state.types.forEach((element, index) => {
-									options.push({
-										type: 'postback',
-										title: `${capitalize(element)}`,
-										payload: `themeYes${index}`,
-									});
+									context.state.options.push({ type: 'postback', title: `${capitalize(element)}`, payload: `themeYes${index}` });
 								});
-
-								options.push({
-									type: 'postback',
-									title: 'Voltar',
-									payload: 'mainMenu',
-								});
-								await context.sendButtonTemplate(`Deseja saber mais sobre ${context.state.intentName.toLowerCase()}?`, options);
-								console.log('options', options);
+								context.state.options.push({ type: 'postback', title: 'Voltar', payload: 'mainMenu' });
+								console.log('options', context.state.options);
+								setTimeout(async () => {
+									await context.sendButtonTemplate(`Deseja saber mais sobre ${getDictionary(context.state.intentName)}?`, context.state.options);
+								}, 5000);
 							}
-							// console.log('types', context.state.types);
 						} else { // we couldn't find neither text answer nor attachment (This is an error and it shouldn't happen)
-							await context.sendText('Parece que fico te devendo essa resposta. '
-									+ 'Mas já entou enviando para nossas equipe e estaremos te respondendo em breve.');
 							await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
 								context.state.whatWasTyped, context.state.resultParameters);
+							await context.sendText('Parece que fico te devendo essa resposta. '
+								+ 'Mas já entou enviando para nossas equipe e estaremos te respondendo em breve.');
+							// await context.sendButtonTemplate(await loadOptionPrompt(context),
+							// 	await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
+							await sendMainMenu(context);
 						}
-
-
-						// await context.setState({ trigger: false });
-						// /* eslint-disable */
-						// for (const [element] of Object.entries(context.state.resultParameters)) { // eslint-disable-line no-restricted-syntax
-						// 	const currentTheme = await context.state.knowledge.knowledge_base.find(x => x.entities[0].tag === element);
-						// 	// check if there's either a text answer or a media attachment linked to current theme
-						// 	if (currentTheme && (currentTheme.answer || (currentTheme.saved_attachment_type !== null && currentTheme.saved_attachment_id !== null))) {
-						// 		if (currentTheme.answer) { // if there's a text asnwer we send it
-						// 			await context.sendText(`Sobre ${dictionary[element].toLowerCase()}: ${currentTheme.answer}`);
-						// 		}
-						// 		if (currentTheme.saved_attachment_type === 'image') { // if attachment is image
-						// 			await context.sendImage({ attachment_id: currentTheme.saved_attachment_id });
-						// 		} else if (currentTheme.saved_attachment_type === 'video') { // if attachment is video
-						// 			await context.sendVideo({ attachment_id: currentTheme.saved_attachment_id });
-						// 		} else if (currentTheme.saved_attachment_type === 'audio') { // if attachment is audio
-						// 			await context.sendAudio({ attachment_id: currentTheme.saved_attachment_id });
-						// 		}
-						// 	} else { // we couldn't find neither text answer nor attachment
-						// 		await context.sendText(`Sobre ${dictionary[element].toLowerCase()} fico te devendo uma resposta. `
-						// 			+ 'Mas já entou enviando para nossas equipe e estaremos te respondendo em breve.');
-						// 		if (context.state.trigger === false) {
-						// 			await context.setState({ trigger: true });
-						// 			await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
-						// 				context.state.whatWasTyped, context.state.resultParameters);
-						// 		}
-						// 	}
-						// }
-						// /* eslint-enable */
-						// await context.sendButtonTemplate(await loadOptionPrompt(context),
-						// 	await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
-						// await context.setState({ // cleaning up
-						// 	apiaiResp: '', knowledge: '', themes: '', whatWasTyped: '', trigger: '',
-						// });
+						// end answering theme --------------------------------------------------
 					} else if (context.event.postback.payload.slice(0, 6) === 'answer') {
 						await context.setState({ question: context.state.knowledge.knowledge_base.find(x => x.id === parseInt(context.event.postback.payload.replace('answer', ''), 10)) });
 						await context.setState({ dialog: 'showAnswer' });
@@ -411,19 +408,92 @@ const handler = new MessengerHandler()
 						delete userMessages[context.session.user.id]; // deleting last sent message (it was sent already)
 						await context.setState({ dialog: 'createIssue' });
 					} else {
+						if (context.event.postback.payload === 'availableIntents') {
+							await context.setState({ paginationNumber: 1, availableIntents: '', nextIntents: '' }); // resetting data
+							await showThemesQR(context);
+						}
 						await context.setState({ dialog: context.event.postback.payload });
 					}
 				} else if (context.event.isQuickReply) {
 					const { payload } = context.event.message.quick_reply;
 					if (payload.slice(0, 4) === 'poll') { // user answered poll that came from timer
 						await context.setState({ dialog: 'pollAnswer' });
+					} else if (payload.slice(0, 12) === 'answerIntent') {
+						await context.setState({ themeName: payload.replace('answerIntent', '') }); // getting the theme name
+						await context.setState({ number: payload[payload.length - 1] });// getting the number type
+						await context.setState({ themeName: context.state.themeName.replace(context.state.number, '') }); // getting the theme name
+						await context.setState({ // getting knowledge base. We send the complete answer from dialogflow
+							knowledge: await MandatoAbertoAPI.getknowledgeBaseByName(context.state.politicianData.user_id, context.state.themeName),
+						});
+						if (context.state.firstTime === true) {
+							await context.setState({ types: await getOurTypes(context.state.knowledge.knowledge_base) });
+							await context.setState({ firstTime: false });
+						}
+
+						console.log('knowledge', context.state.knowledge);
+						console.log('themeName', context.state.themeName);
+						console.log('number', context.state.number);
+						console.log('type', context.state.types);
+						console.log('context.state.types[context.state.number]', context.state.types[context.state.number]);
+
+						await context.setState({ currentTheme: context.state.knowledge.knowledge_base.find(x => x.type === context.state.types[context.state.number]) });
+						console.log('currentTheme', context.state.currentTheme);
+
+						if (context.state.currentTheme && (context.state.currentTheme.answer
+							|| (context.state.currentTheme.saved_attachment_type !== null && context.state.currentTheme.saved_attachment_id !== null))) {
+							if (context.state.currentTheme.answer) { // if there's a text asnwer we send it
+								await context.sendText(`${capitalize(context.state.types[context.state.number])}: ${context.state.currentTheme.answer}`);
+							}
+							if (context.state.currentTheme.saved_attachment_type === 'image') { // if attachment is image
+								await context.sendImage({ attachment_id: context.state.currentTheme.saved_attachment_id });
+							}
+							if (context.state.currentTheme.saved_attachment_type === 'video') { // if attachment is video
+								await context.sendVideo({ attachment_id: context.state.currentTheme.saved_attachment_id });
+							}
+							if (context.state.currentTheme.saved_attachment_type === 'audio') { // if attachment is audio
+								await context.sendAudio({ attachment_id: context.state.currentTheme.saved_attachment_id });
+							}
+							await context.typingOn();
+						} // end currentTheme if --------------------------------------------------
+
+						context.state.types.splice(context.state.number, 1); // removing the theme we just answered
+						console.log(context.state.types);
+						if (context.state.types.length === 0) { // we don't have anymore type of answer (the user already clicked throught them all)
+							setTimeout(async () => {
+								await sendMainMenu(context);
+								// await context.sendButtonTemplate(await loadOptionPrompt(context), await checkMenu(context,
+								// [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
+							}, 5000);
+						} else {
+							await context.setState({ options: [] }); // building the options menu
+							// for each type we still haven't answered we add an option with each index on the payload
+							context.state.types.forEach((element, index) => {
+								context.state.options.push({
+									content_type: 'text',
+									title: `${capitalize(element)}`,
+									payload: `answerIntent${attach.capitalizeFirstLetter(context.state.themeName)}${index}`,
+								});
+							});
+							context.state.options.push({ content_type: 'text', title: 'Temas', payload: 'availableIntents' });
+							context.state.options.push({ content_type: 'text', title: 'Voltar', payload: 'mainMenu' });
+							console.log('options', context.state.options);
+							setTimeout(async () => {
+								await context.sendText(`Deseja saber mais sobre ${getDictionary(context.state.themeName)}?`, { quick_replies: context.state.options });
+							}, 2000);
+						}
+					} else if (payload === 'moreThemes') {
+						await context.setState({ paginationNumber: context.state.paginationNumber + 1 });
+						await showThemesQR(context);
 					} else {
+						if (payload === 'availableIntents') {
+							await context.setState({ paginationNumber: 1, availableIntents: '', nextIntents: '' }); // resetting data
+							await showThemesQR(context);
+						}
 						await context.setState({ dialog: payload });
 					}
 				} else if (context.event.isAudio) {
 					await context.sendText('Áudio? Me dê um instante para processar.');
 					if (context.event.audio.url) {
-						// await context.setState({ audio: await audio.voiceRequest('https://cdn.fbsbx.com/v/t59.3654-21/41422332_1965526987077956_6964334129533943808_n.mp4/audioclip-1536591135000-2694.mp4?_nc_cat=0&oh=4eed936c79d2011ca51995370fe1b718&oe=5B998567', context.session.user.id) });
 						await context.setState({ audio: await audio.voiceRequest(context.event.audio.url, context.session.user.id) });
 						if (context.state.audio.txtMag && context.state.audio.txtMag !== '') { // there was an error (or the user just didn't say anything)
 							await context.sendButtonTemplate(context.state.audio.txtMag,
@@ -635,8 +705,11 @@ const handler = new MessengerHandler()
 					clearTimeout(menuTimers[context.session.user.id]);
 				}
 				menuTimers[context.session.user.id] = setTimeout(async () => { // wait 'MenuTimerlimit' to show options menu
-					await context.sendButtonTemplate(await loadOptionPrompt(context),
-						await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
+					// await context.sendButtonTemplate(await loadOptionPrompt(context),
+					// 	await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.availableIntents]));
+					await attach.sendButtons(context.session.user.id, await loadOptionPrompt(context),
+						[opt.aboutPolitician, opt.poll_suaOpiniao], [opt.participate, opt.availableIntents], context.state.politicianData.fb_access_token);
+					// await sendMainMenu(context);
 					delete menuTimers[context.session.user.id]; // deleting this timer from timers object
 				}, MenuTimerlimit);
 				await context.setState({ dialog: 'prompt' });
@@ -648,7 +721,8 @@ const handler = new MessengerHandler()
 				await context.setState({ trajectory: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'trajectory') });
 				await context.setState({ articles: await getArticles(context.state.politicianData.gender) });
 				await context.setState({ introduction: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'introduction') });
-				await context.sendButtonTemplate(await loadOptionPrompt(context), await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
+				await sendMainMenu(context);
+				// await context.sendButtonTemplate(await loadOptionPrompt(context), await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
 				await context.setState({ dialog: 'prompt' });
 				break;
 			case 'NotOneOfThese': // user said "no" on theme confirmation
@@ -657,8 +731,7 @@ const handler = new MessengerHandler()
 					context.state.whatWasTyped, context.state.resultParameters);
 				await context.sendText('Que pena! Parece que eu errei. Mas recebi sua dúvida e estaremos te respondendo logo mais! Quer fazer outra pergunta?');
 				menuTimers[context.session.user.id] = setTimeout(async () => { // wait 'MenuTimerlimit' to show options menu
-					await context.sendButtonTemplate(await loadOptionPrompt(context),
-						await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
+					await context.sendButtonTemplate(await loadOptionPrompt(context), await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
 					delete menuTimers[context.session.user.id]; // deleting this timer from timers object
 				}, (MenuTimerlimit / 2));
 				await context.setState({ whatWasTyped: '', dialog: 'prompt' });
@@ -672,16 +745,17 @@ const handler = new MessengerHandler()
 				await context.sendButtonTemplate('Selecione a opção desejada em um dos botões abaixo:', [opt.writeMessage, opt.seeAssistent]);
 				await context.setState({ dialog: 'prompt' });
 				break;
-			case 'participateMenu': // participar
+			case 'participateMenu': // Participar
 				await context.setState({ participateText: 'Estamos em campanha e contamos com você.\n' }); // getting the first part of the text
 
 				if (context.state.politicianData.votolegal_integration && context.state.politicianData.votolegal_integration.votolegal_url) {
+					await context.setState({ participateTimer: 2500 }); // setting the wait time for the next message
 					// check if politician is on votoLegal so we can info and option
 					// if referral.source(CUSTOMER_CHAT_PLUGIN) exists we are outside facebook and shouldn't send votolegal's url
 					if ((context.event.rawEvent.postback && context.event.rawEvent.postback.referral) || (context.event.rawEvent.message && context.event.rawEvent.message.tags
 							&& context.event.rawEvent.message.tags.source && context.event.rawEvent.message.tags.source === 'customer_chat_plugin')) {
 						await context.sendText(`${context.state.participateText}Você já está na nossa página para doar.`);
-						await context.sendText('Seu apoio é fundamental para nossa campanha! Por isso, cuidamos da segurança de todos os doadores.');
+						await context.sendText('Seu apoio é fundamental para nossa campanha!');
 					} else {
 						await context.setState({ valueLegal: await VotoLegalAPI.getVotoLegalValues(context.state.politicianData.votolegal_integration.votolegal_username) });
 						await context.setState({
@@ -694,19 +768,33 @@ const handler = new MessengerHandler()
 							title: 'Quero doar!',
 						}]);
 					}
-				} else { // no votoLegal
+				} else { // if politician doesn't have votoLegal
 					await context.sendText(context.state.participateText);
 				}
+				await context.typingOn();
 				// check if there is a share obj so we can show the option
 				if (context.state.politicianData.share && context.state.politicianData.share.url && context.state.politicianData.share.text) {
-					await context.sendButtonTemplate(context.state.politicianData.share.text, [{
-						type: 'web_url',
-						url: context.state.politicianData.share.url,
-						title: 'Divulgar',
-					}]);
+					// if it exists, we showed the first option, so we have to wait before sending this one. If not, this will be the first msg, we can show it right away.
+					await context.setState({ participateTimer: context.state.participateTimer ? context.state.participateTimer : 1 });
+					setTimeout(async () => { // adding a timer to wait a little bit between each message
+						await context.sendButtonTemplate(context.state.politicianData.share.text, [{
+							type: 'web_url',
+							url: context.state.politicianData.share.url,
+							title: 'Divulgar',
+						}]);
+					}, context.state.participateTimer);
 				}
-				await context.sendButtonTemplate('Deixe seus contatos para nossa equipe.', [opt.leaveInfo, opt.backToBeginning]);
-				await context.setState({ dialog: 'prompt', dataPrompt: 'email', recipientData: '' });
+				// !timer -> only message (no waiting), timer === 1 -> second message (has to wait a little), timer === 2500 -> third message (waits for both messages)
+				if (!context.state.participateTimer) { await context.setState({ participateTimer: 0 }); }
+
+				setTimeout(async () => { // adding a timer to wait a little bit between each message
+					await context.sendButtonTemplate('Deixe seus contatos para nossa equipe.', [opt.leaveInfo, opt.backToBeginning]);
+					await context.typingOff();
+				}, context.state.participateTimer === 1 ? 2500 : context.state.participateTimer * 2);
+
+				await context.setState({
+					dialog: 'prompt', dataPrompt: 'email', recipientData: '', participateTimer: '',
+				});
 				break;
 			case 'createIssue': // aka "talkToUs" // will only happen if user clicks on 'Fale Conosco'
 				await context.setState({ issueCreatedMessage: await loadIssueSent(context) }); // loading the confirmation message here
@@ -772,13 +860,13 @@ const handler = new MessengerHandler()
 				if (context.state.politicianData.contact.email) {
 					await context.sendText(` - Através do e-mail: ${context.state.politicianData.contact.email}`);
 				}
-				if (context.state.politicianData.contact.cellphone) {
+				if (context.state.politicianData.contact.cellphone && context.state.politicianData.contact.cellphone !== '+55') {
 					await context.sendText(` - Através do WhatsApp: ${context.state.politicianCellPhone}`);
 				}
 				if (context.state.politicianData.contact.twitter) {
 					await context.sendText(` - Através do Twitter: ${context.state.politicianData.contact.twitter}`);
 				}
-				if (context.state.politicianData.contact.url) {
+				if (context.state.politicianData.contact.url && context.state.politicianData.contact.url !== 'http://') {
 					await context.sendText(` - Através do site: ${context.state.politicianData.contact.url}`);
 				}
 				await context.sendButtonTemplate('Quer saber mais?', await checkMenu(context, [opt.trajectory, opt.poll_suaOpiniao, opt.participate]));

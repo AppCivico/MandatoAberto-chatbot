@@ -65,15 +65,28 @@ module.exports = {
 		return knowledgeBase;
 	},
 
+	async getknowledgeBaseByName(politician_id, entities) {
+		console.log('entities', entities);
+
+		const res = await request(`${apiUri}/api/chatbot/knowledge-base?politician_id=${politician_id}&entities=${entities}&security_token=${security_token}`);
+		const knowledgeBase = await res.json();
+		return knowledgeBase;
+	},
+
 	async postPrivateReply(item, page_id, post_id, comment_id, permalink, user_id) {
 		const res = await request.post(`${apiUri}/api/chatbot/private-reply?page_id=${page_id}&item=${item}&post_id=${post_id}&comment_id=${comment_id}&permalink=${permalink}&user_id=${user_id}&security_token=${security_token}`);
 		const privateReply = await res.json();
 		return privateReply;
 	},
 
-	async updateBlacklist(fb_id, active) { // mising the 0,1 flag
+	async updateBlacklist(fb_id, active) {
 		const res = await request.post(`${apiUri}/api/chatbot/blacklist?fb_id=${fb_id}&active=${active}&security_token=${security_token}`);
 		const Blacklist = await res.json();
 		return Blacklist;
+	},
+	async getAvailableIntents(pageId, page) {
+		const res = await request(`${apiUri}/api/chatbot/intents/available?fb_page_id=${pageId}&page=${page}&security_token=${security_token}`);
+		const intents = await res.json();
+		return intents;
 	},
 };
