@@ -518,11 +518,11 @@ const handler = new MessengerHandler()
 							await context.setState({ resultParameters: context.state.apiaiResp.result.parameters }); // getting the entities
 							await context.setState({ intentName: context.state.apiaiResp.result.metadata.intentName }); // getting the intent
 							await checkPosition(context);
-						} // end if dialogFlow
-					} else {
-						await context.setState({ noDialogFlow: context.event.message.text });
-						delete userMessages[context.session.user.id]; // deleting last sent message (it was sent already)
-						await context.setState({ dialog: 'createIssue' });
+						} else { // not using dialogFlow
+							await context.setState({ noDialogFlow: context.event.message.text });
+							delete userMessages[context.session.user.id]; // deleting last sent message (it was sent already)
+							await context.setState({ dialog: 'createIssue' });
+						}
 					}
 				} // end if isText
 			}
