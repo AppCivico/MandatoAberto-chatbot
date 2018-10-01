@@ -504,7 +504,7 @@ const handler = new MessengerHandler()
 						}
 					}
 				} else if (context.event.isText) {
-					if (context.state.politicianData.use_dialogflow === 1) { // check if politician is using dialogFlow
+					if (context.state.politicianData.use_dialogflow === 3) { // check if politician is using dialogFlow
 						await context.setState({ whatWasTyped: context.event.message.text }); // has to be set here because of talkToUs
 						if (!listening[context.session.user.id] || listening[context.session.user.id] === false) { // if we are listening we don't try to interpret the text
 						// will be used in case the bot doesn't find the question
