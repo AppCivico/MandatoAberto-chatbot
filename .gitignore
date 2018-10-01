@@ -66,9 +66,10 @@ typings/
 .sessions
 # audio2.js
 
-.MA-DF-Secret-Key.json
+*.MA-DF-Secret-Key.json
 
 *.wav
 *.mp4
 *.flac
 audio2.js
+*.vscode
