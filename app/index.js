@@ -515,7 +515,7 @@ const handler = new MessengerHandler()
 							await checkPosition(context);
 						} // end if dialogFlow
 					} else {
-						await context.setState({ whatWasTyped: '' });
+						await context.setState({ noDialogFlow: context.event.message.text });
 						delete userMessages[context.session.user.id]; // deleting last sent message (it was sent already)
 						await context.setState({ dialog: 'createIssue' });
 					}
@@ -811,6 +811,9 @@ const handler = new MessengerHandler()
 					listening[context.session.user.id] = true;
 					await context.typingOn();
 					userMessages[context.session.user.id] = ''; // starting the userMessage
+					if (context.state.noDialogFlow) {
+						userMessages[context.session.user.id] = context.state.noDialogFlow;
+					}
 				}
 
 				if (issueTimers[context.session.user.id]) { // check if timer already exists, and delete it if it does
