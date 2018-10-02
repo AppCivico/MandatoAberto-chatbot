@@ -178,7 +178,7 @@ async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-dec
 }
 
 async function sendMenu(context, text, options) {
-	const buttons = await checkMenu(options);
+	const buttons = await checkMenu(context, options);
 	if (!buttons || buttons.length === 0) {
 		await context.sendText(text);
 	} else if (buttons.length <= 3) {
