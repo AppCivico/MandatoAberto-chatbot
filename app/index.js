@@ -177,6 +177,18 @@ async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-dec
 	return dialogs;
 }
 
+async function sendMenu(context, text, options) {
+	const buttons = await checkMenu(options);
+	if (!buttons || buttons.length === 0) {
+		await context.sendText(text);
+	} else if (buttons.length <= 3) {
+		await context.sendButtonTemplate(text, buttons);
+	} else if (buttons.length === 4) {
+		await attach.sendButtons(context.session.user.id, text,
+			[buttons[0], buttons[1]], [buttons[2], buttons[3]], context.state.politicianData.fb_access_token);
+	}
+}
+
 async function showThemesQR(context) {
 	await context.setState({ firstTime: true }); // flag to check during answer loop that we have to load the types we have
 	await context.setState({ availableIntents: await MandatoAbertoAPI.getAvailableIntents(context.event.rawEvent.recipient.id, context.state.paginationNumber) });
@@ -723,7 +735,8 @@ const handler = new MessengerHandler()
 				menuTimers[context.session.user.id] = setTimeout(async () => { // wait 'MenuTimerlimit' to show options menu
 					// await attach.sendButtons(context.session.user.id, await loadOptionPrompt(context),
 					// 	[opt.aboutPolitician, opt.poll_suaOpiniao], [opt.participate, opt.availableIntents], context.state.politicianData.fb_access_token);
-					await sendMainMenu(context);
+					await sendMenu(context, await loadOptionPrompt(context), [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate, opt.availableIntents]);
+					// await sendMainMenu(context);
 					delete menuTimers[context.session.user.id]; // deleting this timer from timers object
 				}, MenuTimerlimit);
 				await context.setState({ dialog: 'prompt' });
