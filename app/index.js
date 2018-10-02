@@ -87,7 +87,7 @@ async function loadOptionPrompt(context) {
 
 async function sendMainMenu(context) {
 	await attach.sendButtons(context.session.user.id, await loadOptionPrompt(context),
-		[opt.aboutPolitician, opt.poll_suaOpiniao], [opt.participate, opt.availableIntents], context.state.politicianData.fb_access_token);
+		[opt.aboutPolitician, opt.availableIntents], [opt.participate, opt.poll_suaOpiniao], context.state.politicianData.fb_access_token);
 	// await context.sendButtonTemplate(await loadOptionPrompt(context), await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
 }
 
@@ -167,8 +167,10 @@ async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-dec
 	if (!context.state.pollData) { dialogs = dialogs.filter(obj => obj.payload !== 'poll'); }
 	if (!context.state.politicianData.contact || (context.state.politicianData.contact.email === null && context.state.politicianData.contact.twitter === null
 		&& context.state.politicianData.contact.facebook === null && context.state.politicianData.contact.url === 'http://'
-		&& context.state.politicianData.contact.cellphone === '+55')) { dialogs = dialogs.filter(obj => obj.payload !== 'contacts'); }
-
+		&& context.state.politicianData.contact.cellphone === '+55')) {
+		dialogs = dialogs.filter(obj => obj.payload !== 'contacts');
+		await dialogs.push(opt.availableIntents);
+	}
 	if (dialogs.find(x => x.payload === 'poll')) {
 		if (await checkPollAnswered(context) === true // already answered so we remove option
 			|| (Object.keys(context.state.pollData).length === 0 && context.state.pollData.constructor === Object)) { // no active poll
@@ -310,14 +312,14 @@ async function checkPosition(context) {
 			console.log('types', context.state.types);
 
 			await context.sendButtonTemplate('Você está perguntando sobre '// confirm themes with user
-				+ `${getDictionary(context.state.intentName)}?`, opt.themeConfirmation); // obs: the payload of the Yes/Sim option defaults to 'themeYes0'
+					+ `${getDictionary(context.state.intentName)}?`, opt.themeConfirmation); // obs: the payload of the Yes/Sim option defaults to 'themeYes0'
 			// await context.sendButtonTemplate(`Você está perguntando ${await getTypeText(context.state.types[0])} sobre `// confirm themes with user
 			// 	+ `${context.state.intentName.toLowerCase()}?`, opt.themeConfirmation); // obs: the payload of the Yes/Sim option defaults to 'themeYes0'
 		} else { // no answers in knowledge_base (We know the entity but politician doesn't have a position)
 			await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
 				context.state.whatWasTyped, context.state.resultParameters);
 			await context.sendText(`🤔 Eu ainda não perguntei para ${await getArtigoCargoNome(context)} sobre `
-						+ 'esse assunto. Irei encaminhar para nossa equipe, está bem?');
+					+ 'esse assunto. Irei encaminhar para nossa equipe, está bem?');
 			await sendMainMenu(context);
 			// await context.sendButtonTemplate(await loadOptionPrompt(context),
 			// 			await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
@@ -328,6 +330,8 @@ async function checkPosition(context) {
 
 const handler = new MessengerHandler()
 	.onEvent(async (context) => { // eslint-disable-line
+		console.log('teste');
+
 		if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead && context.event.rawEvent.field !== 'feed') {
 			await context.typingOn();
 
@@ -335,6 +339,8 @@ const handler = new MessengerHandler()
 			// we update context data at every interaction that's not a comment or a post
 			await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
 			await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
+
+			console.log('politicianData', context.state.politicianData);
 
 			await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
 				fb_id: context.session.user.id,
@@ -492,29 +498,40 @@ const handler = new MessengerHandler()
 						await context.setState({ dialog: payload });
 					}
 				} else if (context.event.isAudio) {
-					await context.sendText('Áudio? Me dê um instante para processar.');
-					if (context.event.audio.url) {
-						await context.setState({ audio: await audio.voiceRequest(context.event.audio.url, context.session.user.id) });
-						if (context.state.audio.txtMag && context.state.audio.txtMag !== '') { // there was an error (or the user just didn't say anything)
-							await context.sendButtonTemplate(context.state.audio.txtMag,
-								await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
-						} else {
-							await context.setState({ whatWasTyped: context.state.audio.whatWasSaid });
-							await context.setState({ resultParameters: context.state.audio.parameters });
-							await context.setState({ intentName: context.state.audio.intentName });
-							await checkPosition(context);
+					if (context.state.politicianData.use_dialogflow === 1) { // check if politician is using dialogFlow
+						await context.sendText('Áudio? Me dê um instante para processar.');
+						if (context.event.audio.url) {
+							await context.setState({ audio: await audio.voiceRequest(context.event.audio.url, context.session.user.id) });
+							if (context.state.audio.txtMag && context.state.audio.txtMag !== '') { // there was an error (or the user just didn't say anything)
+								await context.sendButtonTemplate(context.state.audio.txtMag,
+									await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
+							} else {
+								await context.setState({ whatWasTyped: context.state.audio.whatWasSaid });
+								await context.setState({ resultParameters: context.state.audio.parameters });
+								await context.setState({ intentName: context.state.audio.intentName });
+								await checkPosition(context);
+							}
 						}
+					} else {
+						delete userMessages[context.session.user.id]; // deleting last sent message (it was sent already)
+						await context.setState({ dialog: 'createIssue' });
 					}
 				} else if (context.event.isText) {
 					await context.setState({ whatWasTyped: context.event.message.text }); // has to be set here because of talkToUs
 					if (!listening[context.session.user.id] || listening[context.session.user.id] === false) { // if we are listening we don't try to interpret the text
 						// will be used in case the bot doesn't find the question
-						await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
+						if (context.state.politicianData.use_dialogflow === 1) { // check if politician is using dialogFlow
+							await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
 
-						await context.setState({ resultParameters: context.state.apiaiResp.result.parameters }); // getting the entities
-						await context.setState({ intentName: context.state.apiaiResp.result.metadata.intentName }); // getting the intent
-						await checkPosition(context);
-					} // end if listening
+							await context.setState({ resultParameters: context.state.apiaiResp.result.parameters }); // getting the entities
+							await context.setState({ intentName: context.state.apiaiResp.result.metadata.intentName }); // getting the intent
+							await checkPosition(context);
+						} else { // not using dialogFlow
+							await context.setState({ noDialogFlow: context.event.message.text });
+							delete userMessages[context.session.user.id]; // deleting last sent message (it was sent already)
+							await context.setState({ dialog: 'createIssue' });
+						}
+					}
 				} // end if isText
 			}
 		}
@@ -704,12 +721,12 @@ const handler = new MessengerHandler()
 				if (menuTimers[context.session.user.id]) { // clear timer if it already exists
 					clearTimeout(menuTimers[context.session.user.id]);
 				}
+				console.log('i am here');
+
 				menuTimers[context.session.user.id] = setTimeout(async () => { // wait 'MenuTimerlimit' to show options menu
-					// await context.sendButtonTemplate(await loadOptionPrompt(context),
-					// 	await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.availableIntents]));
-					await attach.sendButtons(context.session.user.id, await loadOptionPrompt(context),
-						[opt.aboutPolitician, opt.poll_suaOpiniao], [opt.participate, opt.availableIntents], context.state.politicianData.fb_access_token);
-					// await sendMainMenu(context);
+					// await attach.sendButtons(context.session.user.id, await loadOptionPrompt(context),
+					// 	[opt.aboutPolitician, opt.poll_suaOpiniao], [opt.participate, opt.availableIntents], context.state.politicianData.fb_access_token);
+					await sendMainMenu(context);
 					delete menuTimers[context.session.user.id]; // deleting this timer from timers object
 				}, MenuTimerlimit);
 				await context.setState({ dialog: 'prompt' });
@@ -807,6 +824,9 @@ const handler = new MessengerHandler()
 					listening[context.session.user.id] = true;
 					await context.typingOn();
 					userMessages[context.session.user.id] = ''; // starting the userMessage
+					if (context.state.noDialogFlow && context.state.noDialogFlow.length > 0) {
+						userMessages[context.session.user.id] = `${context.state.noDialogFlow} `;
+					}
 				}
 
 				if (issueTimers[context.session.user.id]) { // check if timer already exists, and delete it if it does
@@ -821,8 +841,9 @@ const handler = new MessengerHandler()
 				// create new (or reset) timer for sending message
 				issueTimers[context.session.user.id] = setTimeout(async () => {
 					if (userMessages[context.session.user.id] !== '') { // check if there's a message to send
-						console.log(await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id, userMessages[context.session.user.id],
-							context.state.resultParameters));
+						console.log(await MandatoAbertoAPI.postIssueWithoutEntities(
+							context.state.politicianData.user_id, context.session.user.id, userMessages[context.session.user.id],
+						));
 						// console.log('Enviei ', userMessages[context.session.user.id]);
 						await context.typingOff();
 					}

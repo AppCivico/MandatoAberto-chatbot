@@ -8,14 +8,12 @@ module.exports = {
 	async getPoliticianData(pageId) {
 		const res = await request(`${apiUri}/api/chatbot/politician?fb_page_id=${pageId}&security_token=${security_token}`);
 		const politicianData = await res.json();
-		// console.log('resposta do getPoliticianData: ', politicianData);
 		return politicianData;
 	},
 
 	async getPollData(pageId) {
 		const res = await request(`${apiUri}/api/chatbot/poll?fb_page_id=${pageId}&security_token=${security_token}`);
 		const pollData = await res.json();
-		// console.log('resposta do getPollData: ', pollData);
 		return pollData;
 	},
 
@@ -54,6 +52,13 @@ module.exports = {
 		message = encodeURI(message);
 		entities = JSON.stringify(entities);
 		const res = await request.post(`${apiUri}/api/chatbot/issue?politician_id=${politician_id}&fb_id=${fb_id}&message=${message}&entities=${entities}&security_token=${security_token}`);
+		const issue = await res.json();
+		return issue;
+	},
+
+	async postIssueWithoutEntities(politician_id, fb_id, message) {
+		message = encodeURI(message);
+		const res = await request.post(`${apiUri}/api/chatbot/issue?politician_id=${politician_id}&fb_id=${fb_id}&message=${message}&security_token=${security_token}`);
 		const issue = await res.json();
 		return issue;
 	},
