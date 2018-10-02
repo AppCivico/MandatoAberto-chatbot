@@ -162,7 +162,7 @@ async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-dec
 	if (!context.state.trajectory) { dialogs = dialogs.filter(obj => obj.payload !== 'trajectory'); }
 	if (!context.state.pollData) { dialogs = dialogs.filter(obj => obj.payload !== 'poll'); }
 	if (!context.state.politicianData.contact || (context.state.politicianData.contact.email === null && context.state.politicianData.contact.twitter === null
-		&& context.state.politicianData.contact.facebook === null && context.state.politicianData.contact.url === 'http://'
+		&& context.state.politicianData.contact.facebook === null && (context.state.politicianData.contact.url === 'http://' || context.state.politicianData.contact.url === null)
 		&& context.state.politicianData.contact.cellphone === '+55')) {
 		dialogs = dialogs.filter(obj => obj.payload !== 'contacts');
 		await dialogs.push(opt.availableIntents);
