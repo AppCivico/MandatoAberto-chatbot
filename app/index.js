@@ -85,11 +85,11 @@ async function loadOptionPrompt(context) {
 	return context.state.optionPrompt.content;
 }
 
-async function sendMainMenu(context) {
-	await attach.sendButtons(context.session.user.id, await loadOptionPrompt(context),
-		[opt.aboutPolitician, opt.availableIntents], [opt.participate, opt.poll_suaOpiniao], context.state.politicianData.fb_access_token);
-	// await context.sendButtonTemplate(await loadOptionPrompt(context), await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
-}
+// async function sendMainMenu(context) {
+// 	await attach.sendButtons(context.session.user.id, await loadOptionPrompt(context),
+// 		[opt.aboutPolitician, opt.availableIntents], [opt.participate, opt.poll_suaOpiniao], context.state.politicianData.fb_access_token);
+// 	// await context.sendButtonTemplate(await loadOptionPrompt(context), await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
+// }
 
 async function loadIssueStarted(context) {
 	const answer = await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_started_listening');
@@ -166,10 +166,9 @@ async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-dec
 	if (!context.state.trajectory) { dialogs = dialogs.filter(obj => obj.payload !== 'trajectory'); }
 	if (!context.state.pollData) { dialogs = dialogs.filter(obj => obj.payload !== 'poll'); }
 	if (!context.state.politicianData.contact || (context.state.politicianData.contact.email === null && context.state.politicianData.contact.twitter === null
-		&& context.state.politicianData.contact.facebook === null && context.state.politicianData.contact.url === 'http://'
+		&& context.state.politicianData.contact.facebook === null && (context.state.politicianData.contact.url === 'http://' || context.state.politicianData.contact.url === null)
 		&& context.state.politicianData.contact.cellphone === '+55')) {
 		dialogs = dialogs.filter(obj => obj.payload !== 'contacts');
-		await dialogs.push(opt.availableIntents);
 	}
 	if (dialogs.find(x => x.payload === 'poll')) {
 		if (await checkPollAnswered(context) === true // already answered so we remove option
@@ -181,6 +180,24 @@ async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-dec
 	return dialogs;
 }
 
+async function sendMenu(context, text, options) {
+	const buttons = await checkMenu(context, options);
+	console.log('buttons', buttons.length);
+
+	if (!buttons || buttons.length === 0) {
+		await context.sendText(text);
+	} else if (buttons.length <= 3) {
+		console.log('Tenho 3');
+
+		await context.sendButtonTemplate(text, buttons);
+	} else if (buttons.length === 4) {
+		console.log('Tenho 4');
+
+		await attach.sendButtons(context.session.user.id, text,
+			[buttons[0], buttons[1]], [buttons[2], buttons[3]], context.state.politicianData.fb_access_token);
+	}
+}
+
 async function showThemesQR(context) {
 	await context.setState({ firstTime: true }); // flag to check during answer loop that we have to load the types we have
 	await context.setState({ availableIntents: await MandatoAbertoAPI.getAvailableIntents(context.event.rawEvent.recipient.id, context.state.paginationNumber) });
@@ -188,6 +205,9 @@ async function showThemesQR(context) {
 	// console.log('currentPage', context.state.paginationNumber);
 	// console.log('current intents', context.state.availableIntents);
 	// console.log('nextIntents', context.state.nextIntents);
+
+	console.log('context.state.availableIntents.intents', context.state.availableIntents.intents);
+
 
 	await context.sendText('Escolha um tema:', await attach.getIntentQR(context.state.availableIntents.intents, context.state.nextIntents.intents));
 }
@@ -289,7 +309,7 @@ async function checkPosition(context) {
 		await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
 			context.state.whatWasTyped, context.state.resultParameters);
 		await context.sendText(getRandom(opt.frases_fallback));
-		await sendMainMenu(context);
+		await sendMenu(context, await loadOptionPrompt(context), [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate, opt.availableIntents]);
 		// await context.sendButtonTemplate(await loadOptionPrompt(context),
 		// 	await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
 		break;
@@ -313,14 +333,12 @@ async function checkPosition(context) {
 
 			await context.sendButtonTemplate('Você está perguntando sobre '// confirm themes with user
 					+ `${getDictionary(context.state.intentName)}?`, opt.themeConfirmation); // obs: the payload of the Yes/Sim option defaults to 'themeYes0'
-			// await context.sendButtonTemplate(`Você está perguntando ${await getTypeText(context.state.types[0])} sobre `// confirm themes with user
-			// 	+ `${context.state.intentName.toLowerCase()}?`, opt.themeConfirmation); // obs: the payload of the Yes/Sim option defaults to 'themeYes0'
 		} else { // no answers in knowledge_base (We know the entity but politician doesn't have a position)
 			await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
 				context.state.whatWasTyped, context.state.resultParameters);
 			await context.sendText(`🤔 Eu ainda não perguntei para ${await getArtigoCargoNome(context)} sobre `
 					+ 'esse assunto. Irei encaminhar para nossa equipe, está bem?');
-			await sendMainMenu(context);
+			await sendMenu(context, await loadOptionPrompt(context), [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate, opt.availableIntents]);
 			// await context.sendButtonTemplate(await loadOptionPrompt(context),
 			// 			await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
 		}
@@ -339,8 +357,6 @@ const handler = new MessengerHandler()
 			// we update context data at every interaction that's not a comment or a post
 			await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
 			await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
-
-			console.log('politicianData', context.state.politicianData);
 
 			await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
 				fb_id: context.session.user.id,
@@ -381,7 +397,8 @@ const handler = new MessengerHandler()
 							context.state.types.splice(context.state.number, 1); // removing the theme we just answered
 							if (context.state.types.length === 0) { // we don't have anymore type of answer (the user already clicked throught them all)
 								setTimeout(async () => {
-									await sendMainMenu(context);
+									await sendMenu(context, await loadOptionPrompt(context),
+										[opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate, opt.availableIntents]);
 									// await context.sendButtonTemplate(await loadOptionPrompt(context),
 									// 	await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
 								}, 5000);
@@ -404,7 +421,7 @@ const handler = new MessengerHandler()
 								+ 'Mas já entou enviando para nossas equipe e estaremos te respondendo em breve.');
 							// await context.sendButtonTemplate(await loadOptionPrompt(context),
 							// 	await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
-							await sendMainMenu(context);
+							await sendMenu(context, await loadOptionPrompt(context), [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate, opt.availableIntents]);
 						}
 						// end answering theme --------------------------------------------------
 					} else if (context.event.postback.payload.slice(0, 6) === 'answer') {
@@ -466,7 +483,7 @@ const handler = new MessengerHandler()
 						console.log(context.state.types);
 						if (context.state.types.length === 0) { // we don't have anymore type of answer (the user already clicked throught them all)
 							setTimeout(async () => {
-								await sendMainMenu(context);
+								await sendMenu(context, await loadOptionPrompt(context), [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate, opt.availableIntents]);
 								// await context.sendButtonTemplate(await loadOptionPrompt(context), await checkMenu(context,
 								// [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
 							}, 5000);
@@ -503,8 +520,9 @@ const handler = new MessengerHandler()
 						if (context.event.audio.url) {
 							await context.setState({ audio: await audio.voiceRequest(context.event.audio.url, context.session.user.id) });
 							if (context.state.audio.txtMag && context.state.audio.txtMag !== '') { // there was an error (or the user just didn't say anything)
-								await context.sendButtonTemplate(context.state.audio.txtMag,
-									await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
+								await sendMenu(context, context.state.audio.txtMag, [opt.trajectory, opt.contacts, opt.participate, opt.availableIntents]);
+								// await context.sendButtonTemplate(context.state.audio.txtMag,
+								// await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
 							} else {
 								await context.setState({ whatWasTyped: context.state.audio.whatWasSaid });
 								await context.setState({ resultParameters: context.state.audio.parameters });
@@ -707,7 +725,7 @@ const handler = new MessengerHandler()
 			}
 
 			switch (context.state.dialog) {
-			case 'greetings':
+			case 'greetings': // primeiro
 				await context.typingOff();
 				areWeListening = true;
 				await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
@@ -721,12 +739,13 @@ const handler = new MessengerHandler()
 				if (menuTimers[context.session.user.id]) { // clear timer if it already exists
 					clearTimeout(menuTimers[context.session.user.id]);
 				}
-				console.log('i am here');
 
 				menuTimers[context.session.user.id] = setTimeout(async () => { // wait 'MenuTimerlimit' to show options menu
+					console.log('i am here');
 					// await attach.sendButtons(context.session.user.id, await loadOptionPrompt(context),
 					// 	[opt.aboutPolitician, opt.poll_suaOpiniao], [opt.participate, opt.availableIntents], context.state.politicianData.fb_access_token);
-					await sendMainMenu(context);
+					await sendMenu(context, await loadOptionPrompt(context), [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate, opt.availableIntents]);
+					// await sendMainMenu(context);
 					delete menuTimers[context.session.user.id]; // deleting this timer from timers object
 				}, MenuTimerlimit);
 				await context.setState({ dialog: 'prompt' });
@@ -738,7 +757,7 @@ const handler = new MessengerHandler()
 				await context.setState({ trajectory: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'trajectory') });
 				await context.setState({ articles: await getArticles(context.state.politicianData.gender) });
 				await context.setState({ introduction: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'introduction') });
-				await sendMainMenu(context);
+				await sendMenu(context, await loadOptionPrompt(context), [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate, opt.availableIntents]);
 				// await context.sendButtonTemplate(await loadOptionPrompt(context), await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
 				await context.setState({ dialog: 'prompt' });
 				break;
@@ -748,7 +767,7 @@ const handler = new MessengerHandler()
 					context.state.whatWasTyped, context.state.resultParameters);
 				await context.sendText('Que pena! Parece que eu errei. Mas recebi sua dúvida e estaremos te respondendo logo mais! Quer fazer outra pergunta?');
 				menuTimers[context.session.user.id] = setTimeout(async () => { // wait 'MenuTimerlimit' to show options menu
-					await context.sendButtonTemplate(await loadOptionPrompt(context), await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
+					await sendMenu(context, await loadOptionPrompt(context), [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate, opt.availableIntents]);
 					delete menuTimers[context.session.user.id]; // deleting this timer from timers object
 				}, (MenuTimerlimit / 2));
 				await context.setState({ whatWasTyped: '', dialog: 'prompt' });
@@ -865,8 +884,10 @@ const handler = new MessengerHandler()
 			case 'aboutMe': {
 				const introductionText = await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'introduction');
 				await context.sendText(introductionText.content);
-				await context.sendButtonTemplate(`O que mais deseja saber sobre ${context.state.articles.defined} ${context.state.politicianData.office.name}?`,
-					await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));
+				await sendMenu(context, `O que mais deseja saber sobre ${context.state.articles.defined} ${context.state.politicianData.office.name}?`,
+					[opt.trajectory, opt.contacts, opt.participate, opt.availableIntents]);
+				// await context.sendButtonTemplate(`O que mais deseja saber sobre ${context.state.articles.defined} ${context.state.politicianData.office.name}?`,
+				// 	await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));
 				await context.setState({ dialog: 'prompt' });
 				break;
 			}
@@ -890,14 +911,16 @@ const handler = new MessengerHandler()
 				if (context.state.politicianData.contact.url && context.state.politicianData.contact.url !== 'http://') {
 					await context.sendText(` - Através do site: ${context.state.politicianData.contact.url}`);
 				}
-				await context.sendButtonTemplate('Quer saber mais?', await checkMenu(context, [opt.trajectory, opt.poll_suaOpiniao, opt.participate]));
+				await sendMenu(context, 'Quer saber mais?', [opt.trajectory, opt.poll_suaOpiniao, opt.participate, opt.availableIntents]);
+				// await context.sendButtonTemplate('Quer saber mais?', await checkMenu(context, [opt.trajectory, opt.poll_suaOpiniao, opt.participate]));
 				await context.setState({ dialog: 'prompt', politicianCellPhone: undefined });
 				break;
 			case 'poll': {
 				if (await checkPollAnswered(context) === true) {
 					await context.sendText('Ah, que pena! Você já respondeu essa pergunta.');
-					await context.sendButtonTemplate('Se quiser, eu posso te ajudar com outra coisa.',
-						await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));
+					await sendMenu(context, 'Se quiser, eu posso te ajudar com outra coisa.', [opt.trajectory, opt.contacts, opt.participate, opt.availableIntents]);
+					// await context.sendButtonTemplate('Se quiser, eu posso te ajudar com outra coisa.',
+					// 	await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));
 					await context.setState({ dialog: 'prompt' });
 				} else if (context.state.pollData && context.state.pollData.questions && context.state.pollData.questions[0] && context.state.pollData.questions[0].content) {
 					await context.sendText('Quero conhecer você melhor. Deixe sua resposta e participe deste debate.');
@@ -919,8 +942,9 @@ const handler = new MessengerHandler()
 					await context.setState({ dialog: 'pollAnswer' });
 				} else {
 					await context.sendText('Não temos nenhuma pergunta ativa no momento.');
-					await context.sendButtonTemplate('Se quiser, eu posso te ajudar com outra coisa.',
-						await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));
+					await sendMenu(context, 'Se quiser, eu posso te ajudar com outra coisa.', [opt.trajectory, opt.contacts, opt.participate, opt.availableIntents]);
+					// await context.sendButtonTemplate('Se quiser, eu posso te ajudar com outra coisa.',
+					// await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));
 				}
 				break;
 			}
@@ -929,13 +953,17 @@ const handler = new MessengerHandler()
 					await context.sendButtonTemplate('Muito obrigado por sua resposta. Você gostaria de deixar seu e-mail e telefone para nossa equipe?', opt.recipientData_LetsGo);
 					await context.setState({ dialog: 'prompt', dataPrompt: 'email' });
 				} else { // if it's true, user already sent his personal data
-					await context.sendButtonTemplate('Muito obrigado por sua resposta. Quer saber mais?', await checkMenu(context, [opt.aboutPolitician, opt.talkToUs, opt.participate]));
+					await sendMenu(context, 'Muito obrigado por sua resposta. Quer saber mais?', [opt.aboutPolitician, opt.talkToUs, opt.participate, opt.availableIntents]);
+					// await context.sendButtonTemplate('Muito obrigado por sua resposta. Quer saber mais?',
+					// await checkMenu(context, [opt.aboutPolitician, opt.talkToUs, opt.participate]));
 				}
 				break;
 			case 'recipientData':
 				if (context.event.postback && (context.event.postback.title === 'Agora não' || context.event.postback.title === 'Não')) {
-					await context.sendButtonTemplate('Está bem! Posso te ajudar com mais alguma informação?',
-						await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
+					await sendMenu(context, 'Está bem! Posso te ajudar com mais alguma informação?',
+						[opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate, opt.availableIntents]);
+					// await context.sendButtonTemplate('Está bem! Posso te ajudar com mais alguma informação?',
+					// await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
 					await context.setState({ dialog: 'prompt' });
 				} else if (context.state.dataPrompt) {
 					switch (context.state.dataPrompt) {
@@ -967,9 +995,11 @@ const handler = new MessengerHandler()
 						await context.sendText('Pronto, já guardei seus dados.');
 						await context.setState({ sentPersonalData: true });
 						try {
-							await context.sendButtonTemplate('Quer saber mais?', await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
+							await sendMenu(context, 'Quer saber mais?', [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate, opt.availableIntents]);
+							// await context.sendButtonTemplate('Quer saber mais?', await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
 						} catch (err) {
-							await context.sendButtonTemplate('Como posso te ajudar?', await checkMenu(context, [opt.aboutPolitician, opt.trajectory, opt.participate]));
+							await sendMenu(context, 'Como posso te ajudar?', [opt.aboutPolitician, opt.trajectory, opt.participate, opt.availableIntents]);
+							// await context.sendButtonTemplate('Como posso te ajudar?', await checkMenu(context, [opt.aboutPolitician, opt.trajectory, opt.participate]));
 						}
 						await context.setState({ dialog: 'prompt', recipientData: '', dataPrompt: '' });
 						break;
@@ -978,18 +1008,21 @@ const handler = new MessengerHandler()
 				break;
 			case 'trajectory':
 				await context.sendText(context.state.trajectory.content);
-				await context.sendButtonTemplate('Quer saber mais?', await checkMenu(context, [opt.poll_suaOpiniao, opt.contacts, opt.participate]));
+				await sendMenu(context, 'Quer saber mais?', [opt.poll_suaOpiniao, opt.contacts, opt.participate, opt.availableIntents]);
+				// await context.sendButtonTemplate('Quer saber mais?', await checkMenu(context, [opt.poll_suaOpiniao, opt.contacts, opt.participate]));
 				await context.setState({ dialog: 'prompt' });
 				break;
 			case 'add_blacklist': // adding user to the blacklist from the persistent menu
 				await MandatoAbertoAPI.updateBlacklist(context.session.user.id, 0);
 				await context.sendText('Tudo bem. Não te enviaremos mais nenhuma notificação.');
-				await context.sendButtonTemplate('Quer saber mais?', await checkMenu(context, [opt.aboutPolitician, opt.trajectory, opt.participate]));
+				await sendMenu(context, 'Quer saber mais?', [opt.aboutPolitician, opt.trajectory, opt.participate, opt.availableIntents]);
+				// await context.sendButtonTemplate('Quer saber mais?', await checkMenu(context, [opt.aboutPolitician, opt.trajectory, opt.participate]));
 				break;
 			case 'remove_blacklist': // removing user to the blacklist from the persistent menu
 				await MandatoAbertoAPI.updateBlacklist(context.session.user.id, 1);
 				await context.sendText('Legal. Estaremos te avisando das novidades.');
-				await context.sendButtonTemplate('Quer saber mais?', await checkMenu(context, [opt.aboutPolitician, opt.trajectory, opt.participate]));
+				await sendMenu(context, 'Quer saber mais?', [opt.aboutPolitician, opt.trajectory, opt.participate, opt.availableIntents]);
+				// await context.sendButtonTemplate('Quer saber mais?', await checkMenu(context, [opt.aboutPolitician, opt.trajectory, opt.participate]));
 				break;
 			} // end switch de diálogo
 		}
@@ -1025,8 +1058,7 @@ const handler = new MessengerHandler()
 			console.log('Administrador => Não conseguimos descobrir o nome do político');
 		}
 
-
-		await context.sendButtonTemplate('Escreva uma mensagem para nós!', await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
+		await sendMenu(context, 'Erro! Escreva uma mensagem para nós!', [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate, opt.availableIntents]);
 		await context.setState({ dialog: 'prompt' });
 		// await context.setState({ articles: getArticles(context.state.politicianData.gender) });
 		// await context.sendText('Olá. Você gostaria de enviar uma mensagem para nossa equipe ou conhecer mais sobre '
