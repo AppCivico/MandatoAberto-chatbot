@@ -114,7 +114,7 @@ module.exports = {
 	],
 	availableIntents: {
 		type: 'postback',
-		title: 'Proposta',
+		title: 'Propostas',
 		payload: 'availableIntents',
 	},
 	frases_fallback: ['Essa resposta eu não tenho 🤔. Muito boa a sua pergunta! irei encaminhar para nosso time e já te respondo.',
