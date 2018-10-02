@@ -185,6 +185,9 @@ async function showThemesQR(context) {
 	// console.log('current intents', context.state.availableIntents);
 	// console.log('nextIntents', context.state.nextIntents);
 
+	console.log('context.state.availableIntents.intents', context.state.availableIntents.intents);
+
+
 	await context.sendText('Escolha um tema:', await attach.getIntentQR(context.state.availableIntents.intents, context.state.nextIntents.intents));
 }
 
@@ -335,8 +338,6 @@ const handler = new MessengerHandler()
 			// we update context data at every interaction that's not a comment or a post
 			await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
 			await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
-
-			console.log('politicianData', context.state.politicianData);
 
 			await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
 				fb_id: context.session.user.id,
