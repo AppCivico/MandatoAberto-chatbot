@@ -163,8 +163,10 @@ async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-dec
 	if (!context.state.pollData) { dialogs = dialogs.filter(obj => obj.payload !== 'poll'); }
 	if (!context.state.politicianData.contact || (context.state.politicianData.contact.email === null && context.state.politicianData.contact.twitter === null
 		&& context.state.politicianData.contact.facebook === null && context.state.politicianData.contact.url === 'http://'
-		&& context.state.politicianData.contact.cellphone === '+55')) { dialogs = dialogs.filter(obj => obj.payload !== 'contacts'); }
-
+		&& context.state.politicianData.contact.cellphone === '+55')) {
+		dialogs = dialogs.filter(obj => obj.payload !== 'contacts');
+		await dialogs.push(opt.availableIntents);
+	}
 	if (dialogs.find(x => x.payload === 'poll')) {
 		if (await checkPollAnswered(context) === true // already answered so we remove option
 			|| (Object.keys(context.state.pollData).length === 0 && context.state.pollData.constructor === Object)) { // no active poll
