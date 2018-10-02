@@ -737,9 +737,9 @@ const handler = new MessengerHandler()
 				if (menuTimers[context.session.user.id]) { // clear timer if it already exists
 					clearTimeout(menuTimers[context.session.user.id]);
 				}
-				console.log('i am here');
 
 				menuTimers[context.session.user.id] = setTimeout(async () => { // wait 'MenuTimerlimit' to show options menu
+					console.log('i am here');
 					// await attach.sendButtons(context.session.user.id, await loadOptionPrompt(context),
 					// 	[opt.aboutPolitician, opt.poll_suaOpiniao], [opt.participate, opt.availableIntents], context.state.politicianData.fb_access_token);
 					await sendMenu(context, await loadOptionPrompt(context), [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate, opt.availableIntents]);
