@@ -532,6 +532,8 @@ const handler = new MessengerHandler()
 					}
 				} else if (context.event.isText) {
 					await context.setState({ whatWasTyped: context.event.message.text }); // has to be set here because of talkToUs
+					console.log('context.state.politicianData', context.state.politicianData);
+
 					if (!listening[context.session.user.id] || listening[context.session.user.id] === false) { // if we are listening we don't try to interpret the text
 						if (context.state.whatWasTyped.toLowerCase() === 'sim') {
 							await context.setState({ dialog: 'greetings' });
