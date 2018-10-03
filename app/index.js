@@ -475,7 +475,7 @@ const handler = new MessengerHandler()
 						console.log(context.state.types);
 						if (context.state.types.length === 0) { // we don't have anymore type of answer (the user already clicked throught them all)
 							setTimeout(async () => {
-								await context.setState({ dialog: 'themeEnd' });
+								await context.sendText('Quer ver mais temas? Ou prefere voltar para o menu?', await attach.getQR(opt.themeEnd));
 								// await sendMenu(context, await loadOptionPrompt(context), [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate, opt.availableIntents]);
 							}, 5000);
 						} else {
