@@ -531,8 +531,9 @@ const handler = new MessengerHandler()
 					if (!listening[context.session.user.id] || listening[context.session.user.id] === false) { // if we are listening we don't try to interpret the text
 						// will be used in case the bot doesn't find the question
 						console.log('context.state.politicianData.use_dialogflow', context.state.politicianData.use_dialogflow);
-
-						if (context.state.politicianData.use_dialogflow === 1) { // check if politician is using dialogFlow
+						if (context.state.whatWasTyped.toLowerCase() === 'sim') {
+							await context.setState({ dialog: 'greetings' });
+						} else if (context.state.politicianData.use_dialogflow === 1) { // check if politician is using dialogFlow
 							console.log('entrei aqui');
 
 							await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
