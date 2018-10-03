@@ -350,6 +350,9 @@ const handler = new MessengerHandler()
 			await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
 			await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 
+			console.log('context.state.politicianData', context.state.politicianData);
+
+
 			await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
 				fb_id: context.session.user.id,
 				name: `${context.session.user.first_name} ${context.session.user.last_name}`,
@@ -528,8 +531,6 @@ const handler = new MessengerHandler()
 					}
 				} else if (context.event.isText) {
 					await context.setState({ whatWasTyped: context.event.message.text }); // has to be set here because of talkToUs
-					console.log('context.state.politicianData', context.state.politicianData);
-
 					if (!listening[context.session.user.id] || listening[context.session.user.id] === false) { // if we are listening we don't try to interpret the text
 						if (context.state.whatWasTyped.toLowerCase() === 'sim') {
 							await context.setState({ dialog: 'greetings' });
