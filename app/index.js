@@ -533,7 +533,6 @@ const handler = new MessengerHandler()
 				} else if (context.event.isText) {
 					await context.setState({ whatWasTyped: context.event.message.text }); // has to be set here because of talkToUs
 					if (!listening[context.session.user.id] || listening[context.session.user.id] === false) { // if we are listening we don't try to interpret the text
-						// will be used in case the bot doesn't find the question
 						if (context.state.whatWasTyped.toLowerCase() === 'sim') { // temporary measure for fixing messages that come from comment_response message
 							await context.setState({ dialog: 'greetings' });
 						} else if (context.state.politicianData.use_dialogflow === 1) { // check if politician is using dialogFlow
