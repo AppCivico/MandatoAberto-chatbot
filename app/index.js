@@ -475,7 +475,7 @@ const handler = new MessengerHandler()
 						console.log(context.state.types);
 						if (context.state.types.length === 0) { // we don't have anymore type of answer (the user already clicked throught them all)
 							setTimeout(async () => {
-								await context.sendText('Quer ver mais temas? Ou prefere voltar para o menu?', await attach.getQR(opt.themeEnd));
+								await context.sendText('Quer ver mais temas? Ou prefere voltar para o menu?', { quick_replies: opt.themeEnd });
 								// await sendMenu(context, await loadOptionPrompt(context), [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate, opt.availableIntents]);
 							}, 5000);
 						} else {
@@ -1004,7 +1004,7 @@ const handler = new MessengerHandler()
 				await context.setState({ dialog: 'prompt' });
 				break;
 			case 'themeEnd':
-				await context.sendText('Quer ver mais temas? Ou prefere voltar para o menu?', await attach.getQR(opt.themeEnd));
+				await context.sendText('Quer ver mais temas? Ou prefere voltar para o menu?', { quick_replies: opt.themeEnd });
 				break;
 			case 'add_blacklist': // adding user to the blacklist from the persistent menu
 				await MandatoAbertoAPI.updateBlacklist(context.session.user.id, 0);
