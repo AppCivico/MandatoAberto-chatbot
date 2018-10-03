@@ -494,7 +494,7 @@ const handler = new MessengerHandler()
 								});
 							});
 							context.state.options.push({ content_type: 'text', title: 'Temas', payload: 'availableIntents' });
-							context.state.options.push({ content_type: 'text', title: 'Voltar', payload: 'mainMenu' });
+							context.state.options.push({ content_type: 'text', title: 'Voltar', payload: 'themeEnd' });
 							console.log('options', context.state.options);
 							setTimeout(async () => {
 								await context.sendText(`Deseja saber mais sobre ${getDictionary(context.state.themeName)}?`, { quick_replies: context.state.options });
@@ -503,6 +503,8 @@ const handler = new MessengerHandler()
 					} else if (payload === 'moreThemes') {
 						await context.setState({ paginationNumber: context.state.paginationNumber + 1 });
 						await showThemesQR(context);
+					} else if (payload === 'themeEnd') {
+						await context.sendText('Quer ver mais temas? Ou prefere voltar para o menu?', await attach.getQR(opt.themeEnd));
 					} else {
 						if (payload === 'availableIntents') {
 							await context.setState({ paginationNumber: 1, availableIntents: '', nextIntents: '' }); // resetting data
