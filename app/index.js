@@ -479,9 +479,8 @@ const handler = new MessengerHandler()
 						console.log(context.state.types);
 						if (context.state.types.length === 0) { // we don't have anymore type of answer (the user already clicked throught them all)
 							setTimeout(async () => {
-								await sendMenu(context, await loadOptionPrompt(context), [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate, opt.availableIntents]);
-								// await context.sendButtonTemplate(await loadOptionPrompt(context), await checkMenu(context,
-								// [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
+								await context.setState({ dialog: 'themeEnd' });
+								// await sendMenu(context, await loadOptionPrompt(context), [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate, opt.availableIntents]);
 							}, 5000);
 						} else {
 							await context.setState({ options: [] }); // building the options menu
@@ -503,8 +502,6 @@ const handler = new MessengerHandler()
 					} else if (payload === 'moreThemes') {
 						await context.setState({ paginationNumber: context.state.paginationNumber + 1 });
 						await showThemesQR(context);
-					} else if (payload === 'themeEnd') {
-						await context.sendText('Quer ver mais temas? Ou prefere voltar para o menu?', await attach.getQR(opt.themeEnd));
 					} else {
 						if (payload === 'availableIntents') {
 							await context.setState({ paginationNumber: 1, availableIntents: '', nextIntents: '' }); // resetting data
@@ -1009,6 +1006,9 @@ const handler = new MessengerHandler()
 				await sendMenu(context, 'Quer saber mais?', [opt.poll_suaOpiniao, opt.contacts, opt.participate, opt.availableIntents]);
 				// await context.sendButtonTemplate('Quer saber mais?', await checkMenu(context, [opt.poll_suaOpiniao, opt.contacts, opt.participate]));
 				await context.setState({ dialog: 'prompt' });
+				break;
+			case 'themeEnd':
+				await context.sendText('Quer ver mais temas? Ou prefere voltar para o menu?', await attach.getQR(opt.themeEnd));
 				break;
 			case 'add_blacklist': // adding user to the blacklist from the persistent menu
 				await MandatoAbertoAPI.updateBlacklist(context.session.user.id, 0);
