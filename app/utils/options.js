@@ -117,6 +117,18 @@ module.exports = {
 		title: 'Propostas',
 		payload: 'availableIntents',
 	},
+	themeEnd: [
+		{
+			content_type: 'text',
+			title: 'Ver mais temas',
+			payload: 'availableIntents',
+		},
+		{
+			content_type: 'text',
+			title: 'Voltar para o menu',
+			payload: 'mainMenu',
+		},
+	],
 	frases_fallback: ['Essa resposta eu não tenho 🤔. Muito boa a sua pergunta! irei encaminhar para nosso time e já te respondo.',
 		'Uma pergunta nova 👏👏👏! Irei encaminhar para nossa equipe, que deve responder em breve.',
 		'Ainda não nos fizeram essa pergunta. Vamos descobrir a resposta 🤗 ! Vou encaminhar para nosso time.',
