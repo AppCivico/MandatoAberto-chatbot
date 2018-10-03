@@ -183,12 +183,8 @@ async function sendMenu(context, text, options) {
 	if (!buttons || buttons.length === 0) {
 		await context.sendText(text);
 	} else if (buttons.length <= 3) {
-		console.log('Tenho 3');
-
 		await context.sendButtonTemplate(text, buttons);
 	} else if (buttons.length === 4) {
-		console.log('Tenho 4');
-
 		await attach.sendButtons(context.session.user.id, text,
 			[buttons[0], buttons[1]], [buttons[2], buttons[3]], context.state.politicianData.fb_access_token);
 	}
@@ -533,8 +529,9 @@ const handler = new MessengerHandler()
 				} else if (context.event.isText) {
 					await context.setState({ whatWasTyped: context.event.message.text }); // has to be set here because of talkToUs
 					if (!listening[context.session.user.id] || listening[context.session.user.id] === false) { // if we are listening we don't try to interpret the text
-						// will be used in case the bot doesn't find the question
-						if (context.state.politicianData.use_dialogflow === 1) { // check if politician is using dialogFlow
+						if (context.state.whatWasTyped.toLowerCase() === 'sim') {
+							await context.setState({ dialog: 'greetings' });
+						} else if (context.state.politicianData.use_dialogflow === 1) { // check if politician is using dialogFlow
 							await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
 
 							await context.setState({ resultParameters: context.state.apiaiResp.result.parameters }); // getting the entities
