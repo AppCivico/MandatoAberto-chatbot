@@ -354,9 +354,6 @@ const handler = new MessengerHandler()
 			await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
 			await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 
-			console.log('context.state.politicianData', context.state.politicianData);
-
-
 			await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
 				fb_id: context.session.user.id,
 				name: `${context.session.user.first_name} ${context.session.user.last_name}`,
@@ -536,9 +533,9 @@ const handler = new MessengerHandler()
 				} else if (context.event.isText) {
 					await context.setState({ whatWasTyped: context.event.message.text }); // has to be set here because of talkToUs
 					if (!listening[context.session.user.id] || listening[context.session.user.id] === false) { // if we are listening we don't try to interpret the text
-						if (context.state.whatWasTyped.toLowerCase() === 'sim') {
-							await context.setState({ dialog: 'greetings' });
-						} else if (context.state.politicianData.use_dialogflow === 1) { // check if politician is using dialogFlow
+						// will be used in case the bot doesn't find the question
+
+						if (context.state.politicianData.use_dialogflow === 1) { // check if politician is using dialogFlow
 							await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
 
 							await context.setState({ resultParameters: context.state.apiaiResp.result.parameters }); // getting the entities
