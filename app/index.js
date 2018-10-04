@@ -154,6 +154,13 @@ async function checkPollAnswered(context) {
 // }
 
 async function checkMenu(context, dialogs) { // eslint-disable-line
+	if (process.env.BIORAMA === 'true') { // check if we are on a different brach
+		const results = [];
+		results.push(opt.availableIntents);
+		results.push(opt.participate);
+		results.push(opt.talkToUs);
+		return results;
+	}
 	if (!context.state.introduction) { // just in case something goes way off
 		await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
 		await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
@@ -179,13 +186,6 @@ async function checkMenu(context, dialogs) { // eslint-disable-line
 	}
 
 	return dialogs;
-
-	// // branch especial:
-	// const results = [];
-	// results.push(opt.availableIntents);
-	// results.push(opt.participate);
-	// results.push(opt.talkToUs);
-	// return results;
 }
 
 async function sendMenu(context, text, options) {
