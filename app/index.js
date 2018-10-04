@@ -153,32 +153,39 @@ async function checkPollAnswered(context) {
 // 	}
 // }
 
-async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-declarations
-	if (!context.state.introduction) { // just in case something goes way off
-		await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
-		await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
-	}
-	if (context.state.introduction && !context.state.introduction.content) { dialogs = dialogs.filter(obj => obj.payload !== 'aboutMe'); }
-	if (!context.state.trajectory) { dialogs = dialogs.filter(obj => obj.payload !== 'trajectory'); }
-	if (!context.state.pollData) { dialogs = dialogs.filter(obj => obj.payload !== 'poll'); }
-	if (!context.state.politicianData.contact || (context.state.politicianData.contact.email === null && context.state.politicianData.contact.twitter === null
-		&& context.state.politicianData.contact.facebook === null && (context.state.politicianData.contact.url === 'http://' || context.state.politicianData.contact.url === null)
-		&& context.state.politicianData.contact.cellphone === '+55')) {
-		dialogs = dialogs.filter(obj => obj.payload !== 'contacts');
-	}
-	if (dialogs.find(x => x.payload === 'poll')) {
-		if (await checkPollAnswered(context) === true // already answered so we remove option
-			|| (Object.keys(context.state.pollData).length === 0 && context.state.pollData.constructor === Object)) { // no active poll
-			dialogs = await dialogs.filter(obj => obj.payload !== 'poll');
-			await dialogs.push(opt.talkToUs);
-		}
-	}
+async function checkMenu(context, dialogs) { // eslint-disable-line
+	// if (!context.state.introduction) { // just in case something goes way off
+	// 	await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
+	// 	await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
+	// }
+	// if (context.state.introduction && !context.state.introduction.content) { dialogs = dialogs.filter(obj => obj.payload !== 'aboutMe'); }
+	// if (!context.state.trajectory) { dialogs = dialogs.filter(obj => obj.payload !== 'trajectory'); }
+	// if (!context.state.pollData) { dialogs = dialogs.filter(obj => obj.payload !== 'poll'); }
+	// if (!context.state.politicianData.contact || (context.state.politicianData.contact.email === null && context.state.politicianData.contact.twitter === null
+	// 	&& context.state.politicianData.contact.facebook === null && (context.state.politicianData.contact.url === 'http://' || context.state.politicianData.contact.url === null)
+	// 	&& context.state.politicianData.contact.cellphone === '+55')) {
+	// 	dialogs = dialogs.filter(obj => obj.payload !== 'contacts');
+	// }
+	// if (dialogs.find(x => x.payload === 'poll')) {
+	// 	if (await checkPollAnswered(context) === true // already answered so we remove option
+	// 		|| (Object.keys(context.state.pollData).length === 0 && context.state.pollData.constructor === Object)) { // no active poll
+	// 		dialogs = await dialogs.filter(obj => obj.payload !== 'poll');
+	// 		await dialogs.push(opt.talkToUs);
+	// 	}
+	// }
 
-	if (dialogs.find(x => x.payload === 'availableIntents')) { // filtering out "temas" for everybody
-		dialogs = await dialogs.filter(obj => obj.payload !== 'availableIntents');
-	}
+	// if (dialogs.find(x => x.payload === 'availableIntents')) { // filtering out "temas" for everybody
+	// 	dialogs = await dialogs.filter(obj => obj.payload !== 'availableIntents');
+	// }
 
-	return dialogs;
+	// return dialogs;
+
+	// branch especial:
+	const results = [];
+	results.push(opt.availableIntents);
+	results.push(opt.participate);
+	results.push(opt.talkToUs);
+	return results;
 }
 
 async function sendMenu(context, text, options) {
