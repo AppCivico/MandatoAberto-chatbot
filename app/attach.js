@@ -109,26 +109,3 @@ async function sendButtons(id, text, buttons1, buttons2, accessToken) { // eslin
 	return response;
 }
 module.exports.sendButtons = sendButtons;
-// // get every label
-// async function sendButtons(id, text, buttons, accessToken) { // eslint-disable-line no-unused-vars
-// 	const res = await req.post(`https://graph.facebook.com/v2.6/me/messages?access_token=${accessToken}`).send({
-// 		recipient: {
-// 			id,
-// 		},
-// 		message: {
-// 			attachment: {
-// 				type: 'template',
-// 				payload: {
-// 					template_type: 'button',
-// 					text,
-// 					buttons:,
-// 				},
-// 			},
-// 		},
-// 	});
-// 	const response = await res.json();
-// 	console.log('response', response);
-
-// 	return response;
-// }
-// module.exports.sendButtons = sendButtons;
