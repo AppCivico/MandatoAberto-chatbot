@@ -528,9 +528,10 @@ const handler = new MessengerHandler()
 				} else if (context.event.isText) {
 					await context.setState({ whatWasTyped: context.event.message.text }); // has to be set here because of talkToUs
 					if (!listening[context.session.user.id] || listening[context.session.user.id] === false) { // if we are listening we don't try to interpret the text
-						if (context.state.whatWasTyped.toLowerCase() === 'sim') { // temporary measure for fixing messages that come from comment_response message
-							await context.setState({ dialog: 'greetings' });
-						} else if (context.state.politicianData.use_dialogflow === 1) { // check if politician is using dialogFlow
+						// if (context.state.whatWasTyped.toLowerCase() === 'sim') { // temporary measure for fixing messages that come from comment_response message
+						// 	await context.setState({ dialog: 'greetings' });
+						// } else
+						if (context.state.politicianData.use_dialogflow === 1) { // check if politician is using dialogFlow
 							await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
 							await context.setState({ resultParameters: context.state.apiaiResp.result.parameters }); // getting the entities
 							await context.setState({ intentName: context.state.apiaiResp.result.metadata.intentName }); // getting the intent
