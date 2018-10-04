@@ -135,8 +135,8 @@ async function getArtigoCargoNome(context) {
 // 	return themes.length > 0 ? themes : 'esses assuntos';
 // }
 
-async function intent_human_name (name) {
-    return dictionary[name];
+async function intent_human_name(name) {
+	return dictionary[name];
 }
 
 async function checkPollAnswered(context) {
@@ -178,9 +178,9 @@ async function checkMenu(context, dialogs) { // eslint-disable-line no-inner-dec
 		}
 	}
 
-	if (dialogs.find(x => x.payload === 'availableIntents')) { // filtering out "temas" for everybody
-		dialogs = await dialogs.filter(obj => obj.payload !== 'availableIntents');
-	}
+	// if (dialogs.find(x => x.payload === 'availableIntents')) { // filtering out "temas" for everybody
+	// 	dialogs = await dialogs.filter(obj => obj.payload !== 'availableIntents'); // leave this commented for Mari
+	// }
 
 	return dialogs;
 }
