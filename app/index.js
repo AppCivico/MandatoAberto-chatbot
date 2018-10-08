@@ -927,7 +927,7 @@ const handler = new MessengerHandler()
 				await context.setState({ dialog: 'prompt', politicianCellPhone: undefined });
 				break;
 			case 'poll': {
-				if (await checkPollAnswered(context) === true) {
+				if (await checkPollAnswered(context) !== true) {
 					await context.sendText('Ah, que pena! Você já respondeu essa pergunta.');
 					await sendMenu(context, 'Se quiser, eu posso te ajudar com outra coisa.', [opt.trajectory, opt.contacts, opt.participate, opt.availableIntents]);
 					// await context.sendButtonTemplate('Se quiser, eu posso te ajudar com outra coisa.',
@@ -960,7 +960,7 @@ const handler = new MessengerHandler()
 				break;
 			}
 			case 'pollAnswer':
-				if (context.state.sentPersonalData !== true) {
+				if (context.state.sentPersonalData !== true && 1 === 2) {
 					await context.sendButtonTemplate('Muito obrigado por sua resposta. Você gostaria de deixar seu e-mail e telefone para nossa equipe?', opt.recipientData_LetsGo);
 					await context.setState({ dialog: 'prompt', dataPrompt: 'email' });
 				} else { // if it's true, user already sent his personal data
