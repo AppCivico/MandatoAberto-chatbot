@@ -182,9 +182,9 @@ async function checkMenu(context, dialogs) { // eslint-disable-line
 		}
 	}
 
-	if (dialogs.find(x => x.payload === 'availableIntents')) { // filtering out "temas" for everybody
-		dialogs = await dialogs.filter(obj => obj.payload !== 'availableIntents');
-	}
+	// if (dialogs.find(x => x.payload === 'availableIntents')) { // filtering out "temas" for everybody
+	// 	dialogs = await dialogs.filter(obj => obj.payload !== 'availableIntents');
+	// }
 
 	return dialogs;
 }
