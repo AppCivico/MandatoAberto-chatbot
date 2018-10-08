@@ -137,7 +137,7 @@ async function getArtigoCargoNome(context) {
 
 async function checkPollAnswered(context) {
 	const recipientAnswer = await MandatoAbertoAPI.getPollAnswer(context.session.user.id, context.state.pollData.id);
-	if (recipientAnswer.recipient_answered >= 100) {
+	if (recipientAnswer.recipient_answered >= 1) {
 		return true;
 	}
 	return false;
@@ -960,7 +960,7 @@ const handler = new MessengerHandler()
 				break;
 			}
 			case 'pollAnswer':
-				if (context.state.sentPersonalData === true) { // !== true
+				if (context.state.sentPersonalData !== true) { // !== true
 					await context.sendButtonTemplate('Muito obrigado por sua resposta. Você gostaria de deixar seu e-mail e telefone para nossa equipe?', opt.recipientData_LetsGo);
 					await context.setState({ dialog: 'prompt', dataPrompt: 'email', recipientData: '' });
 				} else { // if it's true, user already sent his personal data
