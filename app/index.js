@@ -318,7 +318,7 @@ async function checkPosition(context) {
 		break;
 	default: // default acts for every intent - position
 		console.log('i am here');
-		console.log('apiaiResp', context.state.apiaiResp);
+		// console.log('apiaiResp', context.state.apiaiResp);
 
 		await context.setState({ // getting knowledge base. We send the complete answer from dialogflow
 			knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.apiaiResp),
@@ -414,7 +414,7 @@ const handler = new MessengerHandler()
 									context.state.options.push({ type: 'postback', title: `${capitalize(element)}`, payload: `themeYes${index}` });
 								});
 								context.state.options.push({ type: 'postback', title: 'Voltar', payload: 'mainMenu' });
-								console.log('options', context.state.options);
+								// console.log('options', context.state.options);
 								setTimeout(async () => {
 									await context.sendButtonTemplate(`Deseja saber mais sobre ${getDictionary(context.state.intentName)}?`, context.state.options);
 								}, 5000);
