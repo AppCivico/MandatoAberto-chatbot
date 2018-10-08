@@ -151,8 +151,6 @@ module.exports = {
 			},
 		);
 		const log = await res.json();
-		console.log('notification:', log);
-
 		return log;
 	},
 
