@@ -120,7 +120,7 @@ module.exports = {
 	themeEnd: [
 		{
 			content_type: 'text',
-			title: 'Ver mais temas',
+			title: 'Ver mais propostas',
 			payload: 'availableIntents',
 		},
 		{
