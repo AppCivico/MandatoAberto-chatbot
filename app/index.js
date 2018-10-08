@@ -379,8 +379,6 @@ const handler = new MessengerHandler()
 						// find the correspondent answer using the current type
 						await context.setState({ currentTheme: await context.state.knowledge.knowledge_base.find(x => x.type === context.state.types[context.state.number]) });
 						// console.log('currentTheme', currentTheme);
-						console.log('currentTheme', context.state.currentTheme);
-						console.log('O ID', context.state.currentTheme.id);
 						if (context.state.firstTime === true) { // we log only on the first answer
 							await MandatoAbertoAPI.logAskedEntity(context.session.user.id, context.state.politicianData.user_id, context.state.currentTheme.id);
 							await context.setState({ firstTime: false });
