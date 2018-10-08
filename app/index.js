@@ -436,13 +436,12 @@ const handler = new MessengerHandler()
 						await context.setState({ dialog: 'createIssue' });
 					} else if (context.event.postback.payload === 'availableIntents') {
 						await context.setState({ paginationNumber: 1, availableIntents: '', nextIntents: '' }); // resetting data
+						await MandatoAbertoAPI.logFlowChange(context.session.user.id, context.state.politicianData.user_id,
+							context.event.postback.payload, context.event.postback.title);
 						await showThemesQR(context);
 						await context.setState({ dialog: context.event.postback.payload });
 					} else {
-						if (context.event.postback.payload === 'recipientData') {
-							context.event.postback.title = 'Deixar Contato';
-						}
-						console.log('context.event.postback', context.event.postback);
+						if (context.event.postback.payload === 'recipientData') { context.event.postback.title = 'Deixar Contato'; } // confirmation after pollAnswer
 						await MandatoAbertoAPI.logFlowChange(context.session.user.id, context.state.politicianData.user_id,
 							context.event.postback.payload, context.event.postback.title);
 						await context.setState({ dialog: context.event.postback.payload });
@@ -516,11 +515,16 @@ const handler = new MessengerHandler()
 					} else if (payload === 'moreThemes') {
 						await context.setState({ paginationNumber: context.state.paginationNumber + 1 });
 						await showThemesQR(context);
+					} else if (payload === 'availableIntents') {
+						await context.setState({ paginationNumber: 1, availableIntents: '', nextIntents: '' }); // resetting data
+						await MandatoAbertoAPI.logFlowChange(context.session.user.id, context.state.politicianData.user_id,
+							context.event.message.quick_reply.payload, context.event.message.quick_reply.title);
+						await showThemesQR(context);
+						await context.setState({ dialog: payload });
 					} else {
-						if (payload === 'availableIntents') {
-							await context.setState({ paginationNumber: 1, availableIntents: '', nextIntents: '' }); // resetting data
-							await showThemesQR(context);
-						}
+						console.log('context.event.message.quick_reply', context.event.message.quick_reply);
+						await MandatoAbertoAPI.logFlowChange(context.session.user.id, context.state.politicianData.user_id,
+							context.event.message.quick_reply.payload, context.event.message.quick_reply.title);
 						await context.setState({ dialog: payload });
 					}
 				} else if (context.event.isAudio) {
