@@ -106,8 +106,6 @@ module.exports = {
 			},
 		);
 		const log = await res.json();
-		console.log('log', log);
-
 		return log;
 	},
 
@@ -138,6 +136,8 @@ module.exports = {
 			},
 		);
 		const log = await res.json();
+		console.log('entity', log);
+
 		return log;
 	},
 
