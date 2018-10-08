@@ -137,7 +137,7 @@ async function getArtigoCargoNome(context) {
 
 async function checkPollAnswered(context) {
 	const recipientAnswer = await MandatoAbertoAPI.getPollAnswer(context.session.user.id, context.state.pollData.id);
-	if (recipientAnswer.recipient_answered >= 1) {
+	if (recipientAnswer.recipient_answered >= 100) {
 		return true;
 	}
 	return false;
