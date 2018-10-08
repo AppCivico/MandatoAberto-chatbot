@@ -447,7 +447,7 @@ const handler = new MessengerHandler()
 						await context.setState({ dialog: context.event.postback.payload });
 					}
 				} else if (context.event.isQuickReply) {
-					console.log('context.event.message.quick_reply', context.event.message.quick_reply);
+					console.log('isso aqui é o que temos hoje', context.event.message.quick_reply);
 
 					const { payload } = context.event.message.quick_reply;
 					if (payload.slice(0, 4) === 'poll') { // user answered poll that came from timer
