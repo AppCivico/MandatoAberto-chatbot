@@ -354,6 +354,8 @@ const handler = new MessengerHandler()
 		if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead && context.event.rawEvent.field !== 'feed') {
 			await context.typingOn();
 
+			console.log('context.event.message.quick_reply', context.event.message.quick_reply);
+
 			// console.log(await MandatoAbertoAPI.getLogAction()); // print possible log actions
 			// we reload politicianData on every useful event
 			// we update context data at every interaction that's not a comment or a post
