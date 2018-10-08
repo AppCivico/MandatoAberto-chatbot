@@ -380,7 +380,7 @@ const handler = new MessengerHandler()
 						await context.setState({ currentTheme: await context.state.knowledge.knowledge_base.find(x => x.type === context.state.types[context.state.number]) });
 						// console.log('currentTheme', currentTheme);
 						if (context.state.firstTime === true) { // we log only on the first answer
-							await MandatoAbertoAPI.logAskedEntity(context.session.user.id, context.state.politicianData.user_id, context.state.entities[0].id);
+							await MandatoAbertoAPI.logAskedEntity(context.session.user.id, context.state.politicianData.user_id, context.state.currentTheme.entities[0].id);
 							await context.setState({ firstTime: false });
 						}
 						if (context.state.currentTheme && (context.state.currentTheme.answer
