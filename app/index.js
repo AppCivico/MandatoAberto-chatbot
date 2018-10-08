@@ -1022,14 +1022,14 @@ const handler = new MessengerHandler()
 				break;
 			case 'add_blacklist': // adding user to the blacklist from the persistent menu 0 -> turn off notification
 				await MandatoAbertoAPI.updateBlacklist(context.session.user.id, 0);
-				await MandatoAbertoAPI.logNotification(context.session.user.id, context.state.politicianData.user_id, 0);
+				await MandatoAbertoAPI.logNotification(context.session.user.id, context.state.politicianData.user_id, 4);
 				await context.sendText('Tudo bem. Não te enviaremos mais nenhuma notificação.');
 				await sendMenu(context, 'Quer saber mais?', [opt.aboutPolitician, opt.trajectory, opt.participate, opt.availableIntents]);
 				// await context.sendButtonTemplate('Quer saber mais?', await checkMenu(context, [opt.aboutPolitician, opt.trajectory, opt.participate]));
 				break;
 			case 'remove_blacklist': // removing user to the blacklist from the persistent menu 1 -> turn on notification
 				await MandatoAbertoAPI.updateBlacklist(context.session.user.id, 1);
-				await MandatoAbertoAPI.logNotification(context.session.user.id, context.state.politicianData.user_id, 1);
+				await MandatoAbertoAPI.logNotification(context.session.user.id, context.state.politicianData.user_id, 3);
 				await context.sendText('Legal. Estaremos te avisando das novidades.');
 				await sendMenu(context, 'Quer saber mais?', [opt.aboutPolitician, opt.trajectory, opt.participate, opt.availableIntents]);
 				// await context.sendButtonTemplate('Quer saber mais?', await checkMenu(context, [opt.aboutPolitician, opt.trajectory, opt.participate]));
