@@ -447,8 +447,6 @@ const handler = new MessengerHandler()
 						await context.setState({ dialog: context.event.postback.payload });
 					}
 				} else if (context.event.isQuickReply) {
-					console.log('isso aqui é o que temos hoje', context.event.message.quick_reply);
-
 					const { payload } = context.event.message.quick_reply;
 					if (payload.slice(0, 4) === 'poll') { // user answered poll that came from timer
 						await context.setState({ dialog: 'pollAnswer' });
@@ -521,13 +519,14 @@ const handler = new MessengerHandler()
 						await context.setState({ paginationNumber: 1, availableIntents: '', nextIntents: '' }); // resetting data
 						console.log('context.event.message.quick_reply', context.event.message.quick_reply);
 						await MandatoAbertoAPI.logFlowChange(context.session.user.id, context.state.politicianData.user_id,
-							context.event.message.quick_reply.payload, context.event.message.quick_reply.title);
+							context.event.message.quick_reply.payload, opt.availableIntents.title);
 						await showThemesQR(context);
 						await context.setState({ dialog: payload });
 					} else {
-						console.log('context.event.message.quick_reply', context.event.message.quick_reply);
-						await MandatoAbertoAPI.logFlowChange(context.session.user.id, context.state.politicianData.user_id,
-							context.event.message.quick_reply.payload, context.event.message.quick_reply.title);
+						if (payload === 'mainMenu') {
+							await MandatoAbertoAPI.logFlowChange(context.session.user.id, context.state.politicianData.user_id,
+								context.event.message.quick_reply.payload, opt.themeEnd[1].title);
+						}
 						await context.setState({ dialog: payload });
 					}
 				} else if (context.event.isAudio) {
