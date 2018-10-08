@@ -121,6 +121,8 @@ module.exports = {
 			},
 		);
 		const log = await res.json();
+		console.log('poll', log);
+
 		return log;
 	},
 

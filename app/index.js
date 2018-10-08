@@ -174,9 +174,6 @@ async function checkMenu(context, dialogs) { // eslint-disable-line
 		dialogs = dialogs.filter(obj => obj.payload !== 'contacts');
 	}
 
-	console.log('context.state.pollData', context.state.pollData);
-	console.log('checkPollAnswered(context)', await checkPollAnswered(context));
-
 	if (dialogs.find(x => x.payload === 'poll')) {
 		if (await checkPollAnswered(context) === true // already answered so we remove option
 			|| (Object.keys(context.state.pollData).length === 0 && context.state.pollData.constructor === Object)) { // no active poll
