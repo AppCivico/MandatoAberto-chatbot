@@ -71,8 +71,6 @@ module.exports = {
 	},
 
 	async getknowledgeBaseByName(politician_id, entities) {
-		console.log('entities', entities);
-
 		const res = await request(`${apiUri}/api/chatbot/knowledge-base?politician_id=${politician_id}&entities=${entities}&security_token=${security_token}`);
 		const knowledgeBase = await res.json();
 		return knowledgeBase;
@@ -93,5 +91,66 @@ module.exports = {
 		const res = await request(`${apiUri}/api/chatbot/intents/available?fb_page_id=${pageId}&page=${page}&security_token=${security_token}`);
 		const intents = await res.json();
 		return intents;
+	},
+
+	async logFlowChange(recipient_fb_id, politician_id, payload, human_name) {
+		const d = new Date();
+		const res = await request.post(`${apiUri}/api/chatbot/log?security_token=${security_token}&`).query(
+			{
+				timestamp: d.toGMTString(),
+				recipient_fb_id,
+				politician_id,
+				action_id: 1,
+				payload,
+				human_name,
+			},
+		);
+		const log = await res.json();
+		return log;
+	},
+
+	async logAnsweredPoll(recipient_fb_id, politician_id, field_id) {
+		const d = new Date();
+		const res = await request.post(`${apiUri}/api/chatbot/log?security_token=${security_token}&`).query(
+			{
+				timestamp: d.toGMTString(),
+				recipient_fb_id,
+				politician_id,
+				action_id: 2,
+				field_id,
+			},
+		);
+		const log = await res.json();
+		return log;
+	},
+
+	// async logAskedEntity(recipient_fb_id, politician_id, field_id) {
+	// 	const d = new Date();
+	// 	const res = await request.post(`${apiUri}/api/chatbot/log?security_token=${security_token}&`).query(
+	// 		{
+	// 			timestamp: d.toGMTString(),
+	// 			recipient_fb_id,
+	// 			politician_id,
+	// 			action_id: 3,
+	// 			field_id,
+	// 		},
+	// 	);
+	// 	const log = await res.json();
+	// 	return log;
+	// },
+
+	async logNotification(recipient_fb_id, politician_id, blacklist) {
+		const d = new Date();
+		const res = await request.post(`${apiUri}/api/chatbot/log?security_token=${security_token}&`).query(
+			{
+				timestamp: d.toGMTString(),
+				recipient_fb_id,
+				politician_id,
+				action_id: 4,
+				blacklist,
+			},
+		);
+		const log = await res.json();
+		return log;
 	},
 };
