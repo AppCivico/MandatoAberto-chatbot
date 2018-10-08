@@ -173,6 +173,10 @@ async function checkMenu(context, dialogs) { // eslint-disable-line
 		&& context.state.politicianData.contact.cellphone === '+55')) {
 		dialogs = dialogs.filter(obj => obj.payload !== 'contacts');
 	}
+
+	console.log('context.state.pollData', context.state.pollData);
+	console.log('checkPollAnswered(context)', await checkPollAnswered(context));
+
 	if (dialogs.find(x => x.payload === 'poll')) {
 		if (await checkPollAnswered(context) === true // already answered so we remove option
 			|| (Object.keys(context.state.pollData).length === 0 && context.state.pollData.constructor === Object)) { // no active poll
@@ -190,8 +194,6 @@ async function checkMenu(context, dialogs) { // eslint-disable-line
 
 async function sendMenu(context, text, options) {
 	const buttons = await checkMenu(context, options);
-	console.log('buttons', buttons.length);
-
 	if (!buttons || buttons.length === 0) {
 		await context.sendText(text);
 	} else if (buttons.length <= 3) {
@@ -352,8 +354,6 @@ async function checkPosition(context) {
 
 const handler = new MessengerHandler()
 	.onEvent(async (context) => { // eslint-disable-line
-		console.log('teste');
-
 		if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead && context.event.rawEvent.field !== 'feed') {
 			await context.typingOn();
 
