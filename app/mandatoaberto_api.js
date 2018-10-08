@@ -111,6 +111,8 @@ module.exports = {
 
 	async logAnsweredPoll(recipient_fb_id, politician_id, field_id) {
 		const d = new Date();
+		console.log('field_id', field_id);
+
 		const res = await request.post(`${apiUri}/api/chatbot/log?security_token=${security_token}&`).query(
 			{
 				timestamp: d.toGMTString(),
