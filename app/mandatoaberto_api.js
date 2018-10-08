@@ -106,6 +106,8 @@ module.exports = {
 			},
 		);
 		const log = await res.json();
+		console.log('log', log);
+
 		return log;
 	},
 

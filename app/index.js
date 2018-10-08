@@ -439,6 +439,8 @@ const handler = new MessengerHandler()
 							await context.setState({ paginationNumber: 1, availableIntents: '', nextIntents: '' }); // resetting data
 							await showThemesQR(context);
 						}
+						console.log('context.event.postback', context.event.postback);
+
 						await MandatoAbertoAPI.logFlowChange(context.session.user.id, context.state.politicianData.user_id,
 							context.event.postback.payload, context.event.postback.title);
 						await context.setState({ dialog: context.event.postback.payload });
