@@ -963,6 +963,7 @@ const handler = new MessengerHandler()
 					await context.setState({ dialog: 'prompt', dataPrompt: 'email' });
 				} else { // if it's true, user already sent his personal data
 					await sendMenu(context, 'Muito obrigado por sua resposta. Quer saber mais?', [opt.aboutPolitician, opt.talkToUs, opt.participate, opt.availableIntents]);
+					await context.setState({ dialog: 'prompt' });
 					// await context.sendButtonTemplate('Muito obrigado por sua resposta. Quer saber mais?',
 					// await checkMenu(context, [opt.aboutPolitician, opt.talkToUs, opt.participate]));
 				}
