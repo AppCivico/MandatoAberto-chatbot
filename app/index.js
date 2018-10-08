@@ -333,7 +333,7 @@ async function checkPosition(context) {
 			console.log('typesWeHave', context.state.typesWeHave);
 			await context.setState({ types: await checkTypes(context.state.entities.Tipos_de_pergunta, context.state.typesWeHave) }); // getting common types
 			console.log('types', context.state.types);
-
+			await context.setState({ firstTime: true });
 			await context.sendButtonTemplate('Você está perguntando sobre '// confirm themes with user
 					+ `${getDictionary(context.state.intentName)}?`, opt.themeConfirmation); // obs: the payload of the Yes/Sim option defaults to 'themeYes0'
 		} else { // no answers in knowledge_base (We know the entity but politician doesn't have a position)
@@ -379,7 +379,11 @@ const handler = new MessengerHandler()
 						// find the correspondent answer using the current type
 						await context.setState({ currentTheme: await context.state.knowledge.knowledge_base.find(x => x.type === context.state.types[context.state.number]) });
 						// console.log('currentTheme', currentTheme);
-
+						console.log('currentTheme', context.state.currentTheme);
+						if (context.state.firstTime === true) { // we log only on the first answer
+							await MandatoAbertoAPI.logAskedEntity(context.session.user.id, context.state.politicianData.user_id, context.state.currentTheme.id);
+							await context.setState({ firstTime: false });
+						}
 						if (context.state.currentTheme && (context.state.currentTheme.answer
 							|| (context.state.currentTheme.saved_attachment_type !== null && context.state.currentTheme.saved_attachment_id !== null))) {
 							if (context.state.currentTheme.answer) { // if there's a text asnwer we send it

@@ -126,20 +126,20 @@ module.exports = {
 		return log;
 	},
 
-	// async logAskedEntity(recipient_fb_id, politician_id, field_id) {
-	// 	const d = new Date();
-	// 	const res = await request.post(`${apiUri}/api/chatbot/log?security_token=${security_token}&`).query(
-	// 		{
-	// 			timestamp: d.toGMTString(),
-	// 			recipient_fb_id,
-	// 			politician_id,
-	// 			action_id: 3,
-	// 			field_id,
-	// 		},
-	// 	);
-	// 	const log = await res.json();
-	// 	return log;
-	// },
+	async logAskedEntity(recipient_fb_id, politician_id, field_id) {
+		const d = new Date();
+		const res = await request.post(`${apiUri}/api/chatbot/log?security_token=${security_token}&`).query(
+			{
+				timestamp: d.toGMTString(),
+				recipient_fb_id,
+				politician_id,
+				action_id: 5,
+				field_id,
+			},
+		);
+		const log = await res.json();
+		return log;
+	},
 
 	async logNotification(recipient_fb_id, politician_id, action_id) {
 		// action_id should be 3 for ACTIVATED_NOTIFICATIONS and 4 for DEACTIVATED_NOTIFICATIONS
