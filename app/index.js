@@ -430,13 +430,17 @@ const handler = new MessengerHandler()
 						await context.setState({ question: context.state.knowledge.knowledge_base.find(x => x.id === parseInt(context.event.postback.payload.replace('answer', ''), 10)) });
 						await context.setState({ dialog: 'showAnswer' });
 					} else if (context.event.postback.payload === 'talkToUs') { // user wants to enter in contact
-						delete userMessages[context.session.user.id]; // deleting last sent message (it was sent already)
+						await MandatoAbertoAPI.logFlowChange(context.session.user.id, context.state.politicianData.user_id,
+							context.event.postback.payload, context.event.postback.title);
+						delete userMessages[context.session.user.id]; // deleting last sent message (it was sent already) title
 						await context.setState({ dialog: 'createIssue' });
 					} else {
 						if (context.event.postback.payload === 'availableIntents') {
 							await context.setState({ paginationNumber: 1, availableIntents: '', nextIntents: '' }); // resetting data
 							await showThemesQR(context);
 						}
+						await MandatoAbertoAPI.logFlowChange(context.session.user.id, context.state.politicianData.user_id,
+							context.event.postback.payload, context.event.postback.title);
 						await context.setState({ dialog: context.event.postback.payload });
 					}
 				} else if (context.event.isQuickReply) {
