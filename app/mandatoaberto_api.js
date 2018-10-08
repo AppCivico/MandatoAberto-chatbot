@@ -93,30 +93,45 @@ module.exports = {
 		return intents;
 	},
 
-	// async logFlowChange(recipient_fb_id, politician_id, payload, human_name) {
-	// 	const d = new Date();
-	// 	const res = await request.post(`${apiUri}/api/chatbot/log?security_token=${security_token}&`).query(
-	// 		{
-	// 			timestamp: d.toGMTString(),
-	// 			recipient_fb_id,
-	// 			politician_id,
-	// 			action_id: 1,
-	// 			payload,
-	// 			human_name,
-	// 		},
-	// 	);
-	// 	const log = await res.json();
-	// 	return log;
-	// },
+	async logFlowChange(recipient_fb_id, politician_id, payload, human_name) {
+		const d = new Date();
+		const res = await request.post(`${apiUri}/api/chatbot/log?security_token=${security_token}&`).query(
+			{
+				timestamp: d.toGMTString(),
+				recipient_fb_id,
+				politician_id,
+				action_id: 1,
+				payload,
+				human_name,
+			},
+		);
+		const log = await res.json();
+		return log;
+	},
 
-	// async logAnsweredPoll(recipient_fb_id, politician_id, field_id) {
+	async logAnsweredPoll(recipient_fb_id, politician_id, field_id) {
+		const d = new Date();
+		const res = await request.post(`${apiUri}/api/chatbot/log?security_token=${security_token}&`).query(
+			{
+				timestamp: d.toGMTString(),
+				recipient_fb_id,
+				politician_id,
+				action_id: 2,
+				field_id,
+			},
+		);
+		const log = await res.json();
+		return log;
+	},
+
+	// async logAskedEntity(recipient_fb_id, politician_id, field_id) {
 	// 	const d = new Date();
 	// 	const res = await request.post(`${apiUri}/api/chatbot/log?security_token=${security_token}&`).query(
 	// 		{
 	// 			timestamp: d.toGMTString(),
 	// 			recipient_fb_id,
 	// 			politician_id,
-	// 			action_id: 2,
+	// 			action_id: 3,
 	// 			field_id,
 	// 		},
 	// 	);
@@ -124,35 +139,26 @@ module.exports = {
 	// 	return log;
 	// },
 
-	// // async logAskedEntity(recipient_fb_id, politician_id, field_id) {
-	// // 	const d = new Date();
-	// // 	const res = await request.post(`${apiUri}/api/chatbot/log?security_token=${security_token}&`).query(
-	// // 		{
-	// // 			timestamp: d.toGMTString(),
-	// // 			recipient_fb_id,
-	// // 			politician_id,
-	// // 			action_id: 3,
-	// // 			field_id,
-	// // 		},
-	// // 	);
-	// // 	const log = await res.json();
-	// // 	return log;
-	// // },
+	async logNotification(recipient_fb_id, politician_id, action_id) {
+		// action_id should be 3 for ACTIVATED_NOTIFICATIONS and 4 for DEACTIVATED_NOTIFICATIONS
+		const d = new Date();
+		const res = await request.post(`${apiUri}/api/chatbot/log?security_token=${security_token}&`).query(
+			{
+				timestamp: d.toGMTString(),
+				recipient_fb_id,
+				politician_id,
+				action_id,
+			},
+		);
+		const log = await res.json();
+		console.log('notification:', log);
 
-	// async logNotification(recipient_fb_id, politician_id, action_id) {
-	// 	// action_id should be 3 for ACTIVATED_NOTIFICATIONS and 4 for DEACTIVATED_NOTIFICATIONS
-	// 	const d = new Date();
-	// 	const res = await request.post(`${apiUri}/api/chatbot/log?security_token=${security_token}&`).query(
-	// 		{
-	// 			timestamp: d.toGMTString(),
-	// 			recipient_fb_id,
-	// 			politician_id,
-	// 			action_id,
-	// 		},
-	// 	);
-	// 	const log = await res.json();
-	// 	console.log('notification:', log);
+		return log;
+	},
 
-	// 	return log;
-	// },
+	async getLogAction() {
+		const res = await request(`${apiUri}/api/chatbot/log/actions?security_token=${security_token}`);
+		const log = await res.json();
+		return log;
+	},
 };
