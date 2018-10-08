@@ -439,10 +439,10 @@ const handler = new MessengerHandler()
 						await showThemesQR(context);
 						await context.setState({ dialog: context.event.postback.payload });
 					} else {
-						console.log('context.event.postback', context.event.postback);
 						if (context.event.postback.payload === 'recipientData') {
 							context.event.postback.title = 'Deixar Contato';
 						}
+						console.log('context.event.postback', context.event.postback);
 						await MandatoAbertoAPI.logFlowChange(context.session.user.id, context.state.politicianData.user_id,
 							context.event.postback.payload, context.event.postback.title);
 						await context.setState({ dialog: context.event.postback.payload });
