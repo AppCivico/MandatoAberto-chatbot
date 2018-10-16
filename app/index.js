@@ -759,11 +759,7 @@ const handler = new MessengerHandler()
 				}
 
 				menuTimers[context.session.user.id] = setTimeout(async () => { // wait 'MenuTimerlimit' to show options menu
-					console.log('i am here');
-					// await attach.sendButtons(context.session.user.id, await loadOptionPrompt(context),
-					// 	[opt.aboutPolitician, opt.poll_suaOpiniao], [opt.participate, opt.availableIntents], context.state.politicianData.fb_access_token);
 					await sendMenu(context, await loadOptionPrompt(context), [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate, opt.availableIntents]);
-					// await sendMainMenu(context);
 					delete menuTimers[context.session.user.id]; // deleting this timer from timers object
 				}, MenuTimerlimit);
 				await context.setState({ dialog: 'prompt' });
