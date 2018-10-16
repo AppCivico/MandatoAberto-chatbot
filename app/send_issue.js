@@ -23,7 +23,7 @@ async function createIssue(context) {
 			context.state.whatWasTyped, context.state.resultParameters);
 		return true;
 	}
-	await context.sendText('Não entendi essa mensagem! Não vou envia-la pra caixa de entrada!');
+	await context.sendText('Não entendi sua mensagem. Você pode escrever novamente?');
 	return false;
 }
 
