@@ -5,6 +5,7 @@ const {
 } = require('bottender');
 const { createServer } = require('bottender/restify');
 const dialogFlow = require('apiai-promise');
+const fse = require('fs-extra');
 
 const config = require('./bottender.config.js').messenger;
 const MandatoAbertoAPI = require('./mandatoaberto_api.js');
@@ -361,7 +362,10 @@ const handler = new MessengerHandler()
 				// session: JSON.stringify(context.state),
 			});
 
-			if (!context.state.dialog) { // this is a message that comes from the comment private-reply
+			console.log(context.event);
+
+			// if (!context.state.dialog) { // because of the message that comes from the comment private-reply
+			if (await fse.pathExists(`.session/messenger:${context.state.politicianData.user_id}.json`) === false) { // because of the message that comes from the comment private-reply
 				await context.setState({ dialog: 'greetings' });
 			} else if (context.state.dialog !== 'recipientData' && context.state.dialog !== 'pollAnswer') { // handling input that's not from "asking data" or answering poll (obs: 'pollAnswer' from timer will bypass this)
 				if (context.event.isPostback) {
