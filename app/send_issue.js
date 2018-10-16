@@ -18,7 +18,7 @@ module.exports.formatString = formatString;
 async function createIssue(context) {
 	// check if text is not empty and not on the blacklist
 	const cleanString = await formatString(context.state.whatWasTyped);
-	if (context.state.whatWasTyped && context.state.whatWasTyped.length > 1 && !blacklist.includes(cleanString)) {
+	if (cleanString && cleanString.length > 1 && !blacklist.includes(cleanString)) {
 		await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
 			context.state.whatWasTyped, context.state.resultParameters);
 		return true;
