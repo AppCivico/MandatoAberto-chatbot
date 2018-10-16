@@ -310,12 +310,8 @@ async function checkPosition(context) {
 		await context.setState({ dialog: 'createIssue' });
 		break;
 	case 'Fallback': // didn't understand what was typed
-		// await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
-		// 	context.state.whatWasTyped, context.state.resultParameters);
 		if (await createIssue(context)) { await context.sendText(getRandom(opt.frases_fallback)); }
 		await sendMenu(context, await loadOptionPrompt(context), [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate, opt.availableIntents]);
-		// await context.sendButtonTemplate(await loadOptionPrompt(context),
-		// 	await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
 		break;
 	default: // default acts for every intent - position
 		await context.setState({ // getting knowledge base. We send the complete answer from dialogflow
@@ -340,8 +336,6 @@ async function checkPosition(context) {
 					+ 'esse assunto. Irei encaminhar para nossa equipe, está bem?');
 			}
 			await sendMenu(context, await loadOptionPrompt(context), [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate, opt.availableIntents]);
-			// await context.sendButtonTemplate(await loadOptionPrompt(context),
-			// 			await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
 		}
 		break;
 	}
@@ -349,7 +343,9 @@ async function checkPosition(context) {
 
 const handler = new MessengerHandler()
 	.onEvent(async (context) => { // eslint-disable-line
-		if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead && context.event.rawEvent.field !== 'feed') {
+		if (!context.state.dialog && context.event.isText) {
+			await context.setState({ dialog: 'greetings' });
+		} else if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead && context.event.rawEvent.field !== 'feed') {
 			await context.typingOn();
 
 			// console.log(await MandatoAbertoAPI.getLogAction()); // print possible log actions
@@ -537,8 +533,6 @@ const handler = new MessengerHandler()
 							await context.setState({ audio: await audio.voiceRequest(context.event.audio.url, context.session.user.id) });
 							if (context.state.audio.txtMag && context.state.audio.txtMag !== '') { // there was an error (or the user just didn't say anything)
 								await sendMenu(context, context.state.audio.txtMag, [opt.trajectory, opt.contacts, opt.participate, opt.availableIntents]);
-								// await context.sendButtonTemplate(context.state.audio.txtMag,
-								// await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
 							} else {
 								await context.setState({ whatWasTyped: context.state.audio.whatWasSaid });
 								await context.setState({ resultParameters: context.state.audio.parameters });
