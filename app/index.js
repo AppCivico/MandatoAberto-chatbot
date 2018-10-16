@@ -344,7 +344,16 @@ async function checkPosition(context) {
 
 const handler = new MessengerHandler()
 	.onEvent(async (context) => { // eslint-disable-line
-		if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead && context.event.rawEvent.field !== 'feed') {
+		console.log(context.event.rawEvent);
+		console.log(context.event.rawEvent.sender.id);
+		console.log('----------');
+
+		console.log(`./.sessions/messenger:${context.event.rawEvent.sender.id}.json`);
+		console.log(await fse.pathExists(`./.sessions/messenger:${context.event.rawEvent.sender.id}.json`));
+
+		if (await fse.pathExists(`./.sessions/messenger:${context.event.rawEvent.sender.id}.json`) === false) { // because of the message that comes from the comment private-reply
+			await context.setState({ dialog: 'greetings' });
+		} else if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead && context.event.rawEvent.field !== 'feed') {
 			await context.typingOn();
 
 			// console.log(await MandatoAbertoAPI.getLogAction()); // print possible log actions
@@ -361,17 +370,8 @@ const handler = new MessengerHandler()
 				picture: context.session.user.profile_pic,
 				// session: JSON.stringify(context.state),
 			});
-			console.log(context.event.rawEvent);
-			console.log(context.event.rawEvent.sender.id);
-			console.log('----------');
 
-			console.log(`./.sessions/messenger:${context.event.rawEvent.sender.id}.json`);
-			console.log(await fse.pathExists(`./.sessions/messenger:${context.event.rawEvent.sender.id}.json`));
-
-			// if (!context.state.dialog) { // because of the message that comes from the comment private-reply
-			if (await fse.pathExists(`./.sessions/messenger:${context.event.rawEvent.sender.id}.json`) === false) { // because of the message that comes from the comment private-reply
-				await context.setState({ dialog: 'greetings' });
-			} else if (context.state.dialog !== 'recipientData' && context.state.dialog !== 'pollAnswer') { // handling input that's not from "asking data" or answering poll (obs: 'pollAnswer' from timer will bypass this)
+			if (context.state.dialog !== 'recipientData' && context.state.dialog !== 'pollAnswer') { // handling input that's not from "asking data" or answering poll (obs: 'pollAnswer' from timer will bypass this)
 				if (context.event.isPostback) {
 					// we are not listening anymore if user clicks on persistent menu during the listening
 					if (listening[context.session.user.id]) { delete listening[context.session.user.id]; }
