@@ -345,23 +345,20 @@ async function checkPosition(context) {
 const handler = new MessengerHandler()
 	.onEvent(async (context) => { // eslint-disable-line
 		if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead && context.event.rawEvent.field !== 'feed') {
-			console.log(context.event.rawEvent);
-			console.log(context.event.rawEvent.sender.id);
-			console.log('----------');
+			// we reload politicianData on every useful event
+			// we update context data at every interaction that's not a comment or a post
+			await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
+			await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 
 			console.log(`./.sessions/messenger:${context.event.rawEvent.sender.id}.json`);
 			console.log(await fse.pathExists(`./.sessions/messenger:${context.event.rawEvent.sender.id}.json`));
-
 			if (await fse.pathExists(`./.sessions/messenger:${context.event.rawEvent.sender.id}.json`) === false) { // because of the message that comes from the comment private-reply
 				await context.setState({ dialog: 'greetings' });
 			} else {
 				await context.typingOn();
 
 				// console.log(await MandatoAbertoAPI.getLogAction()); // print possible log actions
-				// we reload politicianData on every useful event
-				// we update context data at every interaction that's not a comment or a post
-				await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
-				await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
+
 
 				await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
 					fb_id: context.session.user.id,
