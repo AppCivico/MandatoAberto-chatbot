@@ -781,7 +781,7 @@ const handler = new MessengerHandler()
 				console.log('Test', context.state.resultParameters);
 				// TODO  entities: 'missing \'result\' param'
 				console.log(await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
-					context.state.whatWasTyped, context.state.apiaiResp.result));
+					context.state.whatWasTyped, context.state.apiaiResp));
 				// context.state.whatWasTyped, context.state.resultParameters));
 				await context.sendText('Que pena! Parece que eu errei. Mas recebi sua dúvida e estaremos te respondendo logo mais! Quer fazer outra pergunta?');
 				menuTimers[context.session.user.id] = setTimeout(async () => { // wait 'MenuTimerlimit' to show options menu
