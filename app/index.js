@@ -782,8 +782,12 @@ const handler = new MessengerHandler()
 			case 'NotOneOfThese': // user said "no" on theme confirmation
 				if (menuTimers[context.session.user.id]) { delete menuTimers[context.session.user.id]; } // for safety reasons
 				// maybe we don't need to verify if this should be an issue because dialogflow already indentified something
-				console.log(await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
-					context.state.whatWasTyped, context.state.resultParameters));
+				if (context.state.resultParameters) {
+					await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
+						context.state.whatWasTyped, context.state.resultParameters);
+				} else {
+					console.log(await MandatoAbertoAPI.postIssueWithoutEntities(context.state.politicianData.user_id, context.session.user.id, context.state.whatWasTyped));
+				}
 				await context.sendText('Que pena! Parece que eu errei. Mas recebi sua dúvida e estaremos te respondendo logo mais! Quer fazer outra pergunta?');
 				menuTimers[context.session.user.id] = setTimeout(async () => { // wait 'MenuTimerlimit' to show options menu
 					await sendMenu(context, await loadOptionPrompt(context), [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate, opt.availableIntents]);
