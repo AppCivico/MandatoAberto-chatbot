@@ -14,6 +14,7 @@ const opt = require('./utils/options');
 const dictionary = require('./utils/dictionary');
 const audio = require('./utils/audio');
 const attach = require('./attach');
+const { createIssue } = require('./send_issue');
 
 const apiai = dialogFlow(process.env.DIALOGFLOW_TOKEN);
 
@@ -309,17 +310,14 @@ async function checkPosition(context) {
 		await context.setState({ dialog: 'createIssue' });
 		break;
 	case 'Fallback': // didn't understand what was typed
-		await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
-			context.state.whatWasTyped, context.state.resultParameters);
-		await context.sendText(getRandom(opt.frases_fallback));
+		// await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
+		// 	context.state.whatWasTyped, context.state.resultParameters);
+		if (await createIssue(context)) { await context.sendText(getRandom(opt.frases_fallback)); }
 		await sendMenu(context, await loadOptionPrompt(context), [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate, opt.availableIntents]);
 		// await context.sendButtonTemplate(await loadOptionPrompt(context),
 		// 	await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
 		break;
 	default: // default acts for every intent - position
-		console.log('i am here');
-		// console.log('apiaiResp', context.state.apiaiResp);
-
 		await context.setState({ // getting knowledge base. We send the complete answer from dialogflow
 			knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.apiaiResp),
 		});
@@ -337,10 +335,10 @@ async function checkPosition(context) {
 			await context.sendButtonTemplate('Você está perguntando sobre '// confirm themes with user
 					+ `${getDictionary(context.state.intentName)}?`, opt.themeConfirmation); // obs: the payload of the Yes/Sim option defaults to 'themeYes0'
 		} else { // no answers in knowledge_base (We know the entity but politician doesn't have a position)
-			await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
-				context.state.whatWasTyped, context.state.resultParameters);
-			await context.sendText(`🤔 Eu ainda não perguntei para ${await getArtigoCargoNome(context)} sobre `
+			if (await createIssue(context)) {
+				await context.sendText(`🤔 Eu ainda não perguntei para ${await getArtigoCargoNome(context)} sobre `
 					+ 'esse assunto. Irei encaminhar para nossa equipe, está bem?');
+			}
 			await sendMenu(context, await loadOptionPrompt(context), [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate, opt.availableIntents]);
 			// await context.sendButtonTemplate(await loadOptionPrompt(context),
 			// 			await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));// eslint-disable-line
@@ -420,10 +418,10 @@ const handler = new MessengerHandler()
 								}, 5000);
 							}
 						} else { // we couldn't find neither text answer nor attachment (This is an error and it shouldn't happen)
-							await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
-								context.state.whatWasTyped, context.state.resultParameters);
-							await context.sendText('Parece que fico te devendo essa resposta. '
-								+ 'Mas já entou enviando para nossas equipe e estaremos te respondendo em breve.');
+							if (await createIssue(context)) {
+								await context.sendText('Parece que fico te devendo essa resposta. '
+									+ 'Mas já entou enviando para nossas equipe e estaremos te respondendo em breve.');
+							}
 							// await context.sendButtonTemplate(await loadOptionPrompt(context),
 							// 	await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
 							await sendMenu(context, await loadOptionPrompt(context), [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate, opt.availableIntents]);
@@ -783,8 +781,8 @@ const handler = new MessengerHandler()
 				break;
 			case 'NotOneOfThese': // user said "no" on theme confirmation
 				if (menuTimers[context.session.user.id]) { delete menuTimers[context.session.user.id]; } // for safety reasons
-				await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
-					context.state.whatWasTyped, context.state.resultParameters);
+				// maybe we don't need to verify if this should be an issue because dialogflow already indentified something
+				await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id, context.state.whatWasTyped, context.state.resultParameters);
 				await context.sendText('Que pena! Parece que eu errei. Mas recebi sua dúvida e estaremos te respondendo logo mais! Quer fazer outra pergunta?');
 				menuTimers[context.session.user.id] = setTimeout(async () => { // wait 'MenuTimerlimit' to show options menu
 					await sendMenu(context, await loadOptionPrompt(context), [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate, opt.availableIntents]);
@@ -880,9 +878,7 @@ const handler = new MessengerHandler()
 				// create new (or reset) timer for sending message
 				issueTimers[context.session.user.id] = setTimeout(async () => {
 					if (userMessages[context.session.user.id] !== '') { // check if there's a message to send
-						console.log(await MandatoAbertoAPI.postIssueWithoutEntities(
-							context.state.politicianData.user_id, context.session.user.id, userMessages[context.session.user.id],
-						));
+						await MandatoAbertoAPI.postIssueWithoutEntities(context.state.politicianData.user_id, context.session.user.id, userMessages[context.session.user.id]);
 						// console.log('Enviei ', userMessages[context.session.user.id]);
 						await context.typingOff();
 					}

@@ -19,6 +19,7 @@
     "nodemon": "1.12.7",
     "promisepipe": "^3.0.0",
     "query-string": "^5.1.0",
+    "remove-accents": "^0.4.2",
     "request": "^2.83.0",
     "request-promise": "^4.2.2",
     "requisition": "^1.7.0",
