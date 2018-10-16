@@ -343,9 +343,7 @@ async function checkPosition(context) {
 
 const handler = new MessengerHandler()
 	.onEvent(async (context) => { // eslint-disable-line
-		if (!context.state.dialog) { // !context.state.dialog will probably throw an error
-			await context.setState({ dialog: 'greetings' });
-		} else if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead && context.event.rawEvent.field !== 'feed') {
+		if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead && context.event.rawEvent.field !== 'feed') {
 			await context.typingOn();
 
 			// console.log(await MandatoAbertoAPI.getLogAction()); // print possible log actions
@@ -363,7 +361,9 @@ const handler = new MessengerHandler()
 				// session: JSON.stringify(context.state),
 			});
 
-			if (context.state.dialog !== 'recipientData' && context.state.dialog !== 'pollAnswer') { // handling input that's not from "asking data" or answering poll (obs: 'pollAnswer' from timer will bypass this)
+			if (!context.state.dialog) { // this is a message that comes from the comment private-reply
+				await context.setState({ dialog: 'greetings' });
+			} else if (context.state.dialog !== 'recipientData' && context.state.dialog !== 'pollAnswer') { // handling input that's not from "asking data" or answering poll (obs: 'pollAnswer' from timer will bypass this)
 				if (context.event.isPostback) {
 					// we are not listening anymore if user clicks on persistent menu during the listening
 					if (listening[context.session.user.id]) { delete listening[context.session.user.id]; }
