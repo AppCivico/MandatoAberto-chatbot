@@ -343,7 +343,7 @@ async function checkPosition(context) {
 
 const handler = new MessengerHandler()
 	.onEvent(async (context) => { // eslint-disable-line
-		if (!context.session && context.event.isText) {
+		if (!context.state && context.event.isText) {
 			await context.setState({ dialog: 'greetings' });
 		} else if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead && context.event.rawEvent.field !== 'feed') {
 			await context.typingOn();
