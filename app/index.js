@@ -779,13 +779,10 @@ const handler = new MessengerHandler()
 				if (menuTimers[context.session.user.id]) { delete menuTimers[context.session.user.id]; } // for safety reasons
 				// maybe we don't need to verify if this should be an issue because dialogflow already indentified something
 				console.log('Test', context.state.resultParameters);
-
-				if (context.state.resultParameters) {
-					console.log(await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
-						context.state.whatWasTyped, context.state.resultParameters));
-				} else {
-					console.log(await MandatoAbertoAPI.postIssueWithoutEntities(context.state.politicianData.user_id, context.session.user.id, context.state.whatWasTyped));
-				}
+				// TODO  entities: 'missing \'result\' param'
+				console.log(await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
+					context.state.whatWasTyped, context.state.apiaiResp.result));
+				// context.state.whatWasTyped, context.state.resultParameters));
 				await context.sendText('Que pena! Parece que eu errei. Mas recebi sua dúvida e estaremos te respondendo logo mais! Quer fazer outra pergunta?');
 				menuTimers[context.session.user.id] = setTimeout(async () => { // wait 'MenuTimerlimit' to show options menu
 					await sendMenu(context, await loadOptionPrompt(context), [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate, opt.availableIntents]);
