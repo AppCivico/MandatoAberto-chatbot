@@ -365,11 +365,11 @@ const handler = new MessengerHandler()
 			console.log(context.event.rawEvent.sender.id);
 			console.log('----------');
 
-			console.log(`./.session/messenger:${context.event.rawEvent.sender.id}.json`);
-			console.log(await fse.pathExists(`./.session/messenger:${context.event.rawEvent.sender.id}.json`));
+			console.log(`../.session/messenger:${context.event.rawEvent.sender.id}.json`);
+			console.log(await fse.pathExists(`../.session/messenger:${context.event.rawEvent.sender.id}.json`));
 
 			// if (!context.state.dialog) { // because of the message that comes from the comment private-reply
-			if (await fse.pathExists(`./.session/messenger:${context.event.rawEvent.sender.id}.json`) === false) { // because of the message that comes from the comment private-reply
+			if (await fse.pathExists(`../.session/messenger:${context.event.rawEvent.sender.id}.json`) === false) { // because of the message that comes from the comment private-reply
 				await context.setState({ dialog: 'greetings' });
 			} else if (context.state.dialog !== 'recipientData' && context.state.dialog !== 'pollAnswer') { // handling input that's not from "asking data" or answering poll (obs: 'pollAnswer' from timer will bypass this)
 				if (context.event.isPostback) {
