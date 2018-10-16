@@ -361,8 +361,10 @@ const handler = new MessengerHandler()
 				picture: context.session.user.profile_pic,
 				// session: JSON.stringify(context.state),
 			});
+			console.log(context.event.MessengerEvent);
+			console.log('----------');
 
-			console.log(`.session/messenger:${context.event.sender.id}.json`);
+			console.log(`.session/messenger:${context.event.MessengerEvent.sender.id}.json`);
 			console.log(await fse.pathExists(`.session/messenger:${context.event.sender.id}.json`));
 
 			// if (!context.state.dialog) { // because of the message that comes from the comment private-reply
