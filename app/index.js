@@ -361,7 +361,8 @@ const handler = new MessengerHandler()
 				picture: context.session.user.profile_pic,
 				// session: JSON.stringify(context.state),
 			});
-			console.log(context.event.MessengerEvent);
+			console.log(context.event);
+			console.log(context.event.rawEvent);
 			console.log('----------');
 
 			console.log(`.session/messenger:${context.event.MessengerEvent.sender.id}.json`);
