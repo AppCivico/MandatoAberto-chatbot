@@ -76,22 +76,19 @@ function capitalize(s) {
 	return s && s[0].toUpperCase() + s.slice(1);
 }
 
-async function loadOptionPrompt(context) {
-	if (!context.state.optionPrompt || context.state.optionPrompt === '') {
-		const answer = await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'option_prompt');
-		if (!answer || (answer && !answer.content) || (answer && answer.content === '')) {
-			return 'Que tal escolher uma das opções abaixo? Ou digite sua pergunta e nos mande!';
-		}
-		return answer.content;
-	}
-	return context.state.optionPrompt.content;
-}
-
 // async function sendMainMenu(context) {
 // 	await attach.sendButtons(context.session.user.id, await loadOptionPrompt(context),
 // 		[opt.aboutPolitician, opt.availableIntents], [opt.participate, opt.poll_suaOpiniao], context.state.politicianData.fb_access_token);
 // 	// await context.sendButtonTemplate(await loadOptionPrompt(context), await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
 // }
+
+async function loadOptionPrompt(context) {
+	const answer = await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'option_prompt');
+	if (!answer || (answer && !answer.content) || (answer && answer.content === '')) {
+		return 'Que tal escolher uma das opções abaixo? Ou digite sua pergunta e nos mande!';
+	}
+	return answer.content;
+}
 
 async function loadIssueStarted(context) {
 	const answer = await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'issue_started_listening');
@@ -167,10 +164,6 @@ async function checkMenu(context, dialogs) { // eslint-disable-line
 	await context.setState({ trajectory: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'trajectory') });
 	await context.setState({ introduction: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'introduction') });
 
-	// if (!context.state.introduction) { // just in case something goes way off
-	// 	await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
-	// 	await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
-	// }
 	if (!context.state.introduction || !context.state.introduction.content || context.state.introduction.length === 0) { dialogs = dialogs.filter(obj => obj.payload !== 'aboutMe'); }
 	if (!context.state.trajectory || !context.state.trajectory.content || context.state.trajectory.length === 0) { dialogs = dialogs.filter(obj => obj.payload !== 'trajectory'); }
 	if (!context.state.pollData) { dialogs = dialogs.filter(obj => obj.payload !== 'poll'); }
