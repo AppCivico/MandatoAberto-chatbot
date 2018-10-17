@@ -171,8 +171,8 @@ async function checkMenu(context, dialogs) { // eslint-disable-line
 	// 	await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
 	// 	await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 	// }
-	if (context.state.introduction && !context.state.introduction.content) { dialogs = dialogs.filter(obj => obj.payload !== 'aboutMe'); }
-	if (!context.state.trajectory) { dialogs = dialogs.filter(obj => obj.payload !== 'trajectory'); }
+	if (!context.state.introduction || !context.state.introduction.content || context.state.introduction.length === 0) { dialogs = dialogs.filter(obj => obj.payload !== 'aboutMe'); }
+	if (!context.state.trajectory || !context.state.trajectory.content || context.state.trajectory.length === 0) { dialogs = dialogs.filter(obj => obj.payload !== 'trajectory'); }
 	if (!context.state.pollData) { dialogs = dialogs.filter(obj => obj.payload !== 'poll'); }
 	if (!context.state.politicianData.contact || (context.state.politicianData.contact.email === null && context.state.politicianData.contact.twitter === null
 		&& context.state.politicianData.contact.facebook === null && (context.state.politicianData.contact.url === 'http://' || context.state.politicianData.contact.url === null)
