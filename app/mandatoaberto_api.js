@@ -57,7 +57,7 @@ module.exports = {
 			return issue;
 		}
 
-		return undefined;
+		return false;
 	},
 
 	async postIssueWithoutEntities(politician_id, fb_id, message) {
