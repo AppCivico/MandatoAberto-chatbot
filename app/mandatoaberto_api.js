@@ -56,6 +56,7 @@ module.exports = {
 			const issue = await res.json();
 			return issue;
 		}
+
 		return undefined;
 	},
 

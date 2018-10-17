@@ -356,7 +356,7 @@ const handler = new MessengerHandler()
 				await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
 				await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 
-				console.log(context.state.politicianData);
+				console.log(context.state.politicianData.issue_active);
 
 				await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
 					fb_id: context.session.user.id,
@@ -780,9 +780,12 @@ const handler = new MessengerHandler()
 			case 'NotOneOfThese': // user said "no" on theme confirmation
 				if (menuTimers[context.session.user.id]) { delete menuTimers[context.session.user.id]; } // for safety reasons
 				// maybe we don't need to verify if this should be an issue because dialogflow already indentified something
-				await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
-					context.state.whatWasTyped, context.state.apiaiResp);
-				await context.sendText('Que pena! Parece que eu errei. Mas recebi sua dúvida e estaremos te respondendo logo mais! Quer fazer outra pergunta?');
+				if (await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
+					context.state.whatWasTyped, context.state.apiaiResp, context.state.politicianData.issue_active)) {
+					await context.sendText('Que pena! Parece que eu errei. Mas recebi sua dúvida e estaremos te respondendo logo mais! Quer fazer outra pergunta?');
+				} else {
+					await context.sendText('Que pena! Parece que eu errei. Por favor, tente novamente!');
+				}
 				menuTimers[context.session.user.id] = setTimeout(async () => { // wait 'MenuTimerlimit' to show options menu
 					await sendMenu(context, await loadOptionPrompt(context), [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate, opt.availableIntents]);
 					delete menuTimers[context.session.user.id]; // deleting this timer from timers object
