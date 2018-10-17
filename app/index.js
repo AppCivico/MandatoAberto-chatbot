@@ -614,16 +614,16 @@ const handler = new MessengerHandler()
 			}
 		} else {
 			// Tratando caso de o político não ter dados suficientes
-			if (!context.state.dialog) {
-				await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
-				await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
-				if (!context.state.politicianData.greetings && (!context.state.politicianData.contact && !context.state.pollData.questions)) {
-					console.log('Politician does not have enough data');
-					return false;
-				}
-				await context.resetState();
-				await context.setState({ dialog: 'greetings' });
-			}
+			// if (!context.state.dialog) {
+			// await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
+			// await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
+			// if (!context.state.politicianData.greetings && (!context.state.politicianData.contact && !context.state.pollData.questions)) {
+			// 	console.log('Politician does not have enough data');
+			// 	return false;
+			// }
+			// await context.resetState();
+			// await context.setState({ dialog: 'greetings' });
+			// }
 
 			// Tratando botão GET_STARTED
 			if (context.event.postback && context.event.postback.payload === 'greetings') {
