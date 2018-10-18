@@ -16,8 +16,6 @@ module.exports.formatString = formatString;
 // check if we should create an issue with that text message.If it returns true, we send the appropriate message.
 async function createIssue(context) {
 	// check if text is not empty and not on the blacklist
-	console.log('Estou aqui');
-
 	const cleanString = await formatString(context.state.whatWasTyped);
 	if (cleanString && cleanString.length > 1 && !blacklist.includes(cleanString)) {
 		if (await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
