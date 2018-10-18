@@ -597,7 +597,7 @@ const handler = new MessengerHandler()
 		// Abrindo bot através de comentários e posts
 		// ** no context here **
 		if (context.event.rawEvent.field === 'feed') {
-			console.log(context.event);
+			console.log(context.event.rawEvent.value.from);
 
 			let item;
 			let comment_id;
