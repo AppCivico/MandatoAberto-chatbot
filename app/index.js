@@ -5,7 +5,6 @@ const {
 } = require('bottender');
 const { createServer } = require('bottender/restify');
 const dialogFlow = require('apiai-promise');
-const fse = require('fs-extra');
 
 const config = require('./bottender.config.js').messenger;
 const MandatoAbertoAPI = require('./mandatoaberto_api.js');
@@ -356,7 +355,9 @@ const handler = new MessengerHandler()
 		if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead && context.event.rawEvent.field !== 'feed') {
 			// console.log(await MandatoAbertoAPI.getLogAction()); // print possible log actions
 
-			if (await fse.pathExists('./.sessions') === true && await fse.pathExists(`./.sessions/messenger:${context.event.rawEvent.sender.id}.json`) === false) { // because of the message that comes from the comment private-reply
+			if (!context.state.dialog || context.state.dialog === '') { // because of the message that comes from the comment private-reply
+				console.log('Passei por aqui');
+
 				console.log(context.state);
 
 				await context.setState({ dialog: 'greetings' });
