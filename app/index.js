@@ -181,13 +181,23 @@ async function checkMenu(context, dialogs) { // eslint-disable-line
 		}
 	}
 
+	console.log('issue:', context.state.issue_active);
+	console.log(dialogs.find(x => x.payload === 'talkToUs'));
+	console.log(context.state.issue_active !== 1);
+
+
 	if (dialogs.find(x => x.payload === 'talkToUs') && context.state.issue_active !== 1) { // filter talkToUs if issue is not active
+		console.log('entrei aqui');
+
 		dialogs = await dialogs.filter(obj => obj.payload !== 'talkToUs');
 	}
 
 	if (dialogs.find(x => x.payload === 'availableIntents')) { // filtering out "temas" for everybody
 		dialogs = await dialogs.filter(obj => obj.payload !== 'availableIntents');
 	}
+
+	console.log('dialogs', dialogs);
+
 
 	return dialogs;
 }
@@ -359,8 +369,6 @@ const handler = new MessengerHandler()
 				// we update context data at every interaction that's not a comment or a post
 				await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
 				await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
-
-				console.log(context.state.politicianData.issue_active);
 
 				await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
 					fb_id: context.session.user.id,
