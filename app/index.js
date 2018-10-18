@@ -356,17 +356,9 @@ const handler = new MessengerHandler()
 			// console.log(await MandatoAbertoAPI.getLogAction()); // print possible log actions
 
 			if (!context.state.dialog || context.state.dialog === '') { // because of the message that comes from the comment private-reply
-				console.log('Passei por aqui');
-
-				console.log(context.state);
-
 				await context.setState({ dialog: 'greetings' });
 			} else {
 				await context.typingOn();
-				console.log('State now:');
-				console.log(context.state);
-
-
 				// we reload politicianData on every useful event
 				// we update context data at every interaction that's not a comment or a post
 				await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
@@ -605,6 +597,8 @@ const handler = new MessengerHandler()
 		// Abrindo bot através de comentários e posts
 		// ** no context here **
 		if (context.event.rawEvent.field === 'feed') {
+			console.log(context.event);
+
 			let item;
 			let comment_id;
 			let permalink;
