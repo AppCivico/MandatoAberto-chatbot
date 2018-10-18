@@ -49,9 +49,12 @@ module.exports = {
 	},
 
 	async postIssue(politician_id, fb_id, message, entities, issue_active) {
-		console.log('issue_active', issue_active);
+		console.log('issue_active 2', issue_active);
+		console.log(issue_active === '1');
+		console.log(issue_active === 1);
 
-		if (issue_active === true || issue_active === '1') {
+
+		if (issue_active === true || issue_active === 1) {
 			console.log('teste teste');
 
 			message = encodeURI(message);
