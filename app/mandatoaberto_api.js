@@ -52,6 +52,8 @@ module.exports = {
 		console.log('issue_active', issue_active);
 
 		if (issue_active === true || issue_active === '1') {
+			console.log('teste teste');
+
 			message = encodeURI(message);
 			entities = JSON.stringify(entities);
 			const res = await request.post(`${apiUri}/api/chatbot/issue?politician_id=${politician_id}&fb_id=${fb_id}&message=${message}&entities=${entities}&security_token=${security_token}`);
