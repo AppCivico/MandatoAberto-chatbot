@@ -355,11 +355,12 @@ const handler = new MessengerHandler()
 	.onEvent(async (context) => { // eslint-disable-line
 		if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead && context.event.rawEvent.field !== 'feed') {
 			await Sentry.configureScope(async (scope) => {
-				// scope.setUser({ username: (context.session && context.session.user && context.session.user.first_name) : context.session.user.first_name ? 'no_user') });
-				scope.setExtra('whatWasTyped', context.state.whatWasTyped);
-
+				scope.setUser({ username: (context.session && context.session.user && context.session.user.first_name) ? context.session.user.first_name : 'no_user' });
+				scope.setExtra('whatWasTyped', (context.state && context.state.whatWasTyped) ? context.state.whatWasTyped : '');
+				scope.setExtra('politicianData', (context.state && context.state.politicianData) ? context.state.politicianData : '');
 				try {
 					// console.log(await MandatoAbertoAPI.getLogAction()); // print possible log actions
+					console.log(context.test.test);
 
 					if (!context.state.dialog || context.state.dialog === '') { // because of the message that comes from the comment private-reply
 						await context.setState({ dialog: 'greetings' });
