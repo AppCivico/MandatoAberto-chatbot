@@ -16,11 +16,15 @@ module.exports.formatString = formatString;
 // check if we should create an issue with that text message.If it returns true, we send the appropriate message.
 async function createIssue(context) {
 	// check if text is not empty and not on the blacklist
+	console.log('Estou aqui');
+
 	const cleanString = await formatString(context.state.whatWasTyped);
 	if (cleanString && cleanString.length > 1 && !blacklist.includes(cleanString)) {
-		await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
-			context.state.whatWasTyped, context.state.resultParameters);
-		return true;
+		if (await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
+			context.state.whatWasTyped, context.state.resultParameters, context.state.politicianData.issue_active) !== false) {
+			return true;
+		}
+		return false;
 	}
 	await context.sendText('Não entendi sua mensagem. Você pode escrever novamente?');
 	return false;

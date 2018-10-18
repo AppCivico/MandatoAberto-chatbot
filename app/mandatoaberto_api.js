@@ -60,11 +60,15 @@ module.exports = {
 		return false;
 	},
 
-	async postIssueWithoutEntities(politician_id, fb_id, message) {
-		message = encodeURI(message);
-		const res = await request.post(`${apiUri}/api/chatbot/issue?politician_id=${politician_id}&fb_id=${fb_id}&message=${message}&security_token=${security_token}`);
-		const issue = await res.json();
-		return issue;
+	async postIssueWithoutEntities(politician_id, fb_id, message, issue_active) {
+		if (issue_active === 1 || issue_active === true) {
+			message = encodeURI(message);
+			const res = await request.post(`${apiUri}/api/chatbot/issue?politician_id=${politician_id}&fb_id=${fb_id}&message=${message}&security_token=${security_token}`);
+			const issue = await res.json();
+			return issue;
+		}
+
+		return false;
 	},
 
 	async getknowledgeBase(politician_id, entities) {

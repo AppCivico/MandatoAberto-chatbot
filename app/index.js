@@ -255,7 +255,7 @@ async function getOurTypes(KnowledgeBase) {
 	If we couldn't detect any types on the question we default to 'posicionamento'.
 */
 async function checkTypes(entities, knowdlege) {
-	console.log('tipos de pergunta:', entities);
+	// console.log('tipos de pergunta:', entities);
 
 	const typesToCheck = ['posicionamento', 'proposta', 'histórico'];
 	const result = [];
@@ -319,16 +319,16 @@ async function checkPosition(context) {
 		await context.setState({ // getting knowledge base. We send the complete answer from dialogflow
 			knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.apiaiResp),
 		});
-		console.log('knowledge', context.state.knowledge);
+		// console.log('knowledge', context.state.knowledge);
 
 		// check if there's at least one answer in knowledge_base
 		if (context.state.knowledge && context.state.knowledge.knowledge_base && context.state.knowledge.knowledge_base.length >= 1) {
 			await context.setState({ entities: await removeEmptyKeys(context.state.resultParameters) }); // saving the entities that were detect by dialogflow
-			console.log('entities', context.state.entities);
+			// console.log('entities', context.state.entities);
 			await context.setState({ typesWeHave: await getOurTypes(context.state.knowledge.knowledge_base) }); // storing the types we have on our knowledge_base
-			console.log('typesWeHave', context.state.typesWeHave);
+			// console.log('typesWeHave', context.state.typesWeHave);
 			await context.setState({ types: await checkTypes(context.state.entities.Tipos_de_pergunta, context.state.typesWeHave) }); // getting common types
-			console.log('types', context.state.types);
+			// console.log('types', context.state.types);
 			await context.setState({ firstTime: true });
 			await context.sendButtonTemplate('Você está perguntando sobre '// confirm themes with user
 					+ `${getDictionary(context.state.intentName)}?`, opt.themeConfirmation); // obs: the payload of the Yes/Sim option defaults to 'themeYes0'
@@ -468,14 +468,14 @@ const handler = new MessengerHandler()
 								await context.setState({ firstTime: false });
 							}
 
-							console.log('knowledge', context.state.knowledge);
-							console.log('themeName', context.state.themeName);
-							console.log('number', context.state.number);
-							console.log('type', context.state.types);
-							console.log('context.state.types[context.state.number]', context.state.types[context.state.number]);
+							// console.log('knowledge', context.state.knowledge);
+							// console.log('themeName', context.state.themeName);
+							// console.log('number', context.state.number);
+							// console.log('type', context.state.types);
+							// console.log('context.state.types[context.state.number]', context.state.types[context.state.number]);
 
 							await context.setState({ currentTheme: context.state.knowledge.knowledge_base.find(x => x.type === context.state.types[context.state.number]) });
-							console.log('currentTheme', context.state.currentTheme);
+							// console.log('currentTheme', context.state.currentTheme);
 
 							if (context.state.currentTheme && (context.state.currentTheme.answer
 							|| (context.state.currentTheme.saved_attachment_type !== null && context.state.currentTheme.saved_attachment_id !== null))) {
@@ -495,7 +495,7 @@ const handler = new MessengerHandler()
 							} // end currentTheme if --------------------------------------------------
 
 							context.state.types.splice(context.state.number, 1); // removing the theme we just answered
-							console.log(context.state.types);
+							// console.log(context.state.types);
 							if (context.state.types.length === 0) { // we don't have anymore type of answer (the user already clicked throught them all)
 								setTimeout(async () => {
 									await context.sendText('Quer ver mais temas? Ou prefere voltar para o menu?', { quick_replies: opt.themeEnd });
@@ -513,7 +513,7 @@ const handler = new MessengerHandler()
 								});
 								context.state.options.push({ content_type: 'text', title: 'Temas', payload: 'availableIntents' });
 								context.state.options.push({ content_type: 'text', title: 'Voltar', payload: 'themeEnd' });
-								console.log('options', context.state.options);
+								// console.log('options', context.state.options);
 								setTimeout(async () => {
 									await context.sendText(`Deseja saber mais sobre ${getDictionary(context.state.themeName)}?`, { quick_replies: context.state.options });
 								}, 2000);
@@ -523,7 +523,7 @@ const handler = new MessengerHandler()
 							await showThemesQR(context);
 						} else if (payload === 'availableIntents') {
 							await context.setState({ paginationNumber: 1, availableIntents: '', nextIntents: '' }); // resetting data
-							console.log('context.event.message.quick_reply', context.event.message.quick_reply);
+							// console.log('context.event.message.quick_reply', context.event.message.quick_reply);
 							await MandatoAbertoAPI.logFlowChange(context.session.user.id, context.state.politicianData.user_id,
 								context.event.message.quick_reply.payload, opt.availableIntents.title);
 							await showThemesQR(context);
@@ -883,7 +883,8 @@ const handler = new MessengerHandler()
 				// create new (or reset) timer for sending message
 				issueTimers[context.session.user.id] = setTimeout(async () => {
 					if (userMessages[context.session.user.id] !== '') { // check if there's a message to send
-						await MandatoAbertoAPI.postIssueWithoutEntities(context.state.politicianData.user_id, context.session.user.id, userMessages[context.session.user.id]);
+						await MandatoAbertoAPI.postIssueWithoutEntities(context.state.politicianData.user_id, context.session.user.id,
+							userMessages[context.session.user.id], context.state.politicianData.issue_active);
 						// console.log('Enviei ', userMessages[context.session.user.id]);
 						await context.typingOff();
 					}
