@@ -363,6 +363,9 @@ const handler = new MessengerHandler()
 				await context.setState({ dialog: 'greetings' });
 			} else {
 				await context.typingOn();
+				console.log('State now:');
+				console.log(context.state);
+
 
 				// we reload politicianData on every useful event
 				// we update context data at every interaction that's not a comment or a post
