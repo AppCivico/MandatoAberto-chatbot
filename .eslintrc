@@ -19,7 +19,7 @@
     "default-case": 0,
     "max-len": [
       "error",
-      175,
+      195,
       {
         "code": 120,
         "ignoreUrls": true,
