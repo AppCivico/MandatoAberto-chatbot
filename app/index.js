@@ -350,8 +350,7 @@ const handler = new MessengerHandler()
 
 			// console.log(`./.sessions/messenger:${context.event.rawEvent.sender.id}.json`);
 			// console.log(await fse.pathExists(`./.sessions/messenger:${context.event.rawEvent.sender.id}.json`));
-			if (context.event.isDelivery === 'test') { // because of the message that comes from the comment private-reply
-			// if (await fse.pathExists(`./.sessions/messenger:${context.event.rawEvent.sender.id}.json`) === false) { // because of the message that comes from the comment private-reply
+			if (await fse.pathExists('./.sessions') === true && await fse.pathExists(`./.sessions/messenger:${context.event.rawEvent.sender.id}.json`) === false) { // because of the message that comes from the comment private-reply
 				await context.setState({ dialog: 'greetings' });
 			} else {
 				await context.typingOn();
