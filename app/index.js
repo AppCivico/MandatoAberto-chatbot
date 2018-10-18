@@ -113,11 +113,18 @@ function getArticles(gender) {
 	return Articles.masculine;
 }
 
+async function getOfficeName(data) {
+	if (data.office.name === 'Outros') {
+		return data.name;
+	}
+	return `${data.office.name} ${data.name}`;
+}
+
 async function getArtigoCargoNome(context) {
 	if (!context.state.articles) { // check if we are missing the articles and reload them
 		await context.setState({ articles: await getArticles(context.state.politicianData.gender) });
 	}
-	return `${context.state.articles.defined} ${context.state.politicianData.office.name} ${context.state.politicianData.name}`;
+	return `${context.state.articles.defined} ${await getOfficeName(context.state.politicianData)}`;
 }
 
 
@@ -151,6 +158,7 @@ async function checkPollAnswered(context) {
 // 		areWeListening = true;
 // 	}
 // }
+
 
 async function checkMenu(context, dialogs) { // eslint-disable-line
 	if (process.env.BIORAMA === 'true') { // check if we are on a different brach
@@ -800,7 +808,7 @@ const handler = new MessengerHandler()
 				break;
 			case 'intermediate':
 				await context.sendText('Você gostaria de enviar uma mensagem para nossa equipe ou conhecer mais sobre '
-						+ `${context.state.articles.defined} ${context.state.politicianData.office.name} ${context.state.politicianData.name}?`);
+					+ `${await getArtigoCargoNome(context)}?`);
 				await context.sendButtonTemplate('Selecione a opção desejada em um dos botões abaixo:', [opt.writeMessage, opt.seeAssistent]);
 				await context.setState({ dialog: 'prompt' });
 				break;
@@ -906,10 +914,8 @@ const handler = new MessengerHandler()
 			case 'aboutMe': {
 				const introductionText = await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'introduction');
 				await context.sendText(introductionText.content);
-				await sendMenu(context, `O que mais deseja saber sobre ${context.state.articles.defined} ${context.state.politicianData.office.name}?`,
+				await sendMenu(context, `O que mais deseja saber sobre ${await getArtigoCargoNome(context)}?`,
 					[opt.trajectory, opt.contacts, opt.participate, opt.availableIntents]);
-				// await context.sendButtonTemplate(`O que mais deseja saber sobre ${context.state.articles.defined} ${context.state.politicianData.office.name}?`,
-				// 	await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));
 				await context.setState({ dialog: 'prompt' });
 				break;
 			}
@@ -919,8 +925,8 @@ const handler = new MessengerHandler()
 					await context.setState({ politicianCellPhone: context.state.politicianData.contact.cellphone.replace(/(?:\+55)+/g, '') });
 					await context.setState({ politicianCellPhone: context.state.politicianCellPhone.replace(/^(\d{2})/g, '($1)') });
 				}
-				await context.sendText(`Você pode entrar em contato com ${context.state.articles.defined} ${context.state.politicianData.office.name} `
-						+ `${context.state.politicianData.name} pelos seguintes canais:`);
+				await context.sendText('Você pode entrar em contato com } '
+						+ 'pelos seguintes canais:');
 				if (context.state.politicianData.contact.email) {
 					await context.sendText(` - Através do e-mail: ${context.state.politicianData.contact.email}`);
 				}
@@ -1092,11 +1098,6 @@ const handler = new MessengerHandler()
 
 		await sendMenu(context, 'Erro! Escreva uma mensagem para nós!', [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate, opt.availableIntents]);
 		await context.setState({ dialog: 'prompt' });
-		// await context.setState({ articles: getArticles(context.state.politicianData.gender) });
-		// await context.sendText('Olá. Você gostaria de enviar uma mensagem para nossa equipe ou conhecer mais sobre '
-		// 	+ `${context.state.articles.defined} ${context.state.politicianData.office.name} ${context.state.politicianData.name}?`);
-		// await context.sendButtonTemplate('Selecione a opção desejada em um dos botões abaixo:', [opt.writeMessage, opt.seeAssistent]);
-		// await context.setState({ dialog: 'prompt' });
 	});
 
 
