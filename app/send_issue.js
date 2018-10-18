@@ -24,7 +24,6 @@ async function createIssue(context) {
 			context.state.whatWasTyped, context.state.resultParameters, context.state.politicianData.issue_active + 1) !== false) {
 			return true;
 		}
-		return false;
 	}
 	await context.sendText('Não entendi sua mensagem. Você pode escrever novamente?');
 	return false;
