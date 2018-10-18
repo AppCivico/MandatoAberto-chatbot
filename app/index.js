@@ -754,9 +754,9 @@ const handler = new MessengerHandler()
 				areWeListening = true;
 				await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
 				await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
-				await context.setState({ trajectory: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'trajectory') });
+				// await context.setState({ trajectory: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'trajectory') });
 				await context.setState({ articles: await getArticles(context.state.politicianData.gender) });
-				await context.setState({ introduction: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'introduction') });
+				// await context.setState({ introduction: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'introduction') });
 				await context.setState({ greeting: context.state.politicianData.greeting.replace('${user.office.name}', context.state.politicianData.office.name) }); // eslint-disable-line no-template-curly-in-string
 				await context.setState({ greeting: context.state.greeting.replace('${user.name}', context.state.politicianData.name) }); // eslint-disable-line no-template-curly-in-string
 				await context.sendText(context.state.greeting);
