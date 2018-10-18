@@ -186,7 +186,7 @@ async function checkMenu(context, dialogs) { // eslint-disable-line
 	console.log(context.state.politicianData.issue_activee !== 1);
 
 
-	if (dialogs.find(x => x.payload === 'talkToUs') && context.state.politicianData.issue_active !== 1) { // filter talkToUs if issue is not active
+	if (dialogs.find(x => x.payload === 'talkToUs') && context.state.politicianData.issue_active !== 2) { // filter talkToUs if issue is not active
 		console.log('entrei aqui');
 
 		dialogs = await dialogs.filter(obj => obj.payload !== 'talkToUs');
