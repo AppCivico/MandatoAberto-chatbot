@@ -782,7 +782,7 @@ const handler = new MessengerHandler()
 				// maybe we don't need to verify if this should be an issue because dialogflow already indentified something
 
 				if (await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
-					context.state.whatWasTyped, context.state.apiaiResp, context.state.politicianData.issue_active) !== false) {
+					context.state.whatWasTyped, context.state.apiaiResp, context.state.politicianData.issue_active + 1) !== false) {
 					await context.sendText('Que pena! Parece que eu errei. Mas recebi sua dúvida e estaremos te respondendo logo mais! Quer fazer outra pergunta?');
 				} else {
 					await context.sendText('Que pena! Parece que eu errei. Por favor, tente novamente!');
