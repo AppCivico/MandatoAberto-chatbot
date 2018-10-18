@@ -181,6 +181,10 @@ async function checkMenu(context, dialogs) { // eslint-disable-line
 		}
 	}
 
+	if (dialogs.find(x => x.payload === 'talkToUs') && context.state.issue_active !== 1) { // filter talkToUs if issue is not active
+		dialogs = await dialogs.filter(obj => obj.payload !== 'talkToUs');
+	}
+
 	if (dialogs.find(x => x.payload === 'availableIntents')) { // filtering out "temas" for everybody
 		dialogs = await dialogs.filter(obj => obj.payload !== 'availableIntents');
 	}
@@ -782,7 +786,7 @@ const handler = new MessengerHandler()
 				// maybe we don't need to verify if this should be an issue because dialogflow already indentified something
 
 				if (await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
-					context.state.whatWasTyped, context.state.apiaiResp, context.state.politicianData.issue_active + 1) !== false) {
+					context.state.whatWasTyped, context.state.apiaiResp, context.state.politicianData.issue_active) !== false) {
 					await context.sendText('Que pena! Parece que eu errei. Mas recebi sua dúvida e estaremos te respondendo logo mais! Quer fazer outra pergunta?');
 				} else {
 					await context.sendText('Que pena! Parece que eu errei. Por favor, tente novamente!');
