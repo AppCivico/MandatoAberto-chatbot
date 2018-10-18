@@ -181,23 +181,13 @@ async function checkMenu(context, dialogs) { // eslint-disable-line
 		}
 	}
 
-	console.log('issue:', context.state.politicianData.issue_active);
-	console.log(dialogs.find(x => x.payload === 'talkToUs'));
-	console.log(context.state.politicianData.issue_activee !== 1);
-
-
-	if (dialogs.find(x => x.payload === 'talkToUs') && context.state.politicianData.issue_active !== 2) { // filter talkToUs if issue is not active
-		console.log('entrei aqui');
-
+	if (dialogs.find(x => x.payload === 'talkToUs') && context.state.politicianData.issue_active !== 1) { // filter talkToUs if issue is not active
 		dialogs = await dialogs.filter(obj => obj.payload !== 'talkToUs');
 	}
 
 	if (dialogs.find(x => x.payload === 'availableIntents')) { // filtering out "temas" for everybody
 		dialogs = await dialogs.filter(obj => obj.payload !== 'availableIntents');
 	}
-
-	console.log('dialogs', dialogs);
-
 
 	return dialogs;
 }
@@ -222,7 +212,7 @@ async function showThemesQR(context) {
 	// console.log('current intents', context.state.availableIntents);
 	// console.log('nextIntents', context.state.nextIntents);
 
-	console.log('context.state.availableIntents.intents', context.state.availableIntents.intents);
+	// console.log('context.state.availableIntents.intents', context.state.availableIntents.intents);
 
 
 	await context.sendText('Escolha um tema:', await attach.getIntentQR(context.state.availableIntents.intents, context.state.nextIntents.intents));
