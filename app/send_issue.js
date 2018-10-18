@@ -21,7 +21,7 @@ async function createIssue(context) {
 	const cleanString = await formatString(context.state.whatWasTyped);
 	if (cleanString && cleanString.length > 1 && !blacklist.includes(cleanString)) {
 		if (await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
-			context.state.whatWasTyped, context.state.resultParameters, context.state.politicianData.issue_active) !== false) {
+			context.state.whatWasTyped, context.state.resultParameters, context.state.politicianData.issue_active + 1) !== false) {
 			return true;
 		}
 		return false;
