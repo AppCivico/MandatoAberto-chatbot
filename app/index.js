@@ -781,8 +781,10 @@ const handler = new MessengerHandler()
 				if (menuTimers[context.session.user.id]) { delete menuTimers[context.session.user.id]; } // for safety reasons
 				// maybe we don't need to verify if this should be an issue because dialogflow already indentified something
 				// TODO issue_active
-				console.log(context.state.politicianData.issue_active);
 				console.log(typeof context.state.politicianData.issue_active);
+				console.log(await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
+					context.state.whatWasTyped, context.state.apiaiResp, context.state.politicianData.issue_active));
+
 
 				if (await MandatoAbertoAPI.postIssue(context.state.politicianData.user_id, context.session.user.id,
 					context.state.whatWasTyped, context.state.apiaiResp, context.state.politicianData.issue_active) !== false) {
