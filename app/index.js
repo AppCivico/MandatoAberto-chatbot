@@ -360,8 +360,6 @@ const handler = new MessengerHandler()
 				scope.setExtra('politicianData', (context.state && context.state.politicianData) ? context.state.politicianData : '');
 				try {
 					// console.log(await MandatoAbertoAPI.getLogAction()); // print possible log actions
-					console.log(context.test.test);
-
 					if (!context.state.dialog || context.state.dialog === '') { // because of the message that comes from the comment private-reply
 						await context.setState({ dialog: 'greetings' });
 					} else {
