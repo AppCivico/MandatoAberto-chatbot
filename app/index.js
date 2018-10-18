@@ -348,8 +348,6 @@ const handler = new MessengerHandler()
 		if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead && context.event.rawEvent.field !== 'feed') {
 			// console.log(await MandatoAbertoAPI.getLogAction()); // print possible log actions
 
-			// console.log(`./.sessions/messenger:${context.event.rawEvent.sender.id}.json`);
-			// console.log(await fse.pathExists(`./.sessions/messenger:${context.event.rawEvent.sender.id}.json`));
 			if (await fse.pathExists('./.sessions') === true && await fse.pathExists(`./.sessions/messenger:${context.event.rawEvent.sender.id}.json`) === false) { // because of the message that comes from the comment private-reply
 				console.log(context.state);
 
@@ -694,7 +692,7 @@ const handler = new MessengerHandler()
 				const payload = context.event.message.quick_reply.payload;
 				const poll_question_option_id = payload.substr(payload.indexOf('_') + 1, payload.length);
 				await MandatoAbertoAPI.postPollAnswer(context.session.user.id, poll_question_option_id, 'propagate');
-				context.setState({ dialog: 'pollAnswer' });
+				await context.setState({ dialog: 'pollAnswer' });
 			}
 			// Tratando dados adicionais do recipient
 			if (context.state.dialog === 'recipientData' && context.state.recipientData) {
@@ -761,7 +759,7 @@ const handler = new MessengerHandler()
 				await context.setState({ greeting: context.state.greeting.replace('${user.name}', context.state.politicianData.name) }); // eslint-disable-line no-template-curly-in-string
 				await context.sendText(context.state.greeting);
 				if (menuTimers[context.session.user.id]) { // clear timer if it already exists
-					clearTimeout(menuTimers[context.session.user.id]);
+					await clearTimeout(menuTimers[context.session.user.id]);
 				}
 
 				menuTimers[context.session.user.id] = setTimeout(async () => { // wait 'MenuTimerlimit' to show options menu
