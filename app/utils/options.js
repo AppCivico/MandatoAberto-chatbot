@@ -80,7 +80,7 @@ module.exports = {
 		{
 			type: 'postback',
 			title: 'Agora não',
-			payload: 'recipientData',
+			payload: 'recipientDataNo',
 		},
 	],
 	recipientData_YesNo: [ // array with two options
@@ -92,7 +92,7 @@ module.exports = {
 		{
 			type: 'postback',
 			title: 'Não',
-			payload: 'recipientData',
+			payload: 'recipientDataNo',
 		},
 	],
 	votoLegal_participateOptions: [

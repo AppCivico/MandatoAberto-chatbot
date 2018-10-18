@@ -982,6 +982,10 @@ const handler = new MessengerHandler()
 					// await checkMenu(context, [opt.aboutPolitician, opt.talkToUs, opt.participate]));
 				}
 				break;
+			case 'recipientDataNo':
+				await sendMenu(context, 'Está bem! Posso te ajudar com mais alguma informação?',
+					[opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate, opt.availableIntents]);
+				break;
 			case 'recipientData':
 				if (context.event.postback && (context.event.postback.title === 'Agora não' || context.event.postback.title === 'Não')) {
 					await sendMenu(context, 'Está bem! Posso te ajudar com mais alguma informação?',
