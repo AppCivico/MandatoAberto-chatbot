@@ -249,7 +249,11 @@ async function removeEmptyKeys(obj) {
 
 async function getIntentID(context) {
 	const intents = await MandatoAbertoAPI.getAllAvailableIntents(context.event.rawEvent.recipient.id, context.state.paginationNumber);
+	if (intents) {
+		await context.setState({ currentIntent: await intents.find(x => x.name === context.state.intentName) });
+	}
 	console.log('intents', intents);
+	console.log('currentIntent', context.state.currentIntent);
 }
 
 // getting the types we have on our KnowledgeBase
