@@ -800,7 +800,7 @@ const handler = new MessengerHandler()
 						await context.setState({ dialog: 'prompt' });
 						break;
 					case 'NotOneOfThese': // user said "no" on theme confirmation
-						// console.log(await MandatoAbertoAPI.setIntentStatus(context.state.politicianData.user_id, context.session.user.id, context.state.currentIntent, 0));
+						console.log(await MandatoAbertoAPI.setIntentStatus(context.state.politicianData.user_id, context.session.user.id, context.state.currentIntent, 0));
 
 						if (menuTimers[context.session.user.id]) { delete menuTimers[context.session.user.id]; } // for safety reasons
 						// maybe we don't need to verify if this should be an issue because dialogflow already indentified something
