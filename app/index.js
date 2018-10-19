@@ -327,6 +327,9 @@ async function checkPosition(context) {
 		await context.setState({ // getting knowledge base. We send the complete answer from dialogflow
 			knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.apiaiResp),
 		});
+
+		console.log('knowledge:', context.state.knowledge);
+
 		// console.log('knowledge', context.state.knowledge);
 
 		// check if there's at least one answer in knowledge_base
@@ -787,6 +790,7 @@ const handler = new MessengerHandler()
 						await context.setState({ dialog: 'prompt' });
 						break;
 					case 'NotOneOfThese': // user said "no" on theme confirmation
+						await MandatoAbertoAPI.setIntentStatus(context.state.politicianData.user_id, context.session.user.id, 'aa', 0);
 						if (menuTimers[context.session.user.id]) { delete menuTimers[context.session.user.id]; } // for safety reasons
 						// maybe we don't need to verify if this should be an issue because dialogflow already indentified something
 
