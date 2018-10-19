@@ -176,9 +176,8 @@ module.exports = {
 	async setIntentStatus(politician_id, recipient_id, intent, entity_is_correct) {
 		console.log(`${apiUri}/api/chatbot/politician/${politician_id}/intents/${intent.id}/stats?entity_is_correct=${entity_is_correct}&recipient_id=${recipient_id}&security_token=${security_token}`);
 
-
 		if (intent && intent.id) {
-			const res = await request(`${apiUri}/api/chatbot/politician/${politician_id}/intents/${intent.id}/stats?entity_is_correct=${entity_is_correct}&recipient_id=${recipient_id}&security_token=${security_token}`);
+			const res = await request.post(`${apiUri}/api/chatbot/politician/${politician_id}/intents/${intent.id}/stats?entity_is_correct=${entity_is_correct}&recipient_id=${recipient_id}&security_token=${security_token}`);
 			const log = await res.json();
 			return log;
 		}
