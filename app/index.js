@@ -248,13 +248,12 @@ async function removeEmptyKeys(obj) {
 }
 
 async function getIntentID(context) {
+	let oneIntent;
 	const intents = await MandatoAbertoAPI.getAllAvailableIntents(context.event.rawEvent.recipient.id, context.state.paginationNumber);
 	if (intents) {
-		await context.setState({ currentIntent: await intents.intents.find(x => x.name === context.state.intentName) });
+		oneIntent = await intents.intents.find(x => x.name === context.state.intentName);
 	}
-	console.log('intents', intents.intents);
-	console.log('context.state.intentName', context.state.intentName);
-	console.log('currentIntent', context.state.currentIntent);
+	return oneIntent;
 }
 
 // getting the types we have on our KnowledgeBase
@@ -338,7 +337,9 @@ async function checkPosition(context) {
 			knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.apiaiResp),
 		});
 
-		await getIntentID(context);
+		await context.setState({ currentIntent: await getIntentID(context) });
+		await setIntentStatus({});
+
 
 		// console.log('knowledge', context.state.knowledge);
 
@@ -800,7 +801,9 @@ const handler = new MessengerHandler()
 						await context.setState({ dialog: 'prompt' });
 						break;
 					case 'NotOneOfThese': // user said "no" on theme confirmation
-						await MandatoAbertoAPI.setIntentStatus(context.state.politicianData.user_id, context.session.user.id, 'aa', 0);
+						console.log(await MandatoAbertoAPI.setIntentStatus(context.state.politicianData.user_id, context.session.user.id, context.state.currentIntent, 0));
+
+
 						if (menuTimers[context.session.user.id]) { delete menuTimers[context.session.user.id]; } // for safety reasons
 						// maybe we don't need to verify if this should be an issue because dialogflow already indentified something
 
