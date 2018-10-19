@@ -247,6 +247,11 @@ async function removeEmptyKeys(obj) {
 	return obj;
 }
 
+async function getIntentID(context) {
+	const intents = await MandatoAbertoAPI.getAllAvailableIntents(context.event.rawEvent.recipient.id, context.state.paginationNumber);
+	console.log('intents', intents);
+}
+
 // getting the types we have on our KnowledgeBase
 async function getOurTypes(KnowledgeBase) {
 	const result = [];
@@ -328,7 +333,7 @@ async function checkPosition(context) {
 			knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.apiaiResp),
 		});
 
-		console.log('knowledge:', context.state.knowledge);
+		await getIntentID();
 
 		// console.log('knowledge', context.state.knowledge);
 
