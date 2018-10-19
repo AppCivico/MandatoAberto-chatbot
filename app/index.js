@@ -252,7 +252,8 @@ async function getIntentID(context) {
 	if (intents) {
 		await context.setState({ currentIntent: await intents.intents.find(x => x.name === context.state.intentName) });
 	}
-	console.log('intents', intents);
+	console.log('intents', intents.intents);
+	console.log('context.state.intentName', context.state.intentName);
 	console.log('currentIntent', context.state.currentIntent);
 }
 
