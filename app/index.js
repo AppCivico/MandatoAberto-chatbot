@@ -338,7 +338,6 @@ async function checkPosition(context) {
 		});
 
 		await context.setState({ currentIntent: await getIntentID(context) });
-		await setIntentStatus({});
 
 
 		// console.log('knowledge', context.state.knowledge);
