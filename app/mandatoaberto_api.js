@@ -176,7 +176,7 @@ module.exports = {
 	async setIntentStatus(politician_id, recipient_id, intent, entity_is_correct) {
 		console.log(politician_id);
 		console.log(recipient_id);
-		console.log(intent);
+		console.log(intent.id);
 		console.log(entity_is_correct);
 
 
