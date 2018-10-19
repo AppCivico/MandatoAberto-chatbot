@@ -333,7 +333,7 @@ async function checkPosition(context) {
 			knowledge: await MandatoAbertoAPI.getknowledgeBase(context.state.politicianData.user_id, context.state.apiaiResp),
 		});
 
-		await getIntentID();
+		await getIntentID(context);
 
 		// console.log('knowledge', context.state.knowledge);
 
