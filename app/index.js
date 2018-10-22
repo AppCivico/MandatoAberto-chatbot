@@ -19,7 +19,7 @@ const { Sentry } = require('./utils/helper');
 
 const apiai = dialogFlow(process.env.DIALOGFLOW_TOKEN);
 
-console.log('test3');
+console.log('test4');
 
 
 const phoneRegex = new RegExp(/^(?:(?:\+|00)?(55)\s?)?(?:\(?([1-9][0-9])\)?\s?)?(?:((?:9\d|[2-9])\d{3})-?(\d{4}))$/);
