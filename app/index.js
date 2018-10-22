@@ -393,6 +393,10 @@ const handler = new MessengerHandler()
 							if (listening[context.session.user.id]) { delete listening[context.session.user.id]; }
 							// Question/Position flow
 							if (context.event.postback.payload.slice(0, 8) === 'themeYes') { // user confirms that theme(s) is/are correct
+								if (context.state.firstTime === true) {
+									console.log(await MandatoAbertoAPI.setIntentStatus(context.state.politicianData.user_id, context.session.user.id, context.state.currentIntent, 0));
+									await context.setState({ firstTime: false });
+								}
 								await context.setState({ number: context.event.postback.payload.replace('themeYes', '') }); context.event.postback.payload.replace('themeYes', '');
 								// find the correspondent answer using the current type
 								await context.setState({
@@ -801,7 +805,6 @@ const handler = new MessengerHandler()
 						break;
 					case 'NotOneOfThese': // user said "no" on theme confirmation
 						console.log(await MandatoAbertoAPI.setIntentStatus(context.state.politicianData.user_id, context.session.user.id, context.state.currentIntent, 0));
-						// TODO review setIntentStatus
 						if (menuTimers[context.session.user.id]) { delete menuTimers[context.session.user.id]; } // for safety reasons
 						// maybe we don't need to verify if this should be an issue because dialogflow already indentified something
 
