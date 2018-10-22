@@ -394,7 +394,7 @@ const handler = new MessengerHandler()
 							// Question/Position flow
 							if (context.event.postback.payload.slice(0, 8) === 'themeYes') { // user confirms that theme(s) is/are correct
 								if (context.state.firstTime === true) {
-									console.log(await MandatoAbertoAPI.setIntentStatus(context.state.politicianData.user_id, context.session.user.id, context.state.currentIntent, 1));
+									await MandatoAbertoAPI.setIntentStatus(context.state.politicianData.user_id, context.session.user.id, context.state.currentIntent, 1);
 									await context.setState({ firstTime: false });
 								}
 								await context.setState({ number: context.event.postback.payload.replace('themeYes', '') }); context.event.postback.payload.replace('themeYes', '');
@@ -488,7 +488,7 @@ const handler = new MessengerHandler()
 
 								if (context.state.firstTime === true) {
 									await context.setState({ currentIntent: await getIntentID(context) });
-									console.log(await MandatoAbertoAPI.setIntentStatus(context.state.politicianData.user_id, context.session.user.id, context.state.currentIntent, 1));
+									await MandatoAbertoAPI.setIntentStatus(context.state.politicianData.user_id, context.session.user.id, context.state.currentIntent, 1);
 									await context.setState({ types: await getOurTypes(context.state.knowledge.knowledge_base) });
 									await context.setState({ firstTime: false });
 								}
@@ -807,7 +807,7 @@ const handler = new MessengerHandler()
 						await context.setState({ dialog: 'prompt' });
 						break;
 					case 'NotOneOfThese': // user said "no" on theme confirmation
-						console.log(await MandatoAbertoAPI.setIntentStatus(context.state.politicianData.user_id, context.session.user.id, context.state.currentIntent, 0));
+						await MandatoAbertoAPI.setIntentStatus(context.state.politicianData.user_id, context.session.user.id, context.state.currentIntent, 0);
 						if (menuTimers[context.session.user.id]) { delete menuTimers[context.session.user.id]; } // for safety reasons
 						// maybe we don't need to verify if this should be an issue because dialogflow already indentified something
 
