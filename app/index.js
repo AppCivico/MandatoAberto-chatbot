@@ -193,9 +193,9 @@ async function checkMenu(context, dialogs) { // eslint-disable-line
 		dialogs = await dialogs.filter(obj => obj.payload !== 'talkToUs');
 	}
 
-	if (dialogs.find(x => x.payload === 'availableIntents')) { // filtering out "temas" for everybody
-		dialogs = await dialogs.filter(obj => obj.payload !== 'availableIntents');
-	}
+	// if (dialogs.find(x => x.payload === 'availableIntents')) { // filtering out "temas" for everybody
+	// 	dialogs = await dialogs.filter(obj => obj.payload !== 'availableIntents');
+	// }
 
 	return dialogs;
 }
@@ -394,7 +394,7 @@ const handler = new MessengerHandler()
 							// Question/Position flow
 							if (context.event.postback.payload.slice(0, 8) === 'themeYes') { // user confirms that theme(s) is/are correct
 								if (context.state.firstTime === true) {
-									console.log(await MandatoAbertoAPI.setIntentStatus(context.state.politicianData.user_id, context.session.user.id, context.state.currentIntent, 0));
+									console.log(await MandatoAbertoAPI.setIntentStatus(context.state.politicianData.user_id, context.session.user.id, context.state.currentIntent, 1));
 									await context.setState({ firstTime: false });
 								}
 								await context.setState({ number: context.event.postback.payload.replace('themeYes', '') }); context.event.postback.payload.replace('themeYes', '');
@@ -485,7 +485,10 @@ const handler = new MessengerHandler()
 								await context.setState({ // getting knowledge base. We send the complete answer from dialogflow
 									knowledge: await MandatoAbertoAPI.getknowledgeBaseByName(context.state.politicianData.user_id, context.state.themeName),
 								});
+
 								if (context.state.firstTime === true) {
+									await context.setState({ currentIntent: await getIntentID(context) });
+									console.log(await MandatoAbertoAPI.setIntentStatus(context.state.politicianData.user_id, context.session.user.id, context.state.currentIntent, 1));
 									await context.setState({ types: await getOurTypes(context.state.knowledge.knowledge_base) });
 									await context.setState({ firstTime: false });
 								}
