@@ -285,6 +285,8 @@ async function checkTypes(entities, knowdlege) {
 	// 	}));
 	// }
 
+	entities = 'posicionamento';
+
 	console.log('entitiesOld', entities);
 	if (await Array.isArray(entities) === true) {
 		entities = entities[0];
