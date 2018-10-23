@@ -119,6 +119,7 @@ module.exports = {
 			},
 		);
 		const log = await res.json();
+		console.log('logFlowChange', log);
 		return log;
 	},
 
@@ -134,6 +135,7 @@ module.exports = {
 			},
 		);
 		const log = await res.json();
+		console.log('logAnsweredPoll', log);
 		return log;
 	},
 
@@ -149,6 +151,7 @@ module.exports = {
 			},
 		);
 		const log = await res.json();
+		console.log('logAskedEntity', log);
 		return log;
 	},
 
@@ -164,6 +167,7 @@ module.exports = {
 			},
 		);
 		const log = await res.json();
+		console.log('logNotification', log);
 		return log;
 	},
 
@@ -177,6 +181,8 @@ module.exports = {
 		if (intent && intent.id) {
 			const res = await request.post(`${apiUri}/api/chatbot/politician/${politician_id}/intents/${intent.id}/stats?entity_is_correct=${entity_is_correct}&recipient_fb_id=${recipient_fb_id}&security_token=${security_token}`);
 			const log = await res.json();
+			console.log('setIntentStatus', log);
+
 			return log;
 		}
 		return false;

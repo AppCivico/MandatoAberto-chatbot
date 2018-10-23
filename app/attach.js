@@ -104,7 +104,6 @@ async function sendButtons(id, text, buttons1, buttons2, accessToken) { // eslin
 		},
 	});
 	const response = await res.json();
-	console.log('response', response);
 
 	return response;
 }
