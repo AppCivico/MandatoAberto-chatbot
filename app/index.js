@@ -286,7 +286,7 @@ async function checkTypes(entities, knowdlege) {
 	// }
 
 	console.log('entitiesOld', entities);
-	if (await entities.isArray() === true) {
+	if (await Array.isArray(entities) === true) {
 		entities = entities[0];
 	}
 	console.log('entities', entities);
