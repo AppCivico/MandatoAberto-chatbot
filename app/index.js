@@ -285,6 +285,10 @@ async function checkTypes(entities, knowdlege) {
 	// 	}));
 	// }
 
+	console.log('entitiesOld', entities);
+	if (await entities.isArray() === true) {
+		entities = entities[0];
+	}
 	console.log('entities', entities);
 
 	if (entities && entities !== '') { // string exists and isn't empty, this is the type the user asked
@@ -350,7 +354,7 @@ async function checkPosition(context) {
 			// console.log('entities', context.state.entities);
 			await context.setState({ typesWeHave: await getOurTypes(context.state.knowledge.knowledge_base) }); // storing the types we have on our knowledge_base
 			// console.log('typesWeHave', context.state.typesWeHave);
-			await context.setState({ types: await checkTypes(context.state.entities.Tipos_de_pergunta[0], context.state.typesWeHave) }); // getting common types
+			await context.setState({ types: await checkTypes(context.state.entities.Tipos_de_pergunta, context.state.typesWeHave) }); // getting common types
 			// console.log('types', context.state.types);
 			await context.setState({ firstTime: true });
 			await context.sendButtonTemplate('Você está perguntando sobre '// confirm themes with user
