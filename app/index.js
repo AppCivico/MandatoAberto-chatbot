@@ -285,6 +285,8 @@ async function checkTypes(entities, knowdlege) {
 	// 	}));
 	// }
 
+	console.log('entities', entities);
+
 	if (entities && entities !== '') { // string exists and isn't empty, this is the type the user asked
 		if (typesToCheck.includes(entities.toLowerCase() && knowdlege.includes(entities.toLowerCase()))) {
 			result.push(entities.toLowerCase());
