@@ -586,10 +586,14 @@ const handler = new MessengerHandler()
 								// 	await context.setState({ dialog: 'greetings' });
 								// } else
 								if (context.state.politicianData.use_dialogflow === 1) { // check if politician is using dialogFlow
-									await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
-									await context.setState({ resultParameters: context.state.apiaiResp.result.parameters }); // getting the entities
-									await context.setState({ intentName: context.state.apiaiResp.result.metadata.intentName }); // getting the intent
-									await checkPosition(context);
+									if (context.state.whatWasTyped.length <= 255) {
+										await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
+										await context.setState({ resultParameters: context.state.apiaiResp.result.parameters }); // getting the entities
+										await context.setState({ intentName: context.state.apiaiResp.result.metadata.intentName }); // getting the intent
+										await checkPosition(context);
+									} else {
+										await context.sendText('Mensagem muito longa!');
+									}
 								} else { // not using dialogFlow
 									await context.setState({ noDialogFlow: context.event.message.text });
 									delete userMessages[context.session.user.id]; // deleting last sent message (it was sent already)
