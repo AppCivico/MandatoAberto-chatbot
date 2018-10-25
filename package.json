@@ -7,7 +7,7 @@
     "start": "node app/index.js"
   },
   "dependencies": {
-    "@sentry/node": "^4.1.1",
+    "@sentry/node": "^4.2.3",
     "apiai-promise": "^1.0.0",
     "async-child-process": "^1.1.1",
     "bottender": "^0.14.22",
