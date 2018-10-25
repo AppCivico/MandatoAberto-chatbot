@@ -450,8 +450,6 @@ const handler = new MessengerHandler()
 										await context.sendText('Parece que fico te devendo essa resposta. '
 									+ 'Mas já entou enviando para nossas equipe e estaremos te respondendo em breve.');
 									}
-									// await context.sendButtonTemplate(await loadOptionPrompt(context),
-									// 	await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
 									await sendMenu(context, await loadOptionPrompt(context), [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate, opt.availableIntents]);
 								}
 								// end answering theme --------------------------------------------------
@@ -586,13 +584,17 @@ const handler = new MessengerHandler()
 								// 	await context.setState({ dialog: 'greetings' });
 								// } else
 								if (context.state.politicianData.use_dialogflow === 1) { // check if politician is using dialogFlow
-									if (context.state.whatWasTyped.length <= 255) {
+									if (context.state.whatWasTyped.length <= 255) { // check if message is short enough for apiai
 										await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
 										await context.setState({ resultParameters: context.state.apiaiResp.result.parameters }); // getting the entities
 										await context.setState({ intentName: context.state.apiaiResp.result.metadata.intentName }); // getting the intent
 										await checkPosition(context);
 									} else {
-										await context.sendText('Mensagem muito longa!');
+										if (await createIssue(context)) {
+											await context.sendText('Não consigo entender mensagens tão longas mas já entou enviando para nossas equipe e estaremos te '
+											+ 'respondendo em breve.');
+										}
+										await sendMenu(context, await loadOptionPrompt(context), [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate, opt.availableIntents]);
 									}
 								} else { // not using dialogFlow
 									await context.setState({ noDialogFlow: context.event.message.text });
