@@ -14,7 +14,7 @@ module.exports.formatString = formatString;
 
 
 // check if we should create an issue with that text message.If it returns true, we send the appropriate message.
-async function createIssue(context) {
+async function createIssue(context, textToSend) {
 	// check if text is not empty and not on the blacklist
 	const cleanString = await formatString(context.state.whatWasTyped);
 	if (cleanString && cleanString.length > 1 && !blacklist.includes(cleanString)) {
@@ -23,7 +23,7 @@ async function createIssue(context) {
 			return true;
 		}
 	}
-	await context.sendText('Não entendi sua mensagem. Você pode escrever novamente?');
+	await context.sendText(textToSend);
 	return false;
 }
 

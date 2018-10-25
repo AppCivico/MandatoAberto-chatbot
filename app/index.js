@@ -333,7 +333,7 @@ async function checkPosition(context) {
 		await context.setState({ dialog: 'createIssue' });
 		break;
 	case 'Fallback': // didn't understand what was typed
-		if (await createIssue(context)) { await context.sendText(getRandom(opt.frases_fallback)); }
+		if (await createIssue(context, 'Não entendi sua mensagem. Você pode escrever novamente?')) { await context.sendText(getRandom(opt.frases_fallback)); }
 		await sendMenu(context, await loadOptionPrompt(context), [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate, opt.availableIntents]);
 		break;
 	default: // default acts for every intent - position
@@ -358,7 +358,7 @@ async function checkPosition(context) {
 			await context.sendButtonTemplate('Você está perguntando sobre '// confirm themes with user
 					+ `${getDictionary(context.state.intentName)}?`, opt.themeConfirmation); // obs: the payload of the Yes/Sim option defaults to 'themeYes0'
 		} else { // no answers in knowledge_base (We know the entity but politician doesn't have a position)
-			if (await createIssue(context)) {
+			if (await createIssue(context, 'Não entendi sua mensagem. Você pode escrever novamente?')) {
 				await context.sendText(`🤔 Eu ainda não perguntei para ${await getArtigoCargoNome(context)} sobre `
 					+ 'esse assunto. Irei encaminhar para nossa equipe, está bem?');
 			}
@@ -446,7 +446,7 @@ const handler = new MessengerHandler()
 										}, 5000);
 									}
 								} else { // we couldn't find neither text answer nor attachment (This is an error and it shouldn't happen)
-									if (await createIssue(context)) {
+									if (await createIssue(context, 'Não entendi sua mensagem. Você pode escrever novamente?')) {
 										await context.sendText('Parece que fico te devendo essa resposta. '
 									+ 'Mas já entou enviando para nossas equipe e estaremos te respondendo em breve.');
 									}
@@ -590,7 +590,7 @@ const handler = new MessengerHandler()
 										await context.setState({ intentName: context.state.apiaiResp.result.metadata.intentName }); // getting the intent
 										await checkPosition(context);
 									} else {
-										if (await createIssue(context)) {
+										if (await createIssue(context, 'Não entendi sua mensagem pois ela é muito complexa. Você pode escrever novamente, de forma mais direta?')) {
 											await context.sendText('Não consigo entender mensagens tão longas mas já entou enviando para nossas equipe e estaremos te '
 											+ 'respondendo em breve.');
 										}
