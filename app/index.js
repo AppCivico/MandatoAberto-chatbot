@@ -114,15 +114,10 @@ function getArticles(gender) {
 }
 
 async function getOfficeName(data) {
-	console.log(data);
-	
-	if (data.office.name !== 'Outros') {
-		console.log('Passei aqui');
-		
-		return `${data.office.name} ${data.name}`;
+	if (data.office.name === 'Outros') {
+		return data.name;
 	}
-	console.log('Não passei lá');
-	return data.name;
+	return `${data.office.name} ${data.name}`;
 }
 
 async function getArtigoCargoNome(context) {
