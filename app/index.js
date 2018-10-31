@@ -114,9 +114,14 @@ function getArticles(gender) {
 }
 
 async function getOfficeName(data) {
+	console.log(data);
+	
 	if (data.office.name !== 'Outros') {
+		console.log('Passei aqui');
+		
 		return `${data.office.name} ${data.name}`;
 	}
+	console.log('Não passei lá');
 	return data.name;
 }
 
