@@ -114,10 +114,10 @@ function getArticles(gender) {
 }
 
 async function getOfficeName(data) {
-	if (data.office.name === 'Outros') {
-		return data.name;
+	if (data.office.name !== 'Outros') {
+		return `${data.office.name} ${data.name}`;
 	}
-	return `${data.office.name} ${data.name}`;
+	return data.name;
 }
 
 async function getArtigoCargoNome(context) {
