@@ -842,7 +842,7 @@ const handler = new MessengerHandler()
 						await context.setState({ dialog: 'prompt' });
 						break;
 					case 'participateMenu': // Participar
-						await context.setState({ participateText: 'Estamos em campanha e contamos com você.\n' }); // getting the first part of the text
+							await context.setState({ participateText: 'Contamos com você! Veja como participar"\n' }); // getting the first part of the text
 
 						if (context.state.politicianData.votolegal_integration && context.state.politicianData.votolegal_integration.votolegal_url) {
 							await context.setState({ participateTimer: 2500 }); // setting the wait time for the next message
