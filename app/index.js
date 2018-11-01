@@ -402,17 +402,17 @@ const handler = new MessengerHandler()
 							if (listening[context.session.user.id]) { delete listening[context.session.user.id]; }
 							// Question/Position flow
 							if (context.event.postback.payload.slice(0, 8) === 'themeYes') { // user confirms that theme(s) is/are correct
+								await context.setState({ number: context.event.postback.payload.replace('themeYes', '') }); context.event.postback.payload.replace('themeYes', '');
+								// find the correspondent answer using the current type
+								await context.setState({
+									currentTheme: await context.state.knowledge.knowledge_base.find(x => x.type === context.state.types[context.state.number]),
+								});
 								if (context.state.firstTime === true) { // we log only on the first answer
 									await MandatoAbertoAPI.setIntentStatus(context.state.politicianData.user_id, context.session.user.id, context.state.currentIntent, 1);
 									await MandatoAbertoAPI.logAskedEntity(context.session.user.id,
 										context.state.politicianData.user_id, context.state.currentTheme.entities[0].id);
 									await context.setState({ firstTime: false });
 								}
-								await context.setState({ number: context.event.postback.payload.replace('themeYes', '') }); context.event.postback.payload.replace('themeYes', '');
-								// find the correspondent answer using the current type
-								await context.setState({
-									currentTheme: await context.state.knowledge.knowledge_base.find(x => x.type === context.state.types[context.state.number]),
-								});
 								// console.log('currentTheme', currentTheme);
 								if (context.state.currentTheme && (context.state.currentTheme.answer
 							|| (context.state.currentTheme.saved_attachment_type !== null && context.state.currentTheme.saved_attachment_id !== null))) {
@@ -1131,6 +1131,7 @@ const handler = new MessengerHandler()
 				await context.setState({ dialog: 'prompt' });
 				await Sentry.configureScope(async (scope) => {
 					scope.setUser({ username: (context.session && context.session.user && context.session.user.first_name) ? context.session.user.first_name : 'no_user' });
+					scope.setExtra('admin', (context.state.politicianData && context.state.politicianData.name) ? context.state.politicianData.name : 'no_admin' );
 					scope.setExtra('state', context.state);
 					throw err;
 				});
