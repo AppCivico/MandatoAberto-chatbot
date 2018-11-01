@@ -142,8 +142,9 @@ async function getArtigoCargoNome(context) {
 // }
 
 async function checkPollAnswered(context) {
-	console.log(context.state.pollData);
-	
+	if (!context.state.pollData || !context.state.pollData.id) {
+		await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
+	}
 	const recipientAnswer = await MandatoAbertoAPI.getPollAnswer(context.session.user.id, context.state.pollData.id);
 	if (recipientAnswer.recipient_answered >= 1) {
 		return true;

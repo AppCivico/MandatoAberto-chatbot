@@ -31,6 +31,8 @@ module.exports = {
 	},
 
 	async getPollAnswer(fb_id, poll_id) {
+		console.log(fb_id);
+		console.log(poll_id);
 		const res = await request(`${apiUri}/api/chatbot/poll-result?fb_id=${fb_id}&poll_id=${poll_id}&security_token=${security_token}`);
 		const pollAnswer = await res.json();
 		return pollAnswer;
