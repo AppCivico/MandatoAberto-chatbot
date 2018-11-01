@@ -1121,16 +1121,18 @@ const handler = new MessengerHandler()
 
 				await Sentry.configureScope(async (scope) => {
 					if (context.session.user && context.session.user.first_name && context.session.user.last_name) {
+						scope.setUser({ username: `${context.session.user.first_name} ${context.session.user.last_name}` });
 						console.log(`Usuário => ${context.session.user.first_name} ${context.session.user.last_name}`);
-						scope.setUser({ username: (context.session && context.session.user && context.session.user.first_name) ? context.session.user.first_name : 'no_user' });
 					} else {
+						scope.setUser({ username: 'no_user' });
 						console.log('Usuário => Não conseguimos descobrir o nome do cidadão');
 					}
 					if (context.state && context.state.politicianData && context.state.politicianData.name
 						&& context.state.politicianData.office && context.state.politicianData.office.name) {
-						scope.setExtra('admin', (context.state.politicianData && context.state.politicianData.name) ? context.state.politicianData.name : 'no_admin');
+						scope.setExtra('admin', `${context.state.politicianData.office.name} ${context.state.politicianData.name}`);
 						console.log(`Administrador => ${context.state.politicianData.office.name} ${context.state.politicianData.name}`);
 					} else {
+						scope.setExtra('admin', 'no_admin');
 						console.log('Administrador => Não conseguimos descobrir o nome do político');
 					}
 
