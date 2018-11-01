@@ -377,7 +377,7 @@ const handler = new MessengerHandler()
 		if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead && context.event.rawEvent.field !== 'feed') {
 			try {
 				console.log(context.state1.test);
-				
+
 				// console.log(await MandatoAbertoAPI.getLogAction()); // print possible log actions
 				if (!context.state.dialog || context.state.dialog === '') { // because of the message that comes from the comment private-reply
 					await context.setState({ dialog: 'greetings' });
@@ -846,7 +846,7 @@ const handler = new MessengerHandler()
 						await context.setState({ dialog: 'prompt' });
 						break;
 					case 'participateMenu': // Participar
-							await context.setState({ participateText: 'Contamos com você! Veja como participar.\n' }); // getting the first part of the text
+						await context.setState({ participateText: 'Contamos com você! Veja como participar.\n' }); // getting the first part of the text
 
 						if (context.state.politicianData.votolegal_integration && context.state.politicianData.votolegal_integration.votolegal_url) {
 							await context.setState({ participateTimer: 2500 }); // setting the wait time for the next message
@@ -1098,6 +1098,9 @@ const handler = new MessengerHandler()
 					} // end switch de diálogo
 				}
 			} catch (err) {
+				await sendMenu(context, 'Erro! Escreva uma mensagem para nós!', [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate, opt.availableIntents]);
+				await context.setState({ dialog: 'prompt' });
+
 				const date = new Date();
 				console.log('\n');
 				console.log(`Parece que aconteceu um erro as ${date.toLocaleTimeString('pt-BR')} de ${date.getDate()}/${date.getMonth() + 1} =>`);
@@ -1116,23 +1119,21 @@ const handler = new MessengerHandler()
 				// console.log('\n\n\n\nrawEvent.recipient.id no catch', context.event.rawEvent.recipient.id);
 				// console.log('politicianData no catch', context.state.politicianData);
 
-				if (context.session.user && context.session.user.first_name && context.session.user.last_name) {
-					console.log(`Usuário => ${context.session.user.first_name} ${context.session.user.last_name}`);
-				} else {
-					console.log('Usuário => Não conseguimos descobrir o nome do cidadão');
-				}
-				if (context.state && context.state.politicianData && context.state.politicianData.name
-					&& context.state.politicianData.office && context.state.politicianData.office.name) {
-					console.log(`Administrador => ${context.state.politicianData.office.name} ${context.state.politicianData.name}`);
-				} else {
-					console.log('Administrador => Não conseguimos descobrir o nome do político');
-				}
-
-				await sendMenu(context, 'Erro! Escreva uma mensagem para nós!', [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate, opt.availableIntents]);
-				await context.setState({ dialog: 'prompt' });
 				await Sentry.configureScope(async (scope) => {
-					scope.setUser({ username: (context.session && context.session.user && context.session.user.first_name) ? context.session.user.first_name : 'no_user' });
-					scope.setExtra('admin', (context.state.politicianData && context.state.politicianData.name) ? context.state.politicianData.name : 'no_admin' );
+					if (context.session.user && context.session.user.first_name && context.session.user.last_name) {
+						console.log(`Usuário => ${context.session.user.first_name} ${context.session.user.last_name}`);
+						scope.setUser({ username: (context.session && context.session.user && context.session.user.first_name) ? context.session.user.first_name : 'no_user' });
+					} else {
+						console.log('Usuário => Não conseguimos descobrir o nome do cidadão');
+					}
+					if (context.state && context.state.politicianData && context.state.politicianData.name
+						&& context.state.politicianData.office && context.state.politicianData.office.name) {
+						scope.setExtra('admin', (context.state.politicianData && context.state.politicianData.name) ? context.state.politicianData.name : 'no_admin');
+						console.log(`Administrador => ${context.state.politicianData.office.name} ${context.state.politicianData.name}`);
+					} else {
+						console.log('Administrador => Não conseguimos descobrir o nome do político');
+					}
+
 					scope.setExtra('state', context.state);
 					throw err;
 				});
