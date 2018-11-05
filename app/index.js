@@ -196,9 +196,9 @@ async function checkMenu(context, dialogs) { // eslint-disable-line
 		dialogs = await dialogs.filter(obj => obj.payload !== 'talkToUs');
 	}
 
-	// if (dialogs.find(x => x.payload === 'availableIntents')) { // filtering out "temas" for everybody
-	// 	dialogs = await dialogs.filter(obj => obj.payload !== 'availableIntents');
-	// }
+	if (dialogs.find(x => x.payload === 'availableIntents')) { // filtering out "temas" for everybody
+		dialogs = await dialogs.filter(obj => obj.payload !== 'availableIntents');
+	}
 
 	return dialogs;
 }
@@ -363,7 +363,7 @@ async function checkPosition(context) {
 		} else { // no answers in knowledge_base (We know the entity but politician doesn't have a position)
 			if (await createIssue(context)) {
 				await context.sendText(`🤔 Eu ainda não perguntei para ${await getArtigoCargoNome(context)} sobre `
-					+ 'esse assunto. Irei encaminhar para nossa equipe, está bem?');
+						+ 'esse assunto. Irei encaminhar para nossa equipe, está bem?');
 			}
 			await sendMenu(context, await loadOptionPrompt(context), [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate, opt.availableIntents]);
 		}
@@ -414,7 +414,7 @@ const handler = new MessengerHandler()
 								}
 								// console.log('currentTheme', currentTheme);
 								if (context.state.currentTheme && (context.state.currentTheme.answer
-							|| (context.state.currentTheme.saved_attachment_type !== null && context.state.currentTheme.saved_attachment_id !== null))) {
+									|| (context.state.currentTheme.saved_attachment_type !== null && context.state.currentTheme.saved_attachment_id !== null))) {
 									if (context.state.currentTheme.answer) { // if there's a text asnwer we send it
 										await context.sendText(`${capitalize(context.state.types[context.state.number])}: ${context.state.currentTheme.answer}`);
 									}
@@ -452,7 +452,7 @@ const handler = new MessengerHandler()
 								} else { // we couldn't find neither text answer nor attachment (This is an error and it shouldn't happen)
 									if (await createIssue(context)) {
 										await context.sendText('Parece que fico te devendo essa resposta. '
-									+ 'Mas já entou enviando para nossas equipe e estaremos te respondendo em breve.');
+											+ 'Mas já entou enviando para nossas equipe e estaremos te respondendo em breve.');
 									}
 									await sendMenu(context, await loadOptionPrompt(context), [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate, opt.availableIntents]);
 								}
@@ -506,7 +506,7 @@ const handler = new MessengerHandler()
 								// console.log('currentTheme', context.state.currentTheme);
 
 								if (context.state.currentTheme && (context.state.currentTheme.answer
-							|| (context.state.currentTheme.saved_attachment_type !== null && context.state.currentTheme.saved_attachment_id !== null))) {
+									|| (context.state.currentTheme.saved_attachment_type !== null && context.state.currentTheme.saved_attachment_id !== null))) {
 									if (context.state.currentTheme.answer) { // if there's a text asnwer we send it
 										await context.sendText(`${capitalize(context.state.types[context.state.number])}: ${context.state.currentTheme.answer}`);
 									}
@@ -596,7 +596,7 @@ const handler = new MessengerHandler()
 									} else {
 										if (await createIssue(context, 'Não entendi sua mensagem pois ela é muito complexa. Você pode escrever novamente, de forma mais direta?')) {
 											await context.sendText('Não consigo entender mensagens tão longas mas já entou enviando para nossas equipe e estaremos te '
-											+ 'respondendo em breve.');
+												+ 'respondendo em breve.');
 										}
 										await sendMenu(context, await loadOptionPrompt(context), [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate, opt.availableIntents]);
 									}
@@ -709,7 +709,7 @@ const handler = new MessengerHandler()
 					// quick_replies que vem de propagação que não são resposta de enquete
 					// because of the issue response
 					if (context.event.isQuickReply && (context.state.dialog !== 'pollAnswer') && !(context.event.message.quick_reply.payload.includes('pollAnswerPropagate'))
-				&& (context.state.dialog !== 'recipientData')) {
+						&& (context.state.dialog !== 'recipientData')) {
 						await context.setState({ dialog: context.event.message.quick_reply.payload });
 					}
 					// Resposta de enquete
@@ -839,7 +839,7 @@ const handler = new MessengerHandler()
 						break;
 					case 'intermediate':
 						await context.sendText('Você gostaria de enviar uma mensagem para nossa equipe ou conhecer mais sobre '
-					+ `${await getArtigoCargoNome(context)}?`);
+								+ `${await getArtigoCargoNome(context)}?`);
 						await context.sendButtonTemplate('Selecione a opção desejada em um dos botões abaixo:', [opt.writeMessage, opt.seeAssistent]);
 						await context.setState({ dialog: 'prompt' });
 						break;
@@ -851,14 +851,14 @@ const handler = new MessengerHandler()
 							// check if politician is on votoLegal so we can info and option
 							// if referral.source(CUSTOMER_CHAT_PLUGIN) exists we are outside facebook and shouldn't send votolegal's url
 							if ((context.event.rawEvent.postback && context.event.rawEvent.postback.referral) || (context.event.rawEvent.message && context.event.rawEvent.message.tags
-							&& context.event.rawEvent.message.tags.source && context.event.rawEvent.message.tags.source === 'customer_chat_plugin')) {
+									&& context.event.rawEvent.message.tags.source && context.event.rawEvent.message.tags.source === 'customer_chat_plugin')) {
 								await context.sendText(`${context.state.participateText}Você já está na nossa página para doar.`);
 								await context.sendText('Seu apoio é fundamental para nossa campanha!');
 							} else {
 								await context.setState({ valueLegal: await VotoLegalAPI.getVotoLegalValues(context.state.politicianData.votolegal_integration.votolegal_username) });
 								await context.setState({
 									participateText: `${context.state.participateText}Já consegui R$${formatReal(context.state.valueLegal.candidate.total_donated)} da minha meta de `
-									+ `R$${formatReal(getMoney(context.state.valueLegal.candidate.raising_goal))}.`,
+											+ `R$${formatReal(getMoney(context.state.valueLegal.candidate.raising_goal))}.`,
 								});
 								await context.sendButtonTemplate(`${context.state.participateText} Apoie nossa campanha de arrecadação.`, [{
 									type: 'web_url',
@@ -957,7 +957,7 @@ const handler = new MessengerHandler()
 							await context.setState({ politicianCellPhone: context.state.politicianCellPhone.replace(/^(\d{2})/g, '($1)') });
 						}
 						await context.sendText('Você pode entrar em contato com } '
-						+ 'pelos seguintes canais:');
+								+ 'pelos seguintes canais:');
 						if (context.state.politicianData.contact.email) {
 							await context.sendText(` - Através do e-mail: ${context.state.politicianData.contact.email}`);
 						}
