@@ -386,11 +386,6 @@ const handler = new MessengerHandler()
 					await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
 					await context.setState({ pollData: await MandatoAbertoAPI.getPollData(context.event.rawEvent.recipient.id) });
 
-					console.log('Test');
-
-					console.log(context.session.user);
-					console.log('gender', context.session.user.gender);
-
 					await MandatoAbertoAPI.postRecipient(context.state.politicianData.user_id, {
 						fb_id: context.session.user.id,
 						name: `${context.session.user.first_name} ${context.session.user.last_name}`,
