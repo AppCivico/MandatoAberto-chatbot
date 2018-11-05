@@ -80,7 +80,7 @@ module.exports = {
 		{
 			type: 'postback',
 			title: 'Agora não',
-			payload: 'recipientData',
+			payload: 'recipientDataNo',
 		},
 	],
 	recipientData_YesNo: [ // array with two options
@@ -92,7 +92,7 @@ module.exports = {
 		{
 			type: 'postback',
 			title: 'Não',
-			payload: 'recipientData',
+			payload: 'recipientDataNo',
 		},
 	],
 	votoLegal_participateOptions: [
@@ -114,9 +114,21 @@ module.exports = {
 	],
 	availableIntents: {
 		type: 'postback',
-		title: 'Temas',
+		title: 'Propostas',
 		payload: 'availableIntents',
 	},
+	themeEnd: [
+		{
+			content_type: 'text',
+			title: 'Ver mais propostas',
+			payload: 'availableIntents',
+		},
+		{
+			content_type: 'text',
+			title: 'Voltar para o menu',
+			payload: 'mainMenu',
+		},
+	],
 	frases_fallback: ['Essa resposta eu não tenho 🤔. Muito boa a sua pergunta! irei encaminhar para nosso time e já te respondo.',
 		'Uma pergunta nova 👏👏👏! Irei encaminhar para nossa equipe, que deve responder em breve.',
 		'Ainda não nos fizeram essa pergunta. Vamos descobrir a resposta 🤗 ! Vou encaminhar para nosso time.',

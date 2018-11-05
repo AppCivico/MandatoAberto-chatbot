@@ -73,3 +73,5 @@ typings/
 *.flac
 audio2.js
 *.vscode
+*.vstags
+.eslintrc.json
