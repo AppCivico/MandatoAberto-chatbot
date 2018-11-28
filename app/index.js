@@ -722,6 +722,8 @@ const handler = new MessengerHandler()
 						} else {
 							await context.setState({ answer: context.event.message.quick_reply.payload });
 						}
+						console.log('Cheguei aqui');
+
 						await MandatoAbertoAPI.postPollAnswer(context.session.user.id, context.state.answer, 'dialog');
 						await MandatoAbertoAPI.logAnsweredPoll(context.session.user.id, context.state.politicianData.user_id, context.state.answer);
 						await context.setState({ answer: '' });
