@@ -376,7 +376,7 @@ const handler = new MessengerHandler()
 	.onEvent(async (context) => { // eslint-disable-line
 		if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead && context.event.rawEvent.field !== 'feed') {
 			try {
-				console.log('teste2');
+				console.log('teste3');
 				
 
 				// console.log(await MandatoAbertoAPI.getLogAction()); // print possible log actions
