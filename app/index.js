@@ -35,6 +35,9 @@ function formatReal(int) {
 }
 
 const IssueTimerlimit = eval(process.env.ISSUE_TIMER_LIMIT); // 20 seconds -> listening to user doubts -> 1000 * 20 // eslint-disable-line
+
+console.log('IssueTimerlimit', IssueTimerlimit);
+
 const MenuTimerlimit = eval(process.env.MENU_TIMER_LIMIT); // 60 seconds -> waiting to show the initial menu -> 1000 * 60
 // const pollTimerlimit = 1000 * 60 * 60 * 2; // 2 hours -> waiting to send poll -> 1000 * 60 * 60 * 2
 
@@ -191,6 +194,7 @@ async function checkMenu(context, dialogs) { // eslint-disable-line
 			await dialogs.push(opt.talkToUs);
 		}
 	}
+
 
 	if (dialogs.find(x => x.payload === 'talkToUs') && context.state.politicianData.issue_active !== 1) { // filter talkToUs if issue is not active
 		dialogs = await dialogs.filter(obj => obj.payload !== 'talkToUs');
