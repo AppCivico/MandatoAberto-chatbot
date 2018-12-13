@@ -377,7 +377,7 @@ const handler = new MessengerHandler()
 		if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead && context.event.rawEvent.field !== 'feed') {
 			try {
 				console.log('teste3');
-				
+				console.log('Cheguei aqui');
 
 				// console.log(await MandatoAbertoAPI.getLogAction()); // print possible log actions
 				if (!context.state.dialog || context.state.dialog === '') { // because of the message that comes from the comment private-reply
@@ -725,7 +725,6 @@ const handler = new MessengerHandler()
 						} else {
 							await context.setState({ answer: context.event.message.quick_reply.payload });
 						}
-						console.log('Cheguei aqui');
 
 						await MandatoAbertoAPI.postPollAnswer(context.session.user.id, context.state.answer, 'dialog');
 						await MandatoAbertoAPI.logAnsweredPoll(context.session.user.id, context.state.politicianData.user_id, context.state.answer);
