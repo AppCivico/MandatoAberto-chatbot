@@ -903,7 +903,7 @@ const handler = new MessengerHandler()
 							dialog: 'prompt', dataPrompt: 'email', recipientData: '', participateTimer: '',
 						});
 						break;
-					case 'createIssue': // aka "talkToUs" // will only happen if user clicks on 'Fale Conosco'
+						case 'createIssue': // aka "talkToUs" // will only happen if user clicks on Fale Conosco/Deixe uma mensagem
 						await context.setState({ issueCreatedMessage: await loadIssueSent(context) }); // loading the confirmation message here
 
 						if (await listening[context.session.user.id] === true) { // if we are 'listening' we need to aggregate every message the user sends
@@ -943,7 +943,7 @@ const handler = new MessengerHandler()
 						// create new (or reset) timer for confirmation timer (will only be shown if user doesn't change dialog
 						postIssueTimers[context.session.user.id] = setTimeout(async () => {
 							if (!userMessages[context.session.user.id] || userMessages[context.session.user.id] === '') {
-								await context.sendButtonTemplate('Não tem nenhuma mensagem para nossa equipe? Se tiver, clique em "Fale Conosco" e escreva sua mensagem.',
+								await context.sendButtonTemplate('Não tem nenhuma mensagem para nossa equipe? Se tiver, clique em "Deixe uma mensagem" e escreva sua mensagem.',
 									await checkMenu(context, [opt.contacts, opt.participate, opt.talkToUs]));
 							} else {
 								await context.sendButtonTemplate(context.state.issueCreatedMessage,
@@ -965,8 +965,7 @@ const handler = new MessengerHandler()
 							await context.setState({ politicianCellPhone: context.state.politicianData.contact.cellphone.replace(/(?:\+55)+/g, '') });
 							await context.setState({ politicianCellPhone: context.state.politicianCellPhone.replace(/^(\d{2})/g, '($1)') });
 						}
-						await context.sendText('Você pode entrar em contato com } '
-								+ 'pelos seguintes canais:');
+							await context.sendText(`Você pode entrar em contato com ${await getArtigoCargoNome(context)} pelos seguintes canais:`);
 						if (context.state.politicianData.contact.email) {
 							await context.sendText(` - Através do e-mail: ${context.state.politicianData.contact.email}`);
 						}
