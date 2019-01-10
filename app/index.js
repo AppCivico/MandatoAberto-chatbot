@@ -943,7 +943,7 @@ const handler = new MessengerHandler()
 						// create new (or reset) timer for confirmation timer (will only be shown if user doesn't change dialog
 						postIssueTimers[context.session.user.id] = setTimeout(async () => {
 							if (!userMessages[context.session.user.id] || userMessages[context.session.user.id] === '') {
-								await context.sendButtonTemplate('Não tem nenhuma mensagem para nossa equipe? Se tiver, clique em "Deixe uma mensagem" e escreva sua mensagem.',
+								await context.sendButtonTemplate('Não tem nenhuma mensagem para nossa equipe? Se tiver, basta clicar em "Deixe sua Mensagem".',
 									await checkMenu(context, [opt.contacts, opt.participate, opt.talkToUs]));
 							} else {
 								await context.sendButtonTemplate(context.state.issueCreatedMessage,
