@@ -770,7 +770,7 @@ const handler = new MessengerHandler()
 									fb_id: context.session.user.id,
 									email: context.state.email,
 								});
-								await context.sendButtonTemplate('Legal, agora quer me informar seu telefone, para lhe manter informado sobre outras perguntas?', opt.recipientData_YesNo);
+								await context.sendButtonTemplate('Legal, agora você quer deixar seu telefone para te manter informado sobre o mandato?', opt.recipientData_YesNo);
 								await context.setState({ recipientData: 'cellphonePrompt', dialog: 'recipientData', dataPrompt: '' });
 								break;
 							case 'cellphone':
@@ -852,7 +852,8 @@ const handler = new MessengerHandler()
 						await context.setState({ dialog: 'prompt' });
 						break;
 					case 'participateMenu': // Participar
-						await context.setState({ participateText: 'Contamos com você! Veja como participar.\n' }); // getting the first part of the text
+							await context.setState({
+								participateText: 'Veja como participar do mandato e do dia a dia da Câmara dos Deputados.' }); // getting the first part of the text
 
 						if (context.state.politicianData.votolegal_integration && context.state.politicianData.votolegal_integration.votolegal_url) {
 							await context.setState({ participateTimer: 2500 }); // setting the wait time for the next message
@@ -886,7 +887,7 @@ const handler = new MessengerHandler()
 								await context.sendButtonTemplate(context.state.politicianData.share.text, [{
 									type: 'web_url',
 									url: context.state.politicianData.share.url,
-									title: 'Divulgar',
+									title: 'Acompanhar', // Divulgar
 								}]);
 							}, context.state.participateTimer);
 						}
@@ -990,7 +991,7 @@ const handler = new MessengerHandler()
 							// 	await checkMenu(context, [opt.trajectory, opt.contacts, opt.participate]));
 							await context.setState({ dialog: 'prompt' });
 						} else if (context.state.pollData && context.state.pollData.questions && context.state.pollData.questions[0] && context.state.pollData.questions[0].content) {
-							await context.sendText('Quero conhecer você melhor. Deixe sua resposta e participe deste debate.');
+							await context.sendText('Sua resposta é importante para nós, participe deste mandato!');
 							await context.sendText(`Pergunta: ${context.state.pollData.questions[0].content}`, {
 								quick_replies: [
 									{
