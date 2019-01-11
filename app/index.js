@@ -345,19 +345,19 @@ async function checkPosition(context) {
 		await context.setState({ dialog: 'createIssue' });
 		break;
 	case 'Pedido de emprego':
-		await context.sendText(pedidoAnswer);
+		await context.sendButtonTemplate(pedidoAnswer, await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
 		break;
 	case 'Pedido de produtos':
-		await context.sendText(pedidoAnswer);
+		await context.sendButtonTemplate(pedidoAnswer, await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
 		break;
 	case 'Pedido de assistência - saúde':
-		await context.sendText(pedidoAnswer);
+		await context.sendButtonTemplate(pedidoAnswer, await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
 		break;
 	case 'Pedido de assistência - previdência':
-		await context.sendText(pedidoAnswer);
+		await context.sendButtonTemplate(pedidoAnswer, await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
 		break;
 	case 'Pedido de assistência - jurídica':
-		await context.sendText(pedidoAnswer);
+		await context.sendButtonTemplate(pedidoAnswer, await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
 		break;
 	case 'Fallback': // didn't understand what was typed
 		if (await createIssue(context)) { await context.sendText(getRandom(opt.frases_fallback)); }
