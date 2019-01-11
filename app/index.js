@@ -400,9 +400,6 @@ const handler = new MessengerHandler()
 	.onEvent(async (context) => { // eslint-disable-line
 		if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead && context.event.rawEvent.field !== 'feed') {
 			try {
-				console.log('teste3');
-				console.log('Cheguei aqui');
-
 				// console.log(await MandatoAbertoAPI.getLogAction()); // print possible log actions
 				if (!context.state.dialog || context.state.dialog === '') { // because of the message that comes from the comment private-reply
 					await context.setState({ dialog: 'greetings' });
