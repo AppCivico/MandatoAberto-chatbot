@@ -342,6 +342,7 @@ async function checkPosition(context) {
 		delete userMessages[context.session.user.id]; // deleting last sent message (it was sent already)
 		await context.setState({ dialog: 'createIssue' });
 		break;
+
 	case 'Fallback': // didn't understand what was typed
 		if (await createIssue(context)) { await context.sendText(getRandom(opt.frases_fallback)); }
 		await sendMenu(context, await loadOptionPrompt(context), [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate, opt.availableIntents]);
@@ -916,7 +917,7 @@ const handler = new MessengerHandler()
 
 						// Conheça a Câmara
 						await context.sendButtonTemplate('O Poder Legislativo cumpre papel imprescindível: representar  o povo brasileiro, legislar sobre os assuntos '
-							+ 'de interesse nacional e fiscalizar a aplicação dos recursos públicos. Conheça a Câmara do Deputados e saiba as funções dos parlamentares.', [{
+							+ 'de interesse nacional e fiscalizar a aplicação dos recursos públicos. Conheça a Câmara dos Deputados e saiba as funções dos parlamentares.', [{
 							type: 'web_url',
 							url: 'http://www2.camara.leg.br/a-camara/conheca',
 							title: 'Conheça a Câmara',
