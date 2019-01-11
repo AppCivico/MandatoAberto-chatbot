@@ -25,8 +25,13 @@ module.exports = {
 	},
 
 	async postPollAnswer(fb_id, poll_question_option_id, origin) {
+		console.log('poll_question_option_id', poll_question_option_id);
+		console.log('origin', origin);
+
 		const res = await request.post(`${apiUri}/api/chatbot/poll-result?fb_id=${fb_id}&poll_question_option_id=${poll_question_option_id}&origin=${origin}&security_token=${security_token}`);
 		const pollAnswer = await res.json();
+		console.log('pollAnswer', pollAnswer);
+
 		return pollAnswer;
 	},
 

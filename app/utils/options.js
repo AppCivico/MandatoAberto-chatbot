@@ -6,22 +6,22 @@ module.exports = {
 	},
 	aboutPolitician: {
 		type: 'postback',
-		title: 'Saiba mais',
+		title: 'Nosso Mandato', // Saiba Mais
 		payload: 'aboutMe',
 	},
 	contacts: {
 		type: 'postback',
-		title: 'Contatos',
+		title: 'Fale com o Gabinete', // Contatos
 		payload: 'contacts',
 	},
 	trajectory: {
 		type: 'postback',
-		title: 'Trajetória',
+		title: 'Atuação na Câmara', // Trajetória
 		payload: 'trajectory',
 	},
 	participate: {
 		type: 'postback',
-		title: 'Participar',
+		title: 'Dia a Dia na Câmara', // Participar
 		payload: 'participateMenu',
 	},
 	goBackMainMenu: {
@@ -51,7 +51,7 @@ module.exports = {
 	},
 	talkToUs: {
 		type: 'postback',
-		title: 'Fale conosco',
+		title: 'Deixe uma mensagem', // Fale Conosco
 		payload: 'talkToUs',
 	},
 	keepWriting: {
