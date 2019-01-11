@@ -906,7 +906,22 @@ const handler = new MessengerHandler()
 							}]);
 						}
 
-						await help.waitTypingEffect(context, 100000);
+						// pauta do mês
+						await context.sendButtonTemplate('Este mês estamos atentos a reforma da previdência social.'
+							+ ' Recebemos muitas mensagens sobre o assunto e queremos esclarecer suas dúvidas.📣', [{
+							type: 'web_url',
+							url: 'https://www.politize.com.br/reforma-da-previdencia-entenda-os-principais-pontos/',
+							title: 'Previdência Social',
+						}]);
+
+						// Conheça a Câmara
+						await context.sendButtonTemplate('O Poder Legislativo cumpre papel imprescindível: representar  o povo brasileiro, legislar sobre os assuntos '
+							+ 'de interesse nacional e fiscalizar a aplicação dos recursos públicos. Conheça a Câmara do Deputados e saiba as funções dos parlamentares.', [{
+							type: 'web_url',
+							url: 'http://www2.camara.leg.br/a-camara/conheca',
+							title: 'Conheça a Câmara',
+						}]);
+
 
 						// // !timer -> only message (no waiting), timer === 1 -> second message (has to wait a little), timer === 2500 -> third message (waits for both messages)
 						// if (!context.state.participateTimer) { await context.setState({ participateTimer: 0 }); }
