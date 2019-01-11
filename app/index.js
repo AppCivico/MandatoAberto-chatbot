@@ -342,7 +342,21 @@ async function checkPosition(context) {
 		delete userMessages[context.session.user.id]; // deleting last sent message (it was sent already)
 		await context.setState({ dialog: 'createIssue' });
 		break;
-
+	case 'Pedido de emprego':
+		await context.sendText('Caimos no Pedido de emprego');
+		break;
+	case 'Pedido de produtos':
+		await context.sendText('Caimos no Pedido de produtos');
+		break;
+	case 'Pedido de assistência - saúde':
+		await context.sendText('Caimos no Pedido de assistência - saúde');
+		break;
+	case 'Pedido de assistência - previdência':
+		await context.sendText('Caimos no Pedido de assistência - previdência');
+		break;
+	case 'Pedido de assistência - jurídica':
+		await context.sendText('Caimos no Pedido de assistência - jurídica');
+		break;
 	case 'Fallback': // didn't understand what was typed
 		if (await createIssue(context)) { await context.sendText(getRandom(opt.frases_fallback)); }
 		await sendMenu(context, await loadOptionPrompt(context), [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate, opt.availableIntents]);
