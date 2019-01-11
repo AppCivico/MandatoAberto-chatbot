@@ -621,8 +621,6 @@ const handler = new MessengerHandler()
 												{ sessionId: context.session.user.id }),
 										});
 										await context.setState({ resultParameters: context.state.apiaiResp.result.parameters }); // getting the entities
-										console.log('result metadata');
-										console.log(JSON.stringify(context.state.apiaiResp.result.metadata, undefined, 2));
 										await context.setState({ intentName: context.state.apiaiResp.result.metadata.intentName }); // getting the intent
 										await checkPosition(context);
 									} else {
