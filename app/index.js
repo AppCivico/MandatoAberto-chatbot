@@ -8,7 +8,7 @@ const dialogFlow = require('apiai-promise');
 
 const config = require('./bottender.config.js').messenger;
 const MandatoAbertoAPI = require('./mandatoaberto_api.js');
-const VotoLegalAPI = require('./votolegal_api.js');
+const VotoLegalAPI = require('./votolegal_api.js'); // eslint-disable-line
 const Articles = require('./utils/articles.js');
 const opt = require('./utils/options');
 const dictionary = require('./utils/dictionary');
@@ -16,17 +16,17 @@ const audio = require('./utils/audio');
 const attach = require('./attach');
 const { createIssue } = require('./send_issue');
 const { Sentry } = require('./utils/helper');
-const { formatString } = require('./utils/helper');
+const help = require('./utils/helper');
 
 const apiai = dialogFlow(process.env.DIALOGFLOW_TOKEN);
 
 const phoneRegex = new RegExp(/^(?:(?:\+|00)?(55)\s?)?(?:\(?([1-9][0-9])\)?\s?)?(?:((?:9\d|[2-9])\d{3})-?(\d{4}))$/);
 // const phoneRegex = new RegExp(/^\+55\d{2}(\d{1})?\d{8}$/);
 
-function getMoney(str) {
+function getMoney(str) { // eslint-disable-line
 	return parseInt(str.replace(/[\D]+/g, ''), 0);
 }
-function formatReal(int) {
+function formatReal(int) { // eslint-disable-line
 	let tmp = `${int}`;
 	tmp = tmp.replace(/([0-9]{2})$/g, ',$1');
 	if (tmp.length > 6) {
@@ -602,7 +602,7 @@ const handler = new MessengerHandler()
 								if (context.state.politicianData.use_dialogflow === 1) { // check if politician is using dialogFlow
 									if (context.state.whatWasTyped.length <= 255) { // check if message is short enough for apiai
 										await context.setState({
-											apiaiResp: await apiai.textRequest(await formatString(context.state.whatWasTyped),
+											apiaiResp: await apiai.textRequest(await help.formatString(context.state.whatWasTyped),
 												{ sessionId: context.session.user.id }),
 										});
 										await context.setState({ resultParameters: context.state.apiaiResp.result.parameters }); // getting the entities
@@ -862,50 +862,61 @@ const handler = new MessengerHandler()
 					case 'participateMenu': // Participar
 						await context.setState({ participateText: 'Veja como participar do mandato e do dia a dia da Câmara dos Deputados.' }); // getting the first part of the text
 
-						if (context.state.politicianData.votolegal_integration && context.state.politicianData.votolegal_integration.votolegal_url) {
-							await context.setState({ participateTimer: 2500 }); // setting the wait time for the next message
-							// check if politician is on votoLegal so we can info and option
-							// if referral.source(CUSTOMER_CHAT_PLUGIN) exists we are outside facebook and shouldn't send votolegal's url
-							if ((context.event.rawEvent.postback && context.event.rawEvent.postback.referral) || (context.event.rawEvent.message && context.event.rawEvent.message.tags
-									&& context.event.rawEvent.message.tags.source && context.event.rawEvent.message.tags.source === 'customer_chat_plugin')) {
-								await context.sendText(`${context.state.participateText}Você já está na nossa página para doar.`);
-								await context.sendText('Seu apoio é fundamental para nossa campanha!');
-							} else {
-								await context.setState({ valueLegal: await VotoLegalAPI.getVotoLegalValues(context.state.politicianData.votolegal_integration.votolegal_username) });
-								await context.setState({
-									participateText: `${context.state.participateText}Já consegui R$${formatReal(context.state.valueLegal.candidate.total_donated)} da minha meta de `
-											+ `R$${formatReal(getMoney(context.state.valueLegal.candidate.raising_goal))}.`,
-								});
-								await context.sendButtonTemplate(`${context.state.participateText} Apoie nossa campanha de arrecadação.`, [{
-									type: 'web_url',
-									url: `${context.state.politicianData.votolegal_integration.votolegal_url}`,
-									title: 'Quero doar!',
-								}]);
-							}
-						} else { // if politician doesn't have votoLegal
-							await context.sendText(context.state.participateText);
-						}
+						// if (context.state.politicianData.votolegal_integration && context.state.politicianData.votolegal_integration.votolegal_url) {
+						// 	await context.setState({ participateTimer: 2500 }); // setting the wait time for the next message
+						// 	// check if politician is on votoLegal so we can info and option
+						// 	// if referral.source(CUSTOMER_CHAT_PLUGIN) exists we are outside facebook and shouldn't send votolegal's url
+						// 	if ((context.event.rawEvent.postback && context.event.rawEvent.postback.referral) || (context.event.rawEvent.message && context.event.rawEvent.message.tags
+						// 			&& context.event.rawEvent.message.tags.source && context.event.rawEvent.message.tags.source === 'customer_chat_plugin')) {
+						// 		await context.sendText(`${context.state.participateText}Você já está na nossa página para doar.`);
+						// 		await context.sendText('Seu apoio é fundamental para nossa campanha!');
+						// 	} else {
+						// 		await context.setState({ valueLegal: await VotoLegalAPI.getVotoLegalValues(context.state.politicianData.votolegal_integration.votolegal_username) });
+						// 		await context.setState({
+						// 			participateText: `${context.state.participateText}Já consegui R$${formatReal(context.state.valueLegal.candidate.total_donated)} da minha meta de `
+						// 					+ `R$${formatReal(getMoney(context.state.valueLegal.candidate.raising_goal))}.`,
+						// 		});
+						// 		await context.sendButtonTemplate(`${context.state.participateText} Apoie nossa campanha de arrecadação.`, [{
+						// 			type: 'web_url',
+						// 			url: `${context.state.politicianData.votolegal_integration.votolegal_url}`,
+						// 			title: 'Quero doar!',
+						// 		}]);
+						// 	}
+						// } else { // if politician doesn't have votoLegal
+						// 	await context.sendText(context.state.participateText); // VotoLegal is turned off
+						// }
+
+						await context.sendText(context.state.participateText);
 						await context.typingOn();
 						// check if there is a share obj so we can show the option
 						if (context.state.politicianData.share && context.state.politicianData.share.url && context.state.politicianData.share.text) {
 							// if it exists, we showed the first option, so we have to wait before sending this one. If not, this will be the first msg, we can show it right away.
-							await context.setState({ participateTimer: context.state.participateTimer ? context.state.participateTimer : 1 });
-							setTimeout(async () => { // adding a timer to wait a little bit between each message
-								await context.sendButtonTemplate(context.state.politicianData.share.text, [{
-									type: 'web_url',
-									url: context.state.politicianData.share.url,
-									title: 'Acompanhar', // Divulgar
-								}]);
-							}, context.state.participateTimer);
+							// await context.setState({ participateTimer: context.state.participateTimer ? context.state.participateTimer : 1 });
+							// setTimeout(async () => { // adding a timer to wait a little bit between each message
+							// 	await context.sendButtonTemplate(context.state.politicianData.share.text, [{
+							// 		type: 'web_url',
+							// 		url: context.state.politicianData.share.url,
+							// 		title: 'Acompanhar', // Divulgar
+							// 	}]);
+							// }, context.state.participateTimer);
+							await context.sendButtonTemplate(context.state.politicianData.share.text, [{
+								type: 'web_url',
+								url: context.state.politicianData.share.url,
+								title: 'Acompanhar', // Divulgar
+							}]);
 						}
-						// !timer -> only message (no waiting), timer === 1 -> second message (has to wait a little), timer === 2500 -> third message (waits for both messages)
-						if (!context.state.participateTimer) { await context.setState({ participateTimer: 0 }); }
 
-						setTimeout(async () => { // adding a timer to wait a little bit between each message
-							await context.sendButtonTemplate('Deixe seus contatos para nossa equipe.', [opt.leaveInfo, opt.backToBeginning]);
-							await context.typingOff();
-						}, context.state.participateTimer === 1 ? 2500 : context.state.participateTimer * 2);
+						help.waitTypingEffect(context);
 
+						// // !timer -> only message (no waiting), timer === 1 -> second message (has to wait a little), timer === 2500 -> third message (waits for both messages)
+						// if (!context.state.participateTimer) { await context.setState({ participateTimer: 0 }); }
+
+						// setTimeout(async () => { // adding a timer to wait a little bit between each message
+						// 	await context.sendButtonTemplate('Deixe seus contatos para nossa equipe.', [opt.leaveInfo, opt.backToBeginning]);
+						// 	await context.typingOff();
+						// }, context.state.participateTimer === 1 ? 2500 : context.state.participateTimer * 2);
+
+						await context.sendButtonTemplate('Deixe seus contatos para nossa equipe.', [opt.leaveInfo, opt.backToBeginning]);
 						await context.setState({
 							dialog: 'prompt', dataPrompt: 'email', recipientData: '', participateTimer: '',
 						});

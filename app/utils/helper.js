@@ -15,4 +15,15 @@ async function formatString(text) {
 	}
 	return result.trim();
 }
+
+async function waitTypingEffect(context, waitTime = 2500) {
+	await context.typingOn();
+	setTimeout(async () => {
+		await context.typingOff();
+	}, waitTime);
+}
+
+
+module.exports.Sentry = Sentry;
 module.exports.formatString = formatString;
+module.exports.waitTypingEffect = waitTypingEffect;
