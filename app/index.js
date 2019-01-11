@@ -61,6 +61,8 @@ const listening = {};
 let areWeListening = true; // eslint-disable-line
 // areWeListening -> user.state.areWeListening(doesn't work) -> diferenciates messages that come from the standard flow and messages from comment/post
 
+const pedidoAnswer = 'Infelizmente, o Deputado não pode atender o pedido, pois estaria agindo contra a lei. Mas, podemos ajudá-lo de outras maneiras. Faça sua pergunta ou envie uma mensagem.';
+
 function getRandom(myArray) { return myArray[Math.floor(Math.random() * myArray.length)]; }
 
 const mapPageToAccessToken = async (pageId) => {
@@ -343,19 +345,19 @@ async function checkPosition(context) {
 		await context.setState({ dialog: 'createIssue' });
 		break;
 	case 'Pedido de emprego':
-		await context.sendText('Caimos no Pedido de emprego');
+		await context.sendText(pedidoAnswer);
 		break;
 	case 'Pedido de produtos':
-		await context.sendText('Caimos no Pedido de produtos');
+		await context.sendText(pedidoAnswer);
 		break;
 	case 'Pedido de assistência - saúde':
-		await context.sendText('Caimos no Pedido de assistência - saúde');
+		await context.sendText(pedidoAnswer);
 		break;
 	case 'Pedido de assistência - previdência':
-		await context.sendText('Caimos no Pedido de assistência - previdência');
+		await context.sendText(pedidoAnswer);
 		break;
 	case 'Pedido de assistência - jurídica':
-		await context.sendText('Caimos no Pedido de assistência - jurídica');
+		await context.sendText(pedidoAnswer);
 		break;
 	case 'Fallback': // didn't understand what was typed
 		if (await createIssue(context)) { await context.sendText(getRandom(opt.frases_fallback)); }
