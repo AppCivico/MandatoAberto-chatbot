@@ -35,11 +35,13 @@ function formatReal(int) {
 	return tmp;
 }
 
-const IssueTimerlimit = eval(process.env.ISSUE_TIMER_LIMIT); // 20 seconds -> listening to user doubts -> 1000 * 20 // eslint-disable-line
+// 20 seconds -> listening to user doubts -> 1000 * 20
+const IssueTimerlimit = eval(process.env.ISSUE_TIMER_LIMIT); // eslint-disable-line
 
 console.log('IssueTimerlimit', IssueTimerlimit);
 
-const MenuTimerlimit = eval(process.env.MENU_TIMER_LIMIT); // 60 seconds -> waiting to show the initial menu -> 1000 * 60
+// 60 seconds -> waiting to show the initial menu -> 1000 * 60
+const MenuTimerlimit = eval(process.env.MENU_TIMER_LIMIT); // eslint-disable-line
 // const pollTimerlimit = 1000 * 60 * 60 * 2; // 2 hours -> waiting to send poll -> 1000 * 60 * 60 * 2
 
 const issueTimers = {};
@@ -294,7 +296,7 @@ async function checkTypes(entities, knowdlege) {
 	// }
 
 	if (await Array.isArray(entities) === true) {
-		entities = entities[0];
+		entities = entities[0]; // eslint-disable-line
 	}
 
 	if (entities && entities !== '') { // string exists and isn't empty, this is the type the user asked
@@ -599,7 +601,10 @@ const handler = new MessengerHandler()
 								// } else
 								if (context.state.politicianData.use_dialogflow === 1) { // check if politician is using dialogFlow
 									if (context.state.whatWasTyped.length <= 255) { // check if message is short enough for apiai
-										await context.setState({ apiaiResp: await apiai.textRequest( await formatString(context.state.whatWasTyped), { sessionId: context.session.user.id }) });
+										await context.setState({
+											apiaiResp: await apiai.textRequest(await formatString(context.state.whatWasTyped),
+												{ sessionId: context.session.user.id }),
+										});
 										await context.setState({ resultParameters: context.state.apiaiResp.result.parameters }); // getting the entities
 										await context.setState({ intentName: context.state.apiaiResp.result.metadata.intentName }); // getting the intent
 										await checkPosition(context);
@@ -645,14 +650,14 @@ const handler = new MessengerHandler()
 					let comment_id;
 					let permalink;
 					// let introduction;
-					const post_id = context.event.rawEvent.value.post_id;
+					const post_id = context.event.rawEvent.value.post_id; // eslint-disable-line
 					const page_id = post_id.substr(0, post_id.indexOf('_'));
 					const user_id = context.event.rawEvent.value.from.id;
 					areWeListening = false;
 					switch (context.event.rawEvent.value.item) {
 					case 'comment':
 						item = 'comment';
-						comment_id = context.event.rawEvent.value.comment_id;
+							comment_id = context.event.rawEvent.value.comment_id; // eslint-disable-line
 						permalink = context.event.rawEvent.value.post.permalink_url;
 						await MandatoAbertoAPI.postPrivateReply(item, page_id, post_id, comment_id, permalink, user_id);
 						break;
@@ -738,7 +743,7 @@ const handler = new MessengerHandler()
 						await context.setState({ answer: '' });
 					} else if (context.event.isQuickReply && context.event.message.quick_reply.payload && context.event.message.quick_reply.payload.includes('pollAnswerPropagate')) {
 						// Tratando resposta da enquete através de propagação
-						const payload = context.event.message.quick_reply.payload;
+						const payload = context.event.message.quick_reply.payload; // eslint-disable-line
 						const poll_question_option_id = payload.substr(payload.indexOf('_') + 1, payload.length);
 						await MandatoAbertoAPI.postPollAnswer(context.session.user.id, poll_question_option_id, 'propagate');
 						await context.setState({ dialog: 'pollAnswer' });
@@ -855,8 +860,7 @@ const handler = new MessengerHandler()
 						await context.setState({ dialog: 'prompt' });
 						break;
 					case 'participateMenu': // Participar
-							await context.setState({
-								participateText: 'Veja como participar do mandato e do dia a dia da Câmara dos Deputados.' }); // getting the first part of the text
+						await context.setState({ participateText: 'Veja como participar do mandato e do dia a dia da Câmara dos Deputados.' }); // getting the first part of the text
 
 						if (context.state.politicianData.votolegal_integration && context.state.politicianData.votolegal_integration.votolegal_url) {
 							await context.setState({ participateTimer: 2500 }); // setting the wait time for the next message
@@ -906,7 +910,7 @@ const handler = new MessengerHandler()
 							dialog: 'prompt', dataPrompt: 'email', recipientData: '', participateTimer: '',
 						});
 						break;
-						case 'createIssue': // aka "talkToUs" // will only happen if user clicks on Fale Conosco/Deixe uma mensagem
+					case 'createIssue': // aka "talkToUs" // will only happen if user clicks on Fale Conosco/Deixe uma mensagem
 						await context.setState({ issueCreatedMessage: await loadIssueSent(context) }); // loading the confirmation message here
 
 						if (await listening[context.session.user.id] === true) { // if we are 'listening' we need to aggregate every message the user sends
@@ -968,7 +972,7 @@ const handler = new MessengerHandler()
 							await context.setState({ politicianCellPhone: context.state.politicianData.contact.cellphone.replace(/(?:\+55)+/g, '') });
 							await context.setState({ politicianCellPhone: context.state.politicianCellPhone.replace(/^(\d{2})/g, '($1)') });
 						}
-							await context.sendText(`Você pode entrar em contato com ${await getArtigoCargoNome(context)} pelos seguintes canais:`);
+						await context.sendText(`Você pode entrar em contato com ${await getArtigoCargoNome(context)} pelos seguintes canais:`);
 						if (context.state.politicianData.contact.email) {
 							await context.sendText(` - Através do e-mail: ${context.state.politicianData.contact.email}`);
 						}

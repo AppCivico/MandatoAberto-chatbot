@@ -1,3 +1,4 @@
+const accents = require('remove-accents');
 const Sentry = require('@sentry/node');
 
 Sentry.init({
