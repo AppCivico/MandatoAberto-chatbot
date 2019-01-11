@@ -16,6 +16,7 @@ const audio = require('./utils/audio');
 const attach = require('./attach');
 const { createIssue } = require('./send_issue');
 const { Sentry } = require('./utils/helper');
+const { formatString } = require('./utils/helper');
 
 const apiai = dialogFlow(process.env.DIALOGFLOW_TOKEN);
 
@@ -423,7 +424,8 @@ const handler = new MessengerHandler()
 								if (context.state.currentTheme && (context.state.currentTheme.answer
 									|| (context.state.currentTheme.saved_attachment_type !== null && context.state.currentTheme.saved_attachment_id !== null))) {
 									if (context.state.currentTheme.answer) { // if there's a text asnwer we send it
-										await context.sendText(`${capitalize(context.state.types[context.state.number])}: ${context.state.currentTheme.answer}`);
+										// await context.sendText(`${capitalize(context.state.types[context.state.number])}: ${context.state.currentTheme.answer}`);
+										await context.sendText(`${context.state.currentTheme.answer}`);
 									}
 									if (context.state.currentTheme.saved_attachment_type === 'image') { // if attachment is image
 										await context.sendImage({ attachment_id: context.state.currentTheme.saved_attachment_id });
@@ -515,7 +517,8 @@ const handler = new MessengerHandler()
 								if (context.state.currentTheme && (context.state.currentTheme.answer
 									|| (context.state.currentTheme.saved_attachment_type !== null && context.state.currentTheme.saved_attachment_id !== null))) {
 									if (context.state.currentTheme.answer) { // if there's a text asnwer we send it
-										await context.sendText(`${capitalize(context.state.types[context.state.number])}: ${context.state.currentTheme.answer}`);
+										// await context.sendText(`${capitalize(context.state.types[context.state.number])}: ${context.state.currentTheme.answer}`);
+										await context.sendText(`${context.state.currentTheme.answer}`);
 									}
 									if (context.state.currentTheme.saved_attachment_type === 'image') { // if attachment is image
 										await context.sendImage({ attachment_id: context.state.currentTheme.saved_attachment_id });
@@ -596,7 +599,7 @@ const handler = new MessengerHandler()
 								// } else
 								if (context.state.politicianData.use_dialogflow === 1) { // check if politician is using dialogFlow
 									if (context.state.whatWasTyped.length <= 255) { // check if message is short enough for apiai
-										await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
+										await context.setState({ apiaiResp: await apiai.textRequest( await formatString(context.state.whatWasTyped), { sessionId: context.session.user.id }) });
 										await context.setState({ resultParameters: context.state.apiaiResp.result.parameters }); // getting the entities
 										await context.setState({ intentName: context.state.apiaiResp.result.metadata.intentName }); // getting the intent
 										await checkPosition(context);
