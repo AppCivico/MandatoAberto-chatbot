@@ -906,7 +906,7 @@ const handler = new MessengerHandler()
 							}]);
 						}
 
-						help.waitTypingEffect(context);
+						help.waitTypingEffect(context, 100000);
 
 						// // !timer -> only message (no waiting), timer === 1 -> second message (has to wait a little), timer === 2500 -> third message (waits for both messages)
 						// if (!context.state.participateTimer) { await context.setState({ participateTimer: 0 }); }
