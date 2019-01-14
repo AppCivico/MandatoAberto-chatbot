@@ -8,7 +8,7 @@ const dialogFlow = require('apiai-promise');
 
 const config = require('./bottender.config.js').messenger;
 const MandatoAbertoAPI = require('./mandatoaberto_api.js');
-const VotoLegalAPI = require('./votolegal_api.js');
+const VotoLegalAPI = require('./votolegal_api.js'); // eslint-disable-line
 const Articles = require('./utils/articles.js');
 const opt = require('./utils/options');
 const dictionary = require('./utils/dictionary');
@@ -16,16 +16,17 @@ const audio = require('./utils/audio');
 const attach = require('./attach');
 const { createIssue } = require('./send_issue');
 const { Sentry } = require('./utils/helper');
+const help = require('./utils/helper');
 
 const apiai = dialogFlow(process.env.DIALOGFLOW_TOKEN);
 
 const phoneRegex = new RegExp(/^(?:(?:\+|00)?(55)\s?)?(?:\(?([1-9][0-9])\)?\s?)?(?:((?:9\d|[2-9])\d{3})-?(\d{4}))$/);
 // const phoneRegex = new RegExp(/^\+55\d{2}(\d{1})?\d{8}$/);
 
-function getMoney(str) {
+function getMoney(str) { // eslint-disable-line
 	return parseInt(str.replace(/[\D]+/g, ''), 0);
 }
-function formatReal(int) {
+function formatReal(int) { // eslint-disable-line
 	let tmp = `${int}`;
 	tmp = tmp.replace(/([0-9]{2})$/g, ',$1');
 	if (tmp.length > 6) {
@@ -34,11 +35,13 @@ function formatReal(int) {
 	return tmp;
 }
 
-const IssueTimerlimit = eval(process.env.ISSUE_TIMER_LIMIT); // 20 seconds -> listening to user doubts -> 1000 * 20 // eslint-disable-line
+// 20 seconds -> listening to user doubts -> 1000 * 20
+const IssueTimerlimit = eval(process.env.ISSUE_TIMER_LIMIT); // eslint-disable-line
 
 console.log('IssueTimerlimit', IssueTimerlimit);
 
-const MenuTimerlimit = eval(process.env.MENU_TIMER_LIMIT); // 60 seconds -> waiting to show the initial menu -> 1000 * 60
+// 60 seconds -> waiting to show the initial menu -> 1000 * 60
+const MenuTimerlimit = eval(process.env.MENU_TIMER_LIMIT); // eslint-disable-line
 // const pollTimerlimit = 1000 * 60 * 60 * 2; // 2 hours -> waiting to send poll -> 1000 * 60 * 60 * 2
 
 const issueTimers = {};
@@ -57,6 +60,8 @@ const listening = {};
 // listening = true -> verifies if we should aggregate text on userMessages
 let areWeListening = true; // eslint-disable-line
 // areWeListening -> user.state.areWeListening(doesn't work) -> diferenciates messages that come from the standard flow and messages from comment/post
+
+const pedidoAnswer = 'Infelizmente, o Deputado não pode atender o pedido, pois estaria agindo contra a lei. Mas, podemos ajudá-lo de outras maneiras. Faça sua pergunta ou envie uma mensagem.';
 
 function getRandom(myArray) { return myArray[Math.floor(Math.random() * myArray.length)]; }
 
@@ -293,7 +298,7 @@ async function checkTypes(entities, knowdlege) {
 	// }
 
 	if (await Array.isArray(entities) === true) {
-		entities = entities[0];
+		entities = entities[0]; // eslint-disable-line
 	}
 
 	if (entities && entities !== '') { // string exists and isn't empty, this is the type the user asked
@@ -339,6 +344,21 @@ async function checkPosition(context) {
 		delete userMessages[context.session.user.id]; // deleting last sent message (it was sent already)
 		await context.setState({ dialog: 'createIssue' });
 		break;
+	case 'Pedido de emprego':
+		await context.sendButtonTemplate(pedidoAnswer, await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
+		break;
+	case 'Pedido de produtos':
+		await context.sendButtonTemplate(pedidoAnswer, await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
+		break;
+	case 'Pedido de assistência - saúde':
+		await context.sendButtonTemplate(pedidoAnswer, await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
+		break;
+	case 'Pedido de assistência - previdência':
+		await context.sendButtonTemplate(pedidoAnswer, await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
+		break;
+	case 'Pedido de assistência - jurídica':
+		await context.sendButtonTemplate(pedidoAnswer, await checkMenu(context, [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate]));
+		break;
 	case 'Fallback': // didn't understand what was typed
 		if (await createIssue(context)) { await context.sendText(getRandom(opt.frases_fallback)); }
 		await sendMenu(context, await loadOptionPrompt(context), [opt.aboutPolitician, opt.poll_suaOpiniao, opt.participate, opt.availableIntents]);
@@ -380,9 +400,6 @@ const handler = new MessengerHandler()
 	.onEvent(async (context) => { // eslint-disable-line
 		if (!context.event.isDelivery && !context.event.isEcho && !context.event.isRead && context.event.rawEvent.field !== 'feed') {
 			try {
-				console.log('teste3');
-				console.log('Cheguei aqui');
-
 				// console.log(await MandatoAbertoAPI.getLogAction()); // print possible log actions
 				if (!context.state.dialog || context.state.dialog === '') { // because of the message that comes from the comment private-reply
 					await context.setState({ dialog: 'greetings' });
@@ -423,7 +440,8 @@ const handler = new MessengerHandler()
 								if (context.state.currentTheme && (context.state.currentTheme.answer
 									|| (context.state.currentTheme.saved_attachment_type !== null && context.state.currentTheme.saved_attachment_id !== null))) {
 									if (context.state.currentTheme.answer) { // if there's a text asnwer we send it
-										await context.sendText(`${capitalize(context.state.types[context.state.number])}: ${context.state.currentTheme.answer}`);
+										// await context.sendText(`${capitalize(context.state.types[context.state.number])}: ${context.state.currentTheme.answer}`);
+										await context.sendText(`${context.state.currentTheme.answer}`);
 									}
 									if (context.state.currentTheme.saved_attachment_type === 'image') { // if attachment is image
 										await context.sendImage({ attachment_id: context.state.currentTheme.saved_attachment_id });
@@ -515,7 +533,8 @@ const handler = new MessengerHandler()
 								if (context.state.currentTheme && (context.state.currentTheme.answer
 									|| (context.state.currentTheme.saved_attachment_type !== null && context.state.currentTheme.saved_attachment_id !== null))) {
 									if (context.state.currentTheme.answer) { // if there's a text asnwer we send it
-										await context.sendText(`${capitalize(context.state.types[context.state.number])}: ${context.state.currentTheme.answer}`);
+										// await context.sendText(`${capitalize(context.state.types[context.state.number])}: ${context.state.currentTheme.answer}`);
+										await context.sendText(`${context.state.currentTheme.answer}`);
 									}
 									if (context.state.currentTheme.saved_attachment_type === 'image') { // if attachment is image
 										await context.sendImage({ attachment_id: context.state.currentTheme.saved_attachment_id });
@@ -596,7 +615,10 @@ const handler = new MessengerHandler()
 								// } else
 								if (context.state.politicianData.use_dialogflow === 1) { // check if politician is using dialogFlow
 									if (context.state.whatWasTyped.length <= 255) { // check if message is short enough for apiai
-										await context.setState({ apiaiResp: await apiai.textRequest(context.state.whatWasTyped, { sessionId: context.session.user.id }) });
+										await context.setState({
+											apiaiResp: await apiai.textRequest(await help.formatString(context.state.whatWasTyped),
+												{ sessionId: context.session.user.id }),
+										});
 										await context.setState({ resultParameters: context.state.apiaiResp.result.parameters }); // getting the entities
 										await context.setState({ intentName: context.state.apiaiResp.result.metadata.intentName }); // getting the intent
 										await checkPosition(context);
@@ -642,14 +664,14 @@ const handler = new MessengerHandler()
 					let comment_id;
 					let permalink;
 					// let introduction;
-					const post_id = context.event.rawEvent.value.post_id;
+					const post_id = context.event.rawEvent.value.post_id; // eslint-disable-line
 					const page_id = post_id.substr(0, post_id.indexOf('_'));
 					const user_id = context.event.rawEvent.value.from.id;
 					areWeListening = false;
 					switch (context.event.rawEvent.value.item) {
 					case 'comment':
 						item = 'comment';
-						comment_id = context.event.rawEvent.value.comment_id;
+							comment_id = context.event.rawEvent.value.comment_id; // eslint-disable-line
 						permalink = context.event.rawEvent.value.post.permalink_url;
 						await MandatoAbertoAPI.postPrivateReply(item, page_id, post_id, comment_id, permalink, user_id);
 						break;
@@ -735,7 +757,7 @@ const handler = new MessengerHandler()
 						await context.setState({ answer: '' });
 					} else if (context.event.isQuickReply && context.event.message.quick_reply.payload && context.event.message.quick_reply.payload.includes('pollAnswerPropagate')) {
 						// Tratando resposta da enquete através de propagação
-						const payload = context.event.message.quick_reply.payload;
+						const payload = context.event.message.quick_reply.payload; // eslint-disable-line
 						const poll_question_option_id = payload.substr(payload.indexOf('_') + 1, payload.length);
 						await MandatoAbertoAPI.postPollAnswer(context.session.user.id, poll_question_option_id, 'propagate');
 						await context.setState({ dialog: 'pollAnswer' });
@@ -852,58 +874,83 @@ const handler = new MessengerHandler()
 						await context.setState({ dialog: 'prompt' });
 						break;
 					case 'participateMenu': // Participar
-							await context.setState({
-								participateText: 'Veja como participar do mandato e do dia a dia da Câmara dos Deputados.' }); // getting the first part of the text
+						await context.setState({ participateText: 'Veja como participar do mandato e do dia a dia da Câmara dos Deputados.' }); // getting the first part of the text
 
-						if (context.state.politicianData.votolegal_integration && context.state.politicianData.votolegal_integration.votolegal_url) {
-							await context.setState({ participateTimer: 2500 }); // setting the wait time for the next message
-							// check if politician is on votoLegal so we can info and option
-							// if referral.source(CUSTOMER_CHAT_PLUGIN) exists we are outside facebook and shouldn't send votolegal's url
-							if ((context.event.rawEvent.postback && context.event.rawEvent.postback.referral) || (context.event.rawEvent.message && context.event.rawEvent.message.tags
-									&& context.event.rawEvent.message.tags.source && context.event.rawEvent.message.tags.source === 'customer_chat_plugin')) {
-								await context.sendText(`${context.state.participateText}Você já está na nossa página para doar.`);
-								await context.sendText('Seu apoio é fundamental para nossa campanha!');
-							} else {
-								await context.setState({ valueLegal: await VotoLegalAPI.getVotoLegalValues(context.state.politicianData.votolegal_integration.votolegal_username) });
-								await context.setState({
-									participateText: `${context.state.participateText}Já consegui R$${formatReal(context.state.valueLegal.candidate.total_donated)} da minha meta de `
-											+ `R$${formatReal(getMoney(context.state.valueLegal.candidate.raising_goal))}.`,
-								});
-								await context.sendButtonTemplate(`${context.state.participateText} Apoie nossa campanha de arrecadação.`, [{
-									type: 'web_url',
-									url: `${context.state.politicianData.votolegal_integration.votolegal_url}`,
-									title: 'Quero doar!',
-								}]);
-							}
-						} else { // if politician doesn't have votoLegal
-							await context.sendText(context.state.participateText);
-						}
+						// if (context.state.politicianData.votolegal_integration && context.state.politicianData.votolegal_integration.votolegal_url) {
+						// 	await context.setState({ participateTimer: 2500 }); // setting the wait time for the next message
+						// 	// check if politician is on votoLegal so we can info and option
+						// 	// if referral.source(CUSTOMER_CHAT_PLUGIN) exists we are outside facebook and shouldn't send votolegal's url
+						// 	if ((context.event.rawEvent.postback && context.event.rawEvent.postback.referral) || (context.event.rawEvent.message && context.event.rawEvent.message.tags
+						// 			&& context.event.rawEvent.message.tags.source && context.event.rawEvent.message.tags.source === 'customer_chat_plugin')) {
+						// 		await context.sendText(`${context.state.participateText}Você já está na nossa página para doar.`);
+						// 		await context.sendText('Seu apoio é fundamental para nossa campanha!');
+						// 	} else {
+						// 		await context.setState({ valueLegal: await VotoLegalAPI.getVotoLegalValues(context.state.politicianData.votolegal_integration.votolegal_username) });
+						// 		await context.setState({
+						// 			participateText: `${context.state.participateText}Já consegui R$${formatReal(context.state.valueLegal.candidate.total_donated)} da minha meta de `
+						// 					+ `R$${formatReal(getMoney(context.state.valueLegal.candidate.raising_goal))}.`,
+						// 		});
+						// 		await context.sendButtonTemplate(`${context.state.participateText} Apoie nossa campanha de arrecadação.`, [{
+						// 			type: 'web_url',
+						// 			url: `${context.state.politicianData.votolegal_integration.votolegal_url}`,
+						// 			title: 'Quero doar!',
+						// 		}]);
+						// 	}
+						// } else { // if politician doesn't have votoLegal
+						// 	await context.sendText(context.state.participateText); // VotoLegal is turned off
+						// }
+
+						await context.sendText(context.state.participateText);
 						await context.typingOn();
 						// check if there is a share obj so we can show the option
 						if (context.state.politicianData.share && context.state.politicianData.share.url && context.state.politicianData.share.text) {
 							// if it exists, we showed the first option, so we have to wait before sending this one. If not, this will be the first msg, we can show it right away.
-							await context.setState({ participateTimer: context.state.participateTimer ? context.state.participateTimer : 1 });
-							setTimeout(async () => { // adding a timer to wait a little bit between each message
-								await context.sendButtonTemplate(context.state.politicianData.share.text, [{
-									type: 'web_url',
-									url: context.state.politicianData.share.url,
-									title: 'Acompanhar', // Divulgar
-								}]);
-							}, context.state.participateTimer);
+							// await context.setState({ participateTimer: context.state.participateTimer ? context.state.participateTimer : 1 });
+							// setTimeout(async () => { // adding a timer to wait a little bit between each message
+							// 	await context.sendButtonTemplate(context.state.politicianData.share.text, [{
+							// 		type: 'web_url',
+							// 		url: context.state.politicianData.share.url,
+							// 		title: 'Acompanhar', // Divulgar
+							// 	}]);
+							// }, context.state.participateTimer);
+							await context.sendButtonTemplate(context.state.politicianData.share.text, [{
+								type: 'web_url',
+								url: context.state.politicianData.share.url,
+								title: 'Acompanhar', // Divulgar
+							}]);
 						}
-						// !timer -> only message (no waiting), timer === 1 -> second message (has to wait a little), timer === 2500 -> third message (waits for both messages)
-						if (!context.state.participateTimer) { await context.setState({ participateTimer: 0 }); }
 
-						setTimeout(async () => { // adding a timer to wait a little bit between each message
-							await context.sendButtonTemplate('Deixe seus contatos para nossa equipe.', [opt.leaveInfo, opt.backToBeginning]);
-							await context.typingOff();
-						}, context.state.participateTimer === 1 ? 2500 : context.state.participateTimer * 2);
+						// pauta do mês
+						await context.sendButtonTemplate('Este mês estamos atentos a reforma da previdência social.'
+							+ ' Recebemos muitas mensagens sobre o assunto e queremos esclarecer suas dúvidas.📣', [{
+							type: 'web_url',
+							url: 'https://www.politize.com.br/reforma-da-previdencia-entenda-os-principais-pontos/',
+							title: 'Previdência Social',
+						}]);
 
+						// Conheça a Câmara
+						await context.sendButtonTemplate('O Poder Legislativo cumpre papel imprescindível: representar  o povo brasileiro, legislar sobre os assuntos '
+							+ 'de interesse nacional e fiscalizar a aplicação dos recursos públicos. Conheça a Câmara dos Deputados e saiba as funções dos parlamentares.', [{
+							type: 'web_url',
+							url: 'http://www2.camara.leg.br/a-camara/conheca',
+							title: 'Conheça a Câmara',
+						}]);
+
+
+						// // !timer -> only message (no waiting), timer === 1 -> second message (has to wait a little), timer === 2500 -> third message (waits for both messages)
+						// if (!context.state.participateTimer) { await context.setState({ participateTimer: 0 }); }
+
+						// setTimeout(async () => { // adding a timer to wait a little bit between each message
+						// 	await context.sendButtonTemplate('Deixe seus contatos para nossa equipe.', [opt.leaveInfo, opt.backToBeginning]);
+						// 	await context.typingOff();
+						// }, context.state.participateTimer === 1 ? 2500 : context.state.participateTimer * 2);
+
+						await context.sendButtonTemplate('Deixe seus contatos para nossa equipe.', [opt.leaveInfo, opt.backToBeginning]);
 						await context.setState({
 							dialog: 'prompt', dataPrompt: 'email', recipientData: '', participateTimer: '',
 						});
 						break;
-						case 'createIssue': // aka "talkToUs" // will only happen if user clicks on Fale Conosco/Deixe uma mensagem
+					case 'createIssue': // aka "talkToUs" // will only happen if user clicks on Fale Conosco/Deixe uma mensagem
 						await context.setState({ issueCreatedMessage: await loadIssueSent(context) }); // loading the confirmation message here
 
 						if (await listening[context.session.user.id] === true) { // if we are 'listening' we need to aggregate every message the user sends
@@ -965,7 +1012,7 @@ const handler = new MessengerHandler()
 							await context.setState({ politicianCellPhone: context.state.politicianData.contact.cellphone.replace(/(?:\+55)+/g, '') });
 							await context.setState({ politicianCellPhone: context.state.politicianCellPhone.replace(/^(\d{2})/g, '($1)') });
 						}
-							await context.sendText(`Você pode entrar em contato com ${await getArtigoCargoNome(context)} pelos seguintes canais:`);
+						await context.sendText(`Você pode entrar em contato com ${await getArtigoCargoNome(context)} pelos seguintes canais:`);
 						if (context.state.politicianData.contact.email) {
 							await context.sendText(` - Através do e-mail: ${context.state.politicianData.contact.email}`);
 						}
