@@ -183,30 +183,30 @@ async function checkMenu(context, dialogs) { // eslint-disable-line
 	await context.setState({ trajectory: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'trajectory') });
 	await context.setState({ introduction: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'introduction') });
 
-	if (!context.state.introduction || !context.state.introduction.content || context.state.introduction.length === 0) { dialogs = dialogs.filter(obj => obj.payload !== 'aboutMe'); }
-	if (!context.state.trajectory || !context.state.trajectory.content || context.state.trajectory.length === 0) { dialogs = dialogs.filter(obj => obj.payload !== 'trajectory'); }
-	if (!context.state.pollData) { dialogs = dialogs.filter(obj => obj.payload !== 'poll'); }
+	if (!context.state.introduction || !context.state.introduction.content || context.state.introduction.length === 0) { dialogs = dialogs.filter((obj) => obj.payload !== 'aboutMe'); }
+	if (!context.state.trajectory || !context.state.trajectory.content || context.state.trajectory.length === 0) { dialogs = dialogs.filter((obj) => obj.payload !== 'trajectory'); }
+	if (!context.state.pollData) { dialogs = dialogs.filter((obj) => obj.payload !== 'poll'); }
 	if (!context.state.politicianData.contact || (context.state.politicianData.contact.email === null && context.state.politicianData.contact.twitter === null
 		&& context.state.politicianData.contact.facebook === null && (context.state.politicianData.contact.url === 'http://' || context.state.politicianData.contact.url === null)
 		&& context.state.politicianData.contact.cellphone === '+55')) {
-		dialogs = dialogs.filter(obj => obj.payload !== 'contacts');
+		dialogs = dialogs.filter((obj) => obj.payload !== 'contacts');
 	}
 
-	if (dialogs.find(x => x.payload === 'poll')) {
+	if (dialogs.find((x) => x.payload === 'poll')) {
 		if (await checkPollAnswered(context) === true // already answered so we remove option
 			|| (Object.keys(context.state.pollData).length === 0 && context.state.pollData.constructor === Object)) { // no active poll
-			dialogs = await dialogs.filter(obj => obj.payload !== 'poll');
+			dialogs = await dialogs.filter((obj) => obj.payload !== 'poll');
 			await dialogs.push(opt.talkToUs);
 		}
 	}
 
 
-	if (dialogs.find(x => x.payload === 'talkToUs') && context.state.politicianData.issue_active !== 1) { // filter talkToUs if issue is not active
-		dialogs = await dialogs.filter(obj => obj.payload !== 'talkToUs');
+	if (dialogs.find((x) => x.payload === 'talkToUs') && context.state.politicianData.issue_active !== 1) { // filter talkToUs if issue is not active
+		dialogs = await dialogs.filter((obj) => obj.payload !== 'talkToUs');
 	}
 
-	if (dialogs.find(x => x.payload === 'availableIntents')) { // filtering out "temas" for everybody
-		dialogs = await dialogs.filter(obj => obj.payload !== 'availableIntents');
+	if (dialogs.find((x) => x.payload === 'availableIntents')) { // filtering out "temas" for everybody
+		dialogs = await dialogs.filter((obj) => obj.payload !== 'availableIntents');
 	}
 
 	return dialogs;
@@ -263,7 +263,7 @@ async function getIntentID(context) {
 	let oneIntent;
 	const intents = await MandatoAbertoAPI.getAllAvailableIntents(context.event.rawEvent.recipient.id, context.state.paginationNumber);
 	if (intents) {
-		oneIntent = await intents.intents.find(x => x.name === context.state.intentName);
+		oneIntent = await intents.intents.find((x) => x.name === context.state.intentName);
 	}
 	return oneIntent;
 }
@@ -428,7 +428,7 @@ const handler = new MessengerHandler()
 								await context.setState({ number: context.event.postback.payload.replace('themeYes', '') }); context.event.postback.payload.replace('themeYes', '');
 								// find the correspondent answer using the current type
 								await context.setState({
-									currentTheme: await context.state.knowledge.knowledge_base.find(x => x.type === context.state.types[context.state.number]),
+									currentTheme: await context.state.knowledge.knowledge_base.find((x) => x.type === context.state.types[context.state.number]),
 								});
 								if (context.state.firstTime === true) { // we log only on the first answer
 									await MandatoAbertoAPI.setIntentStatus(context.state.politicianData.user_id, context.session.user.id, context.state.currentIntent, 1);
@@ -483,7 +483,7 @@ const handler = new MessengerHandler()
 								}
 								// end answering theme --------------------------------------------------
 							} else if (context.event.postback.payload.slice(0, 6) === 'answer') {
-								await context.setState({ question: context.state.knowledge.knowledge_base.find(x => x.id === parseInt(context.event.postback.payload.replace('answer', ''), 10)) });
+								await context.setState({ question: context.state.knowledge.knowledge_base.find((x) => x.id === parseInt(context.event.postback.payload.replace('answer', ''), 10)) });
 								await context.setState({ dialog: 'showAnswer' });
 							} else if (context.event.postback.payload === 'talkToUs') { // user wants to enter in contact
 								await MandatoAbertoAPI.logFlowChange(context.session.user.id, context.state.politicianData.user_id,
@@ -527,7 +527,7 @@ const handler = new MessengerHandler()
 								// console.log('type', context.state.types);
 								// console.log('context.state.types[context.state.number]', context.state.types[context.state.number]);
 
-								await context.setState({ currentTheme: context.state.knowledge.knowledge_base.find(x => x.type === context.state.types[context.state.number]) });
+								await context.setState({ currentTheme: context.state.knowledge.knowledge_base.find((x) => x.type === context.state.types[context.state.number]) });
 								// console.log('currentTheme', context.state.currentTheme);
 
 								if (context.state.currentTheme && (context.state.currentTheme.answer
@@ -815,7 +815,7 @@ const handler = new MessengerHandler()
 					}
 
 					switch (context.state.dialog) {
-					case 'greetings': // primeiro
+					case 'greetings': { // primeiro
 						await context.typingOff();
 						areWeListening = true;
 						await context.setState({ politicianData: await MandatoAbertoAPI.getPoliticianData(context.event.rawEvent.recipient.id) });
@@ -823,9 +823,16 @@ const handler = new MessengerHandler()
 						// await context.setState({ trajectory: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'trajectory') });
 						await context.setState({ articles: await getArticles(context.state.politicianData.gender) });
 						// await context.setState({ introduction: await MandatoAbertoAPI.getAnswer(context.state.politicianData.user_id, 'introduction') });
-						await context.setState({ greeting: context.state.politicianData.greeting.replace('${user.office.name}', context.state.politicianData.office.name) }); // eslint-disable-line no-template-curly-in-string
-						await context.setState({ greeting: context.state.greeting.replace('${user.name}', context.state.politicianData.name) }); // eslint-disable-line no-template-curly-in-string
-						await context.sendText(context.state.greeting);
+
+						const greetings = context.state.politicianData.find((x) => x.greetings === greetings);
+						if (greetings && greetings.content) {
+							await context.sendText(greetings.content);
+						} else {
+							// await context.sendText(greetings.content);
+						}
+						// await context.setState({ greeting: context.state.politicianData.greeting.replace('${user.office.name}', context.state.politicianData.office.name) }); // eslint-disable-line no-template-curly-in-string
+						// await context.setState({ greeting: context.state.greeting.replace('${user.name}', context.state.politicianData.name) }); // eslint-disable-line no-template-curly-in-string
+						// await context.sendText(context.state.greeting);
 						if (menuTimers[context.session.user.id]) { // clear timer if it already exists
 							await clearTimeout(menuTimers[context.session.user.id]);
 						}
@@ -835,6 +842,7 @@ const handler = new MessengerHandler()
 							delete menuTimers[context.session.user.id]; // deleting this timer from timers object
 						}, MenuTimerlimit);
 						await context.setState({ dialog: 'prompt' });
+					}
 						break;
 					case 'mainMenu':
 						await context.typingOff();
