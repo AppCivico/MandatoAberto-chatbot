@@ -24,7 +24,14 @@
     "request": "^2.83.0",
     "request-promise": "^4.2.2",
     "requisition": "^1.7.0",
-    "util.promisify": "^1.0.0"
+    "util.promisify": "^1.0.0",
+    "set-value": ">=2.0.1",
+    "axios": ">=0.18.1",
+     "bson": ">=1.0.5",
+    "cryptiles": ">=4.1.2",
+    "deep-extend": ">=0.5.1",
+    "sshpk": ">=1.13.2",
+    "https-proxy-agent": ">=2.2.0"
   },
   "devDependencies": {
     "eslint": "^5.12.0",
