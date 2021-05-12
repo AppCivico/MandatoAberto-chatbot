@@ -16,7 +16,7 @@
     "dotenv": "^4.0.0",
     "fs-extra": "^7.0.0",
     "get-audio-duration": "0.0.1",
-    "grpc": "^1.14.1",
+    "grpc": "^1.24.9",
     "nodemon": "1.12.7",
     "promisepipe": "^3.0.0",
     "query-string": "^5.1.0",
